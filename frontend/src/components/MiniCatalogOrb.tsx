@@ -196,7 +196,7 @@ export default function MiniCatalogOrb({
           <circle
             cx="50"
             cy="50"
-            r={44 - i * 3}
+            r={Math.max(2, 44 - i * 3)}
             fill="none"
             stroke={`url(#ring-g-${i})`}
             strokeWidth={1.4}

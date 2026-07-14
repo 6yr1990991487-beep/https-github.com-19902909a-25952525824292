@@ -41,7 +41,7 @@ const Tiktok = () => {
     let cancelled = false;
     (async () => {
       try {
-        const response = await fetch(`${API}/videos?platform=tiktok&limit=200`);
+        const response = await fetch(`${API}/videos?platform=tiktok&limit=80`);
         const json = await response.json();
         if (cancelled || !json.videos?.length) return;
         setList(

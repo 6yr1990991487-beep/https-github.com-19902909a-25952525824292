@@ -42,7 +42,7 @@ const ChaineYoutube = () => {
     let active = true;
     (async () => {
       try {
-        const response = await fetch(`${API}/videos?platform=youtube&limit=200`);
+        const response = await fetch(`${API}/videos?platform=youtube&limit=80`);
         const json = await response.json();
         if (!active) return;
         const rows = (json.videos ?? []).map((r: any): ImportedVideo => ({

@@ -493,7 +493,7 @@ async def get_products(category: Optional[str] = None, q: Optional[str] = None, 
 
 
 @api_router.get("/videos")
-async def get_videos(platform: Optional[str] = None, limit: int = Query(24, ge=1, le=80)):
+async def get_videos(platform: Optional[str] = None, limit: int = Query(24, ge=1, le=200)):
     query: Dict[str, Any] = {}
     if platform and platform != "all":
         query["platform"] = platform

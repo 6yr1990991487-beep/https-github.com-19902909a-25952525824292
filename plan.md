@@ -9,14 +9,14 @@
   - **Prime Video** (best-effort sans API)
   - **Catalogue anime/manga** (AniList public + compléments best-effort)
 - Mettre en place une synchronisation **autonome toutes les 5 minutes** (backend scheduler) avec **stockage MongoDB** et **endpoints admin/sync**.
-- Prioriser les sources les plus complètes (backup + live + **projet Lovable/GitHub/ZIP**), et s’aligner sur la fidélité réelle.
+- Prioriser les sources les plus complètes (**backup + live + projet Lovable/GitHub/ZIP**) afin d’obtenir une **fidélité maximale**.
 - Respecter contraintes projet Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
 
 **Statut actuel**
 - ✅ **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
 - ✅ **Phase 2 terminée (V1 UI/UX + dynamiques internes)** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E.
 - ✅ **Phase 3 terminée (parité auto-sync externe + fidélité catalogue circulaire)** : auto-sync 5 min YouTube/TikTok/Prime + auto-sync catalogue (AniList) + UI sync panels + catalogue carrousel circulaire + E2E.
-- 🔄 **Phase 4 en cours (import projet source Lovable/GitHub/ZIP)** : l’utilisateur fournit désormais une base projet (ZIP + GitHub) à comparer/importer pour améliorer fortement la fidélité.
+- ✅ **Phase 4 terminée (import projet Lovable/GitHub/ZIP)** : import de la **vraie base Lovable** (ZIP/GitHub identiques), adaptation à l’environnement CRA/Emergent, réintégration backend auto-sync, tests E2E OK.
 
 ---
 
@@ -89,87 +89,74 @@ Limitation connue (Prime Video)
 
 ---
 
-### Phase 4 — Import du projet source Lovable/GitHub/ZIP pour fidélité maximale 🔄 IN PROGRESS
+### Phase 4 — Import du projet source Lovable/GitHub/ZIP pour fidélité maximale ✅ COMPLETED
 **Contexte**
-- L’utilisateur juge la reconstruction actuelle insuffisamment identique.
+- L’utilisateur juge la reconstruction initiale insuffisamment identique.
 - Nouvelles sources fournies :
   - ZIP : `lovanet-fr-main.zip` (upload)
   - GitHub : `https://github.com/19902909a/lovanet-fr.git`
-  - Supabase MCP : `https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/mcp` (auth inconnue)
-- Choix utilisateur : **utiliser les deux (ZIP + GitHub), comparer, garder le plus complet**, et autoriser le remplacement de la base actuelle si compatible.
+  - Supabase MCP : `https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/mcp` (**401 Unauthorized** sans token)
+- Choix utilisateur : **utiliser les deux (ZIP + GitHub), comparer, garder le plus complet**, et autoriser le remplacement.
 
-**Objectif Phase 4**
-- Importer/aligner le **vrai projet** (Lovable/GitHub/ZIP) pour récupérer **tous les éléments manquants** (layout exact, composants, assets, comportements) puis **réintégrer** notre backend FARM + auto-sync si nécessaire.
+**Résultats Phase 4**
+- GitHub rendu public et cloné avec succès.
+- Comparaison ZIP vs GitHub : **sources identiques**
+  - 268 fichiers vs 268 fichiers
+  - `only_zip`: 0, `only_git`: 0, `changed`: 0
+  - Commit observé : `a23f1fa Ajouté bulle catalogue RGB`
+- Le **vrai projet Lovable** est désormais la base active du frontend (remplace le replica “from scratch”).
+- Adaptation Vite → environnement CRA/Emergent :
+  - Mappage des variables Supabase vers `REACT_APP_SUPABASE_*` (valeurs publiques anon)
+  - Préservation de `REACT_APP_BACKEND_URL`
+  - Ajustements dépendances (React 18.3.x, three/fiber/drei, etc.)
+- MCP Supabase non utilisé (401) : aucun token fourni.
+- Réintégration backend Phase 3 dans l’UI Lovable :
+  - `ManualSyncButton` → `POST /api/admin/sync/run`
+  - Dashboard `/admin/sync` → `GET /api/admin/sync/status` + relance jobs
+  - Pages YouTube/TikTok/Prime → consomment `GET /api/videos?...` avec fallback
+- Corrections post-import :
+  - `/api/videos` accepte `limit=200` (422 corrigé)
+  - Correction bug SVG `<circle r>` négatif (normalisation hash unsigned + clamp)
+- Validation :
+  - Build frontend OK (warnings non bloquants)
+  - E2E Testing Agent iteration 3 : backend 100% (26/26), frontend 100%
 
-#### Phase 4A — Acquisition & Diff (ZIP vs GitHub)
-1. Télécharger et extraire `lovanet-fr-main.zip` dans un dossier de travail.
-2. Cloner `lovanet-fr.git` (ou télécharger l’archive) et comparer :
-   - Structure (React/Vite/Next?), dépendances, assets, pages/routes.
-   - Présence de configuration Supabase, endpoints sync, données catalogue.
-   - Identifier la source la plus complète (ou fusionner).
-3. Produire une **matrice de diff** (ce que le projet source a et ce que notre reconstruction a).
-
-#### Phase 4B — Adaptation à l’environnement Emergent (FARM)
-1. Faire tourner le frontend du projet source localement :
-   - Adapter `REACT_APP_BACKEND_URL` si CRA, ou `VITE_*` si Vite.
-   - Adapter routing pour fonctionner en SPA sous preview.
-2. Aligner le backend :
-   - Si le projet source utilise Supabase directement :
-     - Décider entre **(A)** conserver Supabase côté frontend (si acceptable) ou **(B)** proxy via FastAPI/MongoDB.
-   - Conserver la contrainte : toutes les routes backend en `/api`.
-3. Réintégrer les modules Phase 3 (si absents du projet source) :
-   - Scheduler 5 minutes
-   - Sync YouTube/AniList/TikTok/Prime
-   - Collections MongoDB + endpoints admin.
-
-#### Phase 4C — Supabase MCP (optionnel)
-1. Tester si l’endpoint MCP requiert auth.
-2. Si token requis : demander au client le header (ex: `Authorization: Bearer ...`).
-3. Si accessible : l’utiliser pour récupérer configuration/données additionnelles (pages, vidéos, sync state) afin d’améliorer la fidélité.
-
-#### Phase 4D — Validation & Non-régression
-1. Lint/build : JS + Python + build frontend.
-2. Tests E2E (Testing Agent) :
-   - Navigation complète
-   - Sync status, sync manuel
-   - Catalogue (cercle)
-   - Boutique/panier/contact
-3. Vérifier que la nouvelle base **augmente la fidélité** sans casser :
-   - `/api` contract
-   - MongoDB
-   - scheduler
-   - assets local/public
-
-**Exit criteria Phase 4**
-- UI/UX nettement plus identiques (composants manquants récupérés du projet source).
-- Fonctionnalités Phase 2–3 intactes (ou réintégrées).
+**Exit criteria Phase 4 (atteints)**
+- Fidélité visuelle/structurelle fortement améliorée (base Lovable réelle).
+- Endpoints `/api` et scheduler auto-sync conservés.
 - Tests E2E passent.
 
 ---
 
 ## 3) Next Actions
-1. **Importer ZIP + cloner GitHub** → comparer et identifier la base la plus complète.
-2. **Adapter le projet source** au runtime Emergent (env vars + routing + build).
-3. **Réintégrer** notre backend/scheduler/sync si absent.
-4. **Tester E2E** et corriger les écarts visuels/fonctionnels.
+### Phase 5 (optionnelle) — Hardening “identique au pixel” + production readiness
+1. **Supabase MCP (si souhaité)**
+   - Obtenir un token/headers pour lever le `401`.
+   - Si accessible : importer la configuration/états supplémentaires (si le projet original s’appuie dessus).
+2. **Prime Video parity**
+   - Fournir une source légitime (export, feed interne, ou autre) si l’objectif est une parité stricte.
+   - Sinon conserver le mode **degraded** + fallback (comportement actuel).
+3. **Qualité & perf**
+   - Réduire les warnings non bloquants (ex: source-map `@mediapipe/tasks-vision`).
+   - Audit Lighthouse, optimisation images, réduction bundles.
+4. **Fonctionnalités production** (si besoin)
+   - Emails transactionnels (contact/commande), export admin, analytics, paiement.
 
 ---
 
 ## 4) Success Criteria
-### Déjà atteints (Phases 1–3)
+### Atteints (Phases 1–4)
 - Pages accessibles principales rendues et navigables + aliases/redirects.
 - Médias principaux servis.
 - Bulles flottantes + superpositions (cart drawer, modals, menus).
 - Formulaires dynamiques + demandes de commande persistées.
 - Auto-sync 5 minutes : YouTube/AniList OK, TikTok best-effort, Prime degraded possible.
-- Catalogue : recherche + filtres + carrousel circulaire + grille.
-- Tests E2E phase 3 : backend 100%, frontend 100%.
+- Catalogue : recherche + filtres + carrousel (incluant composant orb/cercle) + grille.
+- Import Lovable complet (ZIP=GitHub) : UI/UX et composants réels récupérés.
+- Tests E2E : iteration 3 backend 100%, frontend 100%.
 
-### Objectif Phase 4 (nouveau)
-- **Fidélité maximale** par import du projet Lovable/GitHub/ZIP (UI/components/assets/behaviors exacts).
-- Aucune régression des endpoints `/api` et des features d’auto-sync.
-- Tests E2E passent après migration.
-
-### Transparence / contraintes externes
+### Transparence / contraintes externes (toujours valables)
 - TikTok/Prime sans API : fiabilité dépend des pages publiques et protections anti-scraping.
 - Prime : peut rester **degraded** sans source officielle/légitime (API/feed/export).
+- Supabase MCP : nécessite un token (actuellement `401 Unauthorized`).
+- Warnings build non bloquants possibles (ex: source-map manquant `@mediapipe/tasks-vision`).

@@ -1,10 +1,18 @@
 [
   {
-    "content": "Phase 4: Nettoyer les derniers warnings build TypeScript/ESLint après import Lovable",
+    "content": "Phase 4: Corriger erreur syntaxe ProductArtwork après clamp rayon",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 4: Corriger rayon SVG négatif ProductArtwork/MiniCatalogOrb",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 4: Vérifier absence de warnings console négatifs et build/API après correction",
     "status": "completed"
   },
   {
     "content": "Phase 4: Tester build, API et parcours frontend avec Testing Agent",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]
