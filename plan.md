@@ -9,14 +9,14 @@
   - **Prime Video** (best-effort sans API)
   - **Catalogue anime/manga** (AniList public + compléments best-effort)
 - Mettre en place une synchronisation **autonome toutes les 5 minutes** (backend scheduler) avec **stockage MongoDB** et **endpoints admin/sync**.
-- Prioriser le contenu issu de `lovanet-fr_260714.backup`, compléter/valider via le site live.
-- Respecter contraintes projet : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
+- Prioriser les sources les plus complètes (backup + live + **projet Lovable/GitHub/ZIP**), et s’aligner sur la fidélité réelle.
+- Respecter contraintes projet Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
 
 **Statut actuel**
 - ✅ **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
-- ✅ **Phase 2 terminée (V1 UI/UX + dynamiques internes)** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E (backend 100%, frontend 98%), correctif mega-menu appliqué.
-- ✅ **Phase 3 terminée (parité auto-sync externe + fidélité catalogue circulaire)** : auto-sync 5 min YouTube/TikTok/Prime + auto-sync catalogue (AniList) + UI sync panels + catalogue carrousel circulaire + E2E (backend 100%, frontend 100%).
-- ⏭️ **Phase 4 optionnelle** : hardening pixel-level + SEO avancé + exports/admin + amélioration Prime si une source légitime/API est fournie.
+- ✅ **Phase 2 terminée (V1 UI/UX + dynamiques internes)** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E.
+- ✅ **Phase 3 terminée (parité auto-sync externe + fidélité catalogue circulaire)** : auto-sync 5 min YouTube/TikTok/Prime + auto-sync catalogue (AniList) + UI sync panels + catalogue carrousel circulaire + E2E.
+- 🔄 **Phase 4 en cours (import projet source Lovable/GitHub/ZIP)** : l’utilisateur fournit désormais une base projet (ZIP + GitHub) à comparer/importer pour améliorer fortement la fidélité.
 
 ---
 
@@ -51,11 +51,7 @@ Objectif Phase 2
 - Déployer une **V1 full-stack** navigable et fidèle avec pages + UI + redirections + overlays + fonctionnalités dynamiques (contact + panier/commande).
 
 Résultats Phase 2
-- Frontend React reconstruit avec direction **dark neon + glassmorphism** + composants d’interaction :
-  - Header fixed + **mega-menu** + menu mobile
-  - **Cart drawer overlay** (panier) + quantités / suppression / total
-  - **Video modal overlay**
-  - **Floating bubbles/orbs** + floating actions
+- Frontend React reconstruit avec direction **dark neon + glassmorphism** + composants d’interaction.
 - Pages/routes implémentées :
   - `/`, `/shop`, `/decouvrir`, `/lecteurs-video`, `/chaine-youtube`, `/chaine-youtube/manga`, `/prime-video`, `/tiktok`, `/anime-countdown`, `/anime-catalog`, `/contact`, `/legals`
   - Routes langues : `/en /es /de /it /pt /ja /zh`
@@ -67,121 +63,113 @@ Résultats Phase 2
   - `POST /api/forms/{form_type}` (ex: contact) → stockage MongoDB
   - `POST /api/orders` (demande de commande/panier) → stockage MongoDB
   - `GET /api/submissions`.
-- Validations :
-  - Lint JS ✅, lint Python ✅, build frontend ✅.
-  - Testing Agent E2E : `/app/test_reports/iteration_1.json` → backend 100%, frontend 98%.
-  - Issue mineure mega-menu (LOW) corrigée et vérifiée.
+- Validations : lint JS ✅, lint Python ✅, build frontend ✅, E2E ✅.
 
 Limitation (transparence)
-- Le checkout est un flux **demande de commande** (persisté en DB) : **pas de paiement externe** configuré.
+- Checkout = **demande de commande** (persistée en DB), **pas de paiement** externe.
 
 ---
 
 ### Phase 3 — External Auto-Sync Parity (YouTube/TikTok/Prime/Catalog) + Fidelity UI (catalog circulaire) ✅ COMPLETED
 **Objectif Phase 3**
-- Reproduire le comportement de l’autre site sur la partie **synchro externe** et **catalogue dynamique** :
-  1) **Auto-sync toutes les 5 minutes**
-  2) Import/stockage des vidéos (YouTube/TikTok/Prime)
-  3) Import/stockage du catalogue anime/manga (AniList public + best-effort)
-  4) Reproduction du **carrousel circulaire (en cercle)** + réglages/recherche/navigation + états de sync
+- Reproduire le comportement de l’autre site sur la partie **synchro externe** et **catalogue dynamique**.
 
-#### Phase 3A — POC Sync (preuve technique) ✅
-- Script POC : `/app/tests/test_phase3_sync_poc.py` → **PHASE3_SYNC_POC_SUCCESS**
-  - YouTube API OK
-  - AniList GraphQL OK
-  - TikTok best-effort OK (variable selon blocage)
-  - Prime best-effort : **degraded** (attendu)
+Résultats Phase 3
+- Auto-sync backend toutes les **5 minutes** (300s) au startup.
+- Sync YouTube via **YouTube Data API** (clé fournie et stockée en `.env`, non exposée).
+- Sync AniList via **GraphQL public** vers MongoDB.
+- Sync TikTok **best-effort** (sans API officielle).
+- Sync Prime Video **best-effort** + statut **degraded** possible (pas d’API publique, pages parfois bloquées/geo-gated).
+- UI : panneaux de statut sync + bouton sync manuel + bouton flottant sync.
+- Catalogue : **carrousel circulaire** + grille + recherche + filtres.
+- Tests E2E : `/app/test_reports/iteration_2.json` → backend 100%, frontend 100%.
 
-#### Phase 3B — Scheduler Auto-sync (toutes les 5 minutes) ✅
-- Scheduler backend interne démarré au startup
-  - interval = **300s** (5 minutes) via `SYNC_INTERVAL_SECONDS` (défaut 300)
-  - lock anti-concurrence
-  - tracking MongoDB `sync_state`
-
-#### Phase 3C — Data Model MongoDB ✅
-Collections utilisées :
-- `videos`
-- `catalog_items`
-- `sync_state`
-
-#### Phase 3D — Frontend Fidelity Pass (catalog + médias) ✅
-- Pages vidéos (YouTube/TikTok/Prime) alimentées par `/api/videos` (MongoDB)
-- Ajout panneau de statut sync + bouton sync manuel par page
-- Floating sync button déclenche sync globale
-- `/anime-catalog` :
-  - badge source (mongodb vs fallback)
-  - bouton **Sync AniList**
-  - recherche + select genres
-  - toggle **Grille** / **Carrousel cercle**
-  - carrousel circulaire avec prev/next + panneau détail + trailer
-- `/admin` : inventaire + panneau sync status
-
-#### Phase 3E — Tests & Validation ✅
-- Validations : Lint JS ✅, lint Python ✅, build frontend ✅
-- Backend manual sync vérifié :
-  - YouTube **ok** (24 vidéos)
-  - AniList **ok** (50 items)
-  - TikTok **ok** (best-effort, 1 item lors du test)
-  - Prime **degraded** (0 item, attendu)
-- Testing Agent E2E : `/app/test_reports/iteration_2.json`
-  - Backend **100% (26/26)**
-  - Frontend **100%** (features phase 3 + régressions)
-
-Limitation connue (Prime Video) — transparence
-- **Prime Video n’a pas d’API publique** et les pages sont souvent **bloquées/geo-gated** ou non fiables côté serveur.
-- Le système est donc en **best-effort** et peut rester **degraded** sans une source légitime :
-  - URL stable exportable,
-  - feed/partenariat,
-  - ou mécanisme interne déjà existant (à fournir).
-- L’application gère proprement ce cas (pas de crash, fallback UI + statut clair).
+Limitation connue (Prime Video)
+- Sans source légitime (API/feed/export), Prime peut rester **degraded** ; comportement géré sans crash.
 
 ---
 
-### Phase 4 — Hardening & SEO/Exports/Advanced Parity ⏭️ OPTIONAL
-User stories (Hardening/Parity)
-1. Pas de liens cassés après un crawl interne complet.
-2. Responsive proche pixel-level sur pages clés.
-3. SEO complet (meta/OG/canonical/hreflang) route par route.
-4. Redirections historiques SEO/backlinks.
-5. Exports admin (soumissions/commandes/sync logs) + notifications email (option).
-6. Prime Video : améliorer la parité **si** une source légitime (API/feed/URL machine-readable) est fournie.
+### Phase 4 — Import du projet source Lovable/GitHub/ZIP pour fidélité maximale 🔄 IN PROGRESS
+**Contexte**
+- L’utilisateur juge la reconstruction actuelle insuffisamment identique.
+- Nouvelles sources fournies :
+  - ZIP : `lovanet-fr-main.zip` (upload)
+  - GitHub : `https://github.com/19902909a/lovanet-fr.git`
+  - Supabase MCP : `https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/mcp` (auth inconnue)
+- Choix utilisateur : **utiliser les deux (ZIP + GitHub), comparer, garder le plus complet**, et autoriser le remplacement de la base actuelle si compatible.
 
-Steps
-- Crawl interne + audit 404.
-- Optimisations perf (cache headers, compression, lazyload, pagination).
-- SEO : titres/meta/OG dynamiques par route.
-- Exports CSV + notifications email (option).
-- Prime: intégrer une source autorisée si disponible (sinon conserver degraded).
+**Objectif Phase 4**
+- Importer/aligner le **vrai projet** (Lovable/GitHub/ZIP) pour récupérer **tous les éléments manquants** (layout exact, composants, assets, comportements) puis **réintégrer** notre backend FARM + auto-sync si nécessaire.
+
+#### Phase 4A — Acquisition & Diff (ZIP vs GitHub)
+1. Télécharger et extraire `lovanet-fr-main.zip` dans un dossier de travail.
+2. Cloner `lovanet-fr.git` (ou télécharger l’archive) et comparer :
+   - Structure (React/Vite/Next?), dépendances, assets, pages/routes.
+   - Présence de configuration Supabase, endpoints sync, données catalogue.
+   - Identifier la source la plus complète (ou fusionner).
+3. Produire une **matrice de diff** (ce que le projet source a et ce que notre reconstruction a).
+
+#### Phase 4B — Adaptation à l’environnement Emergent (FARM)
+1. Faire tourner le frontend du projet source localement :
+   - Adapter `REACT_APP_BACKEND_URL` si CRA, ou `VITE_*` si Vite.
+   - Adapter routing pour fonctionner en SPA sous preview.
+2. Aligner le backend :
+   - Si le projet source utilise Supabase directement :
+     - Décider entre **(A)** conserver Supabase côté frontend (si acceptable) ou **(B)** proxy via FastAPI/MongoDB.
+   - Conserver la contrainte : toutes les routes backend en `/api`.
+3. Réintégrer les modules Phase 3 (si absents du projet source) :
+   - Scheduler 5 minutes
+   - Sync YouTube/AniList/TikTok/Prime
+   - Collections MongoDB + endpoints admin.
+
+#### Phase 4C — Supabase MCP (optionnel)
+1. Tester si l’endpoint MCP requiert auth.
+2. Si token requis : demander au client le header (ex: `Authorization: Bearer ...`).
+3. Si accessible : l’utiliser pour récupérer configuration/données additionnelles (pages, vidéos, sync state) afin d’améliorer la fidélité.
+
+#### Phase 4D — Validation & Non-régression
+1. Lint/build : JS + Python + build frontend.
+2. Tests E2E (Testing Agent) :
+   - Navigation complète
+   - Sync status, sync manuel
+   - Catalogue (cercle)
+   - Boutique/panier/contact
+3. Vérifier que la nouvelle base **augmente la fidélité** sans casser :
+   - `/api` contract
+   - MongoDB
+   - scheduler
+   - assets local/public
+
+**Exit criteria Phase 4**
+- UI/UX nettement plus identiques (composants manquants récupérés du projet source).
+- Fonctionnalités Phase 2–3 intactes (ou réintégrées).
+- Tests E2E passent.
 
 ---
 
 ## 3) Next Actions
-**Statut**: Phases 1–3 livrées. Next = Phase 4 optionnelle.
-
-1. **Hardening UI** (pixel-level) sur pages clés : home, catalogue (cercle), shop, media pages.
-2. **SEO avancé** : meta dynamiques, OG images par route, hreflang complet.
-3. **Admin exports** : CSV/JSON pour `submissions`, `orders`, `sync_state`.
-4. **Notifications** : email (SendGrid/Mailgun) sur contact/commande (option).
-5. **Prime Video parity** : si vous fournissez une source légitime (ex: liste exportable, feed, URL stable), on remplace le best-effort degraded.
+1. **Importer ZIP + cloner GitHub** → comparer et identifier la base la plus complète.
+2. **Adapter le projet source** au runtime Emergent (env vars + routing + build).
+3. **Réintégrer** notre backend/scheduler/sync si absent.
+4. **Tester E2E** et corriger les écarts visuels/fonctionnels.
 
 ---
 
 ## 4) Success Criteria
-### Atteints (V1 + Phase 3)
+### Déjà atteints (Phases 1–3)
 - Pages accessibles principales rendues et navigables + aliases/redirects.
-- Médias principaux (images/SVG/bundles) servis depuis l’app.
-- Bulles flottantes + superpositions (cart drawer, modals, menus) présents.
-- Formulaires dynamiques OK (contact + stockage) + demandes de commande OK (stockage).
-- Auto-sync **toutes les 5 minutes** opérationnel.
-- YouTube sync via API officielle OK.
-- AniList sync catalogue OK.
-- TikTok best-effort OK (statut géré).
-- Catalogue : recherche + filtres + **carrousel circulaire** + grille.
-- UI sync : statut + sync manuel + admin sync inventory.
-- Tests E2E :
-  - Phase 2: backend 100%, frontend 98%
-  - Phase 3: backend 100%, frontend 100%
+- Médias principaux servis.
+- Bulles flottantes + superpositions (cart drawer, modals, menus).
+- Formulaires dynamiques + demandes de commande persistées.
+- Auto-sync 5 minutes : YouTube/AniList OK, TikTok best-effort, Prime degraded possible.
+- Catalogue : recherche + filtres + carrousel circulaire + grille.
+- Tests E2E phase 3 : backend 100%, frontend 100%.
+
+### Objectif Phase 4 (nouveau)
+- **Fidélité maximale** par import du projet Lovable/GitHub/ZIP (UI/components/assets/behaviors exacts).
+- Aucune régression des endpoints `/api` et des features d’auto-sync.
+- Tests E2E passent après migration.
 
 ### Transparence / contraintes externes
 - TikTok/Prime sans API : fiabilité dépend des pages publiques et protections anti-scraping.
-- Prime : peut rester **degraded** sans source officielle/légitime (API/feed/export) — l’app le gère sans crash, avec fallback.
+- Prime : peut rester **degraded** sans source officielle/légitime (API/feed/export).

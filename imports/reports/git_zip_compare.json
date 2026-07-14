@@ -1,0 +1,61 @@
+{
+  "reports": {
+    "zip": {
+      "files": 268,
+      "bytes": 7285449,
+      "ext": {
+        ".json": 12,
+        "<none>": 2,
+        ".js": 2,
+        ".lock": 1,
+        ".pid": 1,
+        ".lockb": 1,
+        ".ts": 33,
+        ".md": 2,
+        ".html": 1,
+        ".yml": 1,
+        ".css": 2,
+        ".tsx": 102,
+        ".png": 2,
+        ".jpg": 2,
+        ".mjs": 4,
+        ".toml": 1,
+        ".sql": 15,
+        ".xml": 4,
+        ".svg": 77,
+        ".txt": 2,
+        ".ico": 1
+      }
+    },
+    "git": {
+      "files": 268,
+      "bytes": 7285449,
+      "ext": {
+        ".json": 12,
+        "<none>": 2,
+        ".js": 2,
+        ".lock": 1,
+        ".pid": 1,
+        ".lockb": 1,
+        ".ts": 33,
+        ".md": 2,
+        ".html": 1,
+        ".yml": 1,
+        ".css": 2,
+        ".tsx": 102,
+        ".png": 2,
+        ".jpg": 2,
+        ".mjs": 4,
+        ".toml": 1,
+        ".sql": 15,
+        ".xml": 4,
+        ".svg": 77,
+        ".txt": 2,
+        ".ico": 1
+      }
+    }
+  },
+  "only_zip": [],
+  "only_git": [],
+  "changed": []
+}

@@ -1,0 +1,24 @@
+# Phase 4 Status Before E2E Testing
+
+- GitHub is now public and was cloned successfully: `https://github.com/19902909a/lovanet-fr.git`.
+- ZIP and GitHub were compared file-by-file:
+  - ZIP files: 268
+  - GitHub files: 268
+  - `only_zip`: 0
+  - `only_git`: 0
+  - changed files: 0
+  - Git commit: `a23f1fa Ajouté bulle catalogue RGB`
+- The imported Lovable project is now the active frontend source.
+- Original Lovable/Vite source was adapted to the existing CRA/Emergent frontend while preserving `/app/frontend/.env` values, especially `REACT_APP_BACKEND_URL`.
+- Supabase public anon configuration from the project export was mapped to `REACT_APP_SUPABASE_*`; Supabase MCP remains unauthorized without token.
+- Backend FastAPI/MongoDB auto-sync from Phase 3 was preserved and integrated into Lovable UI:
+  - `ManualSyncButton` now calls `/api/admin/sync/run` instead of Supabase Edge Functions.
+  - `/admin/sync` dashboard now reads `/api/admin/sync/status` and can trigger all/youtube/anilist/tiktok/prime sync jobs.
+  - YouTube, TikTok and Prime pages were adapted to read synced videos from FastAPI/MongoDB where appropriate while keeping Lovable fallbacks/visuals.
+- Build status:
+  - Production build exits successfully.
+  - Remaining warnings are non-blocking source-map/type warnings from imported dependencies/components; no fatal build errors.
+- Visual smoke checks passed:
+  - Home renders real Lovable design with Lovanet header, hologram/overlay and original visual assets.
+  - Anime catalog renders real Lovable circular catalogue wall/carousel.
+  - Admin sync dashboard renders 5 sync states and 5 manual sync buttons.

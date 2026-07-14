@@ -1,10 +1,10 @@
 [
   {
-    "content": "Phase 3: Tester E2E avec Testing Agent et corriger tous les problèmes",
+    "content": "Phase 4: Nettoyer les derniers warnings build TypeScript/ESLint après import Lovable",
     "status": "completed"
   },
   {
-    "content": "Phase 3: Examiner le rapport Testing Agent et corriger tout problème restant",
-    "status": "completed"
+    "content": "Phase 4: Tester build, API et parcours frontend avec Testing Agent",
+    "status": "in_progress"
   }
 ]
