@@ -1,0 +1,838 @@
+{
+  "source_priority": [
+    "backup PostgreSQL/Supabase dump (PGDMP identified; table inventory via strings)",
+    "live https://lovanet.fr crawler"
+  ],
+  "backup": {
+    "file": "/app/extraction/raw/lovanet-fr_260714.backup",
+    "format": "PostgreSQL custom dump PGDMP v1.16 / Supabase",
+    "size_bytes": 2443090,
+    "public_tables": [
+      "imported_videos",
+      "media_library",
+      "pages",
+      "profiles",
+      "user_roles",
+      "youtube_blacklist",
+      "youtube_manga_videos",
+      "youtube_sync_state"
+    ],
+    "note": "Current container pg_restore cannot restore this newer PGDMP version; live bundle and sitemap used to complete reconstruction while preserving detected backup structure."
+  },
+  "pages": [
+    {
+      "url": "https://lovanet.fr/",
+      "path": "/",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/amazon-prime",
+      "path": "/amazon-prime",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/anime",
+      "path": "/anime",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/anime-catalog",
+      "path": "/anime-catalog",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/anime-countdown",
+      "path": "/anime-countdown",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/anime-moments-youtube",
+      "path": "/anime-moments-youtube",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/animemoments",
+      "path": "/animemoments",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/animemomentsanimeofficiel",
+      "path": "/animemomentsanimeofficiel",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/catalogue",
+      "path": "/catalogue",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/chaine-youtube",
+      "path": "/chaine-youtube",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/chaine-youtube/manga",
+      "path": "/chaine-youtube/manga",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/contact",
+      "path": "/contact",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/de",
+      "path": "/de",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/decouvrir",
+      "path": "/decouvrir",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/en",
+      "path": "/en",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/es",
+      "path": "/es",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/it",
+      "path": "/it",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/ja",
+      "path": "/ja",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/lecteurs-video",
+      "path": "/lecteurs-video",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/legals",
+      "path": "/legals",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/prime",
+      "path": "/prime",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/prime-video",
+      "path": "/prime-video",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/pt",
+      "path": "/pt",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/shop",
+      "path": "/shop",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/tiktok",
+      "path": "/tiktok",
+      "source": "live-sitemap"
+    },
+    {
+      "url": "https://lovanet.fr/youtube",
+      "path": "/youtube",
+      "source": "bundle-route-or-alias"
+    },
+    {
+      "url": "https://lovanet.fr/zh",
+      "path": "/zh",
+      "source": "bundle-route-or-alias"
+    }
+  ],
+  "assets": [
+    {
+      "url": "https://lovanet.fr/assets/index-BeHpH8Zk.js",
+      "path": "/assets/index-BeHpH8Zk.js",
+      "local_path": "/assets/index-BeHpH8Zk.js",
+      "bytes": 1791923,
+      "sha256_16": "8a934d82ffdf7e3b"
+    },
+    {
+      "url": "https://lovanet.fr/assets/index-Cs62gLZo.css",
+      "path": "/assets/index-Cs62gLZo.css",
+      "local_path": "/assets/index-Cs62gLZo.css",
+      "bytes": 147376,
+      "sha256_16": "7141e7b81c1cd40d"
+    },
+    {
+      "url": "https://lovanet.fr/assets/manga-banner-CxOqMKFj.jpg",
+      "path": "/assets/manga-banner-CxOqMKFj.jpg",
+      "local_path": "/assets/manga-banner-CxOqMKFj.jpg",
+      "bytes": 183290,
+      "sha256_16": "7b569ddf1bb0d9f5"
+    },
+    {
+      "url": "https://lovanet.fr/catalog-seo.json",
+      "path": "/catalog-seo.json",
+      "local_path": "/catalog-seo.json",
+      "bytes": 1268396,
+      "sha256_16": "b937491042917e68"
+    },
+    {
+      "url": "https://lovanet.fr/favicon.png",
+      "path": "/favicon.png",
+      "local_path": "/favicon.png",
+      "bytes": 86984,
+      "sha256_16": "f075d828e4496c0d"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-",
+      "path": "/products/am-",
+      "local_path": "/products/am-",
+      "bytes": 11170,
+      "sha256_16": "e5a9587b5c83733a"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-001.svg",
+      "path": "/products/am-001.svg",
+      "local_path": "/products/am-001.svg",
+      "bytes": 2761,
+      "sha256_16": "0351af40b59d8177"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-002.svg",
+      "path": "/products/am-002.svg",
+      "local_path": "/products/am-002.svg",
+      "bytes": 2775,
+      "sha256_16": "574f71ac1c5bb809"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-003.svg",
+      "path": "/products/am-003.svg",
+      "local_path": "/products/am-003.svg",
+      "bytes": 2771,
+      "sha256_16": "32af2dbed4139ab3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-004.svg",
+      "path": "/products/am-004.svg",
+      "local_path": "/products/am-004.svg",
+      "bytes": 2749,
+      "sha256_16": "2cdc642b72ee316c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-005.svg",
+      "path": "/products/am-005.svg",
+      "local_path": "/products/am-005.svg",
+      "bytes": 2752,
+      "sha256_16": "f3d99dbcec4a0b0f"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-006.svg",
+      "path": "/products/am-006.svg",
+      "local_path": "/products/am-006.svg",
+      "bytes": 2756,
+      "sha256_16": "9bff6964c7693964"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-007.svg",
+      "path": "/products/am-007.svg",
+      "local_path": "/products/am-007.svg",
+      "bytes": 2744,
+      "sha256_16": "662f2fbfc666bd67"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-008.svg",
+      "path": "/products/am-008.svg",
+      "local_path": "/products/am-008.svg",
+      "bytes": 2760,
+      "sha256_16": "4c6891c94e483a5f"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-009.svg",
+      "path": "/products/am-009.svg",
+      "local_path": "/products/am-009.svg",
+      "bytes": 2777,
+      "sha256_16": "8cb8cf9ecfbb952c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-010.svg",
+      "path": "/products/am-010.svg",
+      "local_path": "/products/am-010.svg",
+      "bytes": 2772,
+      "sha256_16": "94c60762766e6a7e"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-011.svg",
+      "path": "/products/am-011.svg",
+      "local_path": "/products/am-011.svg",
+      "bytes": 2756,
+      "sha256_16": "bac1ff97ec96744e"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-012.svg",
+      "path": "/products/am-012.svg",
+      "local_path": "/products/am-012.svg",
+      "bytes": 2763,
+      "sha256_16": "16a1e0cc933ace1a"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-013.svg",
+      "path": "/products/am-013.svg",
+      "local_path": "/products/am-013.svg",
+      "bytes": 2763,
+      "sha256_16": "4f0f95704aa48cd4"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-014.svg",
+      "path": "/products/am-014.svg",
+      "local_path": "/products/am-014.svg",
+      "bytes": 2754,
+      "sha256_16": "e2ef219bec278cf9"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-015.svg",
+      "path": "/products/am-015.svg",
+      "local_path": "/products/am-015.svg",
+      "bytes": 2746,
+      "sha256_16": "b829c0e3629aaa8f"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-016.svg",
+      "path": "/products/am-016.svg",
+      "local_path": "/products/am-016.svg",
+      "bytes": 2744,
+      "sha256_16": "931a58193caba425"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-017.svg",
+      "path": "/products/am-017.svg",
+      "local_path": "/products/am-017.svg",
+      "bytes": 2769,
+      "sha256_16": "2c362b05b75415de"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-018.svg",
+      "path": "/products/am-018.svg",
+      "local_path": "/products/am-018.svg",
+      "bytes": 2758,
+      "sha256_16": "76fad287a986703c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-019.svg",
+      "path": "/products/am-019.svg",
+      "local_path": "/products/am-019.svg",
+      "bytes": 2753,
+      "sha256_16": "f5054ccdb40c1129"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-020.svg",
+      "path": "/products/am-020.svg",
+      "local_path": "/products/am-020.svg",
+      "bytes": 2753,
+      "sha256_16": "28e806b0533e724d"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-021.svg",
+      "path": "/products/am-021.svg",
+      "local_path": "/products/am-021.svg",
+      "bytes": 2749,
+      "sha256_16": "e426eab891be4766"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-022.svg",
+      "path": "/products/am-022.svg",
+      "local_path": "/products/am-022.svg",
+      "bytes": 2765,
+      "sha256_16": "f6ac8c3e051372eb"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-023.svg",
+      "path": "/products/am-023.svg",
+      "local_path": "/products/am-023.svg",
+      "bytes": 2741,
+      "sha256_16": "237e332aee49c582"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-024.svg",
+      "path": "/products/am-024.svg",
+      "local_path": "/products/am-024.svg",
+      "bytes": 2756,
+      "sha256_16": "6084659082e5e432"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-025.svg",
+      "path": "/products/am-025.svg",
+      "local_path": "/products/am-025.svg",
+      "bytes": 2754,
+      "sha256_16": "2470175a8da4e223"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-026.svg",
+      "path": "/products/am-026.svg",
+      "local_path": "/products/am-026.svg",
+      "bytes": 2762,
+      "sha256_16": "d38ff526a21cc9d8"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-027.svg",
+      "path": "/products/am-027.svg",
+      "local_path": "/products/am-027.svg",
+      "bytes": 2751,
+      "sha256_16": "4cb83d15364d268f"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-028.svg",
+      "path": "/products/am-028.svg",
+      "local_path": "/products/am-028.svg",
+      "bytes": 2765,
+      "sha256_16": "625b90236b127ba2"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-029.svg",
+      "path": "/products/am-029.svg",
+      "local_path": "/products/am-029.svg",
+      "bytes": 2761,
+      "sha256_16": "eb673432f0e78b2c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-030.svg",
+      "path": "/products/am-030.svg",
+      "local_path": "/products/am-030.svg",
+      "bytes": 2756,
+      "sha256_16": "6e407d0f1bdf6fe9"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-031.svg",
+      "path": "/products/am-031.svg",
+      "local_path": "/products/am-031.svg",
+      "bytes": 2744,
+      "sha256_16": "f1bef9d0c8514572"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-032.svg",
+      "path": "/products/am-032.svg",
+      "local_path": "/products/am-032.svg",
+      "bytes": 2741,
+      "sha256_16": "ce6781d41537092f"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-033.svg",
+      "path": "/products/am-033.svg",
+      "local_path": "/products/am-033.svg",
+      "bytes": 2752,
+      "sha256_16": "5ee53d48f3d9b3b4"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-034.svg",
+      "path": "/products/am-034.svg",
+      "local_path": "/products/am-034.svg",
+      "bytes": 2751,
+      "sha256_16": "2941319b6165f26c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-035.svg",
+      "path": "/products/am-035.svg",
+      "local_path": "/products/am-035.svg",
+      "bytes": 2745,
+      "sha256_16": "9f95d366a02eb8c3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-036.svg",
+      "path": "/products/am-036.svg",
+      "local_path": "/products/am-036.svg",
+      "bytes": 2755,
+      "sha256_16": "26295e25f104cbc2"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-037.svg",
+      "path": "/products/am-037.svg",
+      "local_path": "/products/am-037.svg",
+      "bytes": 2753,
+      "sha256_16": "bba33651bb8366a3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-038.svg",
+      "path": "/products/am-038.svg",
+      "local_path": "/products/am-038.svg",
+      "bytes": 2745,
+      "sha256_16": "ada59a052fda90c0"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-039.svg",
+      "path": "/products/am-039.svg",
+      "local_path": "/products/am-039.svg",
+      "bytes": 2742,
+      "sha256_16": "78dffb63e6aa6599"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-040.svg",
+      "path": "/products/am-040.svg",
+      "local_path": "/products/am-040.svg",
+      "bytes": 2753,
+      "sha256_16": "6713ac93b0b20270"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-041.svg",
+      "path": "/products/am-041.svg",
+      "local_path": "/products/am-041.svg",
+      "bytes": 2753,
+      "sha256_16": "7d6392fe922b5adb"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-042.svg",
+      "path": "/products/am-042.svg",
+      "local_path": "/products/am-042.svg",
+      "bytes": 2737,
+      "sha256_16": "e75691941adad24d"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-043.svg",
+      "path": "/products/am-043.svg",
+      "local_path": "/products/am-043.svg",
+      "bytes": 2743,
+      "sha256_16": "f71dc28b1cb862bf"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-044.svg",
+      "path": "/products/am-044.svg",
+      "local_path": "/products/am-044.svg",
+      "bytes": 2750,
+      "sha256_16": "699b4dd4ad2447aa"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-045.svg",
+      "path": "/products/am-045.svg",
+      "local_path": "/products/am-045.svg",
+      "bytes": 2757,
+      "sha256_16": "10afe25b9cd19c15"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-046.svg",
+      "path": "/products/am-046.svg",
+      "local_path": "/products/am-046.svg",
+      "bytes": 2756,
+      "sha256_16": "b22cf71ed5f5ec49"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-047.svg",
+      "path": "/products/am-047.svg",
+      "local_path": "/products/am-047.svg",
+      "bytes": 2760,
+      "sha256_16": "1af0d32ed5b85590"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-048.svg",
+      "path": "/products/am-048.svg",
+      "local_path": "/products/am-048.svg",
+      "bytes": 2759,
+      "sha256_16": "6291ff76dd82cbf2"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-049.svg",
+      "path": "/products/am-049.svg",
+      "local_path": "/products/am-049.svg",
+      "bytes": 2747,
+      "sha256_16": "dc7139746a255d85"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-050.svg",
+      "path": "/products/am-050.svg",
+      "local_path": "/products/am-050.svg",
+      "bytes": 2763,
+      "sha256_16": "b1ed42c6460b5020"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-051.svg",
+      "path": "/products/am-051.svg",
+      "local_path": "/products/am-051.svg",
+      "bytes": 2754,
+      "sha256_16": "3b487252f853b9b3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-052.svg",
+      "path": "/products/am-052.svg",
+      "local_path": "/products/am-052.svg",
+      "bytes": 2763,
+      "sha256_16": "4aed76e59d6d67fc"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-053.svg",
+      "path": "/products/am-053.svg",
+      "local_path": "/products/am-053.svg",
+      "bytes": 2746,
+      "sha256_16": "f6c06ed0033496b3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-054.svg",
+      "path": "/products/am-054.svg",
+      "local_path": "/products/am-054.svg",
+      "bytes": 2758,
+      "sha256_16": "8eaa4e8a7f1a406c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-055.svg",
+      "path": "/products/am-055.svg",
+      "local_path": "/products/am-055.svg",
+      "bytes": 2743,
+      "sha256_16": "335c70ed8535ffae"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-056.svg",
+      "path": "/products/am-056.svg",
+      "local_path": "/products/am-056.svg",
+      "bytes": 2764,
+      "sha256_16": "f7d893c75f132aaa"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-057.svg",
+      "path": "/products/am-057.svg",
+      "local_path": "/products/am-057.svg",
+      "bytes": 2760,
+      "sha256_16": "68b56aeaecdd67b0"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-058.svg",
+      "path": "/products/am-058.svg",
+      "local_path": "/products/am-058.svg",
+      "bytes": 2754,
+      "sha256_16": "e29b5af1d03f6165"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-059.svg",
+      "path": "/products/am-059.svg",
+      "local_path": "/products/am-059.svg",
+      "bytes": 2754,
+      "sha256_16": "cb8e7b36eb9e0b21"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-060.svg",
+      "path": "/products/am-060.svg",
+      "local_path": "/products/am-060.svg",
+      "bytes": 2749,
+      "sha256_16": "dd5e86eaf57ef1a1"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-061.svg",
+      "path": "/products/am-061.svg",
+      "local_path": "/products/am-061.svg",
+      "bytes": 2762,
+      "sha256_16": "1911c5764febcd41"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-062.svg",
+      "path": "/products/am-062.svg",
+      "local_path": "/products/am-062.svg",
+      "bytes": 2753,
+      "sha256_16": "702a068082e2f405"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-063.svg",
+      "path": "/products/am-063.svg",
+      "local_path": "/products/am-063.svg",
+      "bytes": 2737,
+      "sha256_16": "ca41247daf0277dc"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-064.svg",
+      "path": "/products/am-064.svg",
+      "local_path": "/products/am-064.svg",
+      "bytes": 2751,
+      "sha256_16": "3aaa25650f83701c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-065.svg",
+      "path": "/products/am-065.svg",
+      "local_path": "/products/am-065.svg",
+      "bytes": 2750,
+      "sha256_16": "80dc6c3c59798eeb"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-066.svg",
+      "path": "/products/am-066.svg",
+      "local_path": "/products/am-066.svg",
+      "bytes": 2759,
+      "sha256_16": "2235016aa464ed91"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-067.svg",
+      "path": "/products/am-067.svg",
+      "local_path": "/products/am-067.svg",
+      "bytes": 2748,
+      "sha256_16": "8249a8e9a64de6b3"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-068.svg",
+      "path": "/products/am-068.svg",
+      "local_path": "/products/am-068.svg",
+      "bytes": 2741,
+      "sha256_16": "7daffbc7aebee6ce"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-069.svg",
+      "path": "/products/am-069.svg",
+      "local_path": "/products/am-069.svg",
+      "bytes": 2734,
+      "sha256_16": "b6eacc6e4f056d2c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-070.svg",
+      "path": "/products/am-070.svg",
+      "local_path": "/products/am-070.svg",
+      "bytes": 2747,
+      "sha256_16": "6bb22925a5e4aad0"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-071.svg",
+      "path": "/products/am-071.svg",
+      "local_path": "/products/am-071.svg",
+      "bytes": 2757,
+      "sha256_16": "ebfabfa958fe839e"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-072.svg",
+      "path": "/products/am-072.svg",
+      "local_path": "/products/am-072.svg",
+      "bytes": 2755,
+      "sha256_16": "b9a89d39da24ef35"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-073.svg",
+      "path": "/products/am-073.svg",
+      "local_path": "/products/am-073.svg",
+      "bytes": 2759,
+      "sha256_16": "6be67cdd0073f42c"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-074.svg",
+      "path": "/products/am-074.svg",
+      "local_path": "/products/am-074.svg",
+      "bytes": 2755,
+      "sha256_16": "0bafcd99359669b5"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-075.svg",
+      "path": "/products/am-075.svg",
+      "local_path": "/products/am-075.svg",
+      "bytes": 2754,
+      "sha256_16": "5377a18819c5651d"
+    },
+    {
+      "url": "https://lovanet.fr/products/am-076.svg",
+      "path": "/products/am-076.svg",
+      "local_path": "/products/am-076.svg",
+      "bytes": 2762,
+      "sha256_16": "67534b71fc11510d"
+    },
+    {
+      "url": "https://lovanet.fr/robots.txt",
+      "path": "/robots.txt",
+      "local_path": "/robots.txt",
+      "bytes": 295,
+      "sha256_16": "cca1c1b529cd8ae3"
+    },
+    {
+      "url": "https://lovanet.fr/sitemap-catalog.xml",
+      "path": "/sitemap-catalog.xml",
+      "local_path": "/sitemap-catalog.xml",
+      "bytes": 3157525,
+      "sha256_16": "0796cb130c033561"
+    },
+    {
+      "url": "https://lovanet.fr/sitemap-i18n.xml",
+      "path": "/sitemap-i18n.xml",
+      "local_path": "/sitemap-i18n.xml",
+      "bytes": 7434,
+      "sha256_16": "bbe9700d8c7dfc2d"
+    },
+    {
+      "url": "https://lovanet.fr/sitemap-index.xml",
+      "path": "/sitemap-index.xml",
+      "local_path": "/sitemap-index.xml",
+      "bytes": 323,
+      "sha256_16": "b804843f67e5ffb5"
+    },
+    {
+      "url": "https://lovanet.fr/sitemap.xml",
+      "path": "/sitemap.xml",
+      "local_path": "/sitemap.xml",
+      "bytes": 27922,
+      "sha256_16": "a106faa8c6beb30b"
+    }
+  ],
+  "redirects": [
+    {
+      "from": "/amazon-prime",
+      "to": "/prime-video",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/prime",
+      "to": "/prime-video",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/youtube",
+      "to": "/chaine-youtube",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/anime-moments-youtube",
+      "to": "/chaine-youtube",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/animemoments",
+      "to": "/decouvrir",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/animemomentsanimeofficiel",
+      "to": "/decouvrir",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/catalogue",
+      "to": "/anime-catalog",
+      "code": 302,
+      "source": "bundle alias"
+    },
+    {
+      "from": "/anime",
+      "to": "/anime-catalog",
+      "code": 302,
+      "source": "bundle alias"
+    }
+  ],
+  "ui_components": [
+    {
+      "type": "fixedHeader",
+      "notes": "Header fixed top, neon/glassmorphism, mega menu on hover/click"
+    },
+    {
+      "type": "floatingBubbles",
+      "notes": "Neon gradient bubbles/orbs and animated background glows recreated"
+    },
+    {
+      "type": "overlays",
+      "notes": "Cart drawer, mobile menu, video player overlay, contact form states"
+    },
+    {
+      "type": "syncFloatingButton",
+      "notes": "Original had floating manual sync button for video sources; recreated as floating action stack"
+    }
+  ]
+}

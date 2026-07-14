@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Tee Long Sleeve Glitch Edit — AnimemomentsAnimeofficiel">
+  <title>Tee Long Sleeve Glitch Edit — AnimemomentsAnimeofficiel</title>
+  <defs>
+    <linearGradient id="gw7q5id" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff5e3a"/>
+      <stop offset="55%" stop-color="#ffb13a"/>
+      <stop offset="100%" stop-color="#ffec5e"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#gw7q5id)"/>
+  <g transform="rotate(-25 200 200)" opacity="0.55">
+    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+  <circle cx="351.0" cy="200.0" r="5" fill="#fff" opacity="0.45"/><circle cx="65.8" cy="323.0" r="12" fill="#fff" opacity="0.45"/><circle cx="209.0" cy="97.4" r="9" fill="#fff" opacity="0.45"/><circle cx="281.6" cy="306.3" r="6" fill="#fff" opacity="0.45"/><circle cx="37.5" cy="171.3" r="13" fill="#fff" opacity="0.45"/><circle cx="272.5" cy="153.8" r="10" fill="#fff" opacity="0.45"/><circle cx="169.7" cy="313.0" r="7" fill="#fff" opacity="0.45"/><circle cx="131.7" cy="68.7" r="4" fill="#fff" opacity="0.45"/><circle cx="368.2" cy="261.2" r="11" fill="#fff" opacity="0.45"/><circle cx="107.6" cy="238.3" r="8" fill="#fff" opacity="0.45"/><circle cx="255.4" cy="81.3" r="5" fill="#fff" opacity="0.45"/><circle cx="248.7" cy="354.5" r="12" fill="#fff" opacity="0.45"/><circle cx="128.1" cy="158.5" r="9" fill="#fff" opacity="0.45"/><circle cx="311.3" cy="175.3" r="6" fill="#fff" opacity="0.45"/><circle cx="116.8" cy="318.8" r="13" fill="#fff" opacity="0.45"/><circle cx="177.0" cy="25.5" r="10" fill="#fff" opacity="0.45"/><circle cx="274.3" cy="262.4" r="7" fill="#fff" opacity="0.45"/><circle cx="72.1" cy="205.6" r="4" fill="#fff" opacity="0.45"/>
+  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
+  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#ff5e3a">A</text>
+  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">APPAREL</text>
+  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Tee Long Sleeve Glitch Edit</text>
+  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-030</text>
+</svg>
