@@ -1,10 +1,10 @@
 [
   {
-    "content": "Phase 3: Vérifier lint/build/API/screenshot après améliorations auto-sync",
+    "content": "Phase 3: Tester E2E avec Testing Agent et corriger tous les problèmes",
     "status": "completed"
   },
   {
-    "content": "Phase 3: Tester E2E avec Testing Agent et corriger tous les problèmes",
-    "status": "in_progress"
+    "content": "Phase 3: Examiner le rapport Testing Agent et corriger tout problème restant",
+    "status": "completed"
   }
 ]
