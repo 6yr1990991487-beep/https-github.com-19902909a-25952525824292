@@ -3,14 +3,21 @@
 ## 1) Objectives
 - Reconstruire **Lovanet.fr à l’identique** (au mieux techniquement) : **toutes les pages accessibles**, design, mise en page, typographies/couleurs, navigation.
 - Reprendre et servir **assets** (images/vidéos/fichiers), **liens**, **redirections** et comportements UI (ex: **bulles flottantes**, **superpositions/overlays**, bandeaux, popups).
-- Recréer les **fonctionnalités dynamiques** détectées (ex: formulaires de contact, demandes, panier/commande, etc.) avec stockage.
+- Recréer les **fonctionnalités dynamiques** visibles ET les **configurations de synchronisation externe** (auto-sync) présentes sur l’autre site :
+  - **YouTube** (sync officiel via API)
+  - **TikTok** (best-effort sans API)
+  - **Prime Video** (best-effort sans API)
+  - **Catalogue anime/manga** (AniList public + compléments best-effort)
+- Mettre en place une synchronisation **autonome toutes les 5 minutes** (backend scheduler) avec **stockage MongoDB** et **endpoints admin/sync**.
 - Prioriser le contenu issu de `lovanet-fr_260714.backup`, compléter/valider via le site live.
 - Respecter contraintes projet : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
 
-**Statut actuel** (au moment de cette mise à jour)
-- **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
-- **Phase 2 terminée** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande) + validations (lint/build) + E2E (backend 100%, frontend 98%) + correctif mega-menu appliqué.
-- **V1 prête à livrer**. Les prochaines étapes sont des optimisations/renforcements (Phase 3/4) si souhaitées.
+**Statut actuel**
+- ✅ **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
+- ✅ **Phase 2 terminée (V1 UI/UX + dynamiques internes)** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E (backend 100%, frontend 98%), correctif mega-menu appliqué.
+- ⏭️ **Phase 3 à faire (parité auto-sync externe + fidélité catalogue circulaire)** : auto-sync 5 min YouTube/TikTok/Prime + auto-sync catalogue (AniList) + amélioration visuelle/carrousel circulaire + réglages/recherche/navigation comme le site original.
+
+---
 
 ## 2) Implementation Steps
 
@@ -38,9 +45,9 @@ Exit criteria Phase 1 (atteints)
 
 ---
 
-### Phase 2 — V1 App Development (MVP): reconstruction de toutes les pages accessibles ✅ COMPLETED
+### Phase 2 — V1 App Development (MVP): reconstruction des pages + dynamiques internes ✅ COMPLETED
 Objectif Phase 2
-- Déployer une **V1 full-stack** navigable et fidèle avec pages + UI + redirections + overlays + fonctionnalités dynamiques.
+- Déployer une **V1 full-stack** navigable et fidèle avec pages + UI + redirections + overlays + fonctionnalités dynamiques (contact + panier/commande).
 
 Résultats Phase 2
 - Frontend React reconstruit avec direction **dark neon + glassmorphism** + composants d’interaction :
@@ -62,71 +69,135 @@ Résultats Phase 2
 - Validations :
   - Lint JS ✅, lint Python ✅, build frontend ✅.
   - Testing Agent E2E : `/app/test_reports/iteration_1.json` → backend 100%, frontend 98%.
-  - Issue mineure mega-menu (LOW) corrigée et vérifiée par screenshot automation (panel visible, 11 liens).
-
-Conclure Phase 2 (atteint)
-- E2E réussi : navigation, assets, redirections/aliases, bulles/overlays, formulaires, panier/commande.
+  - Issue mineure mega-menu (LOW) corrigée et vérifiée.
 
 Limitation (transparence)
-- Le checkout est un flux **demande de commande** (persisté en DB) : **pas de paiement externe** configuré (non demandé / non requis détecté).
+- Le checkout est un flux **demande de commande** (persisté en DB) : **pas de paiement externe** configuré.
 
 ---
 
-### Phase 3 — Hardening & Fidelity Pass (amélioration conformité + complétude) ⏭️ OPTIONAL / NEXT
-User stories (Hardening)
-1. En tant que visiteur, je ne vois pas de liens cassés (404) en parcourant le site.
-2. En tant que visiteur mobile, le rendu est identique (responsive) sur les pages principales.
-3. En tant que visiteur, les vidéos s’affichent comme prévu (autoplay si présent, fallback sinon).
-4. En tant qu’admin, je peux voir un rapport des ressources manquantes et les remplacer.
-5. En tant que visiteur, les performances sont bonnes (lazy-load images, caching headers) sans casser le rendu.
+### Phase 3 — External Auto-Sync Parity (YouTube/TikTok/Prime/Catalog) + Fidelity UI (catalog circulaire) ⏭️ IN PROGRESS / NEXT
+**Nouvel objectif Phase 3 (prioritaire)**
+- Reproduire le fonctionnement du site original côté **synchronisation autonome** et **catalogue dynamique** :
+  1) **Auto-sync toutes les 5 minutes**
+  2) Import/stockage des vidéos (YouTube/TikTok/Prime)
+  3) Import/stockage du catalogue anime/manga (AniList public + best-effort)
+  4) Reproduction du **carrousel circulaire (en cercle)** + réglages/recherche/navigation + positions des vidéos + polices/bannières.
 
-Steps
-- Crawl interne complet de l’app reconstruite (détection 404/500 + assets manquants + routes non couvertes).
-- Pass de fidélité pixel-level sur sections critiques (header/mega-menu, hero, shop cards, modals).
-- Optimisations :
-  - lazy-load images (déjà partiellement), cache headers statiques, compression,
-  - réduction JS/CSS si possible sans altérer design.
-- Ajout d’un écran “Asset Missing / Inventory” enrichi (admin/dev) pour remapper assets.
-- Tests E2E + régressions (desktop + mobile).
+#### Phase 3A — POC Sync (1 source à la fois, preuve technique)
+**Core à prouver**: on peut synchroniser et persister en DB sans casser le quota/latence.
+
+- YouTube (OFFICIEL via API key fournie)
+  - Résoudre channel par handle `@animemomentsAnimeofficiel`
+  - Sync des uploads (playlist uploads) : id, title, description, thumbnails, publishedAt, stats si nécessaire
+  - Déduplication + upsert en MongoDB
+  - Stratégie quotas (maxResults, pagination, backoff)
+- AniList (public GraphQL)
+  - Pull d’un set initial (trending/popular + recherche)
+  - Stockage des champs nécessaires (cover/banner/trailerId/genres/score/year)
+  - Déduplication + pagination
+- TikTok (sans API) — best-effort
+  - Stratégie : RSS/embeds publics si disponibles, ou extraction HTML légère sans authent (si légalement/techniquement possible)
+  - Si impossible: fallback contrôlé (source “manual curated”) + marquage “sync degraded”
+- Prime Video (sans API) — best-effort
+  - Stratégie : pages publiques “anime/manga” Amazon/Prime (si accessibles) + extraction des items listés
+  - Si paywall/anti-bot: fallback contrôlé (curated) + marquage “sync degraded”
+
+**Deliverables POC**
+- Endpoint `POST /api/sync/youtube` + `GET /api/videos?platform=youtube` alimenté par DB
+- Endpoint `POST /api/sync/catalog/anilist` + `GET /api/catalog` alimenté par DB
+- Rapport `sync_status` (dernière exécution, items ajoutés/maj, erreurs)
+
+Exit criteria 3A
+- Au moins YouTube + AniList sync OK end-to-end (API → DB → UI)
+- Gestion des erreurs + statut sync.
+
+#### Phase 3B — Scheduler Auto-sync (toutes les 5 minutes)
+- Ajouter un scheduler côté backend (process interne) :
+  - interval = **5 minutes** (configurable)
+  - locks anti-concurrence
+  - logs + métriques minimales
+  - stockage `sync_state` en MongoDB : last_run, last_success, counts, last_error
+- Endpoints admin :
+  - `POST /api/admin/sync/run` (run now)
+  - `GET /api/admin/sync/status`
+  - `POST /api/admin/sync/config` (optionnel) : interval/limits
+
+#### Phase 3C — Data Model MongoDB (parité avec backup tables)
+Collections proposées :
+- `videos` : {platform, external_id, title, description, thumbnail_url, published_at, stats?, raw?, updated_at}
+- `catalog_items` : {provider: anilist, id, title, summary, year, score, genres, cover, banner, trailerId, updated_at}
+- `sync_state` : {key, last_run_at, last_success_at, inserted, updated, error}
+- `blacklist` : {platform, kind, value, reason}
+
+#### Phase 3D — Frontend Fidelity Pass (catalog + médias)
+- Remplacer les seeds par données DB (React Query) :
+  - Vidéos pages YouTube/TikTok/Prime
+  - Lecteur vidéo + playlists
+  - Catalogue
+- Reproduire le **carrousel circulaire** sur `/anime-catalog` (CSS 3D / canvas / transforms)
+  - navigation (drag / wheel / buttons)
+  - recherche + filtres + réglages (densité, tri, mode performance)
+- Harmoniser :
+  - polices (Orbitron/Inter déjà) + bannières
+  - positions/sections vidéos conformes
+  - états “sync en cours / sync ok / sync dégradé”
+
+#### Phase 3E — Tests & Validation
+- Tests backend :
+  - mocks YouTube/AniList
+  - tests sync_state
+- E2E avec Testing Agent :
+  - vérifier auto-sync (simulate run now)
+  - vérifier UI alimentée par DB
+  - vérifier fallback TikTok/Prime (pas de crash)
 
 ---
 
-### Phase 4 — Feature-complete parity (si détecté/confirmé sur l’original) ⏭️ OPTIONAL
-User stories (Parity)
-1. En tant que visiteur, les CTA (téléphone/mail/maps/whatsapp) fonctionnent partout.
-2. En tant que visiteur, tout tracking/SEO visible (meta, OG tags) est cohérent page par page.
-3. En tant que visiteur, les redirections historiques importantes fonctionnent (SEO/backlinks).
-4. En tant que visiteur, les interactions avancées (carrousels, accordéons, animations) sont fidèles.
-5. En tant qu’admin, je peux exporter les soumissions et commandes.
+### Phase 4 — Hardening & SEO/Exports/Advanced Parity ⏭️ OPTIONAL (après Phase 3)
+User stories (Hardening/Parity)
+1. Pas de liens cassés après un crawl interne complet.
+2. Responsive proche pixel-level sur pages clés.
+3. SEO complet (meta/OG/canonical/hreflang) route par route.
+4. Redirections historiques SEO/backlinks.
+5. Exports admin (soumissions/commandes/sync logs) + notifications email (option).
 
 Steps
-- SEO : titres/meta/OG par route, canonical, sitemap/robots cohérents (déjà récupérés côté assets).
-- Audit redirections + tests automatiques (aliases + historiques).
-- Parité interactions avancées (animations, carrousels, micro-interactions) en priorisant les pages à fort trafic.
-- (Option) Intégration email provider (notification des formulaires) + export CSV.
-- (Option) Intégration paiement (si requis) après validation du besoin.
-- Test E2E final.
+- Crawl interne + audit 404.
+- Optimisations perf (cache headers, compression, lazyload, pagination).
+- SEO : titres/meta/OG dynamiques par route.
+- Exports CSV + notifications email (option).
+
+---
 
 ## 3) Next Actions
-**Statut**: V1 livrée. Les next actions sont optionnelles selon vos priorités.
+**Statut**: V1 livrée; priorité = Phase 3 auto-sync externe + carrousel circulaire.
 
-1. Validation métier : confirmer que le rendu V1 est conforme (pages, navigation, overlays, bulles flottantes).
-2. Lister les écarts de fidélité visuelle (si besoin) : sections à ajuster en priorité.
-3. Décider si vous souhaitez :
-   - Phase 3 (hardening/perf/pixel-pass),
-   - Phase 4 (SEO/exports/email/paiement).
-4. (Si besoin) Fournir un `pg_restore` compatible v1.16 ou un export SQL “plain” pour restaurer 100% du contenu backup en base et remplacer les seeds live.
+1. **Sécuriser la clé YouTube**
+   - Ajouter `YOUTUBE_API_KEY` en variable d’environnement backend (ne pas hardcoder).
+2. Implémenter **POC YouTube sync** (handle → channelId → uploads playlist → upsert MongoDB).
+3. Implémenter **POC AniList sync** (GraphQL → upsert MongoDB) et basculer `/api/catalog` sur DB.
+4. Mettre en place le **scheduler 5 minutes** + endpoints admin/sync status.
+5. Ajouter TikTok + Prime en best-effort (avec fallback “sync degraded”).
+6. Refaire `/anime-catalog` en **carrousel circulaire** + réglages/recherche/navigation + mise en page fidèle.
+7. E2E final (auto-sync + UI) avec Testing Agent.
+
+---
 
 ## 4) Success Criteria
-**Atteints (V1)**
+### Atteints (V1)
 - Pages accessibles principales rendues et navigables + aliases/redirects.
 - Médias principaux (images/SVG/bundles) servis depuis l’app.
 - Bulles flottantes + superpositions (cart drawer, modals, menus) présents.
 - Formulaires dynamiques OK (contact + stockage) + demandes de commande OK (stockage).
 - Tests E2E passants (avec correctif mega-menu).
 
-**À viser si Phase 3/4**
-- Crawl interne = 0 lien interne cassé.
-- Parité responsive + performance (LCP/CLS) améliorée.
-- SEO complet route par route + audit redirections historiques.
-- Exports admin (soumissions/commandes) + notifications email (option).
+### Nouveaux critères (Phase 3 — parité sync)
+- Auto-sync **toutes les 5 minutes** opérationnel (YouTube + AniList minimum) avec `sync_state` visible.
+- UI alimentée par **données synchronisées** (plus de seeds statiques pour les sections concernées).
+- Catalogue : recherche + filtres + **carrousel circulaire** fonctionnels et proches du site original.
+- TikTok + Prime : au minimum **best-effort** sans crash + statut “dégradé” clair si blocage externe.
+- Tests E2E couvrant : run sync now, affichage vidéos, affichage catalogue, overlays, navigation.
+
+### Transparence / contraintes externes
+- TikTok/Prime sans API : fiabilité dépend des pages publiques et protections anti-scraping. Prévoir fallback contrôlé et logs de statut.

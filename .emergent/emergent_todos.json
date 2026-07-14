@@ -1,14 +1,10 @@
 [
   {
-    "content": "Phase 2: Corriger le souci mineur de visibilité du mega menu",
+    "content": "Phase 3: Vérifier lint/build/API/screenshot après améliorations auto-sync",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Examiner le rapport Testing Agent et corriger tous les problèmes",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Tester toutes les pages, liens, médias, bulles flottantes et fonctionnalités dynamiques avec Testing Agent",
-    "status": "completed"
+    "content": "Phase 3: Tester E2E avec Testing Agent et corriger tous les problèmes",
+    "status": "in_progress"
   }
 ]

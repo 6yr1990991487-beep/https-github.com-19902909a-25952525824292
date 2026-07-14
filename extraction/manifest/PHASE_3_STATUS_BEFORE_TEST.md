@@ -1,0 +1,22 @@
+# Phase 3 Status Before E2E Testing
+
+- Added external auto-sync core:
+  - YouTube official Data API sync for `@animemomentsAnimeofficiel` using provided API key.
+  - AniList public GraphQL sync for anime catalogue/cards/trailers.
+  - TikTok public best-effort discovery for `@anime.moments.officiel` without official API credentials.
+  - Prime Video public best-effort discovery; Prime has no public API and currently returns degraded/no public items in server environment, so UI falls back to existing anime/trailer catalogue while preserving degraded sync status.
+- Backend scheduler starts automatically and runs every 300 seconds (5 minutes), with manual `/api/admin/sync/run` and per-provider sync endpoints.
+- MongoDB collections added/used: `videos`, `catalog_items`, `sync_state`.
+- Frontend enhanced with:
+  - Sync status panels.
+  - Manual sync buttons.
+  - YouTube/TikTok/Prime video pages using synced backend data.
+  - Catalogue source badge, sync button, filters/search, grid mode and circular carousel mode.
+  - Admin inventory page with sync state.
+- Validation before testing:
+  - Phase 3 POC script passed: `/app/tests/test_phase3_sync_poc.py` → `PHASE3_SYNC_POC_SUCCESS`.
+  - Backend manual sync verified: YouTube ok, AniList ok, TikTok ok, Prime degraded.
+  - `/api/videos` and `/api/catalog` return MongoDB synced data for YouTube/TikTok/AniList.
+  - JS lint passed, Python lint passed, frontend build passed.
+  - Screenshot confirmed `/anime-catalog` circular carousel renders with 14 cards and source `mongodb`.
+  - Screenshot confirmed `/chaine-youtube` renders synced YouTube video and sync panel; screenshot tool timed out on networkidle due embedded iframe, but DOM/UI was visible.

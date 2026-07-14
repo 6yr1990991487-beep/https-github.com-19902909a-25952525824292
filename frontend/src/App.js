@@ -320,7 +320,8 @@ function VideoCard({ video, onPlay }) {
 
 function VideoModal({ video, onClose }) {
   if (!video) return null;
-  const embedId = video.id || video.trailerId;
+  const embedId = video.external_id || video.id || video.trailerId;
+  const canEmbedYoutube = video.platform !== "tiktok" && String(embedId || "").length <= 20;
   return (
     <div className="modal-backdrop" data-testid="video-modal" role="dialog" aria-modal="true">
       <div className="video-modal-panel">
@@ -331,9 +332,21 @@ function VideoModal({ video, onClose }) {
           </div>
           <button className="icon-button" data-testid="video-modal-close" type="button" onClick={onClose}>×</button>
         </div>
-        <div className="iframe-shell">
-          <iframe title={video.title} src={`https://www.youtube-nocookie.com/embed/${embedId}?autoplay=1&rel=0&modestbranding=1`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
-        </div>
+        {canEmbedYoutube ? (
+          <div className="iframe-shell">
+            <iframe title={video.title} src={`https://www.youtube-nocookie.com/embed/${embedId}?autoplay=1&rel=0&modestbranding=1`} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
+          </div>
+        ) : (
+          <div className="external-player-shell" data-testid="external-player-shell">
+            <img src={video.thumbnail_url || video.thumbnail || "/products/am-001.svg"} alt={video.title} />
+            <div>
+              <span className={`platform-badge ${video.platform}`}>{platformLabels[video.platform] || video.platform}</span>
+              <h3>Source externe synchronisée</h3>
+              <p>{video.description || "Cette source ne propose pas de lecteur public intégrable stable. La carte est importée et référencée automatiquement, avec accès vers la source publique."}</p>
+              {video.video_url && <a className="primary-button" data-testid="external-video-link" href={video.video_url} target="_blank" rel="noreferrer">Ouvrir la source</a>}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -436,33 +449,85 @@ function DiscoverPage() {
   );
 }
 
+function SyncStatusPanel({ compact = false }) {
+  const [status, setStatus] = useState([]);
+  const [running, setRunning] = useState(false);
+
+  const refresh = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API}/admin/sync/status`);
+      setStatus(response.data.status || []);
+      setRunning(Boolean(response.data.running));
+    } catch (error) {
+      console.warn("Sync status unavailable", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+    const timer = window.setInterval(refresh, 30000);
+    return () => window.clearInterval(timer);
+  }, [refresh]);
+
+  const rows = status.slice(0, compact ? 3 : 8);
+  return (
+    <div className={cn("sync-status-panel", compact && "compact")} data-testid="sync-status-panel">
+      <div className="sync-status-head">
+        <span className="eyebrow">Auto-sync 5 min</span>
+        <strong>{running ? "En cours" : "Actif"}</strong>
+      </div>
+      <div className="sync-status-list">
+        {rows.map((row) => (
+          <div key={row.key} className={`sync-row ${row.status}`} data-testid={`sync-status-${row.key}`}>
+            <span>{row.key}</span>
+            <strong>{row.status}</strong>
+            <small>{row.inserted || 0}+ / {row.updated || 0} maj</small>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MediaPage({ platform = "all", title, eyebrow, description }) {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
   const fallback = { videos: platform === "all" ? videosSeed : videosSeed.filter((video) => video.platform === platform), total: videosSeed.length };
-  const { data, loading } = useApiResource(`/videos?platform=${platform}&limit=24`, fallback, [platform]);
+  const { data, loading } = useApiResource(`/videos?platform=${platform}&limit=24`, fallback, [platform, refreshing]);
   const videos = data.videos || fallback.videos;
-  const manualSync = () => {
+  const featuredId = videos[0]?.external_id || videos[0]?.id || "LHtdKWJdif4";
+  const manualSync = async () => {
     setRefreshing(true);
-    window.setTimeout(() => setRefreshing(false), 850);
+    setSyncMessage("");
+    try {
+      const response = await axios.post(`${API}/admin/sync/run`, { target: platform === "all" ? "all" : platform });
+      setSyncMessage(`Sync ${response.data.status || "ok"} · ${response.data.count ?? ""}`);
+    } catch (error) {
+      setSyncMessage("Sync indisponible pour le moment");
+    } finally {
+      window.setTimeout(() => setRefreshing(false), 850);
+    }
   };
   return (
     <section className="page-section top-page" data-testid={`${platform}-media-page`}>
       <SectionTitle eyebrow={eyebrow} title={title}>{description}</SectionTitle>
       <div className="media-hero">
         <div className="iframe-shell large">
-          <iframe title="Lovanet featured video" src={`https://www.youtube-nocookie.com/embed/${videos[0]?.id || "LHtdKWJdif4"}?rel=0&modestbranding=1`} allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
+          <iframe title="Lovanet featured video" src={`https://www.youtube-nocookie.com/embed/${featuredId}?rel=0&modestbranding=1`} allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
         </div>
         <div className="media-panel">
-          <span className="eyebrow">Synchronisation</span>
-          <h3>Flux vidéo reconstruit</h3>
-          <p>Les cartes utilisent les trailers et médias du catalogue Lovanet. Le bouton flottant du site original est recréé pour rafraîchir l’interface.</p>
-          <button type="button" data-testid="manual-sync-button" className="primary-button" onClick={manualSync}>{refreshing ? "Sync en cours…" : "Sync manuel"}</button>
+          <span className="eyebrow">Synchronisation externe</span>
+          <h3>Flux auto-sync autonome</h3>
+          <p>YouTube est synchronisé via API officielle. TikTok et Prime Video utilisent une récupération publique best-effort avec statut dégradé si la source bloque les crawlers.</p>
+          <button type="button" data-testid="manual-sync-button" className="primary-button" onClick={manualSync}>{refreshing ? "Sync en cours…" : "Sync maintenant"}</button>
+          {syncMessage && <p className="form-status" data-testid="manual-sync-status">{syncMessage}</p>}
+          <SyncStatusPanel compact />
         </div>
       </div>
-      {loading && <p className="loading-line">Chargement vidéos…</p>}
+      {loading && <p className="loading-line">Chargement vidéos synchronisées…</p>}
       <div className="video-grid" data-testid="media-video-grid">
-        {videos.map((video) => <VideoCard key={video.id} video={video} onPlay={setSelectedVideo} />)}
+        {videos.map((video) => <VideoCard key={video.id || video.external_id} video={video} onPlay={setSelectedVideo} />)}
       </div>
       <VideoModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />
     </section>
@@ -472,18 +537,22 @@ function MediaPage({ platform = "all", title, eyebrow, description }) {
 function PlayerPage() {
   const [params] = useSearchParams();
   const requested = params.get("video");
-  const selected = videosSeed.find((video) => video.id === requested) || videosSeed[0];
+  const { data } = useApiResource("/videos?platform=all&limit=24", { videos: videosSeed }, []);
+  const playlist = data.videos?.length ? data.videos : videosSeed;
+  const selected = playlist.find((video) => (video.external_id || video.id) === requested) || playlist[0];
+  const selectedId = selected?.external_id || selected?.id || "LHtdKWJdif4";
   return (
     <section className="page-section top-page" data-testid="player-page">
-      <SectionTitle eyebrow="Lecteur vidéo" title="Player immersif anime">Lecture plein écran en panneau glassmorphism comme la tablette/overlay détectée dans le bundle original.</SectionTitle>
+      <SectionTitle eyebrow="Lecteur vidéo" title="Player immersif anime">Lecture plein écran alimentée par les vidéos synchronisées YouTube/TikTok/Prime et affichée en panneau glassmorphism.</SectionTitle>
       <div className="player-layout">
         <div className="iframe-shell cinema">
-          <iframe title={selected.title} src={`https://www.youtube-nocookie.com/embed/${selected.id}?rel=0&modestbranding=1`} allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
+          <iframe title={selected.title} src={`https://www.youtube-nocookie.com/embed/${selectedId}?rel=0&modestbranding=1`} allow="encrypted-media; picture-in-picture; fullscreen" allowFullScreen />
         </div>
         <div className="playlist-panel">
-          {videosSeed.slice(0, 10).map((video) => (
-            <Link data-testid={`playlist-link-${video.id}`} key={video.id} to={`/lecteurs-video?video=${video.id}`} className={cn("playlist-row", selected.id === video.id && "active")}>{video.title}</Link>
-          ))}
+          {playlist.slice(0, 14).map((video) => {
+            const videoId = video.external_id || video.id;
+            return <Link data-testid={`playlist-link-${videoId}`} key={videoId} to={`/lecteurs-video?video=${videoId}`} className={cn("playlist-row", selectedId === videoId && "active")}>{video.title}</Link>;
+          })}
         </div>
       </div>
     </section>
@@ -529,29 +598,84 @@ function CountdownPage() {
 function CatalogPage() {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("all");
+  const [mode, setMode] = useState("circle");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selected, setSelected] = useState(null);
-  const { data, loading } = useApiResource(`/catalog?q=${encodeURIComponent(query)}&genre=${genre}&limit=60`, { items: [], total: 0, genres: [] }, [query, genre]);
+  const [syncMessage, setSyncMessage] = useState("");
+  const { data, loading } = useApiResource(`/catalog?q=${encodeURIComponent(query)}&genre=${genre}&limit=60`, { items: [], total: 0, genres: [], source: "loading" }, [query, genre, syncMessage]);
   const items = data.items || [];
+  const circleItems = items.slice(0, 14);
+  const activeAnime = circleItems[activeIndex % Math.max(circleItems.length, 1)];
+  const runCatalogSync = async () => {
+    setSyncMessage("Synchronisation AniList en cours…");
+    try {
+      const response = await axios.post(`${API}/admin/sync/run`, { target: "anilist" });
+      setSyncMessage(`AniList ${response.data.status} · ${response.data.count || 0} cartes`);
+    } catch (error) {
+      setSyncMessage("Impossible de lancer la sync AniList.");
+    }
+  };
   return (
     <section className="page-section top-page" data-testid="anime-catalog-page">
-      <SectionTitle eyebrow="Catalogue Anime" title="1500+ animés manga avec trailers">Catalogue importé depuis `/catalog-seo.json` du site live Lovanet.</SectionTitle>
-      <div className="shop-toolbar">
+      <SectionTitle eyebrow="Catalogue Anime" title="Catalogue auto-sync AniList + carrousel circulaire">Les cartes sont synchronisées depuis AniList public, complétées par le catalogue live récupéré, avec recherche, filtres et mode cercle.</SectionTitle>
+      <div className="catalog-control-deck" data-testid="catalog-controls">
         <input data-testid="catalog-search-input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Rechercher Attack on Titan, Naruto…" />
         <select data-testid="catalog-genre-select" value={genre} onChange={(event) => setGenre(event.target.value)}>
           <option value="all">Tous genres</option>
           {(data.genres || []).map((item) => <option value={item} key={item}>{item}</option>)}
         </select>
+        <div className="filter-chips">
+          <button type="button" data-testid="catalog-mode-circle" className={cn("filter-chip", mode === "circle" && "active")} onClick={() => setMode("circle")}>Carrousel cercle</button>
+          <button type="button" data-testid="catalog-mode-grid" className={cn("filter-chip", mode === "grid" && "active")} onClick={() => setMode("grid")}>Grille</button>
+          <button type="button" data-testid="catalog-sync-button" className="filter-chip active" onClick={runCatalogSync}>Sync AniList</button>
+        </div>
       </div>
-      {loading && <p className="loading-line">Chargement catalogue…</p>}
-      <div className="catalog-grid" data-testid="catalog-grid">
+      <div className="catalog-meta-row">
+        <span data-testid="catalog-source-badge">Source: {data.source || "mongodb"}</span>
+        <span>{data.total || items.length} cartes</span>
+        {syncMessage && <span data-testid="catalog-sync-status">{syncMessage}</span>}
+      </div>
+      {loading && <p className="loading-line">Chargement catalogue synchronisé…</p>}
+      {mode === "circle" && circleItems.length > 0 && (
+        <div className="catalog-circle-stage" data-testid="catalog-circle-carousel">
+          <button className="circle-nav prev" data-testid="catalog-circle-prev" type="button" onClick={() => setActiveIndex((value) => (value - 1 + circleItems.length) % circleItems.length)}>‹</button>
+          <div className="circle-orbit">
+            {circleItems.map((anime, index) => {
+              const offset = (index - activeIndex + circleItems.length) % circleItems.length;
+              const angle = (360 / circleItems.length) * offset;
+              return (
+                <button
+                  type="button"
+                  key={anime.id || anime.external_id}
+                  data-testid={`catalog-circle-card-${anime.id || anime.external_id}`}
+                  className={cn("circle-card", index === activeIndex && "active")}
+                  style={{ "--angle": `${angle}deg`, "--z": index === activeIndex ? 190 : 60 }}
+                  onClick={() => setActiveIndex(index)}
+                >
+                  <img src={anime.cover} alt={anime.title} />
+                  <span>{anime.title}</span>
+                </button>
+              );
+            })}
+          </div>
+          <button className="circle-nav next" data-testid="catalog-circle-next" type="button" onClick={() => setActiveIndex((value) => (value + 1) % circleItems.length)}>›</button>
+          <div className="circle-detail" data-testid="catalog-circle-detail">
+            <span className="eyebrow">{activeAnime?.year || "Anime"} · {activeAnime?.score || "—"}/100</span>
+            <h3>{activeAnime?.title}</h3>
+            <p>{activeAnime?.summary}</p>
+            {activeAnime?.trailerId && <button type="button" className="primary-button" data-testid="catalog-circle-trailer" onClick={() => setSelected({ id: String(activeAnime.trailerId).trim(), title: activeAnime.title })}>Lire le trailer</button>}
+          </div>
+        </div>
+      )}
+      <div className={cn("catalog-grid", mode === "circle" && "below-circle")} data-testid="catalog-grid">
         {items.map((anime) => (
-          <article className="anime-card" data-testid={`anime-card-${anime.id}`} key={anime.id} id={`anime-${anime.id}`}>
+          <article className="anime-card" data-testid={`anime-card-${anime.id || anime.external_id}`} key={anime.id || anime.external_id} id={`anime-${anime.id || anime.external_id}`}>
             <img src={anime.cover} alt={anime.title} loading="lazy" />
             <div>
               <span className="source-chip">{anime.year || "Anime"} · {anime.score || "—"}/100</span>
               <h3>{anime.title}</h3>
               <p>{anime.summary}</p>
-              {anime.trailerId && <button type="button" data-testid={`anime-trailer-${anime.id}`} className="small-button" onClick={() => setSelected({ id: String(anime.trailerId).trim(), title: anime.title })}>Trailer</button>}
+              {anime.trailerId && <button type="button" data-testid={`anime-trailer-${anime.id || anime.external_id}`} className="small-button" onClick={() => setSelected({ id: String(anime.trailerId).trim(), title: anime.title })}>Trailer</button>}
             </div>
           </article>
         ))}
@@ -630,25 +754,36 @@ function LanguagePage({ code }) {
 }
 
 function AdminPage() {
-  const { data } = useApiResource("/site", { manifestSummary: { pages: 27, assets: 87 }, ui: [] }, []);
+  const { data } = useApiResource("/site", { manifestSummary: { pages: 27, assets: 87 }, ui: [], sync: {} }, []);
   return (
     <section className="page-section top-page" data-testid="admin-inventory-page">
-      <SectionTitle eyebrow="Inventaire" title="Rapport backup/live">Écran technique de contrôle pour les pages, assets, redirections et composants UI reconstruits.</SectionTitle>
+      <SectionTitle eyebrow="Inventaire & Auto-sync" title="Rapport backup/live + synchronisations externes">Contrôle des pages, assets, redirections et sources auto-sync YouTube, TikTok, Prime Video et AniList.</SectionTitle>
       <div className="admin-grid">
         <div><strong>{data.manifestSummary?.pages || 0}</strong><span>pages/routes détectées</span></div>
         <div><strong>{data.manifestSummary?.assets || 0}</strong><span>assets mirrorrés</span></div>
-        <div><strong>PGDMP</strong><span>sauvegarde PostgreSQL/Supabase</span></div>
+        <div><strong>{data.sync?.interval_seconds || 300}s</strong><span>intervalle auto-sync</span></div>
       </div>
+      <SyncStatusPanel />
     </section>
   );
 }
 
 function FloatingActions() {
   const [syncing, setSyncing] = useState(false);
+  const runFloatingSync = async () => {
+    setSyncing(true);
+    try {
+      await axios.post(`${API}/admin/sync/run`, { target: "all" });
+    } catch (error) {
+      console.warn("Floating sync failed", error);
+    } finally {
+      window.setTimeout(() => setSyncing(false), 900);
+    }
+  };
   return (
     <div className="floating-actions" data-testid="floating-actions">
       <Link to="/contact" className="float-bubble" data-testid="floating-contact-button">Contact</Link>
-      <button type="button" className="float-bubble sync" data-testid="floating-sync-button" onClick={() => { setSyncing(true); window.setTimeout(() => setSyncing(false), 900); }}>{syncing ? "Sync…" : "Sync"}</button>
+      <button type="button" className="float-bubble sync" data-testid="floating-sync-button" onClick={runFloatingSync}>{syncing ? "Sync…" : "Sync"}</button>
     </div>
   );
 }

@@ -71,6 +71,11 @@ class LovanetAPITester:
         )
         if success and data.get("status") == "ok":
             print("   ✓ Health status is ok")
+            # Phase 3: Check sync_interval_seconds
+            if data.get("sync_interval_seconds") == 300:
+                print("   ✓ Sync interval is 300 seconds (5 minutes)")
+            else:
+                print(f"   ⚠ Sync interval is {data.get('sync_interval_seconds')} (expected 300)")
         return success
 
     def test_site(self):
@@ -307,16 +312,196 @@ class LovanetAPITester:
                 print(f"   ✓ Order total: {data['order'].get('total', 0)}")
         return success
 
+    def test_sync_status(self):
+        """Test Phase 3: sync status endpoint"""
+        success, data = self.run_test(
+            "Sync Status",
+            "GET",
+            "/admin/sync/status",
+            200
+        )
+        if success:
+            status_list = data.get("status", [])
+            print(f"   ✓ Sync states returned: {len(status_list)}")
+            
+            # Check for expected sync keys
+            keys = {s.get("key") for s in status_list}
+            expected_keys = {"youtube", "catalog:anilist", "tiktok", "prime", "all"}
+            found_keys = keys & expected_keys
+            print(f"   ✓ Found sync keys: {', '.join(sorted(found_keys))}")
+            
+            if data.get("interval_seconds") == 300:
+                print("   ✓ Interval seconds: 300")
+            
+            # Show status of each provider
+            for state in status_list:
+                key = state.get("key")
+                status = state.get("status")
+                if key in expected_keys:
+                    print(f"   ✓ {key}: {status}")
+        return success
+
+    def test_manual_sync_youtube(self):
+        """Test Phase 3: manual YouTube sync"""
+        success, data = self.run_test(
+            "Manual Sync - YouTube",
+            "POST",
+            "/admin/sync/run",
+            200,
+            data={"target": "youtube"}
+        )
+        if success:
+            status = data.get("status")
+            print(f"   ✓ Sync status: {status}")
+            if status == "ok":
+                print(f"   ✓ Inserted: {data.get('inserted', 0)}, Updated: {data.get('updated', 0)}")
+                print(f"   ✓ Video count: {data.get('count', 0)}")
+            elif status == "error":
+                print(f"   ⚠ Error: {data.get('error', 'Unknown')[:100]}")
+        return success
+
+    def test_manual_sync_anilist(self):
+        """Test Phase 3: manual AniList catalog sync"""
+        success, data = self.run_test(
+            "Manual Sync - AniList",
+            "POST",
+            "/admin/sync/run",
+            200,
+            data={"target": "anilist"}
+        )
+        if success:
+            status = data.get("status")
+            print(f"   ✓ Sync status: {status}")
+            if status == "ok":
+                print(f"   ✓ Inserted: {data.get('inserted', 0)}, Updated: {data.get('updated', 0)}")
+                print(f"   ✓ Catalog count: {data.get('count', 0)}")
+            elif status == "error":
+                print(f"   ⚠ Error: {data.get('error', 'Unknown')[:100]}")
+        return success
+
+    def test_manual_sync_tiktok(self):
+        """Test Phase 3: manual TikTok sync (best-effort)"""
+        success, data = self.run_test(
+            "Manual Sync - TikTok",
+            "POST",
+            "/admin/sync/run",
+            200,
+            data={"target": "tiktok"}
+        )
+        if success:
+            status = data.get("status")
+            print(f"   ✓ Sync status: {status} (ok or degraded expected)")
+            if status in {"ok", "degraded"}:
+                print(f"   ✓ Inserted: {data.get('inserted', 0)}, Updated: {data.get('updated', 0)}")
+                print(f"   ✓ Video count: {data.get('count', 0)}")
+            elif status == "error":
+                print(f"   ⚠ Error: {data.get('error', 'Unknown')[:100]}")
+        return success
+
+    def test_manual_sync_prime(self):
+        """Test Phase 3: manual Prime Video sync (best-effort)"""
+        success, data = self.run_test(
+            "Manual Sync - Prime Video",
+            "POST",
+            "/admin/sync/run",
+            200,
+            data={"target": "prime"}
+        )
+        if success:
+            status = data.get("status")
+            print(f"   ✓ Sync status: {status} (ok or degraded expected)")
+            if status in {"ok", "degraded"}:
+                print(f"   ✓ Inserted: {data.get('inserted', 0)}, Updated: {data.get('updated', 0)}")
+                print(f"   ✓ Video count: {data.get('count', 0)}")
+            elif status == "error":
+                print(f"   ⚠ Error: {data.get('error', 'Unknown')[:100]}")
+        return success
+
+    def test_videos_mongodb_source(self):
+        """Test Phase 3: videos endpoint returns MongoDB synced data"""
+        # Test YouTube videos
+        success1, data1 = self.run_test(
+            "Videos MongoDB - YouTube",
+            "GET",
+            "/videos",
+            200,
+            params={"platform": "youtube", "limit": 10}
+        )
+        if success1:
+            videos = data1.get("videos", [])
+            source = data1.get("source", "unknown")
+            print(f"   ✓ YouTube videos: {len(videos)}, source: {source}")
+            if videos and source == "mongodb":
+                sample = videos[0]
+                if sample.get("external_id") and sample.get("title") and sample.get("thumbnail_url"):
+                    print(f"   ✓ Sample video has external_id, title, thumbnail_url")
+                if sample.get("sync_source") == "youtube-data-api-v3":
+                    print(f"   ✓ Sync source is youtube-data-api-v3")
+
+        # Test TikTok videos
+        success2, data2 = self.run_test(
+            "Videos MongoDB - TikTok",
+            "GET",
+            "/videos",
+            200,
+            params={"platform": "tiktok", "limit": 10}
+        )
+        if success2:
+            videos = data2.get("videos", [])
+            source = data2.get("source", "unknown")
+            print(f"   ✓ TikTok videos: {len(videos)}, source: {source}")
+
+        # Test Prime videos
+        success3, data3 = self.run_test(
+            "Videos MongoDB - Prime",
+            "GET",
+            "/videos",
+            200,
+            params={"platform": "prime", "limit": 10}
+        )
+        if success3:
+            videos = data3.get("videos", [])
+            source = data3.get("source", "unknown")
+            print(f"   ✓ Prime videos: {len(videos)}, source: {source} (fallback ok if degraded)")
+
+        return success1 and success2 and success3
+
+    def test_catalog_mongodb_source(self):
+        """Test Phase 3: catalog endpoint returns MongoDB synced AniList data"""
+        success, data = self.run_test(
+            "Catalog MongoDB - AniList",
+            "GET",
+            "/catalog",
+            200,
+            params={"limit": 20}
+        )
+        if success:
+            items = data.get("items", [])
+            source = data.get("source", "unknown")
+            total = data.get("total", 0)
+            genres = data.get("genres", [])
+            print(f"   ✓ Catalog items: {len(items)}, total: {total}, source: {source}")
+            print(f"   ✓ Genres available: {len(genres)}")
+            
+            if items and source == "mongodb":
+                sample = items[0]
+                if sample.get("provider") == "anilist":
+                    print(f"   ✓ Sample item provider is anilist")
+                if sample.get("genres"):
+                    print(f"   ✓ Sample item has genres: {', '.join(sample['genres'][:3])}")
+        return success
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
-        print("LOVANET BACKEND API TESTS")
+        print("LOVANET BACKEND API TESTS - PHASE 3")
         print("=" * 60)
         print(f"Base URL: {BASE_URL}")
         print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("=" * 60)
 
-        # Run all tests
+        # Run Phase 1-2 tests
+        print("\n### PHASE 1-2 TESTS ###")
         self.test_health()
         self.test_site()
         self.test_products()
@@ -327,6 +512,16 @@ class LovanetAPITester:
         self.test_redirects()
         self.test_contact_form()
         self.test_order_creation()
+
+        # Run Phase 3 sync tests
+        print("\n### PHASE 3 SYNC TESTS ###")
+        self.test_sync_status()
+        self.test_manual_sync_youtube()
+        self.test_manual_sync_anilist()
+        self.test_manual_sync_tiktok()
+        self.test_manual_sync_prime()
+        self.test_videos_mongodb_source()
+        self.test_catalog_mongodb_source()
 
         # Print summary
         print("\n" + "=" * 60)
