@@ -149,7 +149,7 @@ function Header() {
             <img src={siteMeta.logo} alt="Lovanet" className="brand-logo" />
             <span className="brand-word">Lovanet</span>
           </Link>
-          <button className={cn("mega-trigger", megaOpen && "active")} data-testid="mega-menu-button" type="button" aria-expanded={megaOpen} onClick={() => setMegaOpen((value) => !value)} onMouseEnter={() => setMegaOpen(true)}>
+          <button className={cn("mega-trigger", megaOpen && "active")} data-testid="mega-menu-button" type="button" aria-expanded={megaOpen} onClick={() => setMegaOpen(true)} onMouseEnter={() => setMegaOpen(true)}>
             ✦
           </button>
         </div>

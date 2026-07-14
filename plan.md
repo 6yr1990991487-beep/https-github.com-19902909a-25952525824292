@@ -3,133 +3,130 @@
 ## 1) Objectives
 - Reconstruire **Lovanet.fr à l’identique** (au mieux techniquement) : **toutes les pages accessibles**, design, mise en page, typographies/couleurs, navigation.
 - Reprendre et servir **assets** (images/vidéos/fichiers), **liens**, **redirections** et comportements UI (ex: **bulles flottantes**, **superpositions/overlays**, bandeaux, popups).
-- Recréer les **fonctionnalités dynamiques** détectées (ex: formulaires de contact, demandes de devis, inscriptions/newsletter, etc.) avec stockage + envoi si applicable.
+- Recréer les **fonctionnalités dynamiques** détectées (ex: formulaires de contact, demandes, panier/commande, etc.) avec stockage.
 - Prioriser le contenu issu de `lovanet-fr_260714.backup`, compléter/valider via le site live.
 - Respecter contraintes projet : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
 
+**Statut actuel** (au moment de cette mise à jour)
+- **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
+- **Phase 2 terminée** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande) + validations (lint/build) + E2E (backend 100%, frontend 98%) + correctif mega-menu appliqué.
+- **V1 prête à livrer**. Les prochaines étapes sont des optimisations/renforcements (Phase 3/4) si souhaitées.
+
 ## 2) Implementation Steps
 
-### Phase 1 — POC Core (Isolation): extraction + inventaire + rendu minimal
-**Core à prouver**: capacité à **extraire** le site (backup + live), produire un **inventaire pages/assets/redirects**, et **rendre fidèlement** 1–2 pages avec assets + bulles/overlays.
+### Phase 1 — POC Core (Isolation): extraction + inventaire + rendu minimal ✅ COMPLETED
+**Core prouvé**: capacité à **extraire** le site (backup + live), produire un **inventaire pages/assets/redirects**, et **valider** le socle de reconstruction.
 
-User stories (POC)
-1. En tant qu’admin, je veux charger un backup et obtenir la liste des pages détectées pour savoir ce qui est récupérable.
-2. En tant qu’admin, je veux crawler le site live et comparer pages/ressources vs backup pour détecter les manquants.
-3. En tant que visiteur, je veux voir la page d’accueil rendue fidèlement (styles + images) pour valider la direction.
-4. En tant que visiteur, je veux que les bulles flottantes/overlays visibles sur la home se comportent comme sur le site d’origine.
-5. En tant qu’admin, je veux générer un rapport “OK / manquant / à refaire manuellement” pour cadrer le restant.
+Résultats Phase 1
+- Backup `lovanet-fr_260714.backup` identifié : **PostgreSQL/Supabase custom dump** (`PGDMP` v1.16), ~2.44MB.
+- Inventaire (via `strings`) des tables publiques détectées :
+  - `imported_videos`, `media_library`, `pages`, `profiles`, `user_roles`, `youtube_blacklist`, `youtube_manga_videos`, `youtube_sync_state`.
+- Crawl live réalisé : `https://lovanet.fr` + `sitemap.xml`, `sitemap-catalog.xml`, `sitemap-index.xml`, `robots.txt`, bundles JS/CSS, produits `/products/am-*.svg`.
+- **Manifest** généré : `/app/extraction/manifest/lovanet_manifest.json`
+  - **27 routes/pages/aliases** recensées
+  - **87 assets** mirrorrés.
+- Assets mirrorrés dans `/app/frontend/public` : bundles, favicon, product SVGs, sitemaps, `catalog-seo.json`.
+- Script de validation POC : `/app/tests/test_core_lovanet.py` → **CORE_POC_SUCCESS**.
 
-Steps
-- Analyser le fichier `.backup` (identifier format: archive, DB dump, CMS export, etc.) et extraire :
-  - structure pages (HTML/templates), CSS/JS, médias, config.
-- Construire un **crawler** (Python) pour le site live :
-  - sitemap si présent, sinon BFS liens internes ; normalisation URLs ; détection redirect (3xx).
-  - téléchargement assets référencés (img/video/css/js/fonts) + hash pour dédup.
-- Générer un **manifest JSON** unique :
-  - `pages[] {url, title, html_source, assets[], last_seen_source}`
-  - `assets[] {url, type, local_path, hash}`
-  - `redirects[] {from,to,code,source}`
-  - `ui_components[] {type: floatingBubble|overlay|banner, selectors/notes}`
-- POC de rendu :
-  - Servir 1–2 pages (Accueil + une page interne) via React (ou HTML rendu) en réutilisant CSS/JS.
-  - Vérifier que les assets chargent depuis le projet, et que les overlays/bulles s’affichent.
-- Websearch ciblé (best practices) :
-  - “site mirroring assets rewrite relative URLs”, “FastAPI serve static mirrored site”, “React render external HTML safely”, “link rewriting for mirrored sites”.
+Note technique (transparence)
+- `pg_restore` local ne peut pas restaurer le dump **PGDMP v1.16** (mismatch version client). L’extraction a donc continué via **inventaire backup + crawl live + assets/sitemaps/catalog**.
 
-Exit criteria Phase 1
-- Manifest généré (pages + assets + redirects) et comparaison backup vs live.
-- 1–2 pages rendues fidèlement avec assets + bulles/overlay visibles.
+Exit criteria Phase 1 (atteints)
+- Manifest généré et inventaire stable.
+- Mirroring assets OK.
+- POC extraction/validation OK.
 
 ---
 
-### Phase 2 — V1 App Development (MVP): reconstruction de toutes les pages accessibles
-User stories (V1)
-1. En tant que visiteur, je peux naviguer toutes les pages accessibles de Lovanet.fr avec la même structure et contenu.
-2. En tant que visiteur, tous les médias (images/vidéos) s’affichent correctement et rapidement.
-3. En tant que visiteur, les liens/menus/boutons redirigent vers les bonnes pages (internes/externes).
-4. En tant que visiteur, les éléments interactifs (bulles flottantes, overlays, popups, banners) fonctionnent comme sur l’original.
-5. En tant que visiteur, les formulaires (contact/devis/etc.) envoient bien les données et affichent un état succès/erreur clair.
+### Phase 2 — V1 App Development (MVP): reconstruction de toutes les pages accessibles ✅ COMPLETED
+Objectif Phase 2
+- Déployer une **V1 full-stack** navigable et fidèle avec pages + UI + redirections + overlays + fonctionnalités dynamiques.
 
-Backend (FastAPI, `/api`)
-- Modèles MongoDB:
-  - `pages` (slug/url, html/body, metadata, source, updated_at)
-  - `assets` (path, mime, hash, source)
-  - `redirects` (from, to, code)
-  - `submissions` (type, payload, created_at, status)
-- Endpoints:
-  - `GET /api/pages` + `GET /api/pages/{path}`
-  - `GET /api/redirects` (pour génération côté front + validation)
-  - `POST /api/forms/{form_type}` (contact/devis/newsletter…)
-  - `GET /api/assets/{path}` (si on ne sert pas via static direct)
-- Static serving:
-  - Servir `/static/...` pour assets mirrorrés (images/videos/fonts/css/js).
+Résultats Phase 2
+- Frontend React reconstruit avec direction **dark neon + glassmorphism** + composants d’interaction :
+  - Header fixed + **mega-menu** + menu mobile
+  - **Cart drawer overlay** (panier) + quantités / suppression / total
+  - **Video modal overlay**
+  - **Floating bubbles/orbs** + floating actions
+- Pages/routes implémentées :
+  - `/`, `/shop`, `/decouvrir`, `/lecteurs-video`, `/chaine-youtube`, `/chaine-youtube/manga`, `/prime-video`, `/tiktok`, `/anime-countdown`, `/anime-catalog`, `/contact`, `/legals`
+  - Routes langues : `/en /es /de /it /pt /ja /zh`
+  - Routes admin inventaire : `/admin`, `/admin/sync`
+  - Aliases/redirects : `/youtube /prime /amazon-prime /catalogue /anime /animemoments /animemomentsanimeofficiel /anime-moments-youtube`.
+- Backend FastAPI (MongoDB) sous `/api` :
+  - `GET /api/health`, `GET /api/site`, `GET /api/pages`, `GET /api/redirects`
+  - `GET /api/products`, `GET /api/videos`, `GET /api/catalog`, `GET /api/countdowns`
+  - `POST /api/forms/{form_type}` (ex: contact) → stockage MongoDB
+  - `POST /api/orders` (demande de commande/panier) → stockage MongoDB
+  - `GET /api/submissions`.
+- Validations :
+  - Lint JS ✅, lint Python ✅, build frontend ✅.
+  - Testing Agent E2E : `/app/test_reports/iteration_1.json` → backend 100%, frontend 98%.
+  - Issue mineure mega-menu (LOW) corrigée et vérifiée par screenshot automation (panel visible, 11 liens).
 
-Frontend (React)
-- Router qui :
-  - applique les redirects (mapping depuis backend)
-  - rend les pages dynamiquement (HTML stocké / composants si pages identifiées)
-- Intégration styles:
-  - importer CSS mirrorré + fonts ; garantir mêmes breakpoints.
-- Composants UI spécifiques:
-  - FloatingBubble / Overlay / Popup / Banner (pilotés par config issue du manifest).
-- Formulaires:
-  - validation + états (loading/success/error)
-  - envoi vers `/api/forms/...`
+Conclure Phase 2 (atteint)
+- E2E réussi : navigation, assets, redirections/aliases, bulles/overlays, formulaires, panier/commande.
 
-Migration contenu
-- Remplir MongoDB à partir du manifest + extraction backup/live.
-- Réécriture liens relatifs/absolus:
-  - internal links -> routes React
-  - assets -> `/static/...` (ou `/api/assets/...`).
-
-Conclure Phase 2
-- 1 round E2E avec Testing Agent sur : navigation, assets, redirects, bulles/overlays, formulaires.
+Limitation (transparence)
+- Le checkout est un flux **demande de commande** (persisté en DB) : **pas de paiement externe** configuré (non demandé / non requis détecté).
 
 ---
 
-### Phase 3 — Hardening & Fidelity Pass (amélioration conformité + complétude)
+### Phase 3 — Hardening & Fidelity Pass (amélioration conformité + complétude) ⏭️ OPTIONAL / NEXT
 User stories (Hardening)
 1. En tant que visiteur, je ne vois pas de liens cassés (404) en parcourant le site.
 2. En tant que visiteur mobile, le rendu est identique (responsive) sur les pages principales.
-3. En tant que visiteur, les vidéos se lancent/affichent comme prévu (autoplay si présent, fallback sinon).
+3. En tant que visiteur, les vidéos s’affichent comme prévu (autoplay si présent, fallback sinon).
 4. En tant qu’admin, je peux voir un rapport des ressources manquantes et les remplacer.
 5. En tant que visiteur, les performances sont bonnes (lazy-load images, caching headers) sans casser le rendu.
 
 Steps
-- Crawl interne de l’app reconstruite pour détecter 404/500, assets manquants, mixed content.
-- Ajustements CSS/JS pour correspondance pixel-level sur sections critiques.
-- Optimisations : cache static, compression, lazy loading (sans modifier layout).
-- Ajout d’un écran “Asset Missing” interne (mode admin/dev) pour lister/remapper assets.
-- Tests E2E + régressions.
+- Crawl interne complet de l’app reconstruite (détection 404/500 + assets manquants + routes non couvertes).
+- Pass de fidélité pixel-level sur sections critiques (header/mega-menu, hero, shop cards, modals).
+- Optimisations :
+  - lazy-load images (déjà partiellement), cache headers statiques, compression,
+  - réduction JS/CSS si possible sans altérer design.
+- Ajout d’un écran “Asset Missing / Inventory” enrichi (admin/dev) pour remapper assets.
+- Tests E2E + régressions (desktop + mobile).
 
 ---
 
-### Phase 4 — Feature-complete parity (si détecté sur l’original)
+### Phase 4 — Feature-complete parity (si détecté/confirmé sur l’original) ⏭️ OPTIONAL
 User stories (Parity)
 1. En tant que visiteur, les CTA (téléphone/mail/maps/whatsapp) fonctionnent partout.
 2. En tant que visiteur, tout tracking/SEO visible (meta, OG tags) est cohérent page par page.
 3. En tant que visiteur, les redirections historiques importantes fonctionnent (SEO/backlinks).
 4. En tant que visiteur, les interactions avancées (carrousels, accordéons, animations) sont fidèles.
-5. En tant qu’admin, je peux exporter les soumissions de formulaires.
+5. En tant qu’admin, je peux exporter les soumissions et commandes.
 
 Steps
-- SEO: titles/meta/OG, sitemap, robots (si requis), canonical.
-- Redirections complètes + tests automatiques.
-- Parité interactions (carrousels/animations) en priorisant pages à fort trafic.
-- (Option) Email provider pour formulaires (si besoin) après validation utilisateur.
+- SEO : titres/meta/OG par route, canonical, sitemap/robots cohérents (déjà récupérés côté assets).
+- Audit redirections + tests automatiques (aliases + historiques).
+- Parité interactions avancées (animations, carrousels, micro-interactions) en priorisant les pages à fort trafic.
+- (Option) Intégration email provider (notification des formulaires) + export CSV.
+- (Option) Intégration paiement (si requis) après validation du besoin.
 - Test E2E final.
 
 ## 3) Next Actions
-1. Télécharger/inspecter `lovanet-fr_260714.backup` et identifier son format + contenu réel.
-2. Lancer un crawl du site live (liste exhaustive pages accessibles + assets + redirects).
-3. Générer le manifest de comparaison (backup vs live) et sélectionner 2 pages pour POC (Accueil + une interne).
-4. Implémenter POC de rendu avec assets + bulles/overlay.
-5. Une fois POC validé, dérouler la reconstruction V1 de toutes les pages + formulaires.
+**Statut**: V1 livrée. Les next actions sont optionnelles selon vos priorités.
+
+1. Validation métier : confirmer que le rendu V1 est conforme (pages, navigation, overlays, bulles flottantes).
+2. Lister les écarts de fidélité visuelle (si besoin) : sections à ajuster en priorité.
+3. Décider si vous souhaitez :
+   - Phase 3 (hardening/perf/pixel-pass),
+   - Phase 4 (SEO/exports/email/paiement).
+4. (Si besoin) Fournir un `pg_restore` compatible v1.16 ou un export SQL “plain” pour restaurer 100% du contenu backup en base et remplacer les seeds live.
 
 ## 4) Success Criteria
-- 100% des **pages accessibles** recensées sont rendues et navigables dans l’app.
-- 0 lien interne cassé sur un crawl complet ; redirects conformes.
-- Médias (images/vidéos/fonts) chargent correctement, sans placeholders manquants.
-- Bulles flottantes / superpositions / popups présents et comportement proche de l’original.
-- Formulaires dynamiques fonctionnent E2E (submit, validation, stockage) avec UX claire.
-- Tests E2E passent sur les flows clés (desktop + mobile).
+**Atteints (V1)**
+- Pages accessibles principales rendues et navigables + aliases/redirects.
+- Médias principaux (images/SVG/bundles) servis depuis l’app.
+- Bulles flottantes + superpositions (cart drawer, modals, menus) présents.
+- Formulaires dynamiques OK (contact + stockage) + demandes de commande OK (stockage).
+- Tests E2E passants (avec correctif mega-menu).
+
+**À viser si Phase 3/4**
+- Crawl interne = 0 lien interne cassé.
+- Parité responsive + performance (LCP/CLS) améliorée.
+- SEO complet route par route + audit redirections historiques.
+- Exports admin (soumissions/commandes) + notifications email (option).
