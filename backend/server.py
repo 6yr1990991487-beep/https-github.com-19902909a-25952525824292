@@ -535,6 +535,55 @@ async def sync_anilist_catalog(page: int = 1, per_page: int = 50) -> Dict[str, A
 async def sync_tiktok_public() -> Dict[str, Any]:
     def work() -> List[Dict[str, Any]]:
         status, text = request_text("https://www.tiktok.com/@anime.moments.officiel", timeout=20)
+        sec_uid_match = re.search(r'"secUid":"([^"]+)"', text)
+        sec_uid = sec_uid_match.group(1) if sec_uid_match else None
+
+        docs: List[Dict[str, Any]] = []
+
+        if sec_uid:
+            try:
+                api_url = "https://www.tiktok.com/api/post/item_list/"
+                query = urllib.parse.urlencode({
+                    "aid": "1988",
+                    "count": "24",
+                    "cursor": "0",
+                    "device_platform": "web_pc",
+                    "secUid": sec_uid,
+                })
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+                    "Accept": "application/json, text/plain, */*",
+                    "Referer": "https://www.tiktok.com/@anime.moments.officiel",
+                }
+                req = urllib.request.Request(f"{api_url}?{query}", headers=headers)
+                with urllib.request.urlopen(req, timeout=20) as response:
+                    body = response.read().decode("utf-8", "replace")
+                if body.strip():
+                    payload = json.loads(body)
+                    for idx, item in enumerate(payload.get("itemList") or []):
+                        video_id = str(item.get("id") or "").strip()
+                        title = str(item.get("desc") or "").strip()
+                        video = item.get("video") or {}
+                        if not re.fullmatch(r"\d{12,}", video_id):
+                            continue
+                        docs.append({
+                            "platform": "tiktok",
+                            "external_id": video_id,
+                            "title": title or f"TikTok Anime Moments {video_id}",
+                            "description": title or "Vidéo publique TikTok Anime.Moments.officiel détectée via profil officiel.",
+                            "thumbnail_url": video.get("dynamicCover") or video.get("originCover") or video.get("cover") or f"/products/am-{(idx % 12) + 1:03d}.svg",
+                            "published_at": datetime.fromtimestamp(int(item.get("createTime")), tz=timezone.utc).isoformat() if item.get("createTime") else None,
+                            "channel_title": "@anime.moments.officiel",
+                            "video_url": f"https://www.tiktok.com/@anime.moments.officiel/video/{video_id}",
+                            "sync_source": "tiktok-web-item-list",
+                            "raw": {"http_status": status, "secUid": sec_uid},
+                        })
+            except Exception:
+                docs = []
+
+        if docs:
+            return docs
+
         titles = [html.unescape(t.encode("utf-8").decode("unicode_escape", "ignore")) for t in re.findall(r'"desc":"(.*?)"', text)[:12]]
         ids = list(dict.fromkeys(re.findall(r'"id":"(\d{12,})"', text)))[:12]
         docs = []
@@ -543,7 +592,7 @@ async def sync_tiktok_public() -> Dict[str, Any]:
             normalized_title = html.unescape(title.encode("utf-8").decode("unicode_escape", "ignore")).strip() if title else ""
             if not re.fullmatch(r"\d{12,}", video_id):
                 continue
-            if not normalized_title or re.search(r"followers|following|likes", normalized_title, flags=re.I):
+            if normalized_title and re.search(r"followers|following|likes", normalized_title, flags=re.I):
                 continue
             docs.append({
                 "platform": "tiktok",
@@ -555,7 +604,7 @@ async def sync_tiktok_public() -> Dict[str, Any]:
                 "channel_title": "@anime.moments.officiel",
                 "video_url": f"https://www.tiktok.com/@anime.moments.officiel/video/{video_id}",
                 "sync_source": "tiktok-public-best-effort",
-                "raw": {"http_status": status, "source_handle": "@anime.moments.officiel"},
+                "raw": {"http_status": status, "source_handle": "@anime.moments.officiel", "secUid": sec_uid},
             })
         return docs
     try:
@@ -567,7 +616,7 @@ async def sync_tiktok_public() -> Dict[str, Any]:
             "$or": [
                 {"channel_title": {"$ne": "@anime.moments.officiel"}},
                 {"video_url": {"$not": {"$regex": r"https://www\.tiktok\.com/@anime\.moments\.officiel/video/"}}},
-                {"sync_source": {"$ne": "tiktok-public-best-effort"}},
+                {"sync_source": {"$nin": ["tiktok-public-best-effort", "tiktok-web-item-list"]}},
                 {"title": {"$regex": r"followers|following|likes", "$options": "i"}},
             ],
         }
@@ -578,7 +627,7 @@ async def sync_tiktok_public() -> Dict[str, Any]:
                     {"external_id": {"$nin": valid_ids}},
                     {"channel_title": {"$ne": "@anime.moments.officiel"}},
                     {"video_url": {"$not": {"$regex": r"https://www\.tiktok\.com/@anime\.moments\.officiel/video/"}}},
-                    {"sync_source": {"$ne": "tiktok-public-best-effort"}},
+                    {"sync_source": {"$nin": ["tiktok-public-best-effort", "tiktok-web-item-list"]}},
                     {"title": {"$regex": r"followers|following|likes", "$options": "i"}},
                 ],
             }

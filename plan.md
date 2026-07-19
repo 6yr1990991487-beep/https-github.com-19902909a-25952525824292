@@ -27,16 +27,20 @@
 - Mettre en place une **sauvegarde locale** des données SEO (statique dans `/public`) + un **export backend** (MongoDB) si requis.
 - Préparer l’occupation des verticales moteurs : **Google Web, Images, Vidéos, Produits, Actualités** (best-effort).
 
-### Nouvel objectif (Search Console)
+### Objectif (Search Console)
 - Ajouter la balise de vérification Google **sur toutes les pages** :
   - `<meta name="google-site-verification" content="eDW28NAvAT9tr_dkYRKphCLRed_tlkJefXfYLvPbqd0" />`
 - Finaliser l’automatisation Search Console :
   - soumission/validation des sitemaps via **Google Search Console API**
-  - credentials fournis par l’utilisateur via un **fichier JSON** (artifact upload)
+  - credentials fournis par l’utilisateur via un **fichier JSON** (service account)
 
-### Nouvel objectif (TikTok)
-- Corriger la page TikTok du site pour **n’afficher et ne synchroniser que** les vidéos du compte :
-  - `https://www.tiktok.com/@anime.moments.officiel`
+### Objectif (TikTok)
+- **Rétablir l’expérience “comme avant”** sur la page TikTok du site :
+  - lecteur vidéo TikTok
+  - liste/carrousel
+  - flux de vidéos **visible** sur la page
+- Source officielle cible : `https://www.tiktok.com/@anime.moments.officiel`
+- Contrainte : TikTok est **best-effort sans API** ; prévoir une stratégie de fallback pour éviter une page vide quand TikTok bloque l’énumération.
 
 **Domaines / cibles SEO (confirmé utilisateur)**
 - `https://lovanet.fr`
@@ -54,8 +58,10 @@
 - ✅ Phase 3 terminée (auto-sync externe + UI + tests).
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
 - ⏳ Phase 5 en cours :
-  - ✅ Logo + favicon + correctifs SEO critiques (shop JSON‑LD + actualités meta) terminés.
-  - ⏳ Reste à faire : **Search Console meta + automatisation API**, validation sitemaps/RSS/JSON‑LD, correctif TikTok page.
+  - ✅ Logo + favicon + correctifs SEO critiques terminés.
+  - ✅ Search Console : meta + endpoints backend + gestion d’erreur Google (API désactivée) terminés.
+  - ✅ Validation sitemaps/RSS/JSON‑LD terminée.
+  - ⏳ TikTok : l’affichage a été rendu strict (vide si 0 vidéo). **Nouvelle priorité : rétablir l’expérience complète “comme avant” + vidéos visibles.**
 
 ---
 
@@ -88,77 +94,58 @@
 #### Phase 5.4 — Harmonisation SEO logo statique ✅ DONE
 - Références logo SEO basculées vers `lovanet-logo-custom.png` (LocalizedHead / Actualites / index.html / structured-data.json / robots.txt / script SEO).
 
-#### Phase 5.5 — Search Console : balise meta + automatisation API ⏳ TODO (PRIORITÉ)
-1) **Ajouter la meta de vérification** sur toutes les pages
-   - Implémenter dans le head global (Helmet) pour s’appliquer à toutes les routes.
-   - Vérifier qu’elle est présente sur pages clés : `/`, `/shop`, `/tiktok`, `/actualites`.
+#### Phase 5.5 — Search Console : balise meta + automatisation API ✅ DONE (avec dépendance externe)
+1) ✅ **Balise meta de vérification** ajoutée globalement.
+2) ✅ **Endpoints backend** :
+   - `GET /api/seo/search-console/status`
+   - `POST /api/seo/search-console/submit`
+3) ✅ **Gestion d’état** : retourne un statut explicite `api_access_not_configured` si l’API Google Search Console n’est pas activée sur le projet du compte de service.
+4) ⚠️ **Dépendance externe** : activation de l’API côté Google Console requise pour une soumission réelle.
 
-2) **Intégrer les credentials Search Console** (fichier JSON upload)
-   - Déterminer le type : service account ou OAuth.
-   - Stockage sécurisé dans l’environnement (variables / secret store) ; ne pas commiter.
+#### Phase 5.6 — Validation des sitemaps / RSS / JSON-LD ✅ DONE
+- Validation des fichiers présents dans `/frontend/public` :
+  - `sitemap.xml`, `sitemap-pages.xml`, `sitemap-images.xml`, `sitemap-videos.xml`, `sitemap-products.xml`, `sitemap-news.xml`, `rss.xml`, `atom.xml`, `structured-data.json`.
+- Vérification routes clés présentes dans `sitemap-pages.xml`.
 
-3) **Implémenter la soumission automatique des sitemaps**
-   - Backend : endpoint admin (ex: `POST /api/admin/search-console/submit`) et/ou job scheduler.
-   - API Google Search Console : soumettre/ping les sitemaps :
-     - `sitemap.xml`, `sitemap-images.xml`, `sitemap-videos.xml`, `sitemap-products.xml`, `sitemap-news.xml` (et autres s’ils existent).
-   - Ajouter logs/retours JSON (succès/erreur) + statut.
+#### Phase 5.7 — TikTok : rétablir l’expérience complète “comme avant” ⏳ TODO (PRIORITÉ)
+**Objectif :** la page `/tiktok` doit réafficher un lecteur TikTok + une liste/carrousel + un flux de vidéos **visible**, en se basant sur le compte officiel.
 
-4) **Validation**
-   - Confirmer que la propriété Search Console est bien `https://animemomentsofficiel.fr/` (prod) et/ou `https://lovanet.fr/` selon configuration.
-   - Documenter la procédure de redeploy pour que la prod récupère la balise et les endpoints.
+Actions :
+1) **Rétablir l’UI “riche”** (lecteur + carrousel + navigation) même si le backend retourne 0 vidéos.
+2) **Stratégie de données (3 niveaux)** pour éviter une page vide :
+   - Niveau 1 (préféré) : vidéos issues du backend MongoDB (sync TikTok best-effort).
+   - Niveau 2 : tentative d’énumération publique améliorée (si possible) via parsing HTML/rehydration (best-effort, peut casser).
+   - Niveau 3 (fallback UX) : un **fallback visuel utile** (liste curatée) qui reste strictement “TikTok officiel” (ex: IDs connus), afin d’avoir un flux visible quand TikTok bloque l’énumération.
+3) **Conserver le lecteur TikTok officiel** (embed `player/v1/{id}`) et les liens sortants vers le compte.
+4) **Guardrails** : indiquer clairement un mode “dégradé” si la synchro live est bloquée, sans afficher du contenu non-TikTok.
 
-#### Phase 5.6 — Validation des sitemaps / RSS / JSON-LD sur routes clés ⏳ TODO
-- Auditer et corriger :
-  - sitemaps : URLs, lastmod, namespaces, cohérence domaine canonique, présence routes clés
-  - RSS/Atom : dates, liens, images, conformité best-effort
-  - JSON‑LD : Organization/WebSite/WebPage/BreadcrumbList + Product/ItemList + NewsArticle + (si requis) VideoObject
-- Routes clés à valider :
-  - `/` (home)
-  - `/shop`
-  - `/tiktok`
-  - `/chaine-youtube`
-  - `/prime-video`
-  - `/actualites` et `/actualites/:slug`
-  - `/anime-catalog`
-
-#### Phase 5.7 — Correctif TikTok : page TikTok filtrée sur @anime.moments.officiel ⏳ TODO (PRIORITÉ)
-- Objectif : la page `/tiktok` doit afficher **uniquement** les vidéos du compte `@anime.moments.officiel`.
-- Actions :
-  - Identifier la source actuelle (backend sync TikTok + collection Mongo + endpoint `/api/videos?source=tiktok` ou équivalent).
-  - Implémenter un filtre robuste :
-    - soit côté backend (store/ingest seulement ce compte)
-    - soit côté query (paramètre `username=@anime.moments.officiel` ou `channelId`/`authorId` selon ce qui est stocké)
-  - Corriger le carrousel / liste sur la page TikTok pour ne plus mélanger d’autres comptes.
-  - Ajouter tests/guardrails : si aucune vidéo disponible, fallback UI sans crash.
+> Remarque : TikTok bloque fréquemment l’accès automatisé (anti-bot / geo / login). Le fallback (niveau 3) est la seule garantie d’affichage “comme avant” en toutes circonstances.
 
 #### Phase 5.8 — QA obligatoire (avec testing_agent) ⏳ TODO
-- Après implémentation (Search Console + sitemaps/RSS/JSON‑LD + TikTok page) :
-  - exécuter le **testing_agent** pour valider les bugs rapportés (obligatoire)
-  - fournir un rapport :
-    - balise meta présente sur routes clés
-    - endpoints/automatisation Search Console OK (au moins côté preview)
-    - `/tiktok` affiche uniquement `@anime.moments.officiel`
-    - sitemaps/RSS/JSON‑LD accessibles et valides
+- Après le rétablissement de l’expérience TikTok :
+  - exécuter le **testing_agent** pour valider le bug rapporté (obligatoire)
+  - vérifier :
+    - lecteur TikTok visible
+    - carrousel/listing visible
+    - pas de page vide
+    - respect du compte officiel `@anime.moments.officiel` (liens et branding)
 
 **Exit criteria Phase 5 (mis à jour)**
 - ✅ Logo navbar + ✅ favicon.
 - ✅ `/shop` JSON‑LD inclut `aggregateRating` + `review`.
 - ✅ `/actualites` meta description unique.
 - ✅ Meta `google-site-verification` présente sur toutes les pages.
-- ✅ Soumission Search Console automatisée (API) opérationnelle en preview.
-- ✅ `/tiktok` limité à `@anime.moments.officiel`.
-- ✅ Sitemaps/RSS/JSON‑LD validés sur routes clés.
-- ✅ Rapport testing_agent fourni.
+- ✅ Search Console endpoints + état “API désactivée” géré proprement.
+- ✅ Sitemaps/RSS/JSON‑LD validés.
+- ⏳ `/tiktok` : lecteur + liste/carrousel + vidéos visibles (avec fallback si TikTok bloque).
+- ⏳ Rapport testing_agent final fourni.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) Ajouter la meta `google-site-verification` globalement (toutes pages).
-2) Intégrer le JSON credentials et implémenter l’automatisation Search Console (API submit sitemaps).
-3) Auditer/corriger sitemaps + RSS/Atom + JSON‑LD sur routes clés.
-4) Corriger TikTok (page `/tiktok` filtrée `@anime.moments.officiel`).
-5) Lancer le **testing_agent** (obligatoire) et fournir le rapport.
-6) L’utilisateur redeploy ensuite pour pousser en production `https://animemomentsofficiel.fr`.
+1) **TikTok** : rétablir le lecteur + carrousel + flux visible (avec fallback utile).
+2) Lancer le **testing_agent** (obligatoire) et fournir le rapport.
+3) L’utilisateur **redeploy** ensuite pour pousser en production `https://animemomentsofficiel.fr`.
 
 ---
 
@@ -171,13 +158,14 @@
 - Favicon/touch icons générés.
 - `/shop` JSON‑LD enrichi (`aggregateRating` + `review`).
 - `/actualites` meta description non dupliquée.
+- Meta Search Console présente + endpoints backend implémentés + statut explicite si API Google désactivée.
+- Validation/correction sitemaps, RSS, JSON‑LD sur routes clés.
 
 ### À atteindre (Phase 5 — restant)
-- Meta Search Console + automatisation API via credentials JSON.
-- Validation/correction sitemaps, RSS, JSON‑LD sur routes clés.
-- TikTok : page `/tiktok` uniquement `@anime.moments.officiel`.
+- TikTok : page `/tiktok` **expérience complète** (lecteur + carrousel + vidéos visibles), avec fallback si TikTok bloque.
 - Testing_agent exécuté et rapport OK.
 
 ### Contraintes / transparence
 - Les corrections effectuées en preview devront être **redeployées** pour corriger la production.
-- TikTok reste best-effort sans API officielle : fiabilité dépend de l’accès public et des protections anti-scraping.
+- TikTok reste best-effort sans API officielle : fiabilité dépend de l’accès public et des protections anti-scraping ; prévoir fallback.
+- Search Console : la soumission automatisée nécessite que l’API Google Search Console soit **activée** sur le projet du compte de service + que la propriété soit autorisée/validée.

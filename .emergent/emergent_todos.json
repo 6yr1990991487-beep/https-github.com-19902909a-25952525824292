@@ -1,34 +1,18 @@
 [
   {
-    "content": "Supprimer les balises google-site-verification dupliquées dans le head",
+    "content": "Restaurer sur /tiktok le lecteur + carrousel avec fallback visuel utile",
     "status": "completed"
   },
   {
-    "content": "Revalider via testing agent après correction finale du head SEO",
+    "content": "Ajuster la logique TikTok backend/frontend pour réafficher des vidéos sur la page",
+    "status": "completed"
+  },
+  {
+    "content": "Compiler et relancer les services si nécessaire",
+    "status": "completed"
+  },
+  {
+    "content": "Lancer le testing agent pour valider le retour du lecteur TikTok et des vidéos",
     "status": "in_progress"
-  },
-  {
-    "content": "Récupérer le fichier JSON Search Console et les fichiers backend/frontend liés",
-    "status": "completed"
-  },
-  {
-    "content": "Obtenir le playbook d’intégration Google Search Console API",
-    "status": "completed"
-  },
-  {
-    "content": "Ajouter la balise google-site-verification globalement sur toutes les pages",
-    "status": "completed"
-  },
-  {
-    "content": "Implémenter l’automatisation Search Console côté backend avec les credentials fournis",
-    "status": "completed"
-  },
-  {
-    "content": "Auditer et corriger sitemaps, RSS et JSON-LD sur les routes clés",
-    "status": "completed"
-  },
-  {
-    "content": "Corriger la page TikTok pour n’afficher que @anime.moments.officiel",
-    "status": "completed"
   }
 ]
