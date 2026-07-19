@@ -1,5 +1,13 @@
 [
   {
+    "content": "Supprimer les balises google-site-verification dupliquées dans le head",
+    "status": "completed"
+  },
+  {
+    "content": "Revalider via testing agent après correction finale du head SEO",
+    "status": "in_progress"
+  },
+  {
     "content": "Récupérer le fichier JSON Search Console et les fichiers backend/frontend liés",
     "status": "completed"
   },
@@ -22,9 +30,5 @@
   {
     "content": "Corriger la page TikTok pour n’afficher que @anime.moments.officiel",
     "status": "completed"
-  },
-  {
-    "content": "Valider les correctifs et les blocages externes via le testing agent",
-    "status": "in_progress"
   }
 ]
