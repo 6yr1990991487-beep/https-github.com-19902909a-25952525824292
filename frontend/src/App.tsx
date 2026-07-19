@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
+import RootLandingPage from "./pages/RootLandingPage";
 import ChaineYoutube from "./pages/ChaineYoutube";
 import ChaineYoutubeManga from "./pages/ChaineYoutubeManga";
 import LecteursVideo from "./pages/LecteursVideo";
@@ -37,7 +38,8 @@ const queryClient = new QueryClient();
 const LOCALE_PREFIXES = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
 const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
-  { path: "/", element: <Index /> },
+  { path: "/", element: <RootLandingPage /> },
+  { path: "/anime-moments", element: <Index /> },
   { path: "/chaine-youtube", element: <ChaineYoutube /> },
   { path: "/chaine-youtube/manga", element: <ChaineYoutubeManga /> },
   { path: "/lecteurs-video", element: <LecteursVideo /> },
@@ -59,6 +61,8 @@ const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
 // links working and matches the Google sitelinks ordering (YouTube, Discover,
 // Prime Video, TikTok, Shop, Countdown, Catalog).
 const REDIRECTS: Array<{ from: string; to: string }> = [
+  { from: "/home", to: "/anime-moments" },
+  { from: "/accueil", to: "/anime-moments" },
   { from: "/youtube", to: "/chaine-youtube" },
   { from: "/anime-moments-youtube", to: "/chaine-youtube" },
   { from: "/animemoments", to: "/chaine-youtube" },

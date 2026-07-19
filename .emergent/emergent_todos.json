@@ -1,26 +1,18 @@
 [
   {
-    "content": "Finaliser navigation/logo/mentions légales sans régression",
+    "content": "Mettre à jour la navbar et les liens internes concernés",
+    "status": "completed"
+  },
+  {
+    "content": "Corriger les erreurs de lint dans Legals.tsx",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier le frontend avec lint/build/captures",
     "status": "in_progress"
   },
   {
-    "content": "Déplacer l’accueil actuel vers /anime-moments",
-    "status": "pending"
-  },
-  {
-    "content": "Créer une nouvelle page d’arrivée longue sur / dans le style manga futuriste",
-    "status": "pending"
-  },
-  {
-    "content": "Mettre à jour les liens de navigation et le routing",
-    "status": "pending"
-  },
-  {
-    "content": "Recompiler et vérifier visuellement navigation + landing + hubs",
-    "status": "pending"
-  },
-  {
-    "content": "Lancer le testing agent pour valider UI, hubs et nouvelle landing",
+    "content": "Lancer le testing agent frontend et corriger les éventuelles régressions",
     "status": "pending"
   }
 ]

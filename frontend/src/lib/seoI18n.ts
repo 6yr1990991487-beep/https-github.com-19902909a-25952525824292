@@ -8,6 +8,7 @@ export const DEFAULT_LOCALE: Locale = "fr";
 
 export type RouteKey =
   | "/"
+  | "/anime-moments"
   | "/decouvrir"
   | "/shop"
   | "/anime-catalog"
@@ -21,6 +22,7 @@ export type RouteKey =
 
 export const ROUTES: RouteKey[] = [
   "/",
+  "/anime-moments",
   "/decouvrir",
   "/shop",
   "/anime-catalog",
@@ -53,7 +55,8 @@ const UNIFIED_DESC: Record<Locale, string> = {
 // exact wording requested by the brand.
 const TITLES: Record<Locale, Record<RouteKey, string>> = {
   fr: {
-    "/": "Anime.Moments.officiel : Lovanet Plateforme officielle",
+    "/": "Lovanet : portail anime manga futuriste",
+    "/anime-moments": "Anime.Moments.officiel : expérience immersive Lovanet",
     "/decouvrir": "Discover Lovanet : Univers anime, vidéos et boutique",
     "/shop": "Boutique Lovanet : Posters, collectors et vêtements anime",
     "/anime-catalog": "Catalogue Anime : 1500+ animés avec trailers",
@@ -66,7 +69,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Mentions légales : Lovanet Anime.Moments.officiel",
   },
   en: {
-    "/": "Anime.Moments.officiel : Lovanet Official Platform",
+    "/": "Lovanet : futuristic anime manga portal",
+    "/anime-moments": "Anime.Moments.officiel : Lovanet immersive experience",
     "/decouvrir": "Discover Lovanet : anime universe, videos and shop",
     "/shop": "Lovanet Shop : anime posters, collectors and apparel",
     "/anime-catalog": "Anime Catalog : 1500+ shows with trailers",
@@ -79,7 +83,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Legal notice : Lovanet Anime.Moments.officiel",
   },
   es: {
-    "/": "Anime.Moments.officiel : Lovanet Plataforma oficial",
+    "/": "Lovanet : portal futurista de anime y manga",
+    "/anime-moments": "Anime.Moments.officiel : experiencia inmersiva Lovanet",
     "/decouvrir": "Discover Lovanet : universo anime, vídeos y tienda",
     "/shop": "Tienda Lovanet : pósteres, coleccionables y ropa anime",
     "/anime-catalog": "Catálogo Anime : 1500+ series con tráilers",
@@ -92,7 +97,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Aviso legal : Lovanet Anime.Moments.officiel",
   },
   de: {
-    "/": "Anime.Moments.officiel : Lovanet Offizielle Plattform",
+    "/": "Lovanet : futuristisches Anime- und Manga-Portal",
+    "/anime-moments": "Anime.Moments.officiel : immersive Lovanet-Erfahrung",
     "/decouvrir": "Discover Lovanet : Anime-Universum, Videos und Shop",
     "/shop": "Lovanet Shop : Anime-Poster, Sammlerstuecke und Kleidung",
     "/anime-catalog": "Anime-Katalog : 1500+ Serien mit Trailern",
@@ -105,7 +111,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Impressum : Lovanet Anime.Moments.officiel",
   },
   it: {
-    "/": "Anime.Moments.officiel : Lovanet Piattaforma ufficiale",
+    "/": "Lovanet : portale futuristico anime e manga",
+    "/anime-moments": "Anime.Moments.officiel : esperienza immersiva Lovanet",
     "/decouvrir": "Discover Lovanet : universo anime, video e shop",
     "/shop": "Shop Lovanet : poster, collector e abbigliamento anime",
     "/anime-catalog": "Catalogo Anime : 1500+ serie con trailer",
@@ -118,7 +125,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Note legali : Lovanet Anime.Moments.officiel",
   },
   pt: {
-    "/": "Anime.Moments.officiel : Lovanet Plataforma oficial",
+    "/": "Lovanet : portal futurista de anime e manga",
+    "/anime-moments": "Anime.Moments.officiel : experiência imersiva Lovanet",
     "/decouvrir": "Discover Lovanet : universo anime, vídeos e loja",
     "/shop": "Loja Lovanet : pôsteres, colecionáveis e roupas anime",
     "/anime-catalog": "Catálogo Anime : 1500+ séries com trailers",
@@ -131,7 +139,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "Aviso legal : Lovanet Anime.Moments.officiel",
   },
   ja: {
-    "/": "Anime.Moments.officiel : Lovanet 公式プラットフォーム",
+    "/": "Lovanet : 未来的なアニメ・マンガポータル",
+    "/anime-moments": "Anime.Moments.officiel : Lovanet 没入体験",
     "/decouvrir": "Discover Lovanet : アニメの世界・動画・ショップ",
     "/shop": "Lovanet ショップ : アニメポスター・コレクション・アパレル",
     "/anime-catalog": "アニメカタログ : 1500本以上・予告編付き",
@@ -144,7 +153,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/legals": "法的通知 : Lovanet Anime.Moments.officiel",
   },
   zh: {
-    "/": "Anime.Moments.officiel : Lovanet 官方平台",
+    "/": "Lovanet : 未来感动漫漫画门户",
+    "/anime-moments": "Anime.Moments.officiel : Lovanet 沉浸式体验",
     "/decouvrir": "Discover Lovanet : 动漫世界、视频与商店",
     "/shop": "Lovanet 商店 : 动漫海报、收藏品与服饰",
     "/anime-catalog": "动漫目录 : 1500+ 部作品含预告",

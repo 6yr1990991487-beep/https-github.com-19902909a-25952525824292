@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 
 const navItems = [
-  { to: "/", label: "Accueil" },
+  { to: "/", label: "Portail" },
+  { to: "/anime-moments", label: "Anime Moments" },
   { to: "/lecteurs-video", label: "Lecteurs vidéo" },
   { to: "/chaine-youtube", label: "YouTube" },
   { to: "/prime-video", label: "Prime Vidéo" },
@@ -20,6 +21,14 @@ const extraItems = [
   { to: "/contact", label: "Contact" },
 ];
 
+const navTestIds: Record<string, string> = {
+  "/": "navbar-home-link",
+  "/anime-moments": "navbar-anime-moments-link",
+  "/decouvrir": "navbar-discover-link",
+  "/shop": "navbar-shop-link",
+  "/actualites": "navbar-news-link",
+};
+
 const shopSubItems = [
   { to: "/shop", label: "Boutique collector", desc: "Affiches, collectors, vêtements" },
   { to: "/shop?category=poster", label: "Affiches", desc: "Posters et artworks premium" },
@@ -28,7 +37,8 @@ const shopSubItems = [
 ];
 
 const megaSections = [
-  { to: "/", label: "Accueil", desc: "Page d'accueil Lovanet", icon: Home },
+  { to: "/", label: "Portail", desc: "Nouvelle landing Lovanet", icon: Home },
+  { to: "/anime-moments", label: "Anime Moments", desc: "Page immersive historique", icon: Film },
   { to: "/tiktok", label: "TikTok", desc: "Shorts & réactions", icon: Music2 },
   { to: "/chaine-youtube", label: "YouTube", desc: "Vidéos & shorts officiels", icon: Youtube },
   { to: "/chaine-youtube/manga", label: "YouTube Manga", desc: "Chaîne dédiée manga", icon: Youtube },
@@ -83,7 +93,7 @@ export const Navbar = () => {
           <Link
             to="/"
             className="tilt-card btn-magnetic flex items-center group rounded-full p-0.5"
-            aria-label="Lovanet — Accueil"
+            aria-label="Lovanet — Portail"
             data-testid="header-home-logo-link"
           >
             <span className="relative inline-flex h-10 w-10 items-center justify-center rounded-[1.35rem] border border-cyan-300/35 bg-white/10 p-[2px] shadow-[0_0_20px_rgba(96,229,255,0.35)] backdrop-blur-xl transition-[transform,box-shadow,border-color] duration-300 group-hover:rotate-[-4deg] group-hover:border-cyan-200/60 group-hover:shadow-[0_0_28px_rgba(96,229,255,0.55),0_0_46px_rgba(186,108,255,0.38)] group-active:scale-95">
@@ -123,6 +133,7 @@ export const Navbar = () => {
               key={item.to}
               to={item.to}
               end={item.to === "/"}
+              data-testid={navTestIds[item.to]}
               className={({ isActive }) =>
                 cn(
                   "nav-3d btn-magnetic relative px-4 py-2 text-sm rounded-full transition-all duration-300 hover:-translate-y-0.5",
@@ -234,6 +245,7 @@ export const Navbar = () => {
                       to={s.to}
                       role="menuitem"
                       aria-current={active ? "page" : undefined}
+                      data-testid={navTestIds[s.to] ?? undefined}
                       onClick={() => setMegaOpen(false)}
                       className={cn(
                         "group relative flex items-start gap-3 p-2.5 sm:p-3 rounded-2xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 active:scale-[0.98] overflow-hidden",
@@ -328,6 +340,7 @@ export const Navbar = () => {
                         end={s.to === "/"}
                         onClick={() => setOpen(false)}
                         aria-current={active ? "page" : undefined}
+                        data-testid={navTestIds[s.to] ?? undefined}
                         className={cn(
                           "group flex items-center gap-3 px-3 py-2.5 rounded-2xl border backdrop-blur-xl transition-all duration-300 active:scale-[0.98]",
                           active

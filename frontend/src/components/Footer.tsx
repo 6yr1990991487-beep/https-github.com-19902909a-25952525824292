@@ -11,7 +11,8 @@ export const Footer = () => {
       <nav aria-label="Lovanet — Plateforme officielle dédiée à l'anime" className="container mx-auto px-4 lg:px-8 pt-10">
         <p className="sr-only">Lovanet — Plateforme officielle dédiée à l'anime · Anime.Moments.officiel &amp; AnimemomentsAnimeofficiel · Animés à venir, Catalogue, Boutique.</p>
         <ul className="grid gap-1 text-sm text-muted-foreground">
-          <li><Link to="/" className="hover:text-primary">Lovanet Plateforme officiel →</Link></li>
+          <li><Link to="/" className="hover:text-primary">Portail Lovanet →</Link></li>
+          <li><Link to="/anime-moments" className="hover:text-primary">Anime Moments →</Link></li>
           <li><Link to="/anime-catalog" className="hover:text-primary">Catalogue →</Link></li>
           <li><Link to="/decouvrir" className="hover:text-primary">Univers Lovanet →</Link></li>
           <li><Link to="/shop" className="hover:text-primary">Boutique →</Link></li>
@@ -47,7 +48,8 @@ export const Footer = () => {
         <div>
           <h4 className="text-xs font-semibold mb-3 tracking-[0.25em] text-primary uppercase">Navigation</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/" className="hover:text-primary">Accueil</Link></li>
+            <li><Link to="/" className="hover:text-primary">Portail</Link></li>
+            <li><Link to="/anime-moments" className="hover:text-primary">Anime Moments</Link></li>
             <li><Link to="/lecteurs-video" className="hover:text-primary">Lecteurs vidéo</Link></li>
             <li><Link to="/chaine-youtube" className="hover:text-primary">YouTube</Link></li>
             <li><Link to="/prime-video" className="hover:text-primary">Prime Vidéo</Link></li>
@@ -97,7 +99,7 @@ export const Footer = () => {
         <div className="container mx-auto px-4 lg:px-8 py-4 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 justify-between">
           <span>© {new Date().getFullYear()} Lovanet — Anime Moments. Tous droits réservés.</span>
           <span className="space-x-3">
-            <Link to="/" className="hover:text-primary">Manga animé</Link>
+            <Link to="/anime-moments" className="hover:text-primary">Manga animé</Link>
             <span>·</span>
             <Link to="/chaine-youtube" className="hover:text-primary">YouTube</Link>
             <span>·</span>

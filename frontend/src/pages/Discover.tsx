@@ -50,7 +50,7 @@ const Discover = () => {
     { to: "/prime-video", label: "Prime Video", tagline: "Séances immersives", desc: "Lecture cinéma en pleine page", icon: Play, grad: "from-sky-500/40 via-blue-500/20 to-transparent", accent: "#38bdf8", emoji: "🎬" },
     { to: "/anime-countdown", label: "À venir", tagline: "Countdown live", desc: "Prochaines sorties anime en direct", icon: Calendar, grad: "from-amber-500/40 via-orange-500/20 to-transparent", accent: "#fbbf24", emoji: "⏳" },
     { to: "/anime-catalog", label: "Catalogue", tagline: "1500+ animés", desc: "Fiches, trailers, synopsis complets", icon: Sparkles, grad: "from-violet-500/40 via-indigo-500/20 to-transparent", accent: "#a78bfa", emoji: "📚" },
-    { to: "/", label: "Univers Lovanet", tagline: "Accueil immersif", desc: "Le hub 3D avec hologrammes & carrousel", icon: Film, grad: "from-emerald-500/40 via-teal-500/20 to-transparent", accent: "#34d399", emoji: "🌌" },
+    { to: "/anime-moments", label: "Anime Moments", tagline: "Expérience immersive", desc: "La page originale avec hologrammes et carrousel vivant", icon: Film, grad: "from-emerald-500/40 via-teal-500/20 to-transparent", accent: "#34d399", emoji: "🌌" },
     { to: "/shop", label: "Shop", tagline: "Collector officiel", desc: `${SHOP_PRODUCTS.length} pièces exclusives · édition limitée`, icon: ShoppingBag, grad: "from-pink-500/40 via-rose-500/20 to-transparent", accent: "#f472b6", emoji: "🛍️" },
   ];
 
@@ -373,14 +373,14 @@ const Discover = () => {
             YouTube · TikTok · Prime · Catalogue · Shop — connectés au même hub officiel.
           </p>
           <Link
-            to="/"
+            to="/anime-moments"
             className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white transition-transform hover:scale-105"
             style={{
               background: "linear-gradient(135deg, #e879f9, #38bdf8)",
               boxShadow: "0 20px 40px -12px rgba(232,121,249,0.5)",
             }}
           >
-            Retour à l’accueil <ArrowRight className="w-4 h-4" />
+            Aller vers Anime Moments <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>

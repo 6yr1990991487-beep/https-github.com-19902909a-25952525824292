@@ -180,26 +180,22 @@
 
 ---
 
-### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ⏳ TODO
+### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ⏳ IN PROGRESS
 
-#### Phase 9.1 — Routing
+#### Phase 9.1 — Routing ✅ DONE
 - `/` devient la **nouvelle landing page** (pas “Accueil”).
-- Déplacer l’actuelle home vers `/anime-moments`.
-- Vérifier toutes les routes, liens navbar, SEO canonicals.
+- L’actuelle home est déplacée vers `/anime-moments`.
+- Navbar, footer et liens internes principaux mis à jour pour la nouvelle structure.
 
-#### Phase 9.2 — Nouvelle landing (long format)
-- Créer une page longue, riche, futuriste/manga :
-  - Hero + CTA
-  - sections “plateformes” (YouTube/TikTok/Prime)
-  - extrait catalogue + CTA
-  - boutique + CTA
-  - actualités + CTA
-  - branding + trust
-  - footer enrichi
+#### Phase 9.2 — Nouvelle landing (long format) ⏳ DONE
+- Nouvelle page racine créée avec hero, portails, storyline, passerelles plateformes, vidéos, teaser hubs 3D, preuves, FAQ, CTA final.
+- Style aligné sur les tokens néon/verre existants et cohérent avec l’identité visuelle importée.
+- `data-testid` ajoutés sur les CTA et sections critiques de la landing.
 
-#### Phase 9.3 — SEO de la landing et de `/anime-moments`
-- Canonical, meta OG/Twitter, JSON-LD WebPage.
-- Mettre à jour sitemaps pages.
+#### Phase 9.3 — SEO de la landing et de `/anime-moments` ⏳ DONE
+- `seoI18n` et `LocalizedHead` mis à jour pour la route `/anime-moments`.
+- Breadcrumbs / labels SEO adaptés à la nouvelle landing `/`.
+- Build frontend validé ; reste le passage de testing agent pour la non-régression complète.
 
 #### Phase 9.4 — Tests
 - Appeler **testing_agent** (obligatoire) pour non-régression.

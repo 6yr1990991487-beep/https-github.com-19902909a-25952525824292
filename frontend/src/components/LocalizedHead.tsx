@@ -44,7 +44,8 @@ function localizedPath(route: string, locale: string) {
 
 function breadcrumbFor(route: string, canonical: string) {
   const labels: Record<string, string> = {
-    "/": "Accueil",
+    "/": "Portail Lovanet",
+    "/anime-moments": "Anime Moments",
     "/decouvrir": "Univers Lovanet",
     "/shop": "Boutique",
     "/anime-catalog": "Catalogue Anime",
