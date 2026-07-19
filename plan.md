@@ -12,11 +12,33 @@
 - Prioriser les sources les plus complètes (**backup + live + projet Lovable/GitHub/ZIP**) afin d’obtenir une **fidélité maximale**.
 - Respecter contraintes projet Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, routes backend préfixées par `/api`.
 
+### Objectif SEO / Référencement
+- **Paramétrer le SEO** à l’identique / au maximum : meta tags, OpenGraph/Twitter, canonical/hreflang.
+- Générer et maintenir les fichiers d’indexation :
+  - `robots.txt`
+  - `sitemap.xml` + sitemaps spécialisés **Image / Vidéo / Produits / News**
+  - flux **RSS/Atom** (Actualités)
+  - données structurées **JSON‑LD schema.org** (Organization, WebSite, WebPage, Product, VideoObject, BreadcrumbList, Article/NewsArticle)
+  - inclure les champs Google demandés : **`aggregateRating`** et **`review`** (là où applicable)
+- **Logo utilisateur** :
+  - affichage dans le **menu/navigation**
+  - utilisation comme **favicon** (+ déclinaisons)
+  - réutilisation SEO (Organization.logo / publisher.logo) si pertinent
+- Mettre en place une **sauvegarde locale** des données SEO (statique dans `/public`) + un **export backend** (MongoDB) si requis.
+- Préparer l’occupation des verticales moteurs : **Google Web, Images, Vidéos, Produits, Actualités** (best-effort).
+
+**Domaines / cibles SEO (confirmé utilisateur)**
+- `https://lovanet.fr`
+- `https://animemomentsofficiel.fr`
+
+> Note canonique : éviter la duplication en choisissant un **domaine canonique primaire** (par défaut `lovanet.fr`) et traiter l’autre en **alternate** ou via stratégie de redirections/canonical.
+
 **Statut actuel**
 - ✅ **Phase 1 terminée** : sauvegarde inspectée + crawl live + manifest + assets mirrorrés + script POC OK.
-- ✅ **Phase 2 terminée (V1 UI/UX + dynamiques internes)** : application full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E.
-- ✅ **Phase 3 terminée (parité auto-sync externe + fidélité catalogue circulaire)** : auto-sync 5 min YouTube/TikTok/Prime + auto-sync catalogue (AniList) + UI sync panels + catalogue carrousel circulaire + E2E.
-- ✅ **Phase 4 terminée (import projet Lovable/GitHub/ZIP)** : import de la **vraie base Lovable** (ZIP/GitHub identiques), adaptation à l’environnement CRA/Emergent, réintégration backend auto-sync, tests E2E OK.
+- ✅ **Phase 2 terminée** : app full-stack fonctionnelle (routes/pages, overlays, bulles flottantes, formulaires, panier/commande), validations (lint/build), E2E.
+- ✅ **Phase 3 terminée** : auto-sync 5 min YouTube/TikTok/Prime + catalogue (AniList) + UI sync panels + catalogue carrousel circulaire + E2E.
+- ✅ **Phase 4 terminée** : import du projet Lovable/GitHub/ZIP + adaptations Emergent + tests OK.
+- ⏳ **Phase 5 en cours** : sous-phase Logo + correctifs SEO critiques **validés** ; reste l’**harmonisation SEO avancée** (OG/Twitter/canonical/hreflang cross-routes + sitemaps) et la **préparation Search Console** (soumission automatique bloquée sans identifiants).
 
 ---
 
@@ -26,121 +48,157 @@
 **Core prouvé**: capacité à **extraire** le site (backup + live), produire un **inventaire pages/assets/redirects**, et **valider** le socle de reconstruction.
 
 Résultats Phase 1
-- Backup `lovanet-fr_260714.backup` identifié : **PostgreSQL/Supabase custom dump** (`PGDMP` v1.16), ~2.44MB.
-- Inventaire (via `strings`) des tables publiques détectées :
-  - `imported_videos`, `media_library`, `pages`, `profiles`, `user_roles`, `youtube_blacklist`, `youtube_manga_videos`, `youtube_sync_state`.
-- Crawl live réalisé : `https://lovanet.fr` + `sitemap.xml`, `sitemap-catalog.xml`, `sitemap-index.xml`, `robots.txt`, bundles JS/CSS, produits `/products/am-*.svg`.
-- **Manifest** généré : `/app/extraction/manifest/lovanet_manifest.json`
-  - **27 routes/pages/aliases** recensées
-  - **87 assets** mirrorrés.
-- Assets mirrorrés dans `/app/frontend/public` : bundles, favicon, product SVGs, sitemaps, `catalog-seo.json`.
-- Script de validation POC : `/app/tests/test_core_lovanet.py` → **CORE_POC_SUCCESS**.
+- Backup `lovanet-fr_260714.backup` identifié : **PostgreSQL/Supabase custom dump** (`PGDMP` v1.16).
+- Inventaire des tables publiques détectées.
+- Crawl live : `https://lovanet.fr` + sitemaps + robots + bundles.
+- Manifest : `/app/extraction/manifest/lovanet_manifest.json` (routes/assets).
+- Assets mirrorrés dans `/app/frontend/public`.
+- Script POC : `/app/tests/test_core_lovanet.py` → **CORE_POC_SUCCESS**.
 
-Note technique (transparence)
-- `pg_restore` local ne peut pas restaurer le dump **PGDMP v1.16** (mismatch version client). L’extraction a donc continué via **inventaire backup + crawl live + assets/sitemaps/catalog**.
+Note technique
+- `pg_restore` local incompatible avec **PGDMP v1.16** ; extraction via inventaire + crawl live.
 
-Exit criteria Phase 1 (atteints)
-- Manifest généré et inventaire stable.
-- Mirroring assets OK.
-- POC extraction/validation OK.
+Exit criteria Phase 1
+- Manifest stable, assets mirrorrés, POC validé.
 
 ---
 
 ### Phase 2 — V1 App Development (MVP): reconstruction des pages + dynamiques internes ✅ COMPLETED
-Objectif Phase 2
-- Déployer une **V1 full-stack** navigable et fidèle avec pages + UI + redirections + overlays + fonctionnalités dynamiques (contact + panier/commande).
+Objectif
+- Déployer une V1 navigable et fidèle avec pages + UI + redirections + overlays + contact + panier/commande.
 
-Résultats Phase 2
-- Frontend React reconstruit avec direction **dark neon + glassmorphism** + composants d’interaction.
-- Pages/routes implémentées :
-  - `/`, `/shop`, `/decouvrir`, `/lecteurs-video`, `/chaine-youtube`, `/chaine-youtube/manga`, `/prime-video`, `/tiktok`, `/anime-countdown`, `/anime-catalog`, `/contact`, `/legals`
-  - Routes langues : `/en /es /de /it /pt /ja /zh`
-  - Routes admin inventaire : `/admin`, `/admin/sync`
-  - Aliases/redirects : `/youtube /prime /amazon-prime /catalogue /anime /animemoments /animemomentsanimeofficiel /anime-moments-youtube`.
-- Backend FastAPI (MongoDB) sous `/api` :
-  - `GET /api/health`, `GET /api/site`, `GET /api/pages`, `GET /api/redirects`
-  - `GET /api/products`, `GET /api/videos`, `GET /api/catalog`, `GET /api/countdowns`
-  - `POST /api/forms/{form_type}` (ex: contact) → stockage MongoDB
-  - `POST /api/orders` (demande de commande/panier) → stockage MongoDB
-  - `GET /api/submissions`.
-- Validations : lint JS ✅, lint Python ✅, build frontend ✅, E2E ✅.
+Résultats
+- Frontend React (dark neon + glassmorphism) + routes principales.
+- Backend FastAPI `/api` (pages, redirects, products, videos, catalog, countdowns, forms, orders).
+- Validations : lint/build/E2E OK.
 
-Limitation (transparence)
-- Checkout = **demande de commande** (persistée en DB), **pas de paiement** externe.
+Limitation
+- Checkout = demande de commande, pas de paiement.
 
 ---
 
-### Phase 3 — External Auto-Sync Parity (YouTube/TikTok/Prime/Catalog) + Fidelity UI (catalog circulaire) ✅ COMPLETED
-**Objectif Phase 3**
-- Reproduire le comportement de l’autre site sur la partie **synchro externe** et **catalogue dynamique**.
+### Phase 3 — External Auto-Sync Parity + Fidelity UI ✅ COMPLETED
+Objectif
+- Synchro externe + catalogue dynamique.
 
-Résultats Phase 3
-- Auto-sync backend toutes les **5 minutes** (300s) au startup.
-- Sync YouTube via **YouTube Data API** (clé fournie et stockée en `.env`, non exposée).
-- Sync AniList via **GraphQL public** vers MongoDB.
-- Sync TikTok **best-effort** (sans API officielle).
-- Sync Prime Video **best-effort** + statut **degraded** possible (pas d’API publique, pages parfois bloquées/geo-gated).
-- UI : panneaux de statut sync + bouton sync manuel + bouton flottant sync.
-- Catalogue : **carrousel circulaire** + grille + recherche + filtres.
-- Tests E2E : `/app/test_reports/iteration_2.json` → backend 100%, frontend 100%.
-
-Limitation connue (Prime Video)
-- Sans source légitime (API/feed/export), Prime peut rester **degraded** ; comportement géré sans crash.
+Résultats
+- Scheduler backend 5 minutes.
+- YouTube API + AniList OK.
+- TikTok/Prime best-effort (degraded possible).
+- UI panels sync + catalogue carrousel circulaire.
+- Tests E2E OK.
 
 ---
 
-### Phase 4 — Import du projet source Lovable/GitHub/ZIP pour fidélité maximale ✅ COMPLETED
-**Contexte**
-- L’utilisateur juge la reconstruction initiale insuffisamment identique.
-- Nouvelles sources fournies :
-  - ZIP : `lovanet-fr-main.zip` (upload)
-  - GitHub : `https://github.com/19902909a/lovanet-fr.git`
-  - Supabase MCP : `https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/mcp` (**401 Unauthorized** sans token)
-- Choix utilisateur : **utiliser les deux (ZIP + GitHub), comparer, garder le plus complet**, et autoriser le remplacement.
+### Phase 4 — Import du projet source Lovable/GitHub/ZIP ✅ COMPLETED
+Objectif
+- Maximiser la fidélité en important le vrai projet.
 
-**Résultats Phase 4**
-- GitHub rendu public et cloné avec succès.
-- Comparaison ZIP vs GitHub : **sources identiques**
-  - 268 fichiers vs 268 fichiers
-  - `only_zip`: 0, `only_git`: 0, `changed`: 0
-  - Commit observé : `a23f1fa Ajouté bulle catalogue RGB`
-- Le **vrai projet Lovable** est désormais la base active du frontend (remplace le replica “from scratch”).
-- Adaptation Vite → environnement CRA/Emergent :
-  - Mappage des variables Supabase vers `REACT_APP_SUPABASE_*` (valeurs publiques anon)
-  - Préservation de `REACT_APP_BACKEND_URL`
-  - Ajustements dépendances (React 18.3.x, three/fiber/drei, etc.)
-- MCP Supabase non utilisé (401) : aucun token fourni.
-- Réintégration backend Phase 3 dans l’UI Lovable :
-  - `ManualSyncButton` → `POST /api/admin/sync/run`
-  - Dashboard `/admin/sync` → `GET /api/admin/sync/status` + relance jobs
-  - Pages YouTube/TikTok/Prime → consomment `GET /api/videos?...` avec fallback
-- Corrections post-import :
-  - `/api/videos` accepte `limit=200` (422 corrigé)
-  - Correction bug SVG `<circle r>` négatif (normalisation hash unsigned + clamp)
-- Validation :
-  - Build frontend OK (warnings non bloquants)
-  - E2E Testing Agent iteration 3 : backend 100% (26/26), frontend 100%
+Résultats
+- ZIP = GitHub identiques.
+- Base UI Lovable adoptée + adaptation CRA/Emergent.
+- Réintégration endpoints backend auto-sync.
+- Fix SVG + limites `/api/videos`.
+- Build/E2E OK.
 
-**Exit criteria Phase 4 (atteints)**
-- Fidélité visuelle/structurelle fortement améliorée (base Lovable réelle).
-- Endpoints `/api` et scheduler auto-sync conservés.
-- Tests E2E passent.
+---
+
+### Phase 5 — Logo + SEO complet + backups + sitemaps verticaux ⏳ IN PROGRESS
+**Objectif Phase 5 (ordre confirmé utilisateur)**
+1) Intégrer le **logo utilisateur** dans le menu/navigation.
+2) Décliner le logo en **favicon** et icônes.
+3) Appliquer les **correctifs SEO critiques** :
+   - `/shop` JSON‑LD : `aggregateRating` + `review`
+   - `/actualites` : supprimer le doublon de `meta description`
+4) Continuer l’indexation complète : OG/Twitter, canonical/hreflang, sitemaps spécialisés, robots, RSS/Atom, backups.
+5) Préparer Search Console (automatisation bloquée sans identifiants exploitables).
+
+#### Phase 5.0 — Préflight (anti-régression) ✅ DONE
+- Identification composants : Navbar + head manager (Helmet) + JSON‑LD Shop + Actualités.
+- Relecture `design_guidelines.md`.
+
+#### Phase 5.1 — Logo dans navigation ✅ DONE + VALIDÉ
+- Logo intégré dans `Navbar` en asset public : `/lovanet-logo-custom.png`.
+- `data-testid="header-home-logo-link"` ajouté.
+- Vérification visuelle preview : OK (logo visible).
+
+#### Phase 5.2 — Favicon & icônes ✅ DONE + VALIDÉ
+- Génération depuis le logo fourni :
+  - `public/favicon.ico`
+  - `public/favicon-32x32.png`, `public/favicon-16x16.png`
+  - `public/apple-touch-icon.png`
+  - `public/favicon.png`
+  - `public/lovanet-logo-custom.png` (source)
+- `public/index.html` mis à jour (liens PNG + apple-touch).
+
+#### Phase 5.3 — Correctifs SEO critiques ✅ DONE + VALIDÉ
+- **/shop** : JSON‑LD `ItemList` contient désormais `aggregateRating` + `review` (review en tableau, rating/reviewCount normalisés + fallback image).
+- **/actualites** : plus de duplication de `meta description` grâce à la logique **`pageOwnsCoreSeo`** (la page Actualités “possède” sa description; `LocalizedHead` ne la duplique pas).
+
+#### Phase 5.4 — Harmonisation SEO logo + assets statiques ✅ DONE
+- Références logo SEO basculées vers `lovanet-logo-custom.png` :
+  - `LocalizedHead` (`Organization.logo`)
+  - `Actualites` (`publisher.logo`)
+  - `public/index.html` JSON‑LD
+  - `public/structured-data.json`
+  - `public/robots.txt`
+  - `scripts/generate_seo_assets.py` (robots allowances + JSON-LD static)
+
+#### Phase 5.5 — Validation build/runtime + QA ✅ DONE
+- `yarn build` : OK (warnings non bloquants mediapipe + ESLint plugin manquant).
+- Note : les logs historiques contenaient une ancienne erreur `lovanetLogo` avant redémarrage ; l’état actuel du code/build est sain.
+
+#### Phase 5.6 — SEO avancé “complet” (OG/Twitter/canonical/hreflang) ⏳ TODO
+- Vérifier cohérence **sur toutes routes** (y compris routes i18n) :
+  - canonical (pas de conflit LocalizedHead vs pages)
+  - OG/Twitter (images, type, url)
+  - `hreflang` / `x-default`
+- Ajouter/valider `rel=alternate` pour le domaine secondaire selon stratégie canonique.
+
+#### Phase 5.7 — Données structurées (extensions) ⏳ TODO
+- Compléter/valider selon pages :
+  - `VideoObject` sur pages vidéos
+  - `BreadcrumbList` cohérent pour routes dynamiques
+- Valider via tests Rich Results / schema validators.
+
+#### Phase 5.8 — Sitemaps spécialisés + robots ✅ PARTIAL → TODO
+- Fichiers déjà présents en `public/`.
+- À faire : audit des URLs, images, routes i18n, et cohérence avec le contenu réel.
+
+#### Phase 5.9 — RSS/Atom Actualités ✅ DONE (existant) → ⏳ VALIDATION
+- `rss.xml` + `atom.xml` présents.
+- À valider : contenu, dates, images, conformité Google News (best-effort).
+
+#### Phase 5.10 — Backups SEO + export backend ⏳ PARTIAL
+- `public/seo-backup.json` présent.
+- À faire (si requis) : endpoint backend d’export SEO depuis MongoDB + pipeline d’update.
+
+#### Phase 5.11 — Google Search Console (soumission autonome) ⏳ BLOCKED
+- Préparation : sitemaps prêts.
+- Automatisation API : nécessite credentials (OAuth/service account + vérification du site).
+
+**Exit criteria Phase 5**
+- ✅ Logo navbar + ✅ favicon/touch icons.
+- ✅ `/shop` JSON‑LD inclut `aggregateRating` + `review`.
+- ✅ `/actualites` : meta description unique.
+- SEO avancé harmonisé : OG/Twitter/canonical/hreflang cohérents et non dupliqués.
+- Sitemaps/robots/RSS/Atom validés.
+- Backups/exports SEO opérationnels.
+- Prêt Search Console (soumission auto uniquement si credentials fournis).
 
 ---
 
 ## 3) Next Actions
-### Phase 5 (optionnelle) — Hardening “identique au pixel” + production readiness
-1. **Supabase MCP (si souhaité)**
-   - Obtenir un token/headers pour lever le `401`.
-   - Si accessible : importer la configuration/états supplémentaires (si le projet original s’appuie dessus).
-2. **Prime Video parity**
-   - Fournir une source légitime (export, feed interne, ou autre) si l’objectif est une parité stricte.
-   - Sinon conserver le mode **degraded** + fallback (comportement actuel).
-3. **Qualité & perf**
-   - Réduire les warnings non bloquants (ex: source-map `@mediapipe/tasks-vision`).
-   - Audit Lighthouse, optimisation images, réduction bundles.
-4. **Fonctionnalités production** (si besoin)
-   - Emails transactionnels (contact/commande), export admin, analytics, paiement.
+1) **Audit SEO global** :
+   - canonical/hreflang sur toutes routes (incl. i18n)
+   - OG/Twitter (images, type, url)
+   - vérifier absence de duplications Helmet (title/description/canonical)
+2) **Valider structured data** :
+   - Rich Results test sur `/shop` et `/actualites`
+   - compléter `VideoObject` si nécessaire
+3) **Audit sitemaps** : vérifier URLs/images/videos/news, et cohérence domaine canonique.
+4) **Backups/export SEO** : confirmer besoin d’un endpoint backend d’export et l’implémenter si validé.
+5) **Search Console** : demander/collecter credentials si l’utilisateur veut l’automatisation (sinon fournir procédure manuelle).
 
 ---
 
@@ -148,15 +206,27 @@ Limitation connue (Prime Video)
 ### Atteints (Phases 1–4)
 - Pages accessibles principales rendues et navigables + aliases/redirects.
 - Médias principaux servis.
-- Bulles flottantes + superpositions (cart drawer, modals, menus).
-- Formulaires dynamiques + demandes de commande persistées.
-- Auto-sync 5 minutes : YouTube/AniList OK, TikTok best-effort, Prime degraded possible.
-- Catalogue : recherche + filtres + carrousel (incluant composant orb/cercle) + grille.
-- Import Lovable complet (ZIP=GitHub) : UI/UX et composants réels récupérés.
-- Tests E2E : iteration 3 backend 100%, frontend 100%.
+- Overlays/bulles + formulaires + demandes de commande.
+- Auto-sync 5 minutes (YouTube/AniList OK ; TikTok/Prime best-effort).
+- Catalogue (recherche/filtres/carrousel/grille).
+- Import Lovable complet + stabilité (build/E2E OK).
 
-### Transparence / contraintes externes (toujours valables)
-- TikTok/Prime sans API : fiabilité dépend des pages publiques et protections anti-scraping.
-- Prime : peut rester **degraded** sans source officielle/légitime (API/feed/export).
-- Supabase MCP : nécessite un token (actuellement `401 Unauthorized`).
-- Warnings build non bloquants possibles (ex: source-map manquant `@mediapipe/tasks-vision`).
+### Atteints (Phase 5 — sous-phase logo + correctifs SEO critiques)
+- ✅ Logo utilisateur visible dans la navbar.
+- ✅ Favicon/touch icons générés et référencés.
+- ✅ `/shop` JSON‑LD contient `aggregateRating` et `review`.
+- ✅ `/actualites` : plus de meta description dupliquée (`pageOwnsCoreSeo`).
+- ✅ Build production OK (`yarn build`).
+
+### À atteindre (Phase 5 — restant)
+- Harmonisation SEO avancée complète (OG/Twitter/canonical/hreflang) sur toutes routes.
+- Validation et complétion JSON‑LD (VideoObject, etc.) + tests Rich Results.
+- Sitemaps/robots/RSS/Atom validés et cohérents.
+- Backups/export SEO finalisés.
+- Search Console prêt (automatisation uniquement si credentials fournis).
+
+### Transparence / contraintes externes
+- TikTok/Prime sans API : fiabilité variable.
+- Supabase MCP : nécessite token (401 actuel).
+- Warnings build non bloquants possibles (source maps mediapipe).
+- Google News : préparation possible (NewsArticle + sitemap news + RSS), pas de garantie d’éligibilité.

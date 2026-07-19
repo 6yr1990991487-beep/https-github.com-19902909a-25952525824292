@@ -52,6 +52,7 @@ export const Footer = () => {
             <li><Link to="/chaine-youtube" className="hover:text-primary">YouTube</Link></li>
             <li><Link to="/prime-video" className="hover:text-primary">Prime Vidéo</Link></li>
             <li><Link to="/tiktok" className="hover:text-primary">TikTok</Link></li>
+            <li><Link to="/actualites" className="hover:text-primary">Actualités anime →</Link></li>
             <li><Link to="/shop" className="hover:text-primary">Shop</Link></li>
           </ul>
         </div>

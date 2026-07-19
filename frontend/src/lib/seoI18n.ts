@@ -15,6 +15,7 @@ export type RouteKey =
   | "/chaine-youtube"
   | "/prime-video"
   | "/tiktok"
+  | "/actualites"
   | "/contact"
   | "/legals";
 
@@ -27,6 +28,7 @@ export const ROUTES: RouteKey[] = [
   "/chaine-youtube",
   "/prime-video",
   "/tiktok",
+  "/actualites",
   "/contact",
   "/legals",
 ];
@@ -59,6 +61,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments chaîne officielle anime",
     "/prime-video": "Prime Video : Anime.Moments.officiel streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel shorts anime",
+    "/actualites": "Actualités Anime : nouveautés vidéos, produits et manga",
     "/contact": "Contact : Lovanet Anime.Moments.officiel",
     "/legals": "Mentions légales : Lovanet Anime.Moments.officiel",
   },
@@ -71,6 +74,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments official anime channel",
     "/prime-video": "Prime Video : Anime.Moments.officiel streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel anime shorts",
+    "/actualites": "Anime News : videos, products and manga updates",
     "/contact": "Contact : Lovanet Anime.Moments.officiel",
     "/legals": "Legal notice : Lovanet Anime.Moments.officiel",
   },
@@ -83,6 +87,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments canal oficial anime",
     "/prime-video": "Prime Video : Anime.Moments.officiel streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel shorts anime",
+    "/actualites": "Noticias Anime : novedades de vídeos, productos y manga",
     "/contact": "Contacto : Lovanet Anime.Moments.officiel",
     "/legals": "Aviso legal : Lovanet Anime.Moments.officiel",
   },
@@ -95,6 +100,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments offizieller Anime-Kanal",
     "/prime-video": "Prime Video : Anime.Moments.officiel Streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel Anime-Shorts",
+    "/actualites": "Anime News : Videos, Produkte und Manga Updates",
     "/contact": "Kontakt : Lovanet Anime.Moments.officiel",
     "/legals": "Impressum : Lovanet Anime.Moments.officiel",
   },
@@ -107,6 +113,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments canale ufficiale anime",
     "/prime-video": "Prime Video : Anime.Moments.officiel streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel shorts anime",
+    "/actualites": "News Anime : novità video, prodotti e manga",
     "/contact": "Contatti : Lovanet Anime.Moments.officiel",
     "/legals": "Note legali : Lovanet Anime.Moments.officiel",
   },
@@ -119,6 +126,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments canal oficial anime",
     "/prime-video": "Prime Video : Anime.Moments.officiel streaming",
     "/tiktok": "TikTok : Anime.Moments.officiel shorts anime",
+    "/actualites": "Notícias Anime : novidades de vídeos, produtos e manga",
     "/contact": "Contato : Lovanet Anime.Moments.officiel",
     "/legals": "Aviso legal : Lovanet Anime.Moments.officiel",
   },
@@ -131,6 +139,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments 公式アニメチャンネル",
     "/prime-video": "Prime Video : Anime.Moments.officiel 配信",
     "/tiktok": "TikTok : Anime.Moments.officiel アニメショート",
+    "/actualites": "アニメニュース : 動画・商品・マンガ最新情報",
     "/contact": "お問い合わせ : Lovanet Anime.Moments.officiel",
     "/legals": "法的通知 : Lovanet Anime.Moments.officiel",
   },
@@ -143,6 +152,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
     "/chaine-youtube": "YouTube : AnimeMoments 官方动漫频道",
     "/prime-video": "Prime Video : Anime.Moments.officiel 流媒体",
     "/tiktok": "TikTok : Anime.Moments.officiel 动漫短片",
+    "/actualites": "动漫新闻 : 视频、商品与漫画更新",
     "/contact": "联系我们 : Lovanet Anime.Moments.officiel",
     "/legals": "法律声明 : Lovanet Anime.Moments.officiel",
   },
@@ -186,6 +196,7 @@ export function normalizeRoute(pathname: string): RouteKey {
     key = "/" + parts.slice(1).join("/");
     if (key === "/") return "/";
   }
+  if (key.startsWith("/actualites/")) return "/actualites";
   return (ROUTES.includes(key as RouteKey) ? (key as RouteKey) : "/");
 }
 

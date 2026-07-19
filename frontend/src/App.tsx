@@ -18,6 +18,7 @@ import AnimeCatalog from "./pages/AnimeCatalog";
 import Discover from "./pages/Discover";
 import OAuthConsent from "./pages/OAuthConsent";
 import SyncDashboard from "./pages/SyncDashboard";
+import Actualites from "./pages/Actualites";
 import { ThemeBubble } from "./components/ThemeBubble";
 import { CartProvider } from "./context/CartContext";
 import { CartDrawer } from "./components/CartDrawer";
@@ -45,6 +46,8 @@ const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
   { path: "/legals", element: <Legals /> },
   { path: "/anime-countdown", element: <AnimeCountdown /> },
   { path: "/anime-catalog", element: <AnimeCatalog /> },
+  { path: "/actualites", element: <Actualites /> },
+  { path: "/actualites/:slug", element: <Actualites /> },
   { path: "/decouvrir", element: <Discover /> },
 ];
 

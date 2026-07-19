@@ -7,7 +7,7 @@ import requests
 import sys
 from datetime import datetime
 
-BASE_URL = "https://lovanet-replica.preview.emergentagent.com/api"
+BASE_URL = "https://actualites-hub.preview.emergentagent.com/api"
 
 class LovanetAPITester:
     def __init__(self):

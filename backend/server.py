@@ -606,6 +606,54 @@ async def create_order(payload: OrderCreate):
     return {"status": "success", "message": "Commande de démonstration enregistrée côté Lovanet.", "order": serialize_doc(doc)}
 
 
+@api_router.get("/seo/export")
+async def seo_export():
+    backup_path = PUBLIC_DIR / "seo-backup.json"
+    if not backup_path.exists():
+        raise HTTPException(status_code=404, detail="SEO backup not generated yet.")
+    try:
+        backup = json.loads(backup_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Unable to read SEO backup: {exc}")
+    sync_rows = await db.sync_state.find({}, {"_id": 0}).sort("last_run_at", -1).to_list(50)
+    return {
+        "status": "ok",
+        "generated_at": backup.get("generatedAt"),
+        "primary_domain": backup.get("primaryDomain"),
+        "alternate_domains": backup.get("alternateDomains", []),
+        "counts": {
+            "pages": len(backup.get("pages", [])),
+            "products": len(backup.get("products", [])),
+            "videos": len(backup.get("videos", [])),
+            "news": len(backup.get("news", [])),
+            "books": len(backup.get("books", [])),
+            "catalogSample": len(backup.get("catalogSample", [])),
+        },
+        "sitemaps": backup.get("searchConsole", {}).get("sitemapsReady", []),
+        "backup": backup,
+        "sync_state": sync_rows,
+    }
+
+@api_router.get("/seo/search-console/status")
+async def search_console_status():
+    return {
+        "status": "credentials_required",
+        "message": "Google Search Console submission requires OAuth/service-account credentials and verified site properties.",
+        "required_scope": "https://www.googleapis.com/auth/webmasters",
+        "properties": ["https://lovanet.fr/", "https://animemomentsofficiel.fr/"],
+        "sitemaps_ready": [
+            "https://lovanet.fr/sitemap.xml",
+            "https://lovanet.fr/sitemap-pages.xml",
+            "https://lovanet.fr/sitemap-images.xml",
+            "https://lovanet.fr/sitemap-videos.xml",
+            "https://lovanet.fr/sitemap-products.xml",
+            "https://lovanet.fr/sitemap-news.xml",
+            "https://lovanet.fr/sitemap-books.xml",
+            "https://animemomentsofficiel.fr/sitemap.xml",
+        ],
+    }
+
+
 @api_router.get("/submissions")
 async def list_submissions(limit: int = Query(50, ge=1, le=200)):
     rows = await db.submissions.find({}, {"_id": 0}).sort("created_at", -1).to_list(limit)

@@ -2,7 +2,6 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles, ShoppingBag, Youtube, Play, Music2, Film, Mail, Compass, ShoppingCart, Home, ScrollText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import lovanetLogo from "@/assets/lovanet-logo-v2.png.asset.json";
 import { useCart } from "@/context/CartContext";
 
 const navItems = [
@@ -14,6 +13,7 @@ const navItems = [
   { to: "/anime-countdown", label: "À venir" },
   { to: "/anime-catalog", label: "Catalogue" },
   { to: "/decouvrir", label: "Univers Lovanet" },
+  { to: "/actualites", label: "Actualités" },
   { to: "/shop", label: "Shop" },
 ];
 
@@ -32,6 +32,7 @@ const megaSections = [
   { to: "/anime-countdown", label: "Animés à venir", desc: "Countdown live des prochains épisodes", icon: Play },
   { to: "/anime-catalog", label: "Catalogue Animés", desc: "Carrousel 3D tendances", icon: Film },
   { to: "/decouvrir", label: "Univers Lovanet", desc: "Vitrine SEO produits & vidéos", icon: Compass },
+  { to: "/actualites", label: "Actualités", desc: "News anime, vidéos, produits", icon: Sparkles },
   { to: "/contact", label: "Contact", desc: "Écrire à l'équipe", icon: Mail },
   { to: "/legals", label: "Mentions légales", desc: "CGV & confidentialité", icon: ScrollText },
 ];
@@ -77,11 +78,12 @@ export const Navbar = () => {
             to="/"
             className="tilt-card btn-magnetic flex items-center group rounded-full p-0.5"
             aria-label="Lovanet — Accueil"
+            data-testid="header-home-logo-link"
           >
             <img
-              src={lovanetLogo.url}
+              src="/lovanet-logo-custom.png"
               alt="Lovanet"
-              className="h-9 w-9 rounded-2xl object-contain p-0.5 bg-white/5 ring-1 ring-white/20 backdrop-blur-xl shadow-[0_0_20px_hsl(var(--neon-cyan)/0.4)] transition-all duration-300 group-hover:ring-white/40 group-hover:shadow-[0_0_28px_hsl(var(--neon-cyan)/0.7),0_0_44px_hsl(var(--neon-purple)/0.5)] group-hover:rotate-[-4deg] group-active:scale-95"
+              className="h-10 w-10 rounded-[1.35rem] object-contain p-0.5 bg-white/5 ring-1 ring-white/20 backdrop-blur-xl shadow-[0_0_20px_hsl(var(--neon-cyan)/0.4)] transition-[transform,box-shadow,border-color] duration-300 group-hover:ring-white/40 group-hover:shadow-[0_0_28px_hsl(var(--neon-cyan)/0.7),0_0_44px_hsl(var(--neon-purple)/0.5)] group-hover:rotate-[-4deg] group-active:scale-95"
             />
             <span className="ml-2 font-display text-sm font-bold tracking-[0.15em] gradient-text hidden sm:inline">
               Lovanet
