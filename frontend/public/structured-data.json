@@ -9,7 +9,9 @@
       "logo": "https://lovanet.fr/lovanet-logo-custom.png",
       "sameAs": [
         "https://www.youtube.com/@animemomentsanimeofficiel",
-        "https://www.tiktok.com/@anime.moments.officiel"
+        "https://www.tiktok.com/@anime.moments.officiel",
+        "https://animemomentsofficiel.fr",
+        "https://animeofficiel.fr"
       ],
       "aggregateRating": {
         "@type": "AggregateRating",

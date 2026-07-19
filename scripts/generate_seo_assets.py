@@ -18,7 +18,9 @@ PUBLIC = APP / 'frontend' / 'public'
 SRC = APP / 'frontend' / 'src'
 PRIMARY = 'https://lovanet.fr'
 SECONDARY = 'https://animemomentsofficiel.fr'
-DOMAINS = [PRIMARY, SECONDARY]
+TERTIARY = 'https://animeofficiel.fr'
+DOMAINS = [PRIMARY, SECONDARY, TERTIARY]
+SITEMAP_CHUNK_SIZE = 1000
 NOW = datetime.now(timezone.utc)
 ISO_NOW = NOW.isoformat(timespec='seconds')
 RFC_NOW = NOW.strftime('%a, %d %b %Y %H:%M:%S +0000')
@@ -128,8 +130,6 @@ def build_videos(catalog: list[dict]) -> list[dict]:
             'genres': item.get('genres') or [],
             'score': item.get('score') or 86,
         })
-        if len(videos) >= 80:
-            break
     return videos
 
 
@@ -205,84 +205,169 @@ def add_url(parent: ET.Element, loc: str, lastmod: str | None = None, changefreq
     return url
 
 
+def domain_slug(domain: str) -> str:
+    return domain.replace('https://', '').replace('http://', '').replace('.', '-')
+
+
+def domainize(url: str, domain: str) -> str:
+    if not url:
+        return url
+    if url.startswith(PRIMARY):
+        return domain + url[len(PRIMARY):]
+    if url.startswith('/'):
+        return f'{domain}{url}'
+    return url
+
+
+def chunked(items: list[dict], size: int = SITEMAP_CHUNK_SIZE) -> list[list[dict]]:
+    if not items:
+        return []
+    return [items[i:i + size] for i in range(0, len(items), size)]
+
+
+def write_urlset_file(filename: str, root: ET.Element) -> None:
+    (PUBLIC / filename).write_text(pretty_xml(root), encoding='utf-8')
+
+
+def build_catalog_routes(catalog: list[dict], domain: str, today: str) -> list[dict]:
+    routes = []
+    for anime in catalog:
+        anime_id = anime.get('id')
+        if anime_id is None:
+            continue
+        title = anime.get('title') or f'Anime {anime_id}'
+        summary = str(anime.get('summary') or 'Fiche anime manga Lovanet.').replace('\n', ' ').strip()
+        routes.append({
+            'url': f'{domain}/anime-catalog?anime={anime_id}',
+            'title': title,
+            'description': summary[:240],
+            'image': anime.get('cover') or anime.get('banner') or f'{domain}/lovanet-og.svg',
+            'lastmod': today,
+        })
+    return routes
+
+
 def write_sitemaps(products: list[dict], videos: list[dict], catalog: list[dict], news: list[dict]) -> None:
     today = NOW.date().isoformat()
-    # Index
-    index = ET.Element('sitemapindex', {'xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9'})
-    for name in ['sitemap-pages.xml', 'sitemap-images.xml', 'sitemap-videos.xml', 'sitemap-products.xml', 'sitemap-news.xml', 'sitemap-books.xml']:
-        sm = ET.SubElement(index, 'sitemap')
-        ET.SubElement(sm, 'loc').text = f'{PRIMARY}/{name}'
-        ET.SubElement(sm, 'lastmod').text = today
-    (PUBLIC / 'sitemap.xml').write_text(pretty_xml(index), encoding='utf-8')
-    (PUBLIC / 'sitemap-index.xml').write_text(pretty_xml(index), encoding='utf-8')
-
-    pages = sitemap_urlset()
-    for page in PAGES:
-        add_url(pages, f"{PRIMARY}{page['path']}", today, page['changefreq'], page['priority'])
-    for item in news[:30]:
-        add_url(pages, item['url'], item['dateModified'][:10], 'daily', '0.75')
-    (PUBLIC / 'sitemap-pages.xml').write_text(pretty_xml(pages), encoding='utf-8')
-
     image_ns = {'xmlns:image': 'http://www.google.com/schemas/sitemap-image/1.1'}
-    images = sitemap_urlset(image_ns)
-    image_sources = []
-    for product in products[:120]:
-        image_sources.append((product['url'], PRIMARY + product['image'] if product['image'].startswith('/') else product['image'], product['name'], product['description']))
-    for anime in catalog[:300]:
-        if anime.get('cover'):
-            image_sources.append((f"{PRIMARY}/anime-catalog#anime-{anime.get('id')}", anime['cover'], anime.get('title'), anime.get('summary', '')))
-    for loc, img, title, caption in image_sources[:420]:
-        u = add_url(images, loc, today)
-        im = ET.SubElement(u, 'image:image')
-        ET.SubElement(im, 'image:loc').text = img
-        ET.SubElement(im, 'image:title').text = str(title or 'Lovanet anime')[:120]
-        ET.SubElement(im, 'image:caption').text = str(caption or 'Image anime manga Lovanet')[:240]
-    (PUBLIC / 'sitemap-images.xml').write_text(pretty_xml(images), encoding='utf-8')
-
     video_ns = {'xmlns:video': 'http://www.google.com/schemas/sitemap-video/1.1'}
-    video_sm = sitemap_urlset(video_ns)
-    for video in videos[:80]:
-        u = add_url(video_sm, video['url'], today)
-        v = ET.SubElement(u, 'video:video')
-        ET.SubElement(v, 'video:thumbnail_loc').text = video['thumbnail']
-        ET.SubElement(v, 'video:title').text = str(video['title'])[:100]
-        ET.SubElement(v, 'video:description').text = str(video['description'])[:2000]
-        ET.SubElement(v, 'video:content_loc').text = video['contentUrl']
-        ET.SubElement(v, 'video:player_loc').text = video['embedUrl']
-        ET.SubElement(v, 'video:publication_date').text = video['uploadDate']
-        ET.SubElement(v, 'video:family_friendly').text = 'yes'
-    (PUBLIC / 'sitemap-videos.xml').write_text(pretty_xml(video_sm), encoding='utf-8')
-
-    prod_sm = sitemap_urlset(image_ns)
-    for product in products[:160]:
-        u = add_url(prod_sm, product['url'], today, 'weekly', '0.7')
-        im = ET.SubElement(u, 'image:image')
-        ET.SubElement(im, 'image:loc').text = PRIMARY + product['image'] if product['image'].startswith('/') else product['image']
-        ET.SubElement(im, 'image:title').text = product['name'][:120]
-        ET.SubElement(im, 'image:caption').text = product['description'][:240]
-    (PUBLIC / 'sitemap-products.xml').write_text(pretty_xml(prod_sm), encoding='utf-8')
-
     news_ns = {'xmlns:news': 'http://www.google.com/schemas/sitemap-news/0.9', 'xmlns:image': 'http://www.google.com/schemas/sitemap-image/1.1'}
-    news_sm = sitemap_urlset(news_ns)
-    for item in news[:30]:
-        u = add_url(news_sm, item['url'], item['dateModified'][:10])
-        n = ET.SubElement(u, 'news:news')
-        pub = ET.SubElement(n, 'news:publication')
-        ET.SubElement(pub, 'news:name').text = 'Lovanet Actualités Anime'
-        ET.SubElement(pub, 'news:language').text = 'fr'
-        ET.SubElement(n, 'news:publication_date').text = item['datePublished']
-        ET.SubElement(n, 'news:title').text = item['title']
-        kws = ', '.join(item['tags'][:8])
-        ET.SubElement(n, 'news:keywords').text = kws
-        im = ET.SubElement(u, 'image:image')
-        ET.SubElement(im, 'image:loc').text = item['image'] if str(item['image']).startswith('http') else PRIMARY + item['image']
-        ET.SubElement(im, 'image:title').text = item['title']
-    (PUBLIC / 'sitemap-news.xml').write_text(pretty_xml(news_sm), encoding='utf-8')
 
-    books = sitemap_urlset(image_ns)
-    for product in [p for p in products if p.get('category') == 'manga'][:80]:
-        add_url(books, product['url'], today, 'weekly', '0.55')
-    (PUBLIC / 'sitemap-books.xml').write_text(pretty_xml(books), encoding='utf-8')
+    for domain in DOMAINS:
+        slug = domain_slug(domain)
+        is_primary = domain == PRIMARY
+
+        def named(kind: str) -> str:
+            return f'sitemap-{kind}.xml' if is_primary else f'sitemap-{kind}-{slug}.xml'
+
+        pages_name = named('pages')
+        images_name = named('images')
+        videos_name = named('videos')
+        products_name = named('products')
+        news_name = named('news')
+        books_name = named('books')
+        catalog_index_name = named('catalog')
+        root_index_name = 'sitemap.xml' if is_primary else f'sitemap-{slug}.xml'
+
+        pages = sitemap_urlset()
+        for page in PAGES:
+            add_url(pages, f"{domain}{page['path']}", today, page['changefreq'], page['priority'])
+        for item in news[:1000]:
+            add_url(pages, domainize(item['url'], domain), item['dateModified'][:10], 'daily', '0.75')
+        write_urlset_file(pages_name, pages)
+
+        images = sitemap_urlset(image_ns)
+        for product in products:
+            u = add_url(images, domainize(product['url'], domain), today)
+            im = ET.SubElement(u, 'image:image')
+            ET.SubElement(im, 'image:loc').text = domainize(product['image'], domain) if str(product['image']).startswith('/') else product['image']
+            ET.SubElement(im, 'image:title').text = str(product['name'] or 'Lovanet anime')[:120]
+            ET.SubElement(im, 'image:caption').text = str(product['description'] or 'Image anime manga Lovanet')[:240]
+        for anime in catalog:
+            anime_id = anime.get('id')
+            image = anime.get('cover') or anime.get('banner')
+            if not anime_id or not image:
+                continue
+            u = add_url(images, f"{domain}/anime-catalog?anime={anime_id}", today)
+            im = ET.SubElement(u, 'image:image')
+            ET.SubElement(im, 'image:loc').text = image
+            ET.SubElement(im, 'image:title').text = str(anime.get('title') or f'Anime {anime_id}')[:120]
+            ET.SubElement(im, 'image:caption').text = str(anime.get('summary') or 'Catalogue anime Lovanet')[:240]
+        write_urlset_file(images_name, images)
+
+        video_sm = sitemap_urlset(video_ns)
+        for video in videos:
+            u = add_url(video_sm, domainize(video['url'], domain), today)
+            v = ET.SubElement(u, 'video:video')
+            ET.SubElement(v, 'video:thumbnail_loc').text = video['thumbnail']
+            ET.SubElement(v, 'video:title').text = str(video['title'])[:100]
+            ET.SubElement(v, 'video:description').text = str(video['description'])[:2000]
+            ET.SubElement(v, 'video:content_loc').text = video['contentUrl']
+            ET.SubElement(v, 'video:player_loc').text = video['embedUrl']
+            ET.SubElement(v, 'video:publication_date').text = video['uploadDate']
+            ET.SubElement(v, 'video:family_friendly').text = 'yes'
+        write_urlset_file(videos_name, video_sm)
+
+        prod_sm = sitemap_urlset(image_ns)
+        for product in products:
+            u = add_url(prod_sm, domainize(product['url'], domain), today, 'weekly', '0.7')
+            im = ET.SubElement(u, 'image:image')
+            ET.SubElement(im, 'image:loc').text = domainize(product['image'], domain) if str(product['image']).startswith('/') else product['image']
+            ET.SubElement(im, 'image:title').text = str(product['name'])[:120]
+            ET.SubElement(im, 'image:caption').text = str(product['description'])[:240]
+        write_urlset_file(products_name, prod_sm)
+
+        news_sm = sitemap_urlset(news_ns)
+        for item in news[:1000]:
+            item_url = domainize(item['url'], domain)
+            u = add_url(news_sm, item_url, item['dateModified'][:10])
+            n = ET.SubElement(u, 'news:news')
+            pub = ET.SubElement(n, 'news:publication')
+            ET.SubElement(pub, 'news:name').text = 'Lovanet Actualités Anime'
+            ET.SubElement(pub, 'news:language').text = 'fr'
+            ET.SubElement(n, 'news:publication_date').text = item['datePublished']
+            ET.SubElement(n, 'news:title').text = item['title']
+            ET.SubElement(n, 'news:keywords').text = ', '.join(item['tags'][:8])
+            im = ET.SubElement(u, 'image:image')
+            ET.SubElement(im, 'image:loc').text = domainize(item['image'], domain) if str(item['image']).startswith('/') else item['image']
+            ET.SubElement(im, 'image:title').text = item['title']
+        write_urlset_file(news_name, news_sm)
+
+        books = sitemap_urlset(image_ns)
+        for product in [p for p in products if p.get('category') == 'manga']:
+            add_url(books, domainize(product['url'], domain), today, 'weekly', '0.55')
+        write_urlset_file(books_name, books)
+
+        catalog_routes = build_catalog_routes(catalog, domain, today)
+        catalog_chunks = chunked(catalog_routes, SITEMAP_CHUNK_SIZE) or [[]]
+        catalog_chunk_files: list[str] = []
+        for idx, batch in enumerate(catalog_chunks, start=1):
+            chunk_name = named(f'catalog-{idx}')
+            catalog_chunk_files.append(chunk_name)
+            catalog_sm = sitemap_urlset(image_ns)
+            for entry in batch:
+                u = add_url(catalog_sm, entry['url'], entry['lastmod'], 'daily', '0.72')
+                im = ET.SubElement(u, 'image:image')
+                ET.SubElement(im, 'image:loc').text = entry['image']
+                ET.SubElement(im, 'image:title').text = str(entry['title'])[:120]
+                ET.SubElement(im, 'image:caption').text = str(entry['description'])[:240]
+            write_urlset_file(chunk_name, catalog_sm)
+
+        catalog_index = ET.Element('sitemapindex', {'xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9'})
+        for name in catalog_chunk_files:
+            sm = ET.SubElement(catalog_index, 'sitemap')
+            ET.SubElement(sm, 'loc').text = f'{domain}/{name}'
+            ET.SubElement(sm, 'lastmod').text = today
+        write_urlset_file(catalog_index_name, catalog_index)
+
+        root_index = ET.Element('sitemapindex', {'xmlns': 'http://www.sitemaps.org/schemas/sitemap/0.9'})
+        for name in [pages_name, images_name, videos_name, products_name, news_name, books_name, catalog_index_name]:
+            sm = ET.SubElement(root_index, 'sitemap')
+            ET.SubElement(sm, 'loc').text = f'{domain}/{name}'
+            ET.SubElement(sm, 'lastmod').text = today
+        write_urlset_file(root_index_name, root_index)
+        if is_primary:
+            write_urlset_file('sitemap-index.xml', root_index)
 
 
 def write_feeds(news: list[dict]) -> None:
@@ -349,7 +434,11 @@ Sitemap: {PRIMARY}/sitemap-images.xml
 Sitemap: {PRIMARY}/sitemap-videos.xml
 Sitemap: {PRIMARY}/sitemap-products.xml
 Sitemap: {PRIMARY}/sitemap-news.xml
-Sitemap: {SECONDARY}/sitemap.xml
+Sitemap: {PRIMARY}/sitemap-catalog.xml
+Sitemap: {SECONDARY}/sitemap-animemomentsofficiel-fr.xml
+Sitemap: {SECONDARY}/sitemap-catalog-animemomentsofficiel-fr.xml
+Sitemap: {TERTIARY}/sitemap-animeofficiel-fr.xml
+Sitemap: {TERTIARY}/sitemap-catalog-animeofficiel-fr.xml
 
 # Google Search Console verification: add the provided google-site-verification value in index.html when available.
 """
@@ -361,7 +450,7 @@ def write_backup(products: list[dict], videos: list[dict], catalog: list[dict], 
     backup = {
         'generatedAt': ISO_NOW,
         'primaryDomain': PRIMARY,
-        'alternateDomains': [SECONDARY],
+        'alternateDomains': [SECONDARY, TERTIARY],
         'keywords': KEYWORDS,
         'pages': PAGES,
         'products': products,
@@ -369,10 +458,11 @@ def write_backup(products: list[dict], videos: list[dict], catalog: list[dict], 
         'news': news,
         'books': books,
         'catalogSample': catalog[:300],
+        'catalogCount': len(catalog),
         'searchConsole': {
             'status': 'credentials_required',
             'requiredScopes': ['https://www.googleapis.com/auth/webmasters'],
-            'sitemapsReady': ['sitemap.xml', 'sitemap-images.xml', 'sitemap-videos.xml', 'sitemap-products.xml', 'sitemap-news.xml', 'sitemap-books.xml'],
+            'sitemapsReady': ['sitemap.xml', 'sitemap-images.xml', 'sitemap-videos.xml', 'sitemap-products.xml', 'sitemap-news.xml', 'sitemap-books.xml', 'sitemap-catalog.xml', 'sitemap-animemomentsofficiel-fr.xml', 'sitemap-animeofficiel-fr.xml'],
         },
     }
     (PUBLIC / 'seo-backup.json').write_text(json.dumps(backup, ensure_ascii=False, indent=2), encoding='utf-8')
@@ -388,7 +478,7 @@ def write_jsonld_static(products: list[dict], videos: list[dict], news: list[dic
             {
                 '@type': 'Organization', '@id': f'{PRIMARY}/#organization', 'name': 'Lovanet Anime.Moments.officiel',
                 'url': PRIMARY, 'logo': f'{PRIMARY}/lovanet-logo-custom.png',
-                'sameAs': ['https://www.youtube.com/@animemomentsanimeofficiel', 'https://www.tiktok.com/@anime.moments.officiel'],
+                'sameAs': ['https://www.youtube.com/@animemomentsanimeofficiel', 'https://www.tiktok.com/@anime.moments.officiel', SECONDARY, TERTIARY],
                 'aggregateRating': {'@type': 'AggregateRating', 'ratingValue': '4.8', 'reviewCount': '1284'},
                 'review': {'@type': 'Review', 'name': 'Avis éditorial Lovanet', 'reviewBody': 'Plateforme anime complète réunissant vidéos, catalogue, boutique manga et actualités Anime.Moments.officiel.', 'reviewRating': {'@type': 'Rating', 'ratingValue': '5', 'bestRating': '5'}, 'author': {'@type': 'Organization', 'name': 'Lovanet'}},
             },

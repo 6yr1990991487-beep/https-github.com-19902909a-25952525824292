@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-pages.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-pages-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-images.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-images-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-videos.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-videos-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-products.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-products-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-news.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-news-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-books.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-books-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://lovanet.fr/sitemap-catalog.xml</loc>
+    <loc>https://animeofficiel.fr/sitemap-catalog-animeofficiel-fr.xml</loc>
     <lastmod>2026-07-19</lastmod>
   </sitemap>
 </sitemapindex>

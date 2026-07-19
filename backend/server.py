@@ -28,6 +28,7 @@ GOOGLE_SITE_VERIFICATION = "eDW28NAvAT9tr_dkYRKphCLRed_tlkJefXfYLvPbqd0"
 SEARCH_CONSOLE_PROPERTIES = [
     "https://lovanet.fr/",
     "https://animemomentsofficiel.fr/",
+    "https://animeofficiel.fr/",
 ]
 SEARCH_CONSOLE_SITEMAPS = [
     "https://lovanet.fr/sitemap.xml",
@@ -37,7 +38,11 @@ SEARCH_CONSOLE_SITEMAPS = [
     "https://lovanet.fr/sitemap-products.xml",
     "https://lovanet.fr/sitemap-news.xml",
     "https://lovanet.fr/sitemap-books.xml",
-    "https://animemomentsofficiel.fr/sitemap.xml",
+    "https://lovanet.fr/sitemap-catalog.xml",
+    "https://animemomentsofficiel.fr/sitemap-animemomentsofficiel-fr.xml",
+    "https://animemomentsofficiel.fr/sitemap-catalog-animemomentsofficiel-fr.xml",
+    "https://animeofficiel.fr/sitemap-animeofficiel-fr.xml",
+    "https://animeofficiel.fr/sitemap-catalog-animeofficiel-fr.xml",
 ]
 load_dotenv(ROOT_DIR / ".env")
 
@@ -347,7 +352,7 @@ async def submit_search_console_sitemaps() -> Dict[str, Any]:
     submitted = []
     final_status = "ok"
     for sitemap_url in SEARCH_CONSOLE_SITEMAPS:
-        target_property = "https://animemomentsofficiel.fr/" if sitemap_url.startswith("https://animemomentsofficiel.fr/") else "https://lovanet.fr/"
+        target_property = next((site for site in SEARCH_CONSOLE_PROPERTIES if sitemap_url.startswith(site)), "https://lovanet.fr/")
         access = property_access.get(target_property)
         if not access:
             submitted.append({
@@ -921,6 +926,7 @@ async def seo_export():
             "news": len(backup.get("news", [])),
             "books": len(backup.get("books", [])),
             "catalogSample": len(backup.get("catalogSample", [])),
+            "catalogCount": backup.get("catalogCount", len(backup.get("catalogSample", []))),
         },
         "sitemaps": backup.get("searchConsole", {}).get("sitemapsReady", []),
         "backup": backup,

@@ -26,6 +26,10 @@ Sitemap: https://lovanet.fr/sitemap-images.xml
 Sitemap: https://lovanet.fr/sitemap-videos.xml
 Sitemap: https://lovanet.fr/sitemap-products.xml
 Sitemap: https://lovanet.fr/sitemap-news.xml
-Sitemap: https://animemomentsofficiel.fr/sitemap.xml
+Sitemap: https://lovanet.fr/sitemap-catalog.xml
+Sitemap: https://animemomentsofficiel.fr/sitemap-animemomentsofficiel-fr.xml
+Sitemap: https://animemomentsofficiel.fr/sitemap-catalog-animemomentsofficiel-fr.xml
+Sitemap: https://animeofficiel.fr/sitemap-animeofficiel-fr.xml
+Sitemap: https://animeofficiel.fr/sitemap-catalog-animeofficiel-fr.xml
 
 # Google Search Console verification: add the provided google-site-verification value in index.html when available.

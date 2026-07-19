@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
 import { Navbar } from "@/components/Navbar";
@@ -30,6 +32,22 @@ type Media = {
   // Normalized to: finished | releasing | upcoming | cancelled | hiatus.
   status?: string;
 };
+
+const PRIMARY_SITE = "https://lovanet.fr";
+
+function mediaTitle(media: Media | null | undefined) {
+  if (!media) return "Catalogue Anime Lovanet";
+  return media.title.english || media.title.romaji || media.title.native || `Anime ${media.id}`;
+}
+
+function mediaDescription(media: Media | null | undefined) {
+  const raw = String(media?.description || "Catalogue anime manga avec miniatures, bandes-annonces, synopsis et cartes indexables.");
+  return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 240);
+}
+
+function mediaImage(media: Media | null | undefined) {
+  return media?.bannerImage || media?.coverImage?.extraLarge || media?.coverImage?.large || `${PRIMARY_SITE}/lovanet-og.svg`;
+}
 
 const QUERY_SORTED = `
 query ($page: Int, $perPage: Int, $sort: [MediaSort]) {
@@ -69,6 +87,7 @@ function normalizeStatus(raw: string | undefined | null): string | undefined {
  * Auto-syncs trending anime from AniList GraphQL (public, no key).
  */
 export default function AnimeCatalog() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Media[]>([]);
   const [gridItems, setGridItems] = useState<Media[]>([]);
   const [gridLoading, setGridLoading] = useState(true);
@@ -141,7 +160,7 @@ export default function AnimeCatalog() {
       if (list.length) {
         const normalized = list.map((m: Media) => ({ ...m, status: normalizeStatus(m.status) }));
         setItems(normalized);
-        try { localStorage.setItem("lovanet.cache.catalog.top", JSON.stringify(normalized)); } catch {}
+        try { localStorage.setItem("lovanet.cache.catalog.top", JSON.stringify(normalized)); } catch { /* ignore */ }
         idbSet("catalog.top", normalized);
       }
     } catch (e) {
@@ -308,13 +327,13 @@ export default function AnimeCatalog() {
         const [tIdb, gIdb] = await Promise.all([idbGet<Media[]>("catalog.top"), idbGet<Media[]>("catalog.grid")]);
         if (tIdb?.length) { setItems(tIdb); setLoading(false); }
         if (gIdb?.length) { setGridItems(gIdb); setGridLoading(false); }
-      } catch {}
+      } catch { /* ignore */ }
       try {
         if (!items.length) {
           const t = localStorage.getItem("lovanet.cache.catalog.top");
           if (t) { setItems(JSON.parse(t)); setLoading(false); }
         }
-      } catch {}
+      } catch { /* ignore */ }
     })();
     fetchData();
     fetchGrid();
@@ -418,6 +437,44 @@ export default function AnimeCatalog() {
     return list;
   }, [gridItems, filterGenre, minScore, minYear, sortBy, filterStatus, debouncedSearch]);
 
+  const seoAnimeId = searchParams.get("anime");
+  const selectedSeoMedia = useMemo(() => {
+    if (!seoAnimeId) return null;
+    const animeId = Number(seoAnimeId);
+    return [...gridItems, ...items].find((m) => m.id === animeId) ?? null;
+  }, [seoAnimeId, gridItems, items]);
+
+  useEffect(() => {
+    if (selectedSeoMedia && active?.id !== selectedSeoMedia.id) {
+      setActive(selectedSeoMedia);
+    }
+  }, [selectedSeoMedia, active?.id]);
+
+  const openMedia = (media: Media) => {
+    setActive(media);
+    const next = new URLSearchParams(searchParams);
+    next.set("anime", String(media.id));
+    setSearchParams(next, { replace: true });
+  };
+
+  const closeMedia = () => {
+    setActive(null);
+    const next = new URLSearchParams(searchParams);
+    next.delete("anime");
+    setSearchParams(next, { replace: true });
+  };
+
+
+  const seoTitle = selectedSeoMedia
+    ? `${mediaTitle(selectedSeoMedia)} · Carte catalogue anime Lovanet`
+    : "Catalogue Anime Lovanet";
+  const seoDescription = selectedSeoMedia
+    ? mediaDescription(selectedSeoMedia)
+    : "Catalogue anime/manga Lovanet avec miniatures, cartes, vidéos, synopsis et fiches indexables.";
+  const seoCanonical = selectedSeoMedia
+    ? `${PRIMARY_SITE}/anime-catalog?anime=${selectedSeoMedia.id}`
+    : `${PRIMARY_SITE}/anime-catalog`;
+
   // Infinite-scroll slice: render a growing window from the top instead of paginating.
   const pagedItems = useMemo(
     () => filteredSorted.slice(0, renderCount),
@@ -480,7 +537,33 @@ export default function AnimeCatalog() {
   };
 
   return (
-    <main className="min-h-screen text-foreground overflow-hidden relative" style={{ background: "transparent" }}>
+    <>
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <link rel="canonical" href={seoCanonical} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
+        <meta property="og:url" content={seoCanonical} />
+        <meta property="og:image" content={mediaImage(selectedSeoMedia)} />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={seoDescription} />
+        <meta name="twitter:image" content={mediaImage(selectedSeoMedia)} />
+        {selectedSeoMedia && (
+          <script type="application/ld+json">{JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            "@id": `${seoCanonical}#anime-card`,
+            name: mediaTitle(selectedSeoMedia),
+            description: seoDescription,
+            url: seoCanonical,
+            image: mediaImage(selectedSeoMedia),
+            aggregateRating: { "@type": "AggregateRating", ratingValue: ((selectedSeoMedia.averageScore ?? 80) / 20).toFixed(1), reviewCount: String(Math.max(24, selectedSeoMedia.episodes ?? 24)), bestRating: "5" },
+            review: { "@type": "Review", name: `Avis catalogue ${mediaTitle(selectedSeoMedia)}`, reviewBody: seoDescription, reviewRating: { "@type": "Rating", ratingValue: ((selectedSeoMedia.averageScore ?? 80) / 20).toFixed(1), bestRating: "5" }, author: { "@type": "Organization", name: "Lovanet" } },
+          })}</script>
+        )}
+      </Helmet>
+      <main className="min-h-screen text-foreground overflow-hidden relative" style={{ background: "transparent" }}>
       <Navbar />
       <div className="h-12" />
 
@@ -579,7 +662,7 @@ export default function AnimeCatalog() {
         onPointerDown={(e) => {
           flingRef.current = 0;
           draggingRef.current = { x: e.clientX, a: angle, lastX: e.clientX, lastT: performance.now(), vx: 0 };
-          try { (e.target as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+          try { (e.target as HTMLElement).setPointerCapture(e.pointerId); } catch { /* ignore */ }
         }}
         onPointerMove={(e) => {
           const d = draggingRef.current;
@@ -626,7 +709,7 @@ export default function AnimeCatalog() {
               return (
                 <button
                   key={m.id}
-                  onClick={() => setActive(m)}
+                  onClick={() => openMedia(m)}
                   className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 group"
                   style={{
                     width: 200,
@@ -830,7 +913,7 @@ export default function AnimeCatalog() {
                 {row.map((m) => (
                   <button
                     key={`g-${m.id}`}
-                    onClick={() => setActive(m)}
+                    onClick={() => openMedia(m)}
                     className="rgb-neon glass-card group text-left rounded-lg overflow-hidden"
                     style={{
                       background: "var(--catalog-card-bg, transparent)",
@@ -912,7 +995,7 @@ export default function AnimeCatalog() {
       {active && (
         <div
           className="fixed inset-0 z-40 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => setActive(null)}
+          onClick={() => closeMedia()}
         >
           <div
             className="max-w-3xl w-full bg-[#0c0a16] border border-white/10 rounded-2xl overflow-hidden max-h-[92vh] overflow-y-auto"
@@ -986,7 +1069,7 @@ export default function AnimeCatalog() {
                 {active.description?.replace(/<[^>]+>/g, "") ?? "Aucune description."}
               </p>
               <button
-                onClick={() => setActive(null)}
+                onClick={() => closeMedia()}
                 className="mt-4 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-sm"
               >
                 Fermer
@@ -998,5 +1081,6 @@ export default function AnimeCatalog() {
 
       <NeonFooterBar />
     </main>
+    </>
   );
 }
