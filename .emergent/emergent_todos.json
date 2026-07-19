@@ -1,6 +1,14 @@
 [
   {
-    "content": "Vérifier le rendu avec build + captures + tests frontend",
+    "content": "Renforcer encore le thème luxe/menu sur la landing /",
     "status": "completed"
+  },
+  {
+    "content": "Supprimer presque tous les textes descriptifs sur la landing (option C)",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier le rendu avec build + captures + tests frontend",
+    "status": "in_progress"
   }
 ]
