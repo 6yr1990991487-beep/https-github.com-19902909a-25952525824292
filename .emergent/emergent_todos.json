@@ -1,14 +1,6 @@
 [
   {
-    "content": "Retirer uniquement les éléments exacts vus en capture (bulle flottante, hologrammes/images parasites, textes footer ciblés)",
-    "status": "completed"
-  },
-  {
-    "content": "Refondre la page portail / en vraie vitrine premium centrée contenu et accès",
-    "status": "completed"
-  },
-  {
     "content": "Relancer vérifications frontend, captures et tests",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]
