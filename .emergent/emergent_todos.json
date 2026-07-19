@@ -1,30 +1,26 @@
 [
   {
-    "content": "Inspecter Navbar, logo/favicon et page Mentions légales",
+    "content": "Finaliser navigation/logo/mentions légales sans régression",
     "status": "in_progress"
   },
   {
-    "content": "Transformer Boutique en sous-menu desktop + mobile avec style boutons principaux",
+    "content": "Déplacer l’accueil actuel vers /anime-moments",
     "status": "pending"
   },
   {
-    "content": "Appliquer le style boutons principaux au texte Lovanet",
+    "content": "Créer une nouvelle page d’arrivée longue sur / dans le style manga futuriste",
     "status": "pending"
   },
   {
-    "content": "Créer une nouvelle variante couleur/3D du logo menu et favicon",
+    "content": "Mettre à jour les liens de navigation et le routing",
     "status": "pending"
   },
   {
-    "content": "Retirer les blocs demandés sur la page Mentions légales",
+    "content": "Recompiler et vérifier visuellement navigation + landing + hubs",
     "status": "pending"
   },
   {
-    "content": "Recompiler et vérifier visuellement la navigation, le logo et les mentions légales",
-    "status": "pending"
-  },
-  {
-    "content": "Lancer le testing agent pour valider les changements UI et la stabilité des hubs",
+    "content": "Lancer le testing agent pour valider UI, hubs et nouvelle landing",
     "status": "pending"
   }
 ]

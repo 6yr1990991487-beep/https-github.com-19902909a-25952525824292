@@ -12,19 +12,29 @@
 - Respecter contraintes Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, backend préfixé `/api`.
 
 ### Objectif UI / Navigation (NOUVEAU)
-- Harmoniser la navigation selon la demande utilisateur (preview + production) :
+- Harmoniser la navigation selon la demande utilisateur (**preview + production**) :
   - Le texte **« Lovanet »** dans le menu doit adopter le **style des boutons principaux**.
-  - Le bouton **« Boutique »** doit devenir une entrée de **sous-menu** (desktop + mobile).
-  - Le bouton « Boutique » doit être **RGB + blanc transparent** comme les boutons principaux.
-- Identité visuelle du logo :
-  - le **logo menu** + **favicon** doivent passer à **une nouvelle couleur**
-  - direction « **icône animation 3D** » pour la version du menu (tout en restant performante et lisible)
+  - Le bouton **« Boutique »** doit devenir une entrée de **sous-menu** (**desktop + mobile**).
+  - Le style demandé : **RGB + blanc transparent** comme les boutons principaux.
+
+### Objectif Identité visuelle (logo/favicons)
+- Le **logo menu** + **favicon** doivent passer à :
+  - une **nouvelle couleur**
+  - direction « **icône animation 3D** » (tout en restant performante)
 
 ### Objectif Mentions légales (NOUVEAU)
 - Sur la page Mentions légales :
   - retirer les blocs de texte :
     - `Éditeur du site ... utilisez la page contact.`
     - `Hébergement ... leurs plateformes respectives.`
+
+### Objectif Nouvelle Page d’arrivée (NOUVEAU — confirmé utilisateur)
+- Créer une **nouvelle page d’arrivée premium** sur `/` :
+  - **ne pas utiliser** le terme « Accueil »
+  - style **moderne / manga / futuriste**, long format, riche en sections
+  - dans l’esprit et l’originalité de la home actuelle, mais **plus “landing page”**
+- Déplacer l’actuelle page d’accueil vers :
+  - `/anime-moments`
 
 ### Objectif SEO / Référencement
 - Paramétrer le SEO : meta tags, OpenGraph/Twitter, canonical/hreflang/alternate.
@@ -34,8 +44,6 @@
   - flux **RSS/Atom** (Actualités)
   - données structurées **JSON‑LD schema.org** (Organization, WebSite, WebPage, Product, VideoObject, BreadcrumbList, Article/NewsArticle)
   - inclure les champs demandés : **`aggregateRating`** et **`review`** (là où applicable)
-- **Logo utilisateur** : navbar + favicon + SEO (`Organization.logo` etc.).
-- Préparer l’occupation des verticales : **Google Web, Images, Vidéos, Produits, Actualités, Catalogue** (best-effort).
 
 ### Objectif (Search Console)
 - Ajouter la balise de vérification Google :
@@ -46,10 +54,9 @@
     - **service account JSON** — utile si la propriété est partagée avec le compte de service + API activée
     - **OAuth Web client** — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
 
-> ⚠️ Sécurité (prioritaire)
-> - ne jamais exposer le *client secret* OAuth (ni l’écrire dans le code/plan/logs)
-> - utiliser un **upload de fichier JSON OAuth** (client_id/client_secret) ou des variables d’environnement sécurisées
-> - stockage sécurisé du **refresh token** côté backend (DB), idéalement chiffré
+> ⚠️ Sécurité
+> - ne jamais exposer le *client secret* OAuth
+> - stockage du **refresh token** côté backend (DB)
 
 ### Objectif (TikTok)
 - **Rétablir l’expérience “comme avant”** sur la page TikTok du site :
@@ -62,18 +69,17 @@
 - Extraire depuis les archives fournies **uniquement** 2 hubs 3D à l’identique visuel :
   - **Hub Ferry**
   - **Hub Train Station**
-- Les intégrer **sans adaptation créative** (identique) si techniquement possible.
 - Implantations demandées :
   - **Hub Train Station** : page **Shop** (`/shop`) **au-dessus de la bannière**.
-  - **Hub Ferry** : page **Univers Lovanet** (route `/decouvrir`) **en dessous** du CTA **« Explorer le catalogue »**.
-- Exigences UX supplémentaires (bug utilisateur, confirmé sur les deux environnements) :
-  - supprimer l’erreur runtime `Cannot read properties of undefined (reading 'testid')` (signalée sur **Hub Ferry**)
-  - **retirer tout le texte** ajouté autour des hubs (titres/description “Hub 3D importé…”) : les hubs doivent apparaître seuls
-  - **désactiver la rotation automatique caméra** et les **changements automatiques de scène** sur **Hub Ferry** + **Hub Train Station**
+  - **Hub Ferry** : page **Univers Lovanet** (`/decouvrir`) **en dessous** du CTA **« Explorer le catalogue »**.
+- Exigences UX supplémentaires (bug utilisateur, confirmé sur preview + production) :
+  - corriger l’erreur runtime `Cannot read properties of undefined (reading 'testid')` (Hub Ferry)
+  - **retirer tout le texte** ajouté autour des hubs
+  - **désactiver la rotation automatique caméra** et les **changements automatiques de scène** sur les 2 hubs
 
 ### Domaines / cibles SEO (confirmé utilisateur)
 - Domaine primaire (canonique) : `https://lovanet.fr`
-- Domaines secondaires à traiter **PARTOUT** (SEO + JSON‑LD + sitemaps + meta) :
+- Domaines secondaires à traiter **PARTOUT** :
   - `https://animemomentsofficiel.fr`
   - `https://animeofficiel.fr`
   - `https://animemomentsanimeofficiel.fr` (ajouté pour propriétés GSC/OAuth)
@@ -81,18 +87,16 @@
 ### Domaines (OAuth redirect URIs) — confirmé utilisateur
 - Callback Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
 - Callback Production : `https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback`
-- Callbacks additionnels (à autoriser dans Google Cloud) :
+- Callbacks additionnels :
   - `https://animeofficiel.fr/api/seo/search-console/oauth/callback`
   - `https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback`
-
-> Note canonique : éviter la duplication en conservant une stratégie de canonique primaire, et utiliser `alternate`/`hreflang`/redirections si nécessaire.
 
 ### Statut environnements
 - Deux environnements existent : **Preview** (dev) + **Production** (`https://animemomentsofficiel.fr`).
 - Priorité utilisateur : **les deux** → implémentation en **Preview**, puis **redeploy** nécessaire pour pousser en production.
 
 ### Validation attendue (clarifiée)
-- Attendu : **soumission technique** (sitemaps/pages/images/vidéos/news/catalogue) + **vérification des signaux SEO** (meta/JSON‑LD/miniatures/descriptions/routes indexables).
+- Attendu : **soumission technique** (sitemaps/pages/images/vidéos/news/catalogue) + **vérification des signaux SEO**.
 - Non garanti : **indexation finale** (décision/crawl Google).
 
 ### Statut actuel (mesuré)
@@ -113,141 +117,103 @@
 - ✅ Phase 3 terminée (auto-sync externe + UI + tests).
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
 - ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
-- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée (lovanet.fr OK) **en preview**.
-- ⏳ Phase 7 (Hubs 3D) : intégration réalisée + correctifs UX demandés (sans texte / sans auto-cam) mais nécessite **validation stable + tests**.
-- ⏳ Phase 8 (UI/Brand polish) : menu, sous-menu Boutique, logo/favicons nouvelle couleur + mentions légales.
+- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée **en preview**.
+- ⏳ Phase 7 (Hubs 3D) : intégration faite mais **bug runtime + UX** à valider (testing agent requis).
+- ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales (en cours).
+- ⏳ Phase 9 (Nouvelle page d’arrivée) : à implémenter (`/` landing, home → `/anime-moments`).
 
 ---
 
 ## 2) Implementation Steps
 
 ### Phase 1 — POC Core (Isolation): extraction + inventaire + rendu minimal ✅ COMPLETED
-- Backup identifié, crawl live, manifest, mirroring assets.
 
 ### Phase 2 — V1 App Development (MVP): pages + dynamiques internes ✅ COMPLETED
-- Frontend routes principales, backend `/api`, validations build/E2E.
 
 ### Phase 3 — External Auto-Sync Parity + Fidelity UI ✅ COMPLETED
-- Scheduler 5 minutes, YouTube/AniList OK, TikTok/Prime best-effort, UI sync.
 
 ### Phase 4 — Import du projet source Lovable/GitHub/ZIP ✅ COMPLETED
-- Base Lovable intégrée + adaptation Emergent + build/E2E OK.
 
-### Phase 5 — SEO + Search Console + TikTok + Multi-domain ✅ COMPLETED (en preview)
-
-#### Phase 5.1 — Logo + navigation ✅ DONE
-- Logo utilisateur dans navbar : `/lovanet-logo-custom.png`.
-
-#### Phase 5.2 — Favicon & icônes ✅ DONE
-- `favicon.ico`, `favicon-32x32.png`, `favicon-16x16.png`, `apple-touch-icon.png` + liens `public/index.html`.
-
-#### Phase 5.3 — Correctifs SEO critiques ✅ DONE
-- `/shop` JSON‑LD : ajout/normalisation `aggregateRating` + `review`.
-- `/actualites` : suppression duplication meta description via ownership.
-
-#### Phase 5.4 — Harmonisation SEO logo statique ✅ DONE
-- Références SEO vers `lovanet-logo-custom.png` (LocalizedHead / Actualites / index.html / structured-data.json / robots.txt / script SEO).
-
-#### Phase 5.5 — Search Console (service account + OAuth) ✅ DONE (preview)
-- Meta vérification en place.
-- Endpoints service account : `GET/POST /api/seo/search-console/*`.
-- Endpoints OAuth : `GET /api/seo/search-console/oauth/*` + `POST /api/seo/search-console/oauth/submit`.
-- Connexion OAuth réalisée (preview) et soumission exécutée :
-  - ✅ `lovanet.fr`: sitemaps soumis
-  - ⚠️ `animemomentsofficiel.fr`: 403 permissions insuffisantes
-  - ⚠️ `animeofficiel.fr`: propriété non accessible tant qu’elle n’est pas validée et partagée
-
-#### Phase 5.6 — Validation sitemaps / RSS / JSON‑LD ✅ DONE
-- Sitemaps complets + catalogue chunké, RSS/Atom, JSON‑LD Organization/WebSite/WebPage validés.
-
-#### Phase 5.7 — TikTok UX ✅ DONE
-- Player + carrousel (si items disponibles)
-- fallback widget officiel TikTok si la sync renvoie 0.
-
-#### Phase 5.8 — Multi-domain SEO « PARTOUT » ✅ DONE
-- Ajout `animemomentsofficiel.fr` + `animeofficiel.fr` dans meta/link/JSON‑LD/sitemaps.
-- Canonicals/alternates conservent les paramètres profonds : `product`, `video`, `anime`.
-
----
+### Phase 5 — SEO + Search Console + TikTok + Multi-domain ✅ COMPLETED (preview)
 
 ### Phase 6 — Search Console OAuth (connexion + soumission) ✅ COMPLETED (preview)
-- ✅ Client OAuth Web fourni et validé.
-- ✅ Flux `/oauth/start` → consentement → `/oauth/callback` fonctionnel.
-- ✅ Soumission exécutée (statut `partial` en raison des permissions Search Console).
-
-> Reste à faire côté Google (humain) :
-> - ajouter/valider la propriété `animeofficiel.fr` dans Search Console
-> - donner au compte OAuth un accès suffisant sur `animemomentsofficiel.fr`
 
 ---
 
 ### Phase 7 — Hubs 3D (ZIP) ⏳ IN PROGRESS
 
 #### Phase 7.1 — Extraction ciblée (ZIP) ✅ DONE
-- Archive utilisable : `49003I909E0-main.zip` (copie des composants requis)
-- L’archive `0nnnnryg5ew4554876-main` fournie ensuite est **vide** côté téléchargement (Content-Length 0) → non exploitable.
+- Archive utilisable : `49003I909E0-main.zip` (composants hubs copiés dans le projet).
+- Archive `0nnnnryg5ew4554876-main` : téléchargement **vide** (`Content-Length 0`) → non exploitable.
 
-#### Phase 7.2 — Intégration “identique” (frontend) ✅ DONE (à stabiliser)
-- **Shop (`/shop`)** : Hub Train Station ajouté au-dessus de la bannière.
-- **Univers Lovanet (`/decouvrir`)** : Hub Ferry ajouté sous le CTA « Explorer le catalogue ».
-- Stratégie : hubs rendus via routes internes `/hub/train-station` et `/hub/ferry` + iframe.
+#### Phase 7.2 — Intégration “identique” (frontend) ✅ DONE
+- `/shop` : hub Train Station au-dessus de la bannière.
+- `/decouvrir` : hub Ferry sous « Explorer le catalogue ».
+- Stratégie : routes internes `/hub/train-station` + `/hub/ferry` + intégration iframe.
 
 #### Phase 7.3 — Stabilisation (BUGFIX/UX) ⏳ TODO (critique)
-- Corriger définitivement l’erreur runtime (confirmée user, preview + production) :
-  - `Cannot read properties of undefined (reading 'testid')` — sur le **Hub Ferry**
-  - neutraliser/retirer les props/attributs incompatibles (ex: `data-testid` sur nodes R3F)
-- Retirer la UI texte autour des hubs :
-  - sur `/shop` et `/decouvrir` ne laisser que le rendu 3D (iframe)
-- Désactiver sur les deux hubs :
-  - rotation automatique caméra
-  - changements automatiques de scène
-  - conserver uniquement les contrôles manuels (si existants)
+- Corriger définitivement le crash Ferry : `Cannot read properties of undefined (reading 'testid')`.
+- Retirer les titres/texte autour des hubs.
+- Désactiver auto rotation caméra / auto changements de scène (Ferry + Train Station).
 
 #### Phase 7.4 — Tests & validation ⏳ TODO
-- Build frontend + smoke runtime.
-- Vérifier :
-  - `/shop` charge sans erreur et le hub Train Station reste visible au bon emplacement.
-  - `/decouvrir` charge sans erreur et le hub Ferry reste visible sous « Explorer le catalogue ».
-  - plus d’erreur `testid`.
-  - plus de rotation/changement auto.
-- Appeler **testing_agent** (obligatoire) pour valider le bug et la non-régression.
+- Smoke test : `/shop`, `/decouvrir`, `/hub/ferry`, `/hub/train-station`.
+- Appeler **testing_agent** (obligatoire).
 
 ---
 
-### Phase 8 — UI / Brand polish (menu + logo + mentions légales) ⏳ TODO
+### Phase 8 — UI / Brand polish (menu + logo + mentions légales) ⏳ IN PROGRESS
 
 #### Phase 8.1 — Menu / boutons (RGB + blanc transparent)
-- Mettre le texte **Lovanet** du menu au même niveau de style que les boutons principaux.
-- Transformer **Boutique** en entrée de **sous-menu** (desktop + mobile) et appliquer le style RGB + blanc transparent.
+- Texte **Lovanet** : style boutons principaux.
+- **Boutique** : sous-menu desktop + mobile, style RGB + blanc transparent.
 
-#### Phase 8.2 — Logo menu + favicon (nouvelle couleur + direction icône 3D)
-- Créer une variante du logo en **nouvelle couleur**.
-- Ajouter une version **icône 3D/animée** pour le menu (tout en gardant une alternative statique + performant).
-- Mettre à jour favicon/OG/logo SEO si demandé (en conservant la cohérence multi-domaines).
+#### Phase 8.2 — Logo menu + favicon (nouvelle couleur + icône 3D)
+- Variante logo “3D” (menu + favicon) + cohérence SEO.
 
 #### Phase 8.3 — Mentions légales
-- Retirer les blocs de texte `Éditeur du site` et `Hébergement` mentionnés.
-- Vérifier que la page reste conforme et sans contenu résiduel non voulu.
+- Retirer les blocs `Éditeur du site` et `Hébergement` demandés.
 
 #### Phase 8.4 — Tests UI
 - Smoke test navigation desktop + mobile.
-- Tester la présence et le placement du sous-menu Boutique.
-- Appeler **testing_agent** (obligatoire) pour valider :
-  - pas de régression visuelle critique
-  - conformité aux demandes UI
-  - hubs toujours stables (pas de crash)
+- Appeler **testing_agent** (obligatoire).
+
+---
+
+### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ⏳ TODO
+
+#### Phase 9.1 — Routing
+- `/` devient la **nouvelle landing page** (pas “Accueil”).
+- Déplacer l’actuelle home vers `/anime-moments`.
+- Vérifier toutes les routes, liens navbar, SEO canonicals.
+
+#### Phase 9.2 — Nouvelle landing (long format)
+- Créer une page longue, riche, futuriste/manga :
+  - Hero + CTA
+  - sections “plateformes” (YouTube/TikTok/Prime)
+  - extrait catalogue + CTA
+  - boutique + CTA
+  - actualités + CTA
+  - branding + trust
+  - footer enrichi
+
+#### Phase 9.3 — SEO de la landing et de `/anime-moments`
+- Canonical, meta OG/Twitter, JSON-LD WebPage.
+- Mettre à jour sitemaps pages.
+
+#### Phase 9.4 — Tests
+- Appeler **testing_agent** (obligatoire) pour non-régression.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **Phase 7.3** : corriger définitivement le crash Ferry (`testid`) + supprimer tout texte autour des hubs + désactiver auto-cam/auto-scènes.
-2) **Phase 7.4** : rebuild + smoke (Shop/Discover + routes hub) + logs.
-3) **Phase 7.4** : lancer **testing_agent** (obligatoire) pour valider la correction du bug `testid` + exigences UX hubs.
-4) **Phase 8.1** : menu — appliquer style boutons au texte Lovanet + passer Boutique en sous-menu (desktop+mobile).
-5) **Phase 8.2** : nouvelle couleur logo + favicon + direction icône 3D/animée.
-6) **Phase 8.3** : nettoyer Mentions légales (suppression des blocs texte indiqués).
-7) **Phase 8.4** : lancer **testing_agent** (obligatoire) pour valider les changements UI + non-régression.
-8) **Production** : redeploy pour pousser hubs 3D stabilisés + endpoints OAuth live + polish UI.
+1) **Phase 7.3** : corriger crash Ferry (`testid`) + supprimer texte hubs + désactiver auto-cam/auto-scènes.
+2) **Phase 7.4** : rebuild + smoke + **testing_agent** (obligatoire).
+3) **Phase 8** : menu (Boutique sous-menu + style), logo/favicons, Mentions légales.
+4) **Phase 8.4** : **testing_agent** (obligatoire) UI + hubs.
+5) **Phase 9** : nouvelle landing `/` + déplacer home en `/anime-moments` + SEO/sitemaps.
+6) **Phase 9.4** : **testing_agent** (obligatoire) landing + routing.
+7) **Production** : redeploy final pour pousser en production.
 
 ---
 
@@ -258,18 +224,23 @@
 - SEO complet : meta/JSON‑LD/sitemaps/RSS + multi-domain.
 - Search Console OAuth : connecté + soumission lancée sur `lovanet.fr`.
 
-### À atteindre (Phase 7 — stabilisation hubs)
-- Hub 3D **Train Station** visible sur `/shop` au bon emplacement (au-dessus de la bannière), **sans texte**, **sans auto-cam**.
-- Hub 3D **Ferry** visible sur `/decouvrir` sous « Explorer le catalogue », **sans texte**, **sans auto-cam**.
-- Plus d’erreur runtime : `Cannot read properties of undefined (reading 'testid')`.
+### À atteindre (Phase 7)
+- `/shop` : hub Train Station visible, **sans texte**, **sans auto-cam**.
+- `/decouvrir` : hub Ferry visible, **sans texte**, **sans auto-cam**.
+- Plus d’erreur runtime `testid`.
 
-### À atteindre (Phase 8 — UI/Brand)
+### À atteindre (Phase 8)
 - Texte **Lovanet** dans le menu stylé comme les boutons principaux.
-- **Boutique** en sous-menu (desktop + mobile) avec style RGB + blanc transparent.
-- Logo menu + favicon : **nouvelle couleur** + direction **icône 3D/animée**.
-- Mentions légales : suppression des blocs `Éditeur du site` et `Hébergement` demandés.
+- **Boutique** en sous-menu (desktop + mobile) + style RGB + blanc transparent.
+- Logo menu + favicon : nouvelle couleur + look “icône 3D”.
+- Mentions légales : suppression des blocs demandés.
+
+### À atteindre (Phase 9)
+- Nouvelle page d’arrivée premium sur `/` (pas “Accueil”).
+- Home déplacée vers `/anime-moments` et accessible.
+- SEO/sitemaps/canonicals mis à jour.
 
 ### Contraintes / transparence
 - Modifs en preview → **redeploy** nécessaire pour production.
-- Indexation Google : non garantie (on garantit la soumission + présence des signaux).
+- Indexation Google : non garantie.
 - Hubs 3D : dépendances WebGL/ThreeJS doivent rester compatibles (fallback si nécessaire).
