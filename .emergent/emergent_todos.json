@@ -1,6 +1,14 @@
 [
   {
-    "content": "Obtenir le playbook OAuth Google Search Console et préparer le flux backend",
+    "content": "Récupérer le JSON OAuth uploadé dans un chemin runtime sécurisé",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier la compatibilité du fichier OAuth Google avec un callback web",
+    "status": "completed"
+  },
+  {
+    "content": "Obtenir un vrai JSON OAuth Google de type Web application",
     "status": "in_progress"
   },
   {
@@ -8,11 +16,15 @@
     "status": "pending"
   },
   {
-    "content": "Préparer les URI de redirection preview/production et le statut OAuth",
+    "content": "Ajouter le statut/soumission OAuth dans le flux Search Console existant",
     "status": "pending"
   },
   {
-    "content": "Tester le flux OAuth/Search Console avec testing agent",
+    "content": "Redémarrer et valider techniquement le flux OAuth",
+    "status": "pending"
+  },
+  {
+    "content": "Lancer le testing agent pour vérifier OAuth/Search Console",
     "status": "pending"
   }
 ]
