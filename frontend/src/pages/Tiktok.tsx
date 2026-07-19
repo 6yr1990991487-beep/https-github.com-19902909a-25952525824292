@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
-import { videos as fallbackVideos } from "@/data/videos";
 import { Music2, Heart, MessageCircle, Share2, ArrowUp, ArrowDown, ExternalLink, VolumeX, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminRemoveVideo } from "@/components/AdminRemoveVideo";
@@ -11,25 +10,17 @@ type TTItem = {
   id: string;
   title: string;
   series: string;
-  source: "tiktok" | "youtube";
+  source: "tiktok";
   videoUrl: string;
   thumb?: string | null;
 };
 
-const ytFallback: TTItem[] = [...fallbackVideos]
-  .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
-  .map((v) => ({
-    id: v.id,
-    title: v.title,
-    series: v.series ?? "Anime Moment",
-    source: "youtube" as const,
-    videoUrl: `https://www.youtube.com/watch?v=${v.id}`,
-  }));
-
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const TIKTOK_HANDLE = "@anime.moments.officiel";
 
 const Tiktok = () => {
-  const [list, setList] = useState<TTItem[]>(ytFallback);
+  const [list, setList] = useState<TTItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [idx, setIdx] = useState(0);
   const [muted, setMuted] = useState(true);
   const [orientation, setOrientation] = useState<"vertical" | "horizontal">("vertical");
@@ -40,23 +31,33 @@ const Tiktok = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${API}/videos?platform=tiktok&limit=80`);
+        const response = await fetch(`${API}/videos?platform=tiktok&channel_title=${encodeURIComponent(TIKTOK_HANDLE)}&strict=true&limit=80`);
         const json = await response.json();
-        if (cancelled || !json.videos?.length) return;
-        setList(
-          json.videos.map((r: any) => ({
+        if (cancelled) return;
+        const filtered = (json.videos || [])
+          .filter((r: any) => {
+            const channel = String(r.channel_title ?? "").trim().toLowerCase();
+            const videoUrl = String(r.video_url ?? "").toLowerCase();
+            const videoId = String(r.external_id ?? r.id ?? "").trim();
+            const title = String(r.title ?? "").trim();
+            return channel === TIKTOK_HANDLE.toLowerCase() && videoUrl.includes("/@anime.moments.officiel/video/") && /^\d{12,}$/.test(videoId) && title.length > 0 && !/followers|following|likes/i.test(title);
+          })
+          .map((r: any) => ({
             id: r.external_id ?? r.id,
             title: r.title ?? "TikTok",
-            series: "@anime.moments.officiel",
+            series: TIKTOK_HANDLE,
             source: "tiktok" as const,
             videoUrl: r.video_url,
             thumb: r.thumbnail_url ?? r.thumbnail,
-          })),
-        );
+          }));
+        setList(filtered);
         setIdx(0);
       } catch {
-        // Keep Lovable fallback videos when public TikTok sync is degraded.
+        if (!cancelled) setList([]);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
@@ -118,7 +119,7 @@ const Tiktok = () => {
   return (
     <PageShell>
       <ManualSyncButton platform="tiktok" label="Sync TikTok" onDone={() => window.location.reload()} />
-      <section className="container mx-auto px-4 lg:px-8 py-12 text-center">
+      <section className="container mx-auto px-4 lg:px-8 py-12 text-center" data-testid="tiktok-page-hero">
         <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Feed officiel</p>
         <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold">
           <span className="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
@@ -132,16 +133,22 @@ const Tiktok = () => {
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white"
             style={{ background: "var(--gradient-magenta)" }}
+            data-testid="tiktok-official-link"
           >
             Ouvrir TikTok @anime.moments.officiel <ExternalLink className="w-4 h-4" />
           </a>
         </div>
       </section>
 
-      <section className="container mx-auto px-4 lg:px-8 pb-6">
-        {!v && (
-          <div className="text-center text-sm text-muted-foreground py-10">
+      <section className="container mx-auto px-4 lg:px-8 pb-6" data-testid="tiktok-feed-section">
+        {loading && (
+          <div className="text-center text-sm text-muted-foreground py-10" data-testid="tiktok-loading-state">
             Chargement du feed TikTok…
+          </div>
+        )}
+        {!loading && !v && (
+          <div className="text-center text-sm text-muted-foreground py-10" data-testid="tiktok-empty-state">
+            Aucune vidéo officielle TikTok disponible pour le compte {TIKTOK_HANDLE} pour le moment.
           </div>
         )}
         {v && (<>
@@ -285,7 +292,7 @@ const Tiktok = () => {
         {/* Thumbnail strip — full library, click to jump */}
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2 px-1">
-            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground" data-testid="tiktok-library-count">
               Bibliothèque · {list.length} vidéos
             </h3>
           </div>
@@ -294,6 +301,7 @@ const Tiktok = () => {
               <button
                 key={`${it.source}-${it.id}-${i}`}
                 onClick={() => setIdx(i)}
+                data-testid={`tiktok-thumbnail-${i + 1}`}
                 className={cn(
                   "snap-start shrink-0 w-24 aspect-[9/16] rounded-xl overflow-hidden relative border-2 transition-all",
                   i === idx ? "border-pink-500 scale-105" : "border-transparent opacity-70 hover:opacity-100"

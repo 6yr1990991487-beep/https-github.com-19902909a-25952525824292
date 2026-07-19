@@ -6,6 +6,9 @@ from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 from datetime import datetime, timezone
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 import asyncio
 import html
 import json
@@ -20,6 +23,22 @@ ROOT_DIR = Path(__file__).parent
 APP_DIR = ROOT_DIR.parent
 PUBLIC_DIR = APP_DIR / "frontend" / "public"
 MANIFEST_PATH = APP_DIR / "extraction" / "manifest" / "lovanet_manifest.json"
+GOOGLE_CREDENTIALS_PATH = Path(os.environ.get("GOOGLE_SEARCH_CONSOLE_CREDENTIALS_FILE", "/tmp/google-search-console-service-account.json"))
+GOOGLE_SITE_VERIFICATION = "eDW28NAvAT9tr_dkYRKphCLRed_tlkJefXfYLvPbqd0"
+SEARCH_CONSOLE_PROPERTIES = [
+    "https://lovanet.fr/",
+    "https://animemomentsofficiel.fr/",
+]
+SEARCH_CONSOLE_SITEMAPS = [
+    "https://lovanet.fr/sitemap.xml",
+    "https://lovanet.fr/sitemap-pages.xml",
+    "https://lovanet.fr/sitemap-images.xml",
+    "https://lovanet.fr/sitemap-videos.xml",
+    "https://lovanet.fr/sitemap-products.xml",
+    "https://lovanet.fr/sitemap-news.xml",
+    "https://lovanet.fr/sitemap-books.xml",
+    "https://animemomentsofficiel.fr/sitemap.xml",
+]
 load_dotenv(ROOT_DIR / ".env")
 
 mongo_url = os.environ["MONGO_URL"]
@@ -229,6 +248,191 @@ async def upsert_many(collection_name: str, docs: List[Dict[str, Any]], key_fiel
     return {"inserted": inserted, "updated": updated}
 
 
+def search_console_credentials_ready() -> bool:
+    return GOOGLE_CREDENTIALS_PATH.exists() and GOOGLE_CREDENTIALS_PATH.is_file()
+
+
+def get_search_console_service_account_info() -> Dict[str, Any]:
+    if not search_console_credentials_ready():
+        return {}
+    try:
+        data = json.loads(GOOGLE_CREDENTIALS_PATH.read_text(encoding="utf-8"))
+        project_id = data.get("project_id")
+        return {
+            "project_id": project_id,
+            "client_email": data.get("client_email"),
+            "token_uri": data.get("token_uri"),
+            "activation_url": f"https://console.developers.google.com/apis/api/searchconsole.googleapis.com/overview?project={project_id}" if project_id else None,
+        }
+    except Exception:
+        return {}
+
+
+def get_search_console_service():
+    if not search_console_credentials_ready():
+        raise RuntimeError("Google Search Console credentials file missing")
+    credentials = service_account.Credentials.from_service_account_file(
+        str(GOOGLE_CREDENTIALS_PATH),
+        scopes=["https://www.googleapis.com/auth/webmasters"],
+    )
+    return build("webmasters", "v3", credentials=credentials, cache_discovery=False)
+
+
+async def fetch_search_console_status() -> Dict[str, Any]:
+    service_account_info = get_search_console_service_account_info()
+    base = {
+        "verification_meta": GOOGLE_SITE_VERIFICATION,
+        "required_scope": "https://www.googleapis.com/auth/webmasters",
+        "properties": SEARCH_CONSOLE_PROPERTIES,
+        "sitemaps_ready": SEARCH_CONSOLE_SITEMAPS,
+        "credentials_detected": search_console_credentials_ready(),
+        "service_account": service_account_info,
+    }
+    if not search_console_credentials_ready():
+        return {
+            **base,
+            "status": "credentials_missing",
+            "message": "Le fichier credentials Search Console est introuvable côté backend.",
+            "property_access": [],
+        }
+    try:
+        service = await asyncio.to_thread(get_search_console_service)
+        sites = await asyncio.to_thread(lambda: service.sites().list().execute())
+        entries = sites.get("siteEntry", [])
+        property_access = [
+            {
+                "site_url": entry.get("siteUrl"),
+                "permission_level": entry.get("permissionLevel"),
+                "verified": entry.get("permissionLevel") != "siteUnverifiedUser",
+            }
+            for entry in entries
+            if entry.get("siteUrl") in SEARCH_CONSOLE_PROPERTIES or entry.get("siteUrl", "").startswith("sc-domain:")
+        ]
+        return {
+            **base,
+            "status": "ok",
+            "message": "Connexion Search Console active.",
+            "property_access": property_access,
+        }
+    except HttpError as exc:
+        msg = str(exc)
+        reason = "api_access_not_configured" if "accessNotConfigured" in msg or "has not been used in project" in msg else "google_api_error"
+        message = msg
+        if reason == "api_access_not_configured" and service_account_info.get("activation_url"):
+            message = f"Google Search Console API désactivée sur le projet du compte de service. Activez-la ici puis relancez la soumission : {service_account_info['activation_url']}"
+        return {
+            **base,
+            "status": reason,
+            "message": message,
+            "property_access": [],
+        }
+    except Exception as exc:
+        return {
+            **base,
+            "status": "error",
+            "message": str(exc),
+            "property_access": [],
+        }
+
+
+async def submit_search_console_sitemaps() -> Dict[str, Any]:
+    status = await fetch_search_console_status()
+    if status.get("status") != "ok":
+        return {
+            **status,
+            "submitted": [],
+        }
+    service = await asyncio.to_thread(get_search_console_service)
+    property_access = {row.get("site_url"): row for row in status.get("property_access", [])}
+    submitted = []
+    final_status = "ok"
+    for sitemap_url in SEARCH_CONSOLE_SITEMAPS:
+        target_property = "https://animemomentsofficiel.fr/" if sitemap_url.startswith("https://animemomentsofficiel.fr/") else "https://lovanet.fr/"
+        access = property_access.get(target_property)
+        if not access:
+            submitted.append({
+                "site_url": target_property,
+                "sitemap_url": sitemap_url,
+                "status": "skipped",
+                "message": "La propriété Search Console n'est pas accessible avec ce compte de service.",
+            })
+            final_status = "partial"
+            continue
+        try:
+            await asyncio.to_thread(lambda tp=target_property, sm=sitemap_url: service.sitemaps().submit(siteUrl=tp, feedpath=sm).execute())
+            submitted.append({
+                "site_url": target_property,
+                "sitemap_url": sitemap_url,
+                "status": "submitted",
+            })
+        except HttpError as exc:
+            submitted.append({
+                "site_url": target_property,
+                "sitemap_url": sitemap_url,
+                "status": "error",
+                "message": str(exc),
+            })
+            final_status = "partial"
+        except Exception as exc:
+            submitted.append({
+                "site_url": target_property,
+                "sitemap_url": sitemap_url,
+                "status": "error",
+                "message": str(exc),
+            })
+            final_status = "partial"
+    now = utc_now_iso()
+    await db.sync_state.update_one(
+        {"key": "google-search-console"},
+        {
+            "$set": {
+                "key": "google-search-console",
+                "status": final_status,
+                "last_run_at": now,
+                "last_success_at": now if final_status == "ok" else None,
+                "meta": {"submitted": submitted},
+            }
+        },
+        upsert=True,
+    )
+    return {
+        **status,
+        "status": final_status,
+        "submitted": submitted,
+        "submitted_at": now,
+    }
+
+
+async def maybe_submit_search_console_sitemaps(trigger: str) -> Dict[str, Any]:
+    state = await db.sync_state.find_one({"key": "google-search-console"}, {"_id": 0})
+    last_run = state.get("last_run_at") if state else None
+    if last_run:
+        try:
+            previous = datetime.fromisoformat(str(last_run).replace("Z", "+00:00"))
+            if (datetime.now(timezone.utc) - previous).total_seconds() < 12 * 60 * 60:
+                return {"status": "skipped", "message": "Soumission Search Console déjà exécutée récemment.", "trigger": trigger}
+        except Exception:
+            pass
+    result = await submit_search_console_sitemaps()
+    if result.get("status") != "ok":
+        now = utc_now_iso()
+        await db.sync_state.update_one(
+            {"key": "google-search-console"},
+            {
+                "$set": {
+                    "key": "google-search-console",
+                    "status": result.get("status"),
+                    "last_run_at": now,
+                    "meta": {"message": result.get("message"), "submitted": result.get("submitted", [])},
+                }
+            },
+            upsert=True,
+        )
+        result["submitted_at"] = now
+    result["trigger"] = trigger
+    return result
+
+
 async def sync_youtube_videos(limit: int = 24) -> Dict[str, Any]:
     def work() -> Dict[str, Any]:
         if not YOUTUBE_API_KEY:
@@ -335,25 +539,53 @@ async def sync_tiktok_public() -> Dict[str, Any]:
         ids = list(dict.fromkeys(re.findall(r'"id":"(\d{12,})"', text)))[:12]
         docs = []
         for idx, video_id in enumerate(ids):
+            title = titles[idx] if idx < len(titles) and titles[idx] else ""
+            normalized_title = html.unescape(title.encode("utf-8").decode("unicode_escape", "ignore")).strip() if title else ""
+            if not re.fullmatch(r"\d{12,}", video_id):
+                continue
+            if not normalized_title or re.search(r"followers|following|likes", normalized_title, flags=re.I):
+                continue
             docs.append({
                 "platform": "tiktok",
                 "external_id": video_id,
-                "title": titles[idx] if idx < len(titles) and titles[idx] else f"TikTok Anime Moments {video_id}",
-                "description": titles[idx] if idx < len(titles) else "Vidéo publique TikTok Anime.Moments.officiel détectée en best-effort.",
+                "title": normalized_title or f"TikTok Anime Moments {video_id}",
+                "description": normalized_title or "Vidéo publique TikTok Anime.Moments.officiel détectée en best-effort.",
                 "thumbnail_url": f"/products/am-{(idx % 12) + 1:03d}.svg",
                 "published_at": None,
                 "channel_title": "@anime.moments.officiel",
                 "video_url": f"https://www.tiktok.com/@anime.moments.officiel/video/{video_id}",
                 "sync_source": "tiktok-public-best-effort",
-                "raw": {"http_status": status},
+                "raw": {"http_status": status, "source_handle": "@anime.moments.officiel"},
             })
         return docs
     try:
         docs = await asyncio.to_thread(work)
         counts = await upsert_many("videos", docs, ["platform", "external_id"]) if docs else {"inserted": 0, "updated": 0}
+        valid_ids = [doc["external_id"] for doc in docs]
+        delete_query: Dict[str, Any] = {
+            "platform": "tiktok",
+            "$or": [
+                {"channel_title": {"$ne": "@anime.moments.officiel"}},
+                {"video_url": {"$not": {"$regex": r"https://www\.tiktok\.com/@anime\.moments\.officiel/video/"}}},
+                {"sync_source": {"$ne": "tiktok-public-best-effort"}},
+                {"title": {"$regex": r"followers|following|likes", "$options": "i"}},
+            ],
+        }
+        if valid_ids:
+            delete_query = {
+                "platform": "tiktok",
+                "$or": [
+                    {"external_id": {"$nin": valid_ids}},
+                    {"channel_title": {"$ne": "@anime.moments.officiel"}},
+                    {"video_url": {"$not": {"$regex": r"https://www\.tiktok\.com/@anime\.moments\.officiel/video/"}}},
+                    {"sync_source": {"$ne": "tiktok-public-best-effort"}},
+                    {"title": {"$regex": r"followers|following|likes", "$options": "i"}},
+                ],
+            }
+        stale_delete = await db.videos.delete_many(delete_query)
         status = "ok" if docs else "degraded"
-        state = await update_sync_state("tiktok", status, **counts, meta={"count": len(docs), "note": "Public best-effort; no official TikTok API credentials provided."})
-        return {"status": status, **counts, "count": len(docs), "state": state}
+        state = await update_sync_state("tiktok", status, inserted=counts.get("inserted", 0), updated=counts.get("updated", 0), meta={"count": len(docs), "deleted_non_matching": stale_delete.deleted_count, "note": "Public best-effort; no official TikTok API credentials provided."})
+        return {"status": status, **counts, "count": len(docs), "deleted_non_matching": stale_delete.deleted_count, "state": state}
     except Exception as exc:
         state = await update_sync_state("tiktok", "degraded", error=str(exc)[:500], meta={"note": "TikTok blocks many server crawlers without official API."})
         return {"status": "degraded", "error": str(exc), "state": state}
@@ -400,9 +632,10 @@ async def sync_all_external(trigger: str = "manual") -> Dict[str, Any]:
             "tiktok": await sync_tiktok_public(),
             "prime": await sync_prime_public(),
         }
-        overall = "ok" if all(v.get("status") in {"ok", "degraded"} for v in results.values()) else "partial"
-        await update_sync_state("all", overall, meta={"trigger": trigger, "results": {k: v.get("status") for k, v in results.items()}})
-        return {"status": overall, "trigger": trigger, "results": results}
+        search_console = await maybe_submit_search_console_sitemaps(trigger=trigger)
+        overall = "ok" if all(v.get("status") in {"ok", "degraded", "skipped", "partial", "api_access_not_configured"} for v in [*results.values(), search_console]) else "partial"
+        await update_sync_state("all", overall, meta={"trigger": trigger, "results": {k: v.get("status") for k, v in results.items()}, "search_console": search_console.get("status")})
+        return {"status": overall, "trigger": trigger, "results": results, "search_console": search_console}
 
 
 async def sync_scheduler_loop() -> None:
@@ -493,22 +726,33 @@ async def get_products(category: Optional[str] = None, q: Optional[str] = None, 
 
 
 @api_router.get("/videos")
-async def get_videos(platform: Optional[str] = None, limit: int = Query(24, ge=1, le=200)):
+async def get_videos(
+    platform: Optional[str] = None,
+    limit: int = Query(24, ge=1, le=200),
+    channel_title: Optional[str] = None,
+    strict: bool = False,
+):
     query: Dict[str, Any] = {}
     if platform and platform != "all":
         query["platform"] = platform
+    if channel_title:
+        query["channel_title"] = channel_title
     docs = await db.videos.find(query, {"_id": 0}).sort("published_at", -1).to_list(limit)
-    if not docs:
+    source = "mongodb"
+    if not docs and not strict:
         docs = load_videos_fallback()
         if platform and platform != "all":
             docs = [v for v in docs if v.get("platform") == platform]
+        if channel_title:
+            docs = [v for v in docs if v.get("channel_title") == channel_title]
+        source = "fallback"
     normalized = []
     for doc in docs[:limit]:
         doc = dict(doc)
         doc.setdefault("id", doc.get("external_id"))
         doc.setdefault("thumbnail", doc.get("thumbnail_url"))
         normalized.append(doc)
-    return {"videos": normalized, "total": len(normalized), "source": "mongodb" if docs and docs[0].get("sync_source") != "catalog-fallback" else "fallback"}
+    return {"videos": normalized, "total": len(normalized), "source": source}
 
 
 @api_router.get("/countdowns")
@@ -636,22 +880,12 @@ async def seo_export():
 
 @api_router.get("/seo/search-console/status")
 async def search_console_status():
-    return {
-        "status": "credentials_required",
-        "message": "Google Search Console submission requires OAuth/service-account credentials and verified site properties.",
-        "required_scope": "https://www.googleapis.com/auth/webmasters",
-        "properties": ["https://lovanet.fr/", "https://animemomentsofficiel.fr/"],
-        "sitemaps_ready": [
-            "https://lovanet.fr/sitemap.xml",
-            "https://lovanet.fr/sitemap-pages.xml",
-            "https://lovanet.fr/sitemap-images.xml",
-            "https://lovanet.fr/sitemap-videos.xml",
-            "https://lovanet.fr/sitemap-products.xml",
-            "https://lovanet.fr/sitemap-news.xml",
-            "https://lovanet.fr/sitemap-books.xml",
-            "https://animemomentsofficiel.fr/sitemap.xml",
-        ],
-    }
+    return await fetch_search_console_status()
+
+
+@api_router.post("/seo/search-console/submit")
+async def search_console_submit():
+    return await submit_search_console_sitemaps()
 
 
 @api_router.get("/submissions")

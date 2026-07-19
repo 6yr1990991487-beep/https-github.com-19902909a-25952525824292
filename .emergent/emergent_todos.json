@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "content": "Récupérer le fichier JSON Search Console et les fichiers backend/frontend liés",
+    "status": "completed"
+  },
+  {
+    "content": "Obtenir le playbook d’intégration Google Search Console API",
+    "status": "completed"
+  },
+  {
+    "content": "Ajouter la balise google-site-verification globalement sur toutes les pages",
+    "status": "completed"
+  },
+  {
+    "content": "Implémenter l’automatisation Search Console côté backend avec les credentials fournis",
+    "status": "completed"
+  },
+  {
+    "content": "Auditer et corriger sitemaps, RSS et JSON-LD sur les routes clés",
+    "status": "completed"
+  },
+  {
+    "content": "Corriger la page TikTok pour n’afficher que @anime.moments.officiel",
+    "status": "completed"
+  },
+  {
+    "content": "Valider les correctifs et les blocages externes via le testing agent",
+    "status": "in_progress"
+  }
+]

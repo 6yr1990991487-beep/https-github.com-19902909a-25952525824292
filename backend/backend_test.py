@@ -491,6 +491,120 @@ class LovanetAPITester:
                     print(f"   ✓ Sample item has genres: {', '.join(sample['genres'][:3])}")
         return success
 
+    def test_tiktok_strict_filtering(self):
+        """Test Phase 4: TikTok strict filtering for official account only"""
+        success, data = self.run_test(
+            "TikTok Strict Filtering",
+            "GET",
+            "/videos",
+            200,
+            params={
+                "platform": "tiktok",
+                "channel_title": "@anime.moments.officiel",
+                "strict": "true",
+                "limit": 80
+            }
+        )
+        if success:
+            videos = data.get("videos", [])
+            source = data.get("source", "unknown")
+            print(f"   ✓ TikTok videos: {len(videos)}, source: {source}")
+            
+            # Validate all videos are from official account
+            if videos:
+                all_official = True
+                for video in videos:
+                    channel = str(video.get("channel_title", "")).lower()
+                    video_url = str(video.get("video_url", "")).lower()
+                    external_id = str(video.get("external_id", ""))
+                    
+                    if channel != "@anime.moments.officiel":
+                        print(f"   ❌ Non-official channel found: {channel}")
+                        all_official = False
+                    
+                    if "/@anime.moments.officiel/video/" not in video_url:
+                        print(f"   ❌ Non-official video URL: {video_url}")
+                        all_official = False
+                    
+                    if not external_id.isdigit() or len(external_id) < 12:
+                        print(f"   ❌ Invalid external_id: {external_id}")
+                        all_official = False
+                
+                if all_official:
+                    print(f"   ✓ All {len(videos)} videos are from official @anime.moments.officiel account")
+                else:
+                    print(f"   ❌ Some videos are not from official account")
+                    return False
+            else:
+                print(f"   ℹ No TikTok videos found (expected if TikTok sync is degraded)")
+        
+        return success
+
+    def test_search_console_status(self):
+        """Test Phase 4: Search Console status endpoint"""
+        success, data = self.run_test(
+            "Search Console Status",
+            "GET",
+            "/seo/search-console/status",
+            200
+        )
+        if success:
+            status = data.get("status")
+            credentials_detected = data.get("credentials_detected")
+            verification_meta = data.get("verification_meta")
+            properties = data.get("properties", [])
+            service_account = data.get("service_account", {})
+            
+            print(f"   ✓ Status: {status}")
+            print(f"   ✓ Credentials detected: {credentials_detected}")
+            print(f"   ✓ Verification meta: {verification_meta}")
+            print(f"   ✓ Properties: {len(properties)}")
+            
+            if service_account:
+                print(f"   ✓ Service account project: {service_account.get('project_id', 'N/A')}")
+                print(f"   ✓ Service account email: {service_account.get('client_email', 'N/A')}")
+            
+            # Expected behavior: credentials should be detected
+            if not credentials_detected:
+                print(f"   ⚠ Credentials not detected (expected to be present)")
+            
+            # Expected behavior: API may be disabled (external config issue)
+            if status == "api_access_not_configured":
+                print(f"   ℹ API access not configured (expected external dependency issue)")
+                if service_account.get("activation_url"):
+                    print(f"   ℹ Activation URL provided: {service_account['activation_url'][:80]}...")
+            elif status == "ok":
+                print(f"   ✓ Search Console API is active")
+                property_access = data.get("property_access", [])
+                print(f"   ✓ Property access: {len(property_access)} properties")
+            
+        return success
+
+    def test_search_console_submit(self):
+        """Test Phase 4: Search Console sitemap submission endpoint"""
+        success, data = self.run_test(
+            "Search Console Submit",
+            "POST",
+            "/seo/search-console/submit",
+            200
+        )
+        if success:
+            status = data.get("status")
+            submitted = data.get("submitted", [])
+            
+            print(f"   ✓ Status: {status}")
+            print(f"   ✓ Submitted sitemaps: {len(submitted)}")
+            
+            # Expected behavior: may fail due to external API disabled
+            if status == "api_access_not_configured":
+                print(f"   ℹ API access not configured (expected external dependency issue)")
+            elif status in {"ok", "partial"}:
+                print(f"   ✓ Submission completed with status: {status}")
+                for item in submitted[:3]:
+                    print(f"   ✓ {item.get('sitemap_url')}: {item.get('status')}")
+            
+        return success
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
@@ -522,6 +636,12 @@ class LovanetAPITester:
         self.test_manual_sync_prime()
         self.test_videos_mongodb_source()
         self.test_catalog_mongodb_source()
+
+        # Run Phase 4 SEO & TikTok filtering tests
+        print("\n### PHASE 4 SEO & TIKTOK FILTERING TESTS ###")
+        self.test_tiktok_strict_filtering()
+        self.test_search_console_status()
+        self.test_search_console_submit()
 
         # Print summary
         print("\n" + "=" * 60)
