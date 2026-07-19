@@ -20,7 +20,7 @@
   - données structurées **JSON‑LD schema.org** (Organization, WebSite, WebPage, Product, VideoObject, BreadcrumbList, Article/NewsArticle)
   - inclure les champs demandés : **`aggregateRating`** et **`review`** (là où applicable)
 - **Logo utilisateur** : navbar + favicon + SEO (`Organization.logo` etc.).
-- Préparer l’occupation des verticales : **Google Web, Images, Vidéos, Produits, Actualités** (best-effort).
+- Préparer l’occupation des verticales : **Google Web, Images, Vidéos, Produits, Actualités, Catalogue** (best-effort).
 
 ### Objectif (Search Console)
 - Ajouter la balise de vérification Google :
@@ -29,9 +29,12 @@
   - soumission/validation des sitemaps via **Google Search Console API**
   - **2 modes d’authentification** :
     - **service account JSON** (déjà intégré) — utile si la propriété est partagée avec le compte de service + API activée
-    - **OAuth Web client** (NOUVEAU) — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
+    - **OAuth Web client** (en cours) — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
 
-> ⚠️ Sécurité : ne jamais exposer le *client secret* OAuth. Stockage sécurisé du refresh token côté backend (DB). 
+> ⚠️ Sécurité (prioritaire) :
+> - ne jamais exposer le *client secret* OAuth (ni l’écrire dans le code/plan/logs)
+> - exiger un **upload de fichier JSON OAuth** (client_id/client_secret) OU une injection sécurisée (env/secret manager)
+> - stockage sécurisé du **refresh token** côté backend (DB), idéalement chiffré
 
 ### Objectif (TikTok)
 - **Rétablir l’expérience “comme avant”** sur la page TikTok du site :
@@ -45,6 +48,13 @@
 - Domaines secondaires à traiter **PARTOUT** (SEO + JSON‑LD + sitemaps + meta) :
   - `https://animemomentsofficiel.fr`
   - `https://animeofficiel.fr`
+
+### Domaines (OAuth redirect URIs) — confirmé utilisateur
+- Callback Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
+- Callback Production : `https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback`
+- Callbacks additionnels (à autoriser dans Google Cloud) :
+  - `https://animeofficiel.fr/api/seo/search-console/oauth/callback`
+  - `https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback` (NOUVEAU)
 
 > Note canonique : éviter la duplication en conservant une stratégie de canonique primaire, et utiliser `alternate`/`hreflang`/redirections si nécessaire.
 
@@ -71,6 +81,7 @@
 - ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
 - ⚠️ Blocage externe service account : la soumission réelle Search Console reste en état `api_access_not_configured` tant que l’API Search Console n’est pas activée sur le projet `dynamic-cove-502914-u0`.
 - 🆕 L’utilisateur a fourni un **OAuth Web client** (client_id + secret). Nouvelle stratégie : ajouter un flux OAuth backend pour Search Console afin de pouvoir soumettre via le compte Google utilisateur.
+- 🆕 Nouveau choix utilisateur : ajouter une URI de redirection OAuth supplémentaire pour **`animemomentsanimeofficiel.fr`**.
 
 ---
 
@@ -141,42 +152,51 @@ Objectif : présence des signaux SEO + listings pour : pages, images, vidéos, a
 - ✅ Catalogue : sitemap dédié chunké via `sitemap-catalog.xml`.
 - ✅ Validé par `testing_agent` iteration_6 (100%).
 
-### Phase 6 — Search Console OAuth (NOUVEAU) ⏳ PLANNED
+### Phase 6 — Search Console OAuth (NOUVEAU) ⏳ IN PROGRESS
 Objectif : permettre une **soumission réelle** des sitemaps en utilisant le compte Google utilisateur, même si le service account est bloqué.
 
-#### Phase 6.1 — Backend OAuth endpoints (authorization code flow)
+#### Phase 6.0 — Sécurisation des credentials OAuth (bloquant) ⏳
+- ✅ Ne pas utiliser le secret collé en clair dans les messages.
+- ⏳ Demander/obtenir :
+  - soit un **upload** d’un JSON OAuth (type "web" / "installed")
+  - soit des variables d’environnement sécurisées (`GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`)
+- ⏳ Ajouter (si nécessaire) une vérification côté backend : si secret manquant → endpoints OAuth renvoient une erreur explicite.
+
+#### Phase 6.1 — Backend OAuth endpoints (authorization code flow) ⏳
 - Ajouter endpoints :
   - `GET /api/seo/search-console/oauth/start` (génère URL Google OAuth + state)
   - `GET /api/seo/search-console/oauth/callback` (échange code -> tokens)
-  - `POST /api/seo/search-console/oauth/submit` (soumet sitemaps avec token)
   - `GET /api/seo/search-console/oauth/status` (statut + propriétés accessibles)
-- Stocker le **refresh token** en DB (collection `secrets`/`sync_state` dédiée) + chiffrage/obfuscation si possible.
+  - `POST /api/seo/search-console/oauth/submit` (soumet sitemaps avec token)
+- Stocker le **refresh token** en DB (collection dédiée) + chiffrage/obfuscation si possible.
+- Gestion refresh token + invalidation + “reconnect required”.
 
-#### Phase 6.2 — Configuration Google Cloud (bloquant)
-- Confirmer et configurer les **Redirect URIs** autorisées (à fournir à l’utilisateur) :
-  - Preview : `https://<preview-domain>/api/seo/search-console/oauth/callback`
+#### Phase 6.2 — Configuration Google Cloud (bloquant) ⏳
+- Configurer les **Redirect URIs** autorisées :
+  - Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
   - Production : `https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback`
-  - (optionnel) `https://animeofficiel.fr/api/seo/search-console/oauth/callback` si le domaine sert le backend.
-- Vérifier que la portée OAuth inclut : `https://www.googleapis.com/auth/webmasters`.
+  - + `https://animeofficiel.fr/api/seo/search-console/oauth/callback`
+  - + `https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback` (NOUVEAU)
+- Vérifier scopes OAuth : `https://www.googleapis.com/auth/webmasters`
 
 #### Phase 6.3 — UI Admin (optionnel mais recommandé)
 - Bouton “Connecter Search Console (Google)” côté admin.
 - Afficher : propriétés détectées, sitemaps prêts, dernier run, erreurs.
 
-#### Phase 6.4 — Validation
+#### Phase 6.4 — Validation ✅ (à faire après implémentation)
 - Tester : login OAuth, récupération properties, soumission sitemaps.
 - Lancer `testing_agent` après implémentation.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **OAuth Search Console (recommandé maintenant)** :
-   - configurer Redirect URIs dans Google Cloud (preview + production)
-   - lancer le flow OAuth via endpoint `/api/seo/search-console/oauth/start`
-2) **Soumission technique** : soumettre tous les sitemaps (pages/images/vidéos/produits/news/books/catalogue + multi-domain).
-3) **Optionnel service account** : activer l’API Search Console sur `dynamic-cove-502914-u0` et partager les propriétés au service account.
-4) **Production** : l’utilisateur **redeploy** pour pousser toutes les corrections de preview sur `https://animemomentsofficiel.fr` (et configurer le domaine `animeofficiel.fr`).
-5) **Suivi** : vérifier côté Search Console (UI) l’apparition des sitemaps et l’état d’exploration (sans promesse d’indexation finale).
+1) **Sécurité credentials OAuth (bloquant)** : fournir credentials OAuth via upload JSON ou variables d’environnement (pas de secret en clair).
+2) **Google Cloud** : ajouter les redirect URIs (preview + production + animeofficiel.fr + animemomentsanimeofficiel.fr).
+3) Implémenter les endpoints OAuth Search Console (start/callback/status/submit) + stockage refresh token.
+4) **Soumission technique (OAuth)** : soumettre tous les sitemaps (pages/images/vidéos/produits/news/books/catalogue + multi-domain).
+5) (Optionnel) **Service account** : activer l’API Search Console sur `dynamic-cove-502914-u0` et partager les propriétés au service account.
+6) **Production** : l’utilisateur **redeploy** pour pousser toutes les corrections de preview en production.
+7) **Suivi** : vérifier côté Search Console (UI) l’apparition des sitemaps, erreurs d’exploration, couverture (sans promesse d’indexation finale).
 
 ---
 
@@ -189,7 +209,7 @@ Objectif : permettre une **soumission réelle** des sitemaps en utilisant le com
 - Favicon/touch icons générés.
 - `/shop` JSON‑LD enrichi (`aggregateRating` + `review`).
 - `/actualites` meta description non dupliquée.
-- Search Console meta + endpoints backend + message d’activation API.
+- Search Console meta + endpoints backend (service account) + message d’activation API.
 - Sitemaps/RSS/JSON‑LD validés, catalogue chunké + multi-domain.
 - TikTok : page `/tiktok` non vide + expérience visible restaurée (fallback widget officiel) + tests OK.
 - Multi-domain SEO : `animemomentsofficiel.fr` + `animeofficiel.fr` présents **PARTOUT** + tests OK.
@@ -204,5 +224,5 @@ Objectif : permettre une **soumission réelle** des sitemaps en utilisant le com
 - TikTok reste best-effort sans API officielle : l’énumération peut rester à 0 ; le fallback widget officiel garantit un affichage non vide.
 - Search Console :
   - service account dépend de l’activation API + permissions sur les propriétés.
-  - OAuth dépend de la configuration correcte des **redirect URIs** + consentement utilisateur.
+  - OAuth dépend de la configuration correcte des **redirect URIs** + consentement utilisateur + stockage sécurisé des tokens.
 - L’indexation finale (Google) n’est pas garantie, seulement la **soumission** et la **présence** des signaux SEO.
