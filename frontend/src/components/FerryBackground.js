@@ -4517,7 +4517,7 @@ function MarinaBuildingSeaLevel({ tod }) {
       ))}
 
       {/* Club nautique premium */}
-      <group position={[-20, 1.5, 18.8]} data-testid="marina-yacht-club">
+      <group position={[-20, 1.5, 18.8]}>
         <mesh position={[0, 2.4, 0]}><boxGeometry args={[10, 4.8, 6.4]} /><meshPhysicalMaterial color={night ? '#1d2c3b' : '#f7fbff'} transparent opacity={0.72} metalness={0.42} roughness={0.08} /></mesh>
         <mesh position={[0, 5.05, 0]}><boxGeometry args={[10.8, 0.24, 7]} /><meshStandardMaterial color={night ? '#273645' : '#ffffff'} roughness={0.16} metalness={0.22} /></mesh>
         <mesh position={[0, 3.2, 3.24]}><boxGeometry args={[6.8, 0.9, 0.12]} /><meshStandardMaterial color="#17324f" emissive="#7ce7ff" emissiveIntensity={night ? 1.8 : 0.14} /></mesh>
@@ -4525,7 +4525,7 @@ function MarinaBuildingSeaLevel({ tod }) {
       </group>
 
       {/* Restaurant flottant */}
-      <group position={[19, 0.86, 31]} data-testid="floating-restaurant-barge">
+      <group position={[19, 0.86, 31]}>
         <mesh><boxGeometry args={[11, 0.42, 7]} /><meshStandardMaterial color={night ? '#dce5ed' : '#f7fbff'} roughness={0.22} metalness={0.18} /></mesh>
         <mesh position={[0, 1.8, 0]}><boxGeometry args={[9.2, 3.2, 5.6]} /><meshPhysicalMaterial color={night ? '#233545' : '#fff7ef'} transparent opacity={0.7} metalness={0.36} roughness={0.08} /></mesh>
         <mesh position={[0, 3.6, 0]}><boxGeometry args={[9.8, 0.2, 6.2]} /><meshStandardMaterial color={night ? '#304050' : '#ffffff'} roughness={0.16} metalness={0.24} /></mesh>
@@ -4544,7 +4544,7 @@ function MarinaBuildingSeaLevel({ tod }) {
 
       {/* Signalétique maritime de luxe */}
       {[-14, 0, 14].map((x, i) => (
-        <group key={`maritime-sign-${i}`} position={[x, 1.5, 16.5]} data-testid={`maritime-sign-${i}`}>
+        <group key={`maritime-sign-${i}`} position={[x, 1.5, 16.5]}>
           <mesh position={[0, 1.8, 0]}><boxGeometry args={[0.14, 3.6, 0.14]} /><meshStandardMaterial color="#cfd7df" metalness={0.9} roughness={0.08} /></mesh>
           <mesh position={[0, 4.1, 0]}><boxGeometry args={[3.8, 0.82, 0.12]} /><meshStandardMaterial color="#17324f" emissive={i % 2 === 0 ? '#7ce7ff' : '#ffd870'} emissiveIntensity={night ? 1.8 : 0.12} /></mesh>
           <Text position={[0, 4.14, 0.14]} fontSize={0.28} color="#ffffff" anchorX="center" fontWeight="bold">{['DOCK A', 'YACHT CLUB', 'SEA DINING'][i]}</Text>
@@ -6869,7 +6869,7 @@ function FerryQualityPolish({ tod, qualityTier }) {
   const reflectionStrips = qualityTier === 'desktop' ? 4 : qualityTier === 'tablet' ? 2 : 1;
 
   return (
-    <group data-testid="ferry-quality-polish-layer">
+    <group>
       {harborLightNodes.map((node) => (
         <group key={`ferry-polish-light-${node.id}`} position={[node.x, node.y, node.z]}>
           <pointLight intensity={isDay ? 0.45 : 0.95} distance={qualityTier === 'desktop' ? 34 : 24} color={isDay ? '#8fd9ff' : '#78d6ff'} />
@@ -7101,12 +7101,12 @@ function FerryCameraController({ controlsRef, cameraRef, autoRotateRef, initialV
       invalidate();
     };
 
-    window.resetFerryCamera = () => smoothPreset(defaultView, true);
-    window.setFerrySeaView = () => smoothPreset(seaView, true);
-    window.setFerryBirdView = () => smoothPreset(birdView, true);
+    window.resetFerryCamera = () => smoothPreset(defaultView, false);
+    window.setFerrySeaView = () => smoothPreset(seaView, false);
+    window.setFerryBirdView = () => smoothPreset(birdView, false);
     window.setFerryTrainCityView = () => smoothPreset(trainCityView, false);
     window.setFerryStreetView = () => smoothPreset(streetView, false);
-    window.setFerryPanoramaView = () => smoothPreset(panoramaView, true);
+    window.setFerryPanoramaView = () => smoothPreset(panoramaView, false);
     window.stopFerryAutoCameraSequence = () => {
       stopIntroRotation?.();
       autoRotateRef.current = false;
@@ -7140,10 +7140,10 @@ function Scene({ isMobile, isTablet, isLowPower, shouldReduceParticles, shouldDi
   const [, forceUpdate] = useState(0);
   const controlsRef = useRef();
   const cameraRef = useRef();
-  const autoRotateRef = useRef(true);
+  const autoRotateRef = useRef(false);
   
   // Séquence caméra automatique au démarrage
-  const [introRotationActive, setIntroRotationActive] = useState(true);
+  const [introRotationActive, setIntroRotationActive] = useState(false);
   const introPhaseRef = useRef('orbitAroundFerry');
   const introProgressRef = useRef(0);
   const introPhaseStartRef = useRef(null);
@@ -7175,10 +7175,10 @@ function Scene({ isMobile, isTablet, isLowPower, shouldReduceParticles, shouldDi
   const cityCenter = useMemo(() => (isMobile ? [-18, 8.8, -162] : [-18, 9.6, -166]), [isMobile]);
 
   useEffect(() => {
-    introPhaseRef.current = 'multiScene';
+    introPhaseRef.current = 'complete';
     introProgressRef.current = 0;
     introPhaseStartRef.current = initialView;
-    setIntroRotationActive(true);
+    setIntroRotationActive(false);
     autoRotateRef.current = false;
   }, [initialView]);
 
@@ -7813,10 +7813,10 @@ const FerryBackground = memo(() => {
 
   return (
     <>
-      <div className="fixed inset-0 z-0" style={{ pointerEvents: 'none' }} data-testid="ferry-background">
+      <div className="fixed inset-0 z-0" style={{ pointerEvents: 'none' }}>
         <div
           style={{ pointerEvents: 'auto', width: '100%', height: '100%', touchAction: 'none' }}
-          data-testid="ferry-scene-hold-layer"
+
           onPointerDown={() => {
             setSceneHoldPaused(true);
             if (window.stopFerryAutoCameraSequence) window.stopFerryAutoCameraSequence();

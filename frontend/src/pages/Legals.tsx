@@ -39,27 +39,6 @@ const Legals = () => {
 
         <section className="space-y-10 text-sm md:text-base leading-relaxed text-foreground/90">
           <div>
-            <h2 className="text-xl font-semibold mb-2 text-primary">Éditeur du site</h2>
-            <p>
-              Le site <strong>Lovanet</strong> (https://lovanet.fr) est édité par
-              l'équipe <strong>AnimemomentsAnimeofficiel</strong>, créateur indépendant de
-              contenus audiovisuels anime. Pour toute question, utilisez la page{" "}
-              <Link to="/contact" className="text-primary underline underline-offset-2 hover:opacity-80">
-                contact
-              </Link>.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-2 text-primary">Hébergement</h2>
-            <p>
-              Le site est hébergé par <strong>Lovable</strong> — lovable.dev. Les
-              contenus multimédia tiers (YouTube, TikTok, Prime Video) sont diffusés
-              depuis leurs plateformes respectives.
-            </p>
-          </div>
-
-          <div>
             <h2 className="text-xl font-semibold mb-2 text-primary">Propriété intellectuelle</h2>
             <p>
               L'ensemble des éléments du site (textes, visuels, sons, logos, marque

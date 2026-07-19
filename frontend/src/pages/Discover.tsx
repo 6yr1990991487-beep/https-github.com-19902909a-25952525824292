@@ -291,7 +291,6 @@ const Discover = () => {
             <HubEmbedFrame
               src="/hub/ferry"
               title="Hub Ferry"
-              description="Import 3D identique du hub Ferry, positionné sous « Explorer le catalogue » sur Univers Lovanet."
               heightClassName="h-[620px] md:h-[760px]"
               testId="discover-ferry-hub"
             />

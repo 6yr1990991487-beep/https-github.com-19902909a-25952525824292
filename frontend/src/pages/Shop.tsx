@@ -229,7 +229,6 @@ const Shop = () => {
         <HubEmbedFrame
           src="/hub/train-station"
           title="Hub Train Station"
-          description="Import 3D identique du hub Train Station, implanté au-dessus de la bannière Shop comme demandé."
           heightClassName="h-[620px] md:h-[780px]"
           testId="shop-train-station-hub"
         />

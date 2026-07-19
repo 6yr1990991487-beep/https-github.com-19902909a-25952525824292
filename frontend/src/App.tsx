@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import ChaineYoutube from "./pages/ChaineYoutube";
 import ChaineYoutubeManga from "./pages/ChaineYoutubeManga";
@@ -75,40 +75,49 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
   { from: "/admin", to: "/admin/sync" },
 ];
 
+const AppShell = () => {
+  const location = useLocation();
+  const isHubPreviewRoute = location.pathname.startsWith("/hub/") || LOCALE_PREFIXES.some((lang) => location.pathname.startsWith(`/${lang}/hub/`));
+
+  return (
+    <CartProvider>
+      {!isHubPreviewRoute && <LocalizedHead />}
+      <Toaster />
+      <Sonner />
+      <Routes>
+        {APP_ROUTES.map((r) => (
+          <Route key={r.path} path={r.path} element={r.element} />
+        ))}
+        {LOCALE_PREFIXES.flatMap((lang) =>
+          APP_ROUTES.map((r) => (
+            <Route
+              key={`${lang}-${r.path}`}
+              path={r.path === "/" ? `/${lang}` : `/${lang}${r.path}`}
+              element={r.element}
+            />
+          )),
+        )}
+        {REDIRECTS.map((r) => (
+          <Route key={`redir-${r.from}`} path={r.from} element={<Navigate to={r.to} replace />} />
+        ))}
+        <Route path="/admin/sync" element={<SyncDashboard />} />
+        <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {!isHubPreviewRoute && <ThemeBubble />}
+      {!isHubPreviewRoute && <CartDrawer />}
+      {!isHubPreviewRoute && <GoogleTranslate />}
+      {!isHubPreviewRoute && <HologramOverlay />}
+    </CartProvider>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <CartProvider>
-        <LocalizedHead />
-        <Toaster />
-        <Sonner />
-        <Routes>
-          {APP_ROUTES.map((r) => (
-            <Route key={r.path} path={r.path} element={r.element} />
-          ))}
-          {LOCALE_PREFIXES.flatMap((lang) =>
-            APP_ROUTES.map((r) => (
-              <Route
-                key={`${lang}-${r.path}`}
-                path={r.path === "/" ? `/${lang}` : `/${lang}${r.path}`}
-                element={r.element}
-              />
-            )),
-          )}
-          {REDIRECTS.map((r) => (
-            <Route key={`redir-${r.from}`} path={r.from} element={<Navigate to={r.to} replace />} />
-          ))}
-          <Route path="/admin/sync" element={<SyncDashboard />} />
-          <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <ThemeBubble />
-        <CartDrawer />
-        <GoogleTranslate />
-        <HologramOverlay />
-        </CartProvider>
+        <AppShell />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

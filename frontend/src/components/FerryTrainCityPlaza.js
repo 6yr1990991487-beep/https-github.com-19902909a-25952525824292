@@ -89,7 +89,7 @@ export function FerryTrainCityPlaza({
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {/* Enveloppe territoriale moins ronde et énormément plus reculée */}
-      <group data-testid="ferry-train-territory-dome">
+      <group>
         <mesh position={[0, 138, -1647]}>
           <boxGeometry args={[2960, 34, 2680]} />
           <meshPhysicalMaterial
@@ -517,7 +517,7 @@ function AnimatedPedestrian({
   });
 
   return (
-    <group ref={rootRef} position={position} rotation={[0, heading, 0]} scale={[scale, scale, scale]} data-testid={dataTestId}>
+    <group ref={rootRef} position={position} rotation={[0, heading, 0]} scale={[scale, scale, scale]}>
       <group ref={torsoRef} position={[0, 1.08, 0]} scale={[bodyScale.x, bodyScale.y, bodyScale.z]}>
         <mesh position={[0, 0.08, 0]}><capsuleGeometry args={[0.22, 0.72, 7, 12]} /><meshStandardMaterial color={wardrobe.top} roughness={0.6} /></mesh>
         <mesh position={[0, -0.36, 0]}><capsuleGeometry args={[0.2, 0.18, 6, 10]} /><meshStandardMaterial color={wardrobe.bottom} roughness={0.62} /></mesh>
@@ -668,14 +668,14 @@ function PerimeterLoopTraffic({ night, centerZ, halfW, halfH }) {
   });
 
   return (
-    <group data-testid="grand-perimeter-road-traffic">
+    <group>
       {[
         { x: 0, z: -halfH + centerZ, rot: 0 },
         { x: 0, z: halfH + centerZ, rot: Math.PI },
         { x: halfW, z: centerZ, rot: Math.PI / 2 },
         { x: -halfW, z: centerZ, rot: -Math.PI / 2 },
       ].map((signal, index) => (
-        <group key={`perimeter-signal-${index}`} position={[signal.x, 0, signal.z]} rotation={[0, signal.rot, 0]} data-testid={`perimeter-signal-${index}`}>
+        <group key={`perimeter-signal-${index}`} position={[signal.x, 0, signal.z]} rotation={[0, signal.rot, 0]}>
           <mesh position={[0, 2.8, 0]}><boxGeometry args={[0.24, 5.6, 0.24]} /><meshStandardMaterial color="#bac4ce" metalness={0.9} roughness={0.08} /></mesh>
           <mesh position={[0, 5.1, 0.5]}><boxGeometry args={[0.9, 1.8, 0.32]} /><meshStandardMaterial color="#141b23" roughness={0.5} /></mesh>
           <mesh ref={(el) => { signalRedRefs.current[index] = el; }} position={[0, 5.55, 0.68]}><sphereGeometry args={[0.16, 10, 10]} /><meshStandardMaterial color="#ff4040" emissive="#ff4040" emissiveIntensity={night ? 2.2 : 0.22} /></mesh>
@@ -689,7 +689,7 @@ function PerimeterLoopTraffic({ night, centerZ, halfW, halfH }) {
         <group
           key={`perimeter-car-${vehicle.id}`}
           ref={(el) => { vehicleRefs.current[index] = el; }}
-          data-testid={`perimeter-car-${vehicle.id}`}
+
         >
           {vehicle.kind === 'motorbike' ? (
             <>
@@ -916,7 +916,7 @@ function CityCircuitRailway({ night, centerZ }) {
   });
 
   return (
-    <group position={[0, 0, 0]} data-testid="grand-city-transit-loop">
+    <group position={[0, 0, 0]}>
       {/* ═══ AUTOROUTE URBAINE — grand tour complet du Nouveau Monde ═══ */}
       <mesh position={[0, 0.18, -roadHalfH + centerZ]}><boxGeometry args={[roadHalfW * 2 + 20, 0.24, 12]} /><meshStandardMaterial color={roadColor} roughness={0.92} /></mesh>
       <mesh position={[0, 0.18, roadHalfH + centerZ]}><boxGeometry args={[roadHalfW * 2 + 20, 0.24, 12]} /><meshStandardMaterial color={roadColor} roughness={0.92} /></mesh>
@@ -1181,7 +1181,7 @@ function CityCircuitRailway({ night, centerZ }) {
         [-88, centerZ + 82, 24, 10, 'BASSIN SOUTH'],
         [88, centerZ + 86, 24, 10, 'CANAL SOUTH'],
       ].map(([x, z, w, d, name], index) => (
-        <group key={`basin-${index}`} position={[x, 0, z]} data-testid={`outer-basin-${index}`}>
+        <group key={`basin-${index}`} position={[x, 0, z]}>
           <mesh position={[0, 0.08, 0]}><boxGeometry args={[w + 3, 0.22, d + 3]} /><meshStandardMaterial color={night ? '#4f565d' : '#c8d0d8'} roughness={0.65} /></mesh>
           <mesh position={[0, 0.18, 0]}><boxGeometry args={[w, 0.1, d]} /><meshPhysicalMaterial color={basinWater} transparent opacity={0.78} roughness={0.02} metalness={0.28} /></mesh>
           <mesh ref={(el) => { basinReflectionRefs.current[index] = el; }} position={[0, 0.24, 0]}><boxGeometry args={[w * 0.92, 0.03, d * 0.9]} /><meshStandardMaterial color="#d8f6ff" emissive="#8fe7ff" emissiveIntensity={night ? 1.8 : 0.18} transparent opacity={night ? 0.28 : 0.2} /></mesh>
@@ -1192,7 +1192,7 @@ function CityCircuitRailway({ night, centerZ }) {
 
       {/* Échangeurs routiers monumentaux Est/Ouest */}
       {[[-1, -roadHalfW - 18], [1, roadHalfW + 18]].map(([dir, x], index) => (
-        <group key={`interchange-${index}`} position={[x, 0, centerZ]} data-testid={`city-interchange-${index}`}>
+        <group key={`interchange-${index}`} position={[x, 0, centerZ]}>
           <mesh position={[0, 4.8, 0]}><boxGeometry args={[5.4, 0.34, 56]} /><meshStandardMaterial color={roadColor} roughness={0.84} /></mesh>
           <mesh position={[0, 5.02, 0]}><boxGeometry args={[1.2, 0.05, 52]} /><meshStandardMaterial color={medianColor} emissive={medianColor} emissiveIntensity={night ? 0.55 : 0} /></mesh>
           {[-18, 18].map((z, rampIndex) => (
@@ -1214,7 +1214,7 @@ function CityCircuitRailway({ night, centerZ }) {
         { key: 'east-sign', text: 'EAST INTERCHANGE', x: roadHalfW, z: centerZ, rot: Math.PI / 2 },
         { key: 'west-sign', text: 'WEST GATE', x: -roadHalfW, z: centerZ, rot: -Math.PI / 2 },
       ].map((sign, index) => (
-        <group key={sign.key} position={[sign.x, 0, sign.z]} rotation={[0, sign.rot, 0]} data-testid={sign.key}>
+        <group key={sign.key} position={[sign.x, 0, sign.z]} rotation={[0, sign.rot, 0]}>
           <mesh position={[-6, 4.4, 0]}><boxGeometry args={[0.5, 8, 0.5]} /><meshStandardMaterial color="#818891" metalness={0.6} /></mesh>
           <mesh position={[6, 4.4, 0]}><boxGeometry args={[0.5, 8, 0.5]} /><meshStandardMaterial color="#818891" metalness={0.6} /></mesh>
           <mesh position={[0, 7.6, 0]}><boxGeometry args={[16, 1.8, 0.25]} /><meshStandardMaterial color={signFrame} metalness={0.28} roughness={0.2} /></mesh>
@@ -1314,12 +1314,12 @@ function CityCircuitRailway({ night, centerZ }) {
         const x = -railHalfW + 16 + i * 34;
         return (
           <React.Fragment key={`catenary-horizontal-${i}`}>
-            <group position={[x, 0, -railHalfH + centerZ]} data-testid={`catenary-north-${i}`}>
+            <group position={[x, 0, -railHalfH + centerZ]}>
               <mesh position={[-3.4, 5.4, 0]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[3.4, 5.4, 0]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 10.6, 0]}><boxGeometry args={[7.2, 0.12, 0.16]} /><meshStandardMaterial color="#d8e0e8" metalness={0.95} roughness={0.08} /></mesh>
             </group>
-            <group position={[x, 0, railHalfH + centerZ]} data-testid={`catenary-south-${i}`}>
+            <group position={[x, 0, railHalfH + centerZ]}>
               <mesh position={[-3.4, 5.4, 0]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[3.4, 5.4, 0]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 10.6, 0]}><boxGeometry args={[7.2, 0.12, 0.16]} /><meshStandardMaterial color="#d8e0e8" metalness={0.95} roughness={0.08} /></mesh>
@@ -1331,12 +1331,12 @@ function CityCircuitRailway({ night, centerZ }) {
         const z = -railHalfH + 20 + i * 32;
         return (
           <React.Fragment key={`catenary-vertical-${i}`}>
-            <group position={[railHalfW, 0, z + centerZ]} data-testid={`catenary-east-${i}`}>
+            <group position={[railHalfW, 0, z + centerZ]}>
               <mesh position={[0, 5.4, -3.4]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 5.4, 3.4]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 10.6, 0]} rotation={[0, Math.PI / 2, 0]}><boxGeometry args={[7.2, 0.12, 0.16]} /><meshStandardMaterial color="#d8e0e8" metalness={0.95} roughness={0.08} /></mesh>
             </group>
-            <group position={[-railHalfW, 0, z + centerZ]} data-testid={`catenary-west-${i}`}>
+            <group position={[-railHalfW, 0, z + centerZ]}>
               <mesh position={[0, 5.4, -3.4]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 5.4, 3.4]}><boxGeometry args={[0.22, 10.8, 0.22]} /><meshStandardMaterial color="#bbc4cd" metalness={0.9} roughness={0.1} /></mesh>
               <mesh position={[0, 10.6, 0]} rotation={[0, Math.PI / 2, 0]}><boxGeometry args={[7.2, 0.12, 0.16]} /><meshStandardMaterial color="#d8e0e8" metalness={0.95} roughness={0.08} /></mesh>
@@ -1364,7 +1364,7 @@ function CityCircuitRailway({ night, centerZ }) {
         [railHalfW - 5, centerZ - 34, Math.PI / 2], [railHalfW - 5, centerZ + 34, Math.PI / 2],
         [-railHalfW + 5, centerZ - 34, -Math.PI / 2], [-railHalfW + 5, centerZ + 34, -Math.PI / 2],
       ].map(([x, z, rot], i) => (
-        <group key={`rail-signal-${i}`} position={[x, 0, z]} rotation={[0, rot, 0]} data-testid={`rail-signal-${i}`}>
+        <group key={`rail-signal-${i}`} position={[x, 0, z]} rotation={[0, rot, 0]}>
           <mesh position={[0, 2.6, 0]}><boxGeometry args={[0.24, 5.2, 0.24]} /><meshStandardMaterial color="#b7c1ca" metalness={0.92} roughness={0.08} /></mesh>
           <mesh position={[0, 5.1, 0.42]}><boxGeometry args={[0.9, 1.6, 0.28]} /><meshStandardMaterial color="#131922" roughness={0.5} /></mesh>
           <mesh position={[0, 5.45, 0.58]}><sphereGeometry args={[0.16, 10, 10]} /><meshStandardMaterial color="#ff4040" emissive="#ff4040" emissiveIntensity={night ? 2.2 : 0.18} /></mesh>
@@ -1378,7 +1378,7 @@ function CityCircuitRailway({ night, centerZ }) {
         [-26, centerZ - railHalfH, 0.22], [26, centerZ - railHalfH, -0.22],
         [-26, centerZ + railHalfH, -0.22], [26, centerZ + railHalfH, 0.22],
       ].map(([x, z, rot], i) => (
-        <group key={`visual-switch-${i}`} position={[x, railY + 0.09, z]} data-testid={`visual-switch-${i}`}>
+        <group key={`visual-switch-${i}`} position={[x, railY + 0.09, z]}>
           <mesh position={[0, -0.02, 0.32]}><boxGeometry args={[8.4, 0.05, 2.3]} /><meshStandardMaterial color={ballastColor} roughness={0.92} /></mesh>
           {[-3.2, -1.6, 0, 1.6, 3.2].map((tieOffset, tieIndex) => (
             <mesh key={`switch-tie-${tieIndex}`} position={[tieOffset, -0.01, 0.32]}>
@@ -1404,7 +1404,7 @@ function CityCircuitRailway({ night, centerZ }) {
           key={station.key}
           position={[station.x, 0, station.z + centerZ]}
           rotation={[0, station.rot, 0]}
-          data-testid={`outer-station-${station.key}`}
+
         >
           <mesh position={[0, railY + 0.16, 4.5]}><boxGeometry args={[28, 0.32, station.platformDepth]} /><meshStandardMaterial color={platformColor} roughness={0.42} metalness={0.16} /></mesh>
           <mesh position={[0, railY + 0.14, -4.2]}><boxGeometry args={[28, 0.24, 4.8]} /><meshStandardMaterial color={platformColor} roughness={0.42} metalness={0.16} /></mesh>
@@ -1456,7 +1456,7 @@ function CityCircuitRailway({ night, centerZ }) {
         </group>
       ))}
 
-      <group position={[0, 0, centerZ]} data-testid="central-city-station">
+      <group position={[0, 0, centerZ]}>
         <mesh position={[0, railY + 0.12, 0]}><boxGeometry args={[44, 0.32, 24]} /><meshStandardMaterial color={platformColor} roughness={0.38} metalness={0.18} /></mesh>
         <mesh position={[0, railY + 0.12, -10.8]}><boxGeometry args={[44, 0.24, 4.8]} /><meshStandardMaterial color={platformColor} roughness={0.38} metalness={0.18} /></mesh>
         <mesh position={[0, railY + 0.12, 10.8]}><boxGeometry args={[44, 0.24, 4.8]} /><meshStandardMaterial color={platformColor} roughness={0.38} metalness={0.18} /></mesh>
@@ -1498,7 +1498,7 @@ function CityCircuitRailway({ night, centerZ }) {
         { x: -110, z: centerZ - 17.6, rot: -Math.PI + 0.42 },
         { x: -110, z: centerZ + 17.6, rot: Math.PI - 0.42 },
       ].map((connector, index) => (
-        <group key={`rapid-connector-${index}`} position={[connector.x, railY, connector.z]} rotation={[0, connector.rot, 0]} data-testid={`rapid-connector-${index}`}>
+        <group key={`rapid-connector-${index}`} position={[connector.x, railY, connector.z]} rotation={[0, connector.rot, 0]}>
           <mesh><boxGeometry args={[58, 0.14, 3.8]} /><meshStandardMaterial color={ballastColor} roughness={0.9} /></mesh>
           {[-0.82, 0.82].map((offset, railIndex) => (
             <mesh key={`rapid-connector-rail-${railIndex}`} position={[0, 0.08, offset]}><boxGeometry args={[58, 0.07, 0.12]} /><meshStandardMaterial color={railColor} metalness={0.9} roughness={0.14} /></mesh>
@@ -1518,7 +1518,7 @@ function CityCircuitRailway({ night, centerZ }) {
         { x: -110, z: centerZ - 17.6, rot: -Math.PI + 0.42, label: 'CENTRALE' },
         { x: -110, z: centerZ + 17.6, rot: Math.PI - 0.42, label: 'CENTRALE' },
       ].map((connector, index) => (
-        <group key={`connector-sign-${index}`} position={[connector.x, 0, connector.z]} rotation={[0, connector.rot, 0]} data-testid={`connector-sign-${index}`}>
+        <group key={`connector-sign-${index}`} position={[connector.x, 0, connector.z]} rotation={[0, connector.rot, 0]}>
           <mesh position={[0, 3.1, 0]}><boxGeometry args={[0.14, 6.2, 0.14]} /><meshStandardMaterial color="#cfd7df" metalness={0.9} roughness={0.08} /></mesh>
           <mesh position={[2.2, 5.1, 0]}><boxGeometry args={[4.4, 0.82, 0.12]} /><meshStandardMaterial color="#17324f" emissive="#1a8aff" emissiveIntensity={night ? 1.6 : 0.12} /></mesh>
           <Text position={[2.2, 5.14, 0.16]} fontSize={0.28} color="#ffffff" anchorX="center" fontWeight="bold">{connector.label}</Text>
@@ -1527,7 +1527,7 @@ function CityCircuitRailway({ night, centerZ }) {
 
       {/* Trains grande boucle */}
       {[trainRef1, trainRef2, trainRef3, trainRef4].map((ref, index) => (
-        <group key={`outer-loop-train-${index}`} ref={ref} data-testid={`outer-loop-train-${index}`}>
+        <group key={`outer-loop-train-${index}`} ref={ref}>
           <mesh position={[0, 0.34, 0]}><boxGeometry args={[4.4, 0.72, 1.12]} /><meshStandardMaterial color={['#16366b', '#7a1f1f', '#145f53', '#67458e'][index]} metalness={0.58} roughness={0.28} /></mesh>
           <mesh position={[0, 0.72, 0]}><boxGeometry args={[4.2, 0.08, 1.02]} /><meshStandardMaterial color="#d8dde8" metalness={0.8} roughness={0.16} /></mesh>
           <mesh position={[2.1, 0.52, 0]}><boxGeometry args={[0.18, 0.38, 0.84]} /><meshStandardMaterial color="#7ec8e3" transparent opacity={0.82} emissive="#7ec8e3" emissiveIntensity={night ? 0.9 : 0.22} /></mesh>
@@ -1549,7 +1549,7 @@ function CityCircuitRailway({ night, centerZ }) {
 
       {/* Trains navettes synchronisés à la gare centrale */}
       {[{ ref: hubTrainWestRef, color: '#0f5c91', accent: centerZ - 3.2, id: 'west' }, { ref: hubTrainEastRef, color: '#7c3f12', accent: centerZ + 3.2, id: 'east' }].map((train) => (
-        <group key={`hub-train-${train.id}`} ref={train.ref} data-testid={`hub-train-${train.id}`}>
+        <group key={`hub-train-${train.id}`} ref={train.ref}>
           <mesh position={[0, 0.32, 0]}><boxGeometry args={[3.8, 0.66, 0.94]} /><meshStandardMaterial color={train.color} metalness={0.52} roughness={0.28} /></mesh>
           <mesh position={[0, 0.68, 0]}><boxGeometry args={[3.65, 0.08, 0.86]} /><meshStandardMaterial color="#e2e8f0" metalness={0.78} roughness={0.16} /></mesh>
           <mesh position={[1.82, 0.5, 0]}><boxGeometry args={[0.16, 0.34, 0.74]} /><meshStandardMaterial color="#8bd7ff" transparent opacity={0.82} emissive="#8bd7ff" emissiveIntensity={night ? 0.9 : 0.2} /></mesh>
@@ -2165,7 +2165,7 @@ function MegaCityExpansion({ night, centerZ }) {
       </group>
 
       {/* ═══ QUARTIERS AJOUTÉS — résidentiel et logistique ═══ */}
-      <group position={[132, 0, -34 + centerZ]} data-testid="east-residential-district">
+      <group position={[132, 0, -34 + centerZ]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0]}><planeGeometry args={[44, 30]} /><meshStandardMaterial color={night ? '#314336' : '#88ad79'} roughness={0.95} /></mesh>
         {[-14, 0, 14].map((x, row) => (
           [-8, 8].map((z, houseIndex) => (
@@ -2185,7 +2185,7 @@ function MegaCityExpansion({ night, centerZ }) {
         ))}
       </group>
 
-      <group position={[-132, 0, -34 + centerZ]} data-testid="west-residential-district">
+      <group position={[-132, 0, -34 + centerZ]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0]}><planeGeometry args={[44, 30]} /><meshStandardMaterial color={night ? '#304235' : '#86aa77'} roughness={0.95} /></mesh>
         {[-14, 0, 14].map((x, row) => (
           [-8, 8].map((z, houseIndex) => (
@@ -2205,7 +2205,7 @@ function MegaCityExpansion({ night, centerZ }) {
         ))}
       </group>
 
-      <group position={[0, 0, -94 + centerZ]} data-testid="north-logistics-yard">
+      <group position={[0, 0, -94 + centerZ]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.09, 0]}><planeGeometry args={[74, 24]} /><meshStandardMaterial color={night ? '#4a4d50' : '#aeb4ba'} roughness={0.9} /></mesh>
         {[-20, 0, 20].map((x, i) => (
           <group key={`warehouse-${i}`} position={[x, 0, 0]}>
@@ -2232,7 +2232,7 @@ function MegaCityExpansion({ night, centerZ }) {
         { x: 0, z: 60 + centerZ, label: 'AURORA PALACE', color: '#ffd870' },
         { x: 0, z: 42 + centerZ, label: 'GRAND BOULEVARD', color: '#ff7fd6' },
       ].map((poi, index) => (
-        <group key={`poi-${index}`} position={[poi.x, 0, poi.z]} data-testid={`city-poi-${index}`}>
+        <group key={`poi-${index}`} position={[poi.x, 0, poi.z]}>
           <mesh position={[0, 3, 0]}><boxGeometry args={[0.3, 6, 0.3]} /><meshStandardMaterial color="#d5dde5" metalness={0.92} roughness={0.08} /></mesh>
           <mesh ref={(el) => { poiRefs.current[index] = el; }} position={[0, 6.7, 0]}><boxGeometry args={[7.4, 1.1, 0.12]} /><meshStandardMaterial color="#15304b" emissive={poi.color} emissiveIntensity={night ? 1.8 : 0.14} /></mesh>
           <Text position={[0, 6.72, 0.18]} fontSize={0.42} color="#ffffff" anchorX="center" fontWeight="bold">{poi.label}</Text>
@@ -2240,7 +2240,7 @@ function MegaCityExpansion({ night, centerZ }) {
       ))}
 
       {/* District événementiel continu autour du hall sud */}
-      <group position={[96, 0, 22 + centerZ]} data-testid="south-live-district-plaza">
+      <group position={[96, 0, 22 + centerZ]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}><planeGeometry args={[64, 24]} /><meshStandardMaterial color={night ? '#4a4f56' : '#d7d3ca'} roughness={0.92} /></mesh>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]}><ringGeometry args={[4.2, 7.6, 32]} /><meshStandardMaterial color={night ? '#243444' : '#b9c6d2'} roughness={0.4} /></mesh>
         <mesh position={[0, 0.28, 0]}><cylinderGeometry args={[4.2, 4.6, 0.44, 24]} /><meshStandardMaterial color={night ? '#dbe4eb' : '#f4f7fa'} roughness={0.28} /></mesh>
@@ -2250,7 +2250,7 @@ function MegaCityExpansion({ night, centerZ }) {
       </group>
 
       {[[-22, 'CAPTURE HOTEL'], [22, 'SKY SUITES']].map(([x, label], index) => (
-        <group key={`live-hotel-${index}`} position={[96 + x, 0, 26 + centerZ]} data-testid={`live-hotel-${index}`}>
+        <group key={`live-hotel-${index}`} position={[96 + x, 0, 26 + centerZ]}>
           <mesh position={[0, 11, 0]}><boxGeometry args={[12, 22, 12]} /><meshPhysicalMaterial color={night ? '#16283a' : '#dfe9f0'} transparent opacity={0.72} metalness={0.6} roughness={0.08} /></mesh>
           <mesh position={[0, 22.4, 0]}><boxGeometry args={[13, 0.32, 13]} /><meshStandardMaterial color={night ? '#223244' : '#f3f6f9'} roughness={0.18} metalness={0.28} /></mesh>
           <mesh position={[0, 20.2, 6.08]}><boxGeometry args={[8.8, 1, 0.12]} /><meshStandardMaterial color="#17324f" emissive={index === 0 ? '#41d8ff' : '#ffd870'} emissiveIntensity={night ? 2.1 : 0.16} /></mesh>
@@ -2270,7 +2270,7 @@ function MegaCityExpansion({ night, centerZ }) {
       ))}
 
       {[[-24, 'NEON LOUNGE'], [24, 'DINING DECK']].map(([x, label], index) => (
-        <group key={`district-restaurant-${index}`} position={[96 + x, 0, 8 + centerZ]} data-testid={`district-restaurant-${index}`}>
+        <group key={`district-restaurant-${index}`} position={[96 + x, 0, 8 + centerZ]}>
           <mesh position={[0, 1.6, 0]}><boxGeometry args={[18, 3.2, 10]} /><meshPhysicalMaterial color={night ? '#1d2c3b' : '#f5f2eb'} transparent opacity={0.72} metalness={0.34} roughness={0.08} /></mesh>
           <mesh position={[0, 3.4, 0]}><boxGeometry args={[18.6, 0.24, 10.6]} /><meshStandardMaterial color={night ? '#2b3746' : '#ffffff'} roughness={0.18} metalness={0.24} /></mesh>
           <mesh position={[0, 2.9, 5.08]}><boxGeometry args={[9.5, 0.9, 0.12]} /><meshStandardMaterial color="#17324f" emissive={index === 0 ? '#ff56d6' : '#7ce7ff'} emissiveIntensity={night ? 1.9 : 0.14} /></mesh>
@@ -2292,18 +2292,18 @@ function MegaCityExpansion({ night, centerZ }) {
       ))}
 
       {/* ═══ PACK VILLE PREMIUM — Grand Palace Boulevard ═══ */}
-      <group position={[0, 0, 54 + centerZ]} data-testid="grand-palace-district">
+      <group position={[0, 0, 54 + centerZ]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}><planeGeometry args={[74, 30]} /><meshStandardMaterial color={night ? '#4a4741' : '#ddd4c7'} roughness={0.94} /></mesh>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 10.5]}><planeGeometry args={[46, 8]} /><meshStandardMaterial color={night ? '#333840' : '#c4ccd4'} roughness={0.8} /></mesh>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.14, 10.5]}><planeGeometry args={[44, 0.24]} /><meshStandardMaterial color="#d4a020" emissive="#d4a020" emissiveIntensity={night ? 0.9 : 0.04} /></mesh>
         {[-16, -6, 6, 16].map((x, index) => (
-          <group key={`chauffeur-bollard-${index}`} position={[x, 0, 13.8]} data-testid={`grand-palace-bollard-${index}`}>
+          <group key={`chauffeur-bollard-${index}`} position={[x, 0, 13.8]}>
             <mesh position={[0, 0.65, 0]}><cylinderGeometry args={[0.18, 0.22, 1.3, 10]} /><meshStandardMaterial color="#d9e1e8" metalness={0.92} roughness={0.08} /></mesh>
             <mesh ref={(el) => { chauffeurLightRefs.current[index] = el; }} position={[0, 1.35, 0]}><sphereGeometry args={[0.18, 10, 10]} /><meshStandardMaterial color={index % 2 === 0 ? '#ffd870' : '#7ce7ff'} emissive={index % 2 === 0 ? '#ffd870' : '#7ce7ff'} emissiveIntensity={night ? 1.6 : 0.1} /></mesh>
           </group>
         ))}
 
-        <group data-testid="grand-palace-hotel">
+        <group>
           <mesh position={[0, 3.4, 0]}><boxGeometry args={[28, 6.8, 22]} /><meshPhysicalMaterial color={night ? '#163048' : '#eef4f8'} transparent opacity={0.76} metalness={0.56} roughness={0.08} /></mesh>
           <mesh position={[0, 17.5, 0]}><boxGeometry args={[18, 28, 14]} /><meshPhysicalMaterial color={night ? '#17314b' : '#dfeaf1'} transparent opacity={0.72} metalness={0.62} roughness={0.08} /></mesh>
           <mesh position={[0, 31.7, 0]}><boxGeometry args={[19.5, 0.34, 15.5]} /><meshStandardMaterial color={night ? '#f0f5fa' : '#ffffff'} roughness={0.16} metalness={0.22} /></mesh>
@@ -2332,7 +2332,7 @@ function MegaCityExpansion({ night, centerZ }) {
               <meshStandardMaterial color={index === 0 ? '#7ce7ff' : '#ffd870'} emissive={index === 0 ? '#7ce7ff' : '#ffd870'} emissiveIntensity={night ? 2.2 : 0.12} transparent opacity={night ? 0.1 : 0.02} side={2} />
             </mesh>
           ))}
-          <group position={[0, 31.95, -2.2]} data-testid="grand-palace-rooftop-pool">
+          <group position={[0, 31.95, -2.2]}>
             <mesh rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[7.2, 3.2]} /><meshPhysicalMaterial color={waterColor} transparent opacity={0.78} roughness={0.02} metalness={0.3} /></mesh>
             {[-2.4, 0, 2.4].map((x, index) => (
               <group key={`pool-light-${index}`} position={[x, 0, 3.35]}>
@@ -2344,7 +2344,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {[-24, 24].map((x, index) => (
-          <group key={`couture-house-${index}`} position={[x, 0, -1]} data-testid={`couture-house-${index}`}>
+          <group key={`couture-house-${index}`} position={[x, 0, -1]}>
             <mesh position={[0, 3.2, 0]}><boxGeometry args={[15, 6.4, 12]} /><meshPhysicalMaterial color={night ? '#1f3143' : '#f4efe8'} transparent opacity={0.72} metalness={0.38} roughness={0.08} /></mesh>
             <mesh position={[0, 6.7, 0]}><boxGeometry args={[15.6, 0.24, 12.6]} /><meshStandardMaterial color={night ? '#f0f5fa' : '#ffffff'} roughness={0.16} metalness={0.18} /></mesh>
             <mesh ref={(el) => { skylineCrownRefs.current[index + 1] = el; }} position={[0, 5.1, 6.08]}><boxGeometry args={[9.4, 0.92, 0.12]} /><meshStandardMaterial color="#17324f" emissive={index === 0 ? '#ff7fd6' : '#7ce7ff'} emissiveIntensity={night ? 2 : 0.14} /></mesh>
@@ -2362,7 +2362,7 @@ function MegaCityExpansion({ night, centerZ }) {
           </group>
         ))}
 
-        <group position={[0, 0, -8]} data-testid="grand-palace-sculpture-plaza">
+        <group position={[0, 0, -8]}>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.12, 0]}><planeGeometry args={[24, 12]} /><meshStandardMaterial color={night ? '#dfe6ec' : '#f7f8fa'} roughness={0.26} /></mesh>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.16, 0]}><ringGeometry args={[2.6, 5.2, 32]} /><meshStandardMaterial color={night ? '#203548' : '#c9d4dd'} roughness={0.24} /></mesh>
           <mesh position={[0, 0.38, 0]}><cylinderGeometry args={[2.6, 2.9, 0.36, 24]} /><meshPhysicalMaterial color={waterColor} transparent opacity={0.74} roughness={0.02} metalness={0.3} /></mesh>
@@ -2376,9 +2376,9 @@ function MegaCityExpansion({ night, centerZ }) {
           ))}
         </group>
 
-        <group position={[0, 0, 11.5]} data-testid="grand-palace-valet-dropoff">
+        <group position={[0, 0, 11.5]}>
           {[-10, 10].map((x, index) => (
-            <group key={`valet-limo-${index}`} position={[x, 0, 0]} rotation={[0, index === 0 ? 0.16 : -0.18, 0]} data-testid={`valet-limo-${index}`}>
+            <group key={`valet-limo-${index}`} position={[x, 0, 0]} rotation={[0, index === 0 ? 0.16 : -0.18, 0]}>
               <mesh position={[0, 0.7, 0]}><boxGeometry args={[6.4, 1.1, 2.1]} /><meshStandardMaterial color={index === 0 ? '#11151d' : '#e8edf2'} metalness={0.5} roughness={0.18} /></mesh>
               <mesh position={[0, 1.2, 0]}><boxGeometry args={[3.2, 0.7, 1.7]} /><meshStandardMaterial color={index === 0 ? '#0d1f35' : '#f7f9fb'} metalness={0.46} roughness={0.16} /></mesh>
               {[-2.4, 2.4].map((wheelX, wheelIndex) => (
@@ -2576,53 +2576,53 @@ function MegaCityExpansion({ night, centerZ }) {
         />
       ))}
       {/* Micro-scènes humaines lisibles */}
-      <group data-testid="micro-scene-family-crossing">
+      <group>
         <AnimatedPedestrian position={[-8, 0.52, centerZ + 18]} scale={1} bodyColor="#f3f5f8" skinColor="#f1c39f" build="slim" backpack headwear="none" gesture="talk" moveMode="flow" route={[1, 0.15]} moveRadius={2.4} pace={0.82} phase={0.1} dataTestId="family-crossing-parent-1" />
         <AnimatedPedestrian position={[-5.2, 0.52, centerZ + 19.1]} scale={0.78} bodyColor="#2a3c5c" skinColor="#d99972" build="child" headwear="cap" backpack gesture="wave" moveMode="flow" route={[1, 0.15]} moveRadius={2.1} pace={0.92} phase={0.6} dataTestId="family-crossing-child" />
         <AnimatedPedestrian position={[-11.1, 0.52, centerZ + 16.8]} scale={0.98} bodyColor="#145f53" skinColor="#b77d5b" build="regular" phone carry="bag" gesture="phone" moveMode="flow" route={[1, 0.15]} moveRadius={2.3} pace={0.8} phase={1.1} dataTestId="family-crossing-parent-2" />
       </group>
 
-      <group data-testid="micro-scene-vip-escort">
+      <group>
         <AnimatedPedestrian position={[96, 0.52, centerZ + 30.5]} scale={0.98} bodyColor="#f3f5f8" skinColor="#e7bc97" build="slim" headwear="cap" phone gesture="phone" moveMode="flow" route={[0, 1]} moveRadius={2.2} pace={0.8} phase={0.2} dataTestId="vip-escort-vip" />
         <AnimatedPedestrian position={[92.8, 0.52, centerZ + 29.8]} scale={1.04} bodyColor="#0b1020" skinColor="#c78d67" build="broad" headwear="helmet" gesture="point" moveMode="guard" moveRadius={0.1} pace={0.7} phase={0.5} dataTestId="vip-escort-security-left" />
         <AnimatedPedestrian position={[99.2, 0.52, centerZ + 31.2]} scale={1.04} bodyColor="#0b1020" skinColor="#c78d67" build="broad" headwear="helmet" gesture="point" moveMode="guard" moveRadius={0.1} pace={0.7} phase={1.1} dataTestId="vip-escort-security-right" />
       </group>
 
-      <group data-testid="micro-scene-technicians">
+      <group>
         <AnimatedPedestrian position={[73, 0.52, centerZ + 23]} scale={0.98} bodyColor="#22324d" skinColor="#f1c39f" build="regular" headwear="helmet" gesture="talk" moveMode="flow" route={[1, 0.35]} moveRadius={2.4} pace={0.78} phase={0.4} dataTestId="technician-case-a" />
         <AnimatedPedestrian position={[76.4, 0.52, centerZ + 24.6]} scale={1.02} bodyColor="#2b313b" skinColor="#d99972" build="broad" headwear="helmet" backpack gesture="point" moveMode="flow" route={[1, 0.35]} moveRadius={2.6} pace={0.74} phase={0.9} dataTestId="technician-case-b" />
       </group>
 
-      <group data-testid="micro-scene-travelers-luggage">
+      <group>
         <AnimatedPedestrian position={[6, 0.52, centerZ - 8]} scale={0.98} bodyColor="#20344f" skinColor="#e7bc97" build="slim" headwear="cap" backpack phone gesture="phone" moveMode="flow" route={[1, -0.2]} moveRadius={2.8} pace={0.82} phase={0.3} dataTestId="traveler-luggage-a" />
         <AnimatedPedestrian position={[11, 0.52, centerZ - 10.6]} scale={1.04} bodyColor="#ffffff" skinColor="#f1c39f" build="regular" backpack gesture="talk" moveMode="flow" route={[1, -0.2]} moveRadius={3} pace={0.8} phase={0.8} dataTestId="traveler-luggage-b" />
         <AnimatedPedestrian position={[15.6, 0.52, centerZ - 13]} scale={1.08} bodyColor="#7a4d1d" skinColor="#d69972" build="broad" headwear="hood" gesture="none" moveMode="flow" route={[1, -0.2]} moveRadius={3.2} pace={0.74} phase={1.3} dataTestId="traveler-luggage-c" />
       </group>
 
       {/* Scènes quotidiennes par zone */}
-      <group data-testid="daily-scene-fountain-kids">
+      <group>
         <AnimatedPedestrian position={[90, 0.52, centerZ + 20.5]} scale={0.74} bodyColor="#2a3c5c" skinColor="#f1c39f" build="child" headwear="cap" gesture="wave" moveMode="shuffle" moveRadius={1.4} pace={1.02} phase={0.2} dataTestId="fountain-kid-a" />
         <AnimatedPedestrian position={[101, 0.52, centerZ + 19.6]} scale={0.76} bodyColor="#ff7fd6" skinColor="#d99972" build="child" headwear="hood" gesture="none" moveMode="shuffle" moveRadius={1.3} pace={1.05} phase={0.7} dataTestId="fountain-kid-b" />
         <AnimatedPedestrian position={[95.4, 0.52, centerZ + 24.2]} scale={0.98} bodyColor="#f3f5f8" skinColor="#e7bc97" build="slim" backpack gesture="talk" moveMode="shuffle" moveRadius={1.2} pace={0.8} phase={1.1} dataTestId="fountain-parent" />
       </group>
 
-      <group data-testid="daily-scene-mall-exit">
+      <group>
         <AnimatedPedestrian position={[-116, 0.52, centerZ - 6]} scale={0.96} bodyColor="#ffffff" skinColor="#f1c39f" build="slim" carry="bag" gesture="talk" moveMode="flow" route={[1, 0.2]} moveRadius={2.1} pace={0.82} phase={0.3} dataTestId="mall-exit-shopper-a" />
         <AnimatedPedestrian position={[-111.5, 0.52, centerZ - 8]} scale={1} bodyColor="#7a1d52" skinColor="#d99972" build="regular" carry="bag" phone gesture="phone" moveMode="flow" route={[1, 0.2]} moveRadius={2.3} pace={0.78} phase={0.8} dataTestId="mall-exit-shopper-b" />
         <AnimatedPedestrian position={[-106.8, 0.52, centerZ - 10]} scale={0.78} bodyColor="#2f405a" skinColor="#f5d0b3" build="child" headwear="cap" backpack gesture="wave" moveMode="flow" route={[1, 0.2]} moveRadius={2} pace={0.96} phase={1.2} dataTestId="mall-exit-child" />
       </group>
 
-      <group data-testid="daily-scene-hall-taxi-wait">
+      <group>
         <AnimatedPedestrian position={[84, 0.52, centerZ + 24]} scale={0.98} bodyColor="#1f365a" skinColor="#f1c39f" build="slim" phone gesture="phone" moveMode="queue" moveRadius={0.7} pace={0.76} phase={0.4} dataTestId="hall-taxi-wait-a" />
         <AnimatedPedestrian position={[87.4, 0.52, centerZ + 25.6]} scale={1.02} bodyColor="#7a4d1d" skinColor="#d69972" build="regular" gesture="talk" moveMode="queue" moveRadius={0.7} pace={0.72} phase={1.0} dataTestId="hall-taxi-wait-b" />
       </group>
 
-      <group data-testid="daily-scene-vip-check">
+      <group>
         <AnimatedPedestrian position={[92, 0.52, centerZ + 29.2]} scale={1.02} bodyColor="#0b1020" skinColor="#c78d67" build="broad" headwear="helmet" gesture="point" moveMode="guard" moveRadius={0.08} pace={0.7} phase={0.3} dataTestId="vip-check-security" />
         <AnimatedPedestrian position={[95.6, 0.52, centerZ + 28.6]} scale={0.98} bodyColor="#f3f5f8" skinColor="#e7bc97" build="slim" headwear="cap" phone carry="bag" gesture="phone" moveMode="queue" moveRadius={0.45} pace={0.8} phase={0.9} dataTestId="vip-check-guest" />
       </group>
 
-      <group data-testid="daily-scene-station-wait">
+      <group>
         <AnimatedPedestrian position={[-6, 0.52, centerZ - 6]} scale={0.96} bodyColor="#20344f" skinColor="#f1c39f" build="slim" gesture="none" moveMode="queue" moveRadius={0.55} pace={0.74} phase={0.5} dataTestId="station-wait-a" />
         <AnimatedPedestrian position={[-1.8, 0.52, centerZ - 7.4]} scale={1.04} bodyColor="#ffffff" skinColor="#d99972" build="regular" backpack phone gesture="phone" moveMode="queue" moveRadius={0.55} pace={0.78} phase={1.0} dataTestId="station-wait-b" />
         <AnimatedPedestrian position={[2.4, 0.52, centerZ - 8.8]} scale={1.08} bodyColor="#7a4d1d" skinColor="#f5d0b3" build="broad" gesture="talk" moveMode="queue" moveRadius={0.55} pace={0.7} phase={1.5} dataTestId="station-wait-c" />
@@ -2631,7 +2631,7 @@ function MegaCityExpansion({ night, centerZ }) {
       {/* ═══════════════════════════════════════════ */}
       {/* ═══ GRAND HALL VITRÉ SUD — emplacement capture ═══ */}
       {/* ═══════════════════════════════════════════ */}
-      <group position={[96, 0, 56 + centerZ]} rotation={[0, -0.06, 0]} data-testid="south-glass-hall-complex">
+      <group position={[96, 0, 56 + centerZ]} rotation={[0, -0.06, 0]}>
         {/* Socle / dalle */}
         <mesh position={[0, 0.22, 0]}><boxGeometry args={[56, 0.44, 34]} /><meshStandardMaterial color={night ? '#d7dde2' : '#f7f8fa'} roughness={0.26} metalness={0.08} /></mesh>
         <mesh position={[0, 0.36, 0]}><boxGeometry args={[52, 0.08, 30]} /><meshStandardMaterial color="#c6b170" emissive="#c6b170" emissiveIntensity={night ? 0.4 : 0.05} /></mesh>
@@ -2657,7 +2657,7 @@ function MegaCityExpansion({ night, centerZ }) {
         <mesh position={[0, 9.5, -2]}><boxGeometry args={[0.18, 18, 26]} /><meshPhysicalMaterial color={night ? '#7fd0ff' : '#d6f4ff'} transparent opacity={0.24} transmission={0.9} metalness={0.14} roughness={0.02} /></mesh>
 
         {/* Partie gauche — zone DJ / podium */}
-        <group position={[-12, 0, -1]} data-testid="south-hall-dj-zone">
+        <group position={[-12, 0, -1]}>
           <mesh position={[0, 1.6, -8]}><boxGeometry args={[17, 3.2, 9.5]} /><meshPhysicalMaterial color={night ? '#9edcff' : '#e9fbff'} transparent opacity={0.28} transmission={0.9} metalness={0.2} roughness={0.02} /></mesh>
           <mesh position={[0, 3.28, -8]}><boxGeometry args={[17.4, 0.18, 9.9]} /><meshStandardMaterial color="#a7f0ff" emissive="#86e9ff" emissiveIntensity={night ? 2.1 : 0.18} /></mesh>
           <mesh position={[0, 1.4, 5.4]}><cylinderGeometry args={[8.2, 9, 2.8, 28]} /><meshStandardMaterial color={night ? '#edf2f7' : '#ffffff'} roughness={0.18} metalness={0.12} /></mesh>
@@ -2673,7 +2673,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {/* Partie droite — scène voix / micros / écran suspendu */}
-        <group position={[12, 0, -1]} data-testid="south-hall-performance-zone">
+        <group position={[12, 0, -1]}>
           <mesh position={[0, 1.7, -7.5]}><boxGeometry args={[17, 3.4, 10.5]} /><meshPhysicalMaterial color={night ? '#a6e8ff' : '#effcff'} transparent opacity={0.28} transmission={0.92} metalness={0.18} roughness={0.02} /></mesh>
           <mesh position={[0, 3.45, -7.5]}><boxGeometry args={[17.4, 0.18, 10.9]} /><meshStandardMaterial color="#a7f0ff" emissive="#86e9ff" emissiveIntensity={night ? 2.1 : 0.18} /></mesh>
           <mesh position={[0, 3.55, -7.5]} rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[16, 9.4]} /><meshPhysicalMaterial color={night ? '#8fe8ff' : '#f4fdff'} transparent opacity={0.18} transmission={0.92} metalness={0.16} roughness={0.02} /></mesh>
@@ -2691,7 +2691,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {/* Ambiance premium — éclairages gauche / DJ */}
-        <group position={[-12, 0, -1]} data-testid="south-hall-dj-lighting">
+        <group position={[-12, 0, -1]}>
           <mesh position={[0, 18.2, 4]}><boxGeometry args={[16, 0.4, 1.4]} /><meshStandardMaterial color="#cad4dd" metalness={0.95} roughness={0.08} /></mesh>
           {[-6, -2, 2, 6].map((x, i) => (
             <group key={`dj-light-${i}`} position={[x, 17.2, 4.2]}>
@@ -2703,7 +2703,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {/* Ambiance premium — éclairages droite / performance */}
-        <group position={[12, 0, -1]} data-testid="south-hall-performance-lighting">
+        <group position={[12, 0, -1]}>
           <mesh position={[0, 18.2, 3.8]}><boxGeometry args={[16, 0.4, 1.4]} /><meshStandardMaterial color="#cad4dd" metalness={0.95} roughness={0.08} /></mesh>
           {[-6, -2, 2, 6].map((x, i) => (
             <group key={`perf-light-${i}`} position={[x, 17.2, 4]}>
@@ -2715,7 +2715,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {/* Foule séparée — partie DJ */}
-        <group data-testid="south-hall-dj-crowd">
+        <group>
           {[
             [-18, 0.52, 6.2], [-15.2, 0.52, 7.5], [-12.4, 0.52, 6.6], [-9.5, 0.52, 7.9], [-6.7, 0.52, 6.9],
             [-19.1, 0.52, 9.6], [-16.3, 0.52, 10.5], [-13.5, 0.52, 9.4], [-10.6, 0.52, 10.8], [-7.8, 0.52, 9.8],
@@ -2740,7 +2740,7 @@ function MegaCityExpansion({ night, centerZ }) {
         </group>
 
         {/* Foule séparée — partie performance */}
-        <group data-testid="south-hall-performance-crowd">
+        <group>
           {[
             [5.8, 0.52, 6.4], [8.8, 0.52, 7.5], [11.8, 0.52, 6.7], [14.8, 0.52, 7.9], [17.8, 0.52, 6.8],
             [4.8, 0.52, 9.8], [7.8, 0.52, 10.7], [10.8, 0.52, 9.6], [13.8, 0.52, 10.9], [16.8, 0.52, 9.9],
@@ -2769,7 +2769,7 @@ function MegaCityExpansion({ night, centerZ }) {
           [-12, 'DJ BACKSTAGE'],
           [12, 'LIVE BACKSTAGE'],
         ].map(([x, label], i) => (
-          <group key={`backstage-${i}`} position={[x, 0, -13.2]} data-testid={`south-hall-backstage-${i}`}>
+          <group key={`backstage-${i}`} position={[x, 0, -13.2]}>
             <mesh position={[0, 2.1, 0]}><boxGeometry args={[16, 4.2, 4.4]} /><meshPhysicalMaterial color={night ? '#8fd8ff' : '#effcff'} transparent opacity={0.2} transmission={0.92} metalness={0.18} roughness={0.02} /></mesh>
             <mesh position={[0, 4.35, 0]}><boxGeometry args={[16.2, 0.14, 4.6]} /><meshStandardMaterial color="#a7f0ff" emissive="#86e9ff" emissiveIntensity={night ? 1.8 : 0.12} /></mesh>
             {[-5, 0, 5].map((rackX, ri) => (
@@ -2784,7 +2784,7 @@ function MegaCityExpansion({ night, centerZ }) {
         ))}
 
         {/* Entrée VIP et contrôle */}
-        <group position={[-18, 0, 18.5]} data-testid="south-hall-vip-entry">
+        <group position={[-18, 0, 18.5]}>
           <mesh position={[0, 3.2, 0]}><boxGeometry args={[10, 0.28, 6]} /><meshStandardMaterial color="#e9eef5" metalness={0.18} roughness={0.18} /></mesh>
           <mesh position={[0, 5.1, 2.95]}><boxGeometry args={[8.4, 1.1, 0.12]} /><meshStandardMaterial color="#13243a" emissive="#1a8aff" emissiveIntensity={night ? 2.1 : 0.16} /></mesh>
           <Text position={[0, 5.12, 3.08]} fontSize={0.62} color="#ffffff" anchorX="center" fontWeight="bold">VIP ENTRY</Text>
@@ -2820,7 +2820,7 @@ function MegaCityExpansion({ night, centerZ }) {
           [-22.6, 18.5, -10.5, -0.2], [22.6, 18.5, -10.5, 3.34],
           [-18, 6.2, 21.4, 0], [18, 6.2, 21.4, Math.PI],
         ].map(([x, y, z, rot], i) => (
-          <group key={`security-camera-${i}`} position={[x, y, z]} rotation={[0, rot, 0]} data-testid={`south-hall-security-camera-${i}`}>
+          <group key={`security-camera-${i}`} position={[x, y, z]} rotation={[0, rot, 0]}>
             <mesh position={[0, 0, 0]}><boxGeometry args={[0.7, 0.22, 0.22]} /><meshStandardMaterial color="#d8e0e8" metalness={0.95} roughness={0.08} /></mesh>
             <mesh position={[0.45, -0.12, 0]} rotation={[0, 0, -0.25]}><boxGeometry args={[0.85, 0.18, 0.18]} /><meshStandardMaterial color="#cdd6de" metalness={0.95} roughness={0.08} /></mesh>
             <mesh position={[0.92, -0.18, 0]}><sphereGeometry args={[0.18, 10, 10]} /><meshStandardMaterial color="#0f1620" emissive="#5fd3ff" emissiveIntensity={night ? 1.2 : 0.08} /></mesh>
@@ -2829,7 +2829,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
         {/* Portiques lumineux / contrôle d’entrée */}
         {[-10, 10].map((laneX, i) => (
-          <group key={`entry-gate-${i}`} position={[laneX, 0, 16.9]} data-testid={`south-hall-entry-gate-${i}`}>
+          <group key={`entry-gate-${i}`} position={[laneX, 0, 16.9]}>
             <mesh position={[-2.1, 2.2, 0]}><boxGeometry args={[0.28, 4.4, 0.28]} /><meshStandardMaterial color="#d4dce4" metalness={0.95} roughness={0.08} /></mesh>
             <mesh position={[2.1, 2.2, 0]}><boxGeometry args={[0.28, 4.4, 0.28]} /><meshStandardMaterial color="#d4dce4" metalness={0.95} roughness={0.08} /></mesh>
             <mesh position={[0, 4.4, 0]}><boxGeometry args={[4.6, 0.24, 0.28]} /><meshStandardMaterial color="#d4dce4" metalness={0.95} roughness={0.08} /></mesh>
@@ -2860,7 +2860,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
         {/* Marquage de circulation premium */}
         {[-10, 10].map((x, i) => (
-          <group key={`flow-marking-${i}`} position={[x, 0, 22.8]} data-testid={`south-hall-flow-marking-${i}`}>
+          <group key={`flow-marking-${i}`} position={[x, 0, 22.8]}>
             {[0, -2.4, -4.8].map((z, zi) => (
               <mesh key={`flow-line-${zi}`} position={[0, 0.31, z]}><boxGeometry args={[1.2, 0.04, 0.16]} /><meshStandardMaterial color={i === 0 ? '#ff5ecf' : '#4ad9ff'} emissive={i === 0 ? '#ff5ecf' : '#4ad9ff'} emissiveIntensity={night ? 1.2 : 0.08} /></mesh>
             ))}
@@ -2877,7 +2877,7 @@ function MegaCityExpansion({ night, centerZ }) {
         {[
           [-20, 2.6, 20.2], [20, 2.6, 20.2],
         ].map(([x, y, z], i) => (
-          <group key={`beacon-${i}`} position={[x, y, z]} data-testid={`south-hall-beacon-${i}`}>
+          <group key={`beacon-${i}`} position={[x, y, z]}>
             <mesh position={[0, -1.4, 0]}><cylinderGeometry args={[0.08, 0.1, 2.8, 8]} /><meshStandardMaterial color="#d3dce4" metalness={0.92} roughness={0.08} /></mesh>
             <mesh ref={(el) => { beaconRefs.current[i] = el; }} position={[0, 0.25, 0]}><boxGeometry args={[1.8, 0.08, 0.22]} /><meshStandardMaterial color={i === 0 ? '#ff5ecf' : '#4ad9ff'} emissive={i === 0 ? '#ff5ecf' : '#4ad9ff'} emissiveIntensity={night ? 1.5 : 0.08} /></mesh>
           </group>
@@ -2904,7 +2904,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
         {/* Barrières et files d’attente */}
         {[-10, 10].map((laneX, laneIndex) => (
-          <group key={`queue-lane-${laneIndex}`} position={[laneX, 0, 20.2]} data-testid={`south-hall-queue-lane-${laneIndex}`}>
+          <group key={`queue-lane-${laneIndex}`} position={[laneX, 0, 20.2]}>
             {[-6, -2, 2, 6].map((z, i) => (
               <React.Fragment key={`queue-post-${laneIndex}-${i}`}>
                 <mesh position={[-2.6, 1, z]}><cylinderGeometry args={[0.08, 0.1, 2, 8]} /><meshStandardMaterial color="#d3d9df" metalness={0.9} roughness={0.08} /></mesh>
@@ -2947,7 +2947,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
       {/* Spectacle monumental — drones, lasers et guidage événementiel */}
       {Array.from({ length: 6 }).map((_, index) => (
-        <group key={`hall-drone-${index}`} ref={(el) => { droneRefs.current[index] = el; }} data-testid={`hall-drone-${index}`}>
+        <group key={`hall-drone-${index}`} ref={(el) => { droneRefs.current[index] = el; }}>
           <mesh><sphereGeometry args={[0.34, 10, 10]} /><meshStandardMaterial color="#e6edf4" metalness={0.95} roughness={0.08} /></mesh>
           <mesh position={[0, -0.22, 0]}><sphereGeometry args={[0.16, 8, 8]} /><meshStandardMaterial color="#1a8aff" emissive="#1a8aff" emissiveIntensity={night ? 1.8 : 0.15} /></mesh>
           <mesh rotation={[0, 0, Math.PI / 2]}><boxGeometry args={[1.2, 0.04, 0.1]} /><meshStandardMaterial color="#b8c6d4" metalness={0.9} roughness={0.08} /></mesh>
@@ -2965,7 +2965,7 @@ function MegaCityExpansion({ night, centerZ }) {
           <meshStandardMaterial color={color} emissive={color} emissiveIntensity={night ? 2.2 : 0.08} transparent opacity={night ? 0.12 : 0.02} side={2} />
         </mesh>
       ))}
-      <group position={[96, 0, 29 + centerZ]} data-testid="hall-event-banner">
+      <group position={[96, 0, 29 + centerZ]}>
         <mesh position={[0, 7.8, 0]}><boxGeometry args={[18, 1.4, 0.14]} /><meshStandardMaterial color="#13243a" metalness={0.3} roughness={0.16} /></mesh>
         <mesh ref={(el) => { eventBannerRefs.current[0] = el; }} position={[0, 7.8, 0.12]}><boxGeometry args={[17.2, 0.9, 0.08]} /><meshStandardMaterial color="#17324f" emissive="#1a8aff" emissiveIntensity={night ? 2.2 : 0.16} /></mesh>
         <Text position={[0, 7.82, 0.22]} fontSize={0.52} color="#ffffff" anchorX="center" fontWeight="bold">CAPTURE LIVE DISTRICT</Text>
@@ -3004,7 +3004,7 @@ function MegaCityExpansion({ night, centerZ }) {
       <TrafficVehicles night={night} centerZ={centerZ} W={W} />
 
       {/* Console Signature CAPTURE — mode manuel + auto */}
-      <group position={[0, 5.4, centerZ - 2]} data-testid="signature-mode-console">
+      <group position={[0, 5.4, centerZ - 2]}>
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[20, 2.8, 0.38]} />
           <meshPhysicalMaterial color={night ? '#11263b' : '#e8f3fb'} transparent opacity={0.84} metalness={0.44} roughness={0.1} />
@@ -3023,7 +3023,7 @@ function MegaCityExpansion({ night, centerZ }) {
         ].map((button) => {
           const active = button.key === 'auto' ? signatureAutoCycle : !signatureAutoCycle && signatureMode === button.key;
           return (
-            <group key={`signature-btn-${button.key}`} position={[button.x, -0.45, 0.34]} data-testid={`signature-mode-${button.key}-button`}>
+            <group key={`signature-btn-${button.key}`} position={[button.x, -0.45, 0.34]}>
               <mesh
                 onClick={() => {
                   if (button.key === 'auto') {
@@ -3047,7 +3047,7 @@ function MegaCityExpansion({ night, centerZ }) {
       {/* ═══ PACK 40 IDÉES ULTRA PREMIUM — NOUVEAU MONDE ═══ */}
       {/* ═══════════════════════════════════════════ */}
       {ultraPremiumInstallations.map((idea) => (
-        <group key={`ultra-premium-idea-${idea.id}`} position={[idea.x, 0, idea.z]} data-testid={`ultra-premium-idea-${idea.id}`}>
+        <group key={`ultra-premium-idea-${idea.id}`} position={[idea.x, 0, idea.z]}>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.08, 0]}>
             <circleGeometry args={[2.2, 20]} />
             <meshStandardMaterial color={night ? '#24303f' : '#f2f5f9'} roughness={0.22} metalness={0.2} />
@@ -3086,7 +3086,7 @@ function MegaCityExpansion({ night, centerZ }) {
       {/* ═══ PACK 40 IDÉES ULTRA PREMIUM #2 (ARCHI+PAYSAGE) ═══ */}
       {/* ═══════════════════════════════════════════ */}
       {ultraPremiumInstallationsPhase2.map((idea) => (
-        <group key={`ultra-premium-idea-phase2-${idea.id}`} position={[idea.x, 0, idea.z]} data-testid={`ultra-premium-idea-phase2-${idea.id}`}>
+        <group key={`ultra-premium-idea-phase2-${idea.id}`} position={[idea.x, 0, idea.z]}>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.09, 0]}>
             <circleGeometry args={[idea.category === 'architecture' ? 2.5 : 2.2, 20]} />
             <meshStandardMaterial color={night ? '#263245' : '#f3f6fb'} roughness={0.24} metalness={0.18} />
@@ -3136,7 +3136,7 @@ function MegaCityExpansion({ night, centerZ }) {
       {/* ═══ IMMEUBLES PÉRIPHÉRIQUES + BOSQUETS RONDS ═══ */}
       {/* ═══════════════════════════════════════════ */}
       {perimeterTowers.map((b, i) => (
-        <group key={`tower-${i}`} position={[b.x, 0, b.z + centerZ]} data-testid={`perimeter-tower-${i}`}>
+        <group key={`tower-${i}`} position={[b.x, 0, b.z + centerZ]}>
           <mesh position={[0, b.h / 2, 0]}><boxGeometry args={[b.w, b.h, b.d]} /><meshStandardMaterial color={night ? '#152535' : b.color} roughness={0.5} metalness={0.3} /></mesh>
           <mesh position={[0, b.h + 0.1, 0]}><boxGeometry args={[b.w * 0.9, 0.15, b.d * 0.9]} /><meshStandardMaterial color="#7d8b98" metalness={0.4} /></mesh>
           <mesh position={[0, 1.8, b.d / 2 + 0.08]}><boxGeometry args={[b.w * 0.36, 3.2, 0.14]} /><meshStandardMaterial color={i % 2 === 0 ? '#dff6ff' : '#4b535c'} emissive={i % 2 === 0 ? '#7ce7ff' : '#000000'} emissiveIntensity={night && i % 2 === 0 ? 0.9 : 0} metalness={0.72} roughness={0.08} transparent opacity={i % 2 === 0 ? 0.5 : 1} /></mesh>
@@ -3161,7 +3161,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
       {/* Bosquets ronds verts lumineux autour de tous les immeubles périphériques */}
       {perimeterBosquets.map((bosquet) => (
-        <group key={`perimeter-bosquet-${bosquet.id}`} position={[bosquet.x, 0, bosquet.z]} data-testid={`perimeter-bosquet-${bosquet.id}`}>
+        <group key={`perimeter-bosquet-${bosquet.id}`} position={[bosquet.x, 0, bosquet.z]}>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.09, 0]}>
             <ringGeometry args={[bosquet.size * 0.5, bosquet.size * 0.86, 16]} />
             <meshStandardMaterial color={night ? '#1a5f37' : '#7fbc6e'} roughness={0.92} />
@@ -3175,7 +3175,7 @@ function MegaCityExpansion({ night, centerZ }) {
 
       {/* Bosquets ronds premium autour des immeubles majeurs des districts */}
       {districtBosquets.map((bosquet) => (
-        <group key={`district-bosquet-${bosquet.id}`} position={[bosquet.x, 0, bosquet.z]} data-testid={`district-bosquet-${bosquet.id}`}>
+        <group key={`district-bosquet-${bosquet.id}`} position={[bosquet.x, 0, bosquet.z]}>
           <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.09, 0]}>
             <circleGeometry args={[bosquet.size * 0.72, 14]} />
             <meshStandardMaterial color={night ? '#204f35' : '#84bf74'} roughness={0.96} />

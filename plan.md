@@ -11,6 +11,21 @@
 - Mettre en place une synchronisation **autonome toutes les 5 minutes** (backend scheduler) avec **stockage MongoDB**.
 - Respecter contraintes Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, backend préfixé `/api`.
 
+### Objectif UI / Navigation (NOUVEAU)
+- Harmoniser la navigation selon la demande utilisateur (preview + production) :
+  - Le texte **« Lovanet »** dans le menu doit adopter le **style des boutons principaux**.
+  - Le bouton **« Boutique »** doit devenir une entrée de **sous-menu** (desktop + mobile).
+  - Le bouton « Boutique » doit être **RGB + blanc transparent** comme les boutons principaux.
+- Identité visuelle du logo :
+  - le **logo menu** + **favicon** doivent passer à **une nouvelle couleur**
+  - direction « **icône animation 3D** » pour la version du menu (tout en restant performante et lisible)
+
+### Objectif Mentions légales (NOUVEAU)
+- Sur la page Mentions légales :
+  - retirer les blocs de texte :
+    - `Éditeur du site ... utilisez la page contact.`
+    - `Hébergement ... leurs plateformes respectives.`
+
 ### Objectif SEO / Référencement
 - Paramétrer le SEO : meta tags, OpenGraph/Twitter, canonical/hreflang/alternate.
 - Générer et maintenir les fichiers d’indexation :
@@ -43,7 +58,7 @@
   - flux visible (fallback officiel quand TikTok bloque l’énumération)
 - Source officielle : `https://www.tiktok.com/@anime.moments.officiel`
 
-### Objectif (Hubs 3D — EN COURS)
+### Objectif (Hubs 3D)
 - Extraire depuis les archives fournies **uniquement** 2 hubs 3D à l’identique visuel :
   - **Hub Ferry**
   - **Hub Train Station**
@@ -51,15 +66,17 @@
 - Implantations demandées :
   - **Hub Train Station** : page **Shop** (`/shop`) **au-dessus de la bannière**.
   - **Hub Ferry** : page **Univers Lovanet** (route `/decouvrir`) **en dessous** du CTA **« Explorer le catalogue »**.
-- **Source de vérité extraction hubs** :
-  - archive initiale : `49003I909E0-main.zip`
-  - **nouvelle archive prioritaire** si les hubs ne sont pas complets : `0nnnnryg5ew4554876-main` (upload utilisateur)
+- Exigences UX supplémentaires (bug utilisateur, confirmé sur les deux environnements) :
+  - supprimer l’erreur runtime `Cannot read properties of undefined (reading 'testid')` (signalée sur **Hub Ferry**)
+  - **retirer tout le texte** ajouté autour des hubs (titres/description “Hub 3D importé…”) : les hubs doivent apparaître seuls
+  - **désactiver la rotation automatique caméra** et les **changements automatiques de scène** sur **Hub Ferry** + **Hub Train Station**
 
 ### Domaines / cibles SEO (confirmé utilisateur)
 - Domaine primaire (canonique) : `https://lovanet.fr`
 - Domaines secondaires à traiter **PARTOUT** (SEO + JSON‑LD + sitemaps + meta) :
   - `https://animemomentsofficiel.fr`
   - `https://animeofficiel.fr`
+  - `https://animemomentsanimeofficiel.fr` (ajouté pour propriétés GSC/OAuth)
 
 ### Domaines (OAuth redirect URIs) — confirmé utilisateur
 - Callback Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
@@ -97,7 +114,8 @@
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
 - ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
 - ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée (lovanet.fr OK) **en preview**.
-- ⏳ Prochaine grande tâche : **Hubs 3D** (extraction ZIP + intégration pages).
+- ⏳ Phase 7 (Hubs 3D) : intégration réalisée + correctifs UX demandés (sans texte / sans auto-cam) mais nécessite **validation stable + tests**.
+- ⏳ Phase 8 (UI/Brand polish) : menu, sous-menu Boutique, logo/favicons nouvelle couleur + mentions légales.
 
 ---
 
@@ -163,51 +181,73 @@
 
 ---
 
-### Phase 7 — Hubs 3D (ZIP) ⏳ PLANNED / IN PROGRESS
+### Phase 7 — Hubs 3D (ZIP) ⏳ IN PROGRESS
 
-#### Phase 7.1 — Extraction ciblée (ZIP)
-- Télécharger et décompresser :
-  - archive #1 : `49003I909E0-main.zip`
-  - archive #2 (prioritaire si besoin) : `0nnnnryg5ew4554876-main`
-- Localiser et extraire **uniquement** les modules nécessaires aux 2 hubs :
-  - `TrainStation` (+ hooks/data utilisés)
-  - `FerryBackground` (+ `FerryTrainCityPlaza`, audio, controls)
-- Identifier les dépendances manquantes dans le projet actuel :
-  - `react-icons` (dépendance non présente actuellement)
-  - fichiers `/audio/train-announcements/*.mp3` référencés
-  - tout asset additionnel requis
-- Décider la stratégie d’intégration "identique" :
-  - intégration brute des composants + dépendances
-  - encapsulation pour éviter `position:fixed` globale du hub ferry qui écraserait tout le layout
+#### Phase 7.1 — Extraction ciblée (ZIP) ✅ DONE
+- Archive utilisable : `49003I909E0-main.zip` (copie des composants requis)
+- L’archive `0nnnnryg5ew4554876-main` fournie ensuite est **vide** côté téléchargement (Content-Length 0) → non exploitable.
 
-#### Phase 7.2 — Intégration identique (frontend)
-- **Shop (`/shop`)** : ajouter **Hub Train Station** au-dessus de la bannière (avant `ShopHeroBanner`).
-- **Univers Lovanet (`/decouvrir`)** : ajouter **Hub Ferry** **sous** le CTA **« Explorer le catalogue »**.
-- Conserver l’apparence « identique » : shaders/textures/contrôles/caméra/animations.
-- Ajouter un lazy-load + fallback de chargement (sans changer le rendu final).
+#### Phase 7.2 — Intégration “identique” (frontend) ✅ DONE (à stabiliser)
+- **Shop (`/shop`)** : Hub Train Station ajouté au-dessus de la bannière.
+- **Univers Lovanet (`/decouvrir`)** : Hub Ferry ajouté sous le CTA « Explorer le catalogue ».
+- Stratégie : hubs rendus via routes internes `/hub/train-station` et `/hub/ferry` + iframe.
 
-#### Phase 7.3 — Performance & compatibilité (sans changer le visuel)
-- Vérifier chargement progressif (lazy-load) et absence de blocage du rendu.
-- S’assurer que le hub 3D ne casse pas le mobile (canvas responsive, hauteur contrôlée, fallback si WebGL indisponible).
-- Attention particulière :
-  - `FerryBackground` utilise un overlay `fixed` + injection DOM (`document.body.appendChild`) : à encapsuler pour ne pas casser le reste du site.
+#### Phase 7.3 — Stabilisation (BUGFIX/UX) ⏳ TODO (critique)
+- Corriger définitivement l’erreur runtime (confirmée user, preview + production) :
+  - `Cannot read properties of undefined (reading 'testid')` — sur le **Hub Ferry**
+  - neutraliser/retirer les props/attributs incompatibles (ex: `data-testid` sur nodes R3F)
+- Retirer la UI texte autour des hubs :
+  - sur `/shop` et `/decouvrir` ne laisser que le rendu 3D (iframe)
+- Désactiver sur les deux hubs :
+  - rotation automatique caméra
+  - changements automatiques de scène
+  - conserver uniquement les contrôles manuels (si existants)
 
-#### Phase 7.4 — Tests & validation
-- Build frontend.
-- Test navigation : Shop + Univers Lovanet.
-- Vérifier que les hubs s’affichent aux positions demandées.
-- Appeler **testing_agent** pour valider la régression UI et la présence des hubs.
+#### Phase 7.4 — Tests & validation ⏳ TODO
+- Build frontend + smoke runtime.
+- Vérifier :
+  - `/shop` charge sans erreur et le hub Train Station reste visible au bon emplacement.
+  - `/decouvrir` charge sans erreur et le hub Ferry reste visible sous « Explorer le catalogue ».
+  - plus d’erreur `testid`.
+  - plus de rotation/changement auto.
+- Appeler **testing_agent** (obligatoire) pour valider le bug et la non-régression.
+
+---
+
+### Phase 8 — UI / Brand polish (menu + logo + mentions légales) ⏳ TODO
+
+#### Phase 8.1 — Menu / boutons (RGB + blanc transparent)
+- Mettre le texte **Lovanet** du menu au même niveau de style que les boutons principaux.
+- Transformer **Boutique** en entrée de **sous-menu** (desktop + mobile) et appliquer le style RGB + blanc transparent.
+
+#### Phase 8.2 — Logo menu + favicon (nouvelle couleur + direction icône 3D)
+- Créer une variante du logo en **nouvelle couleur**.
+- Ajouter une version **icône 3D/animée** pour le menu (tout en gardant une alternative statique + performant).
+- Mettre à jour favicon/OG/logo SEO si demandé (en conservant la cohérence multi-domaines).
+
+#### Phase 8.3 — Mentions légales
+- Retirer les blocs de texte `Éditeur du site` et `Hébergement` mentionnés.
+- Vérifier que la page reste conforme et sans contenu résiduel non voulu.
+
+#### Phase 8.4 — Tests UI
+- Smoke test navigation desktop + mobile.
+- Tester la présence et le placement du sous-menu Boutique.
+- Appeler **testing_agent** (obligatoire) pour valider :
+  - pas de régression visuelle critique
+  - conformité aux demandes UI
+  - hubs toujours stables (pas de crash)
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **Phase 7.1** : analyser `0nnnnryg5ew4554876-main` (prioritaire) + fallback vers `49003I909E0-main.zip` si besoin.
-2) Copier/intégrer dans le projet actuel uniquement les composants/hook/data requis + ajouter dépendances npm manquantes (notamment `react-icons`).
-3) **Phase 7.2** : intégrer Train Station sur `/shop` au-dessus du hero.
-4) **Phase 7.2** : intégrer Ferry sous « Explorer le catalogue » sur `/decouvrir`.
-5) **Phase 7.3** : encapsuler Ferry pour éviter les effets globaux (`fixed`/DOM injection) tout en gardant le rendu.
-6) **Phase 7.4** : tests + rapport testing_agent.
-7) **Production** : redeploy pour pousser les hubs 3D + endpoints OAuth live.
+1) **Phase 7.3** : corriger définitivement le crash Ferry (`testid`) + supprimer tout texte autour des hubs + désactiver auto-cam/auto-scènes.
+2) **Phase 7.4** : rebuild + smoke (Shop/Discover + routes hub) + logs.
+3) **Phase 7.4** : lancer **testing_agent** (obligatoire) pour valider la correction du bug `testid` + exigences UX hubs.
+4) **Phase 8.1** : menu — appliquer style boutons au texte Lovanet + passer Boutique en sous-menu (desktop+mobile).
+5) **Phase 8.2** : nouvelle couleur logo + favicon + direction icône 3D/animée.
+6) **Phase 8.3** : nettoyer Mentions légales (suppression des blocs texte indiqués).
+7) **Phase 8.4** : lancer **testing_agent** (obligatoire) pour valider les changements UI + non-régression.
+8) **Production** : redeploy pour pousser hubs 3D stabilisés + endpoints OAuth live + polish UI.
 
 ---
 
@@ -218,10 +258,16 @@
 - SEO complet : meta/JSON‑LD/sitemaps/RSS + multi-domain.
 - Search Console OAuth : connecté + soumission lancée sur `lovanet.fr`.
 
-### À atteindre (Phase 7)
-- Hub 3D **Train Station** visible sur `/shop` au bon emplacement (au-dessus de la bannière).
-- Hub 3D **Ferry** visible sur `/decouvrir` sous « Explorer le catalogue ».
-- Intégration « identique » au ZIP sans casse responsive.
+### À atteindre (Phase 7 — stabilisation hubs)
+- Hub 3D **Train Station** visible sur `/shop` au bon emplacement (au-dessus de la bannière), **sans texte**, **sans auto-cam**.
+- Hub 3D **Ferry** visible sur `/decouvrir` sous « Explorer le catalogue », **sans texte**, **sans auto-cam**.
+- Plus d’erreur runtime : `Cannot read properties of undefined (reading 'testid')`.
+
+### À atteindre (Phase 8 — UI/Brand)
+- Texte **Lovanet** dans le menu stylé comme les boutons principaux.
+- **Boutique** en sous-menu (desktop + mobile) avec style RGB + blanc transparent.
+- Logo menu + favicon : **nouvelle couleur** + direction **icône 3D/animée**.
+- Mentions légales : suppression des blocs `Éditeur du site` et `Hébergement` demandés.
 
 ### Contraintes / transparence
 - Modifs en preview → **redeploy** nécessaire pour production.

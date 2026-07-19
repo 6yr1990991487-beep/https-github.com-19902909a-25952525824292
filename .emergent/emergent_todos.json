@@ -1,30 +1,30 @@
 [
   {
-    "content": "Extraire le ZIP prioritaire et localiser uniquement Hub Ferry + Hub Train Station",
-    "status": "completed"
-  },
-  {
-    "content": "Identifier les emplacements frontend exacts pour Shop et Univers Lovanet",
-    "status": "completed"
-  },
-  {
-    "content": "Déterminer la stratégie d’intégration identique sans casser le layout",
-    "status": "completed"
-  },
-  {
-    "content": "Intégrer Hub Train Station sur /shop au-dessus de la bannière",
-    "status": "completed"
-  },
-  {
-    "content": "Intégrer Hub Ferry sous « Explorer le catalogue » sur Univers Lovanet",
-    "status": "completed"
-  },
-  {
-    "content": "Compiler et vérifier visuellement les pages modifiées",
+    "content": "Inspecter Navbar, logo/favicon et page Mentions légales",
     "status": "in_progress"
   },
   {
-    "content": "Lancer le testing agent pour valider les hubs 3D",
+    "content": "Transformer Boutique en sous-menu desktop + mobile avec style boutons principaux",
+    "status": "pending"
+  },
+  {
+    "content": "Appliquer le style boutons principaux au texte Lovanet",
+    "status": "pending"
+  },
+  {
+    "content": "Créer une nouvelle variante couleur/3D du logo menu et favicon",
+    "status": "pending"
+  },
+  {
+    "content": "Retirer les blocs demandés sur la page Mentions légales",
+    "status": "pending"
+  },
+  {
+    "content": "Recompiler et vérifier visuellement la navigation, le logo et les mentions légales",
+    "status": "pending"
+  },
+  {
+    "content": "Lancer le testing agent pour valider les changements UI et la stabilité des hubs",
     "status": "pending"
   }
 ]

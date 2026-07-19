@@ -1,4 +1,5 @@
-import FerryBackground from "@/components/FerryBackground";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const FerryBackground = require("@/components/FerryBackground").default;
 
 export default function HubFerryStandalone() {
   return (

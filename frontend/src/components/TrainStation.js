@@ -7718,7 +7718,7 @@ function TrainScene({ isNight, onTrainHorn, isMobile, shouldReduceParticles, sho
   };
 
   // État pour la rotation intro
-  const [introRotationActive, setIntroRotationActive] = useState(true);
+  const [introRotationActive, setIntroRotationActive] = useState(false);
   const introProgressRef = useRef(0);
 
   // Composant de rotation panoramique au démarrage
