@@ -75,19 +75,13 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
             <div className="relative grid items-center gap-8 lg:grid-cols-[1.02fr_0.98fr]">
               <div className="space-y-6" data-testid="root-landing-hero-content">
-                <Badge variant="outline" className={luxuryPill} data-testid="home-hero-badge">
-                  <span className="neon-rgb-text-soft">Lovanet · portail anime manga</span>
-                </Badge>
-
                 <div className="space-y-4">
-                  <h1
-                    className="max-w-3xl font-display text-4xl font-black leading-[0.9] text-white sm:text-5xl lg:text-7xl"
-                    data-testid="home-hero-heading"
-                  >
-                    <span className="block text-white">Le portail</span>
-                    <span className="block neon-rgb-text">premium</span>
-                    <span className="block text-white">Lovanet</span>
-                  </h1>
+                  <div className="h-3 w-28 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" data-testid="home-hero-badge-placeholder" />
+                  <div className="flex flex-col gap-3" data-testid="home-hero-title-placeholder">
+                    <div className="h-16 max-w-[22rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(232,121,249,0.12)] sm:h-20" />
+                    <div className="h-16 max-w-[18rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(34,211,238,0.12)] sm:h-20" />
+                    <div className="h-16 max-w-[20rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(232,121,249,0.12)] sm:h-20" />
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -107,14 +101,13 @@ export default function RootLandingPage() {
 
                 <div className="grid gap-3 sm:grid-cols-3" data-testid="home-hero-highlights-grid">
                   {[
-                    { label: "Anime Moments", value: "Immersif", testId: "home-hero-highlight-1" },
-                    { label: "Contenus", value: "Premium", testId: "home-hero-highlight-2" },
-                    { label: "Boutique", value: "Collector", testId: "home-hero-highlight-3" },
+                    { label: "Anime Moments", testId: "home-hero-highlight-1" },
+                    { label: "Contenus", testId: "home-hero-highlight-2" },
+                    { label: "Boutique", testId: "home-hero-highlight-3" },
                   ].map((item) => (
                     <Card key={item.testId} className="rounded-[1.5rem] border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]" data-testid={item.testId}>
-                      <CardContent className="space-y-1 p-4">
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-white/48">{item.label}</p>
-                        <p className="text-lg font-semibold text-white neon-rgb-text-soft">{item.value}</p>
+                      <CardContent className="p-4">
+                        <div className="h-9 rounded-xl border border-white/10 bg-white/[0.04] shadow-[0_0_18px_rgba(255,255,255,0.06)]" />
                       </CardContent>
                     </Card>
                   ))}
@@ -216,10 +209,7 @@ export default function RootLandingPage() {
             <div className={luxuryGlowRight} />
             <div className="relative">
               <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">Accès rapides</p>
-                  <h2 className={luxuryHeading} data-testid="home-platforms-heading">Sections</h2>
-                </div>
+                <div className="h-12 w-48 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)]" data-testid="home-platforms-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-platforms-button">
                   <Link to="/lecteurs-video">
                     Lecteurs vidéo
@@ -278,10 +268,7 @@ export default function RootLandingPage() {
             <div className={luxuryGlowRight} />
             <div className="relative">
               <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">À la une</p>
-                  <h2 className={luxuryHeading} data-testid="home-news-preview-heading">Contenus</h2>
-                </div>
+                <div className="h-12 w-44 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(232,121,249,0.1)]" data-testid="home-news-preview-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-news-preview-button">
                   <Link to="/actualites">
                     Actualités
@@ -319,12 +306,8 @@ export default function RootLandingPage() {
                 <div className={luxuryGlowLeft} />
                 <div className={luxuryGlowRight} />
                 <div className="relative space-y-5">
-                  <Badge variant="outline" className={luxuryPill} data-testid="home-final-cta-badge">
-                    <span className="neon-rgb-text-soft">Boutique collector</span>
-                  </Badge>
-                  <h2 className="font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft" data-testid="home-final-cta-heading">
-                    Sélection premium
-                  </h2>
+                  <div className="h-3 w-28 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" data-testid="home-final-cta-badge-placeholder" />
+                  <div className="h-12 w-60 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(232,121,249,0.1)]" data-testid="home-final-cta-heading-placeholder" />
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <Button asChild size="lg" className="btn-neon-rainbow rounded-full text-white" data-testid="home-final-cta-primary-button">
                       <Link to="/shop">

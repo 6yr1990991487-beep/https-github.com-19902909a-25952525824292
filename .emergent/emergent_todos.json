@@ -1,6 +1,10 @@
 [
   {
-    "content": "Vérifier le rendu avec build + captures + tests frontend",
-    "status": "completed"
+    "content": "Retirer exactement les textes visibles dans les captures sur la landing /",
+    "status": "in_progress"
+  },
+  {
+    "content": "Vérifier le rendu avec capture et test frontend",
+    "status": "pending"
   }
 ]
