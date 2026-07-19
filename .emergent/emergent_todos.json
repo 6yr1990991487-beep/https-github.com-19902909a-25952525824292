@@ -1,10 +1,14 @@
 [
   {
-    "content": "Ouvrir le flux OAuth Search Console depuis le preview et vérifier l’étape atteinte",
+    "content": "Vérifier que la connexion OAuth Google Search Console est bien active",
     "status": "completed"
   },
   {
-    "content": "Confirmer si une action humaine de connexion Google est nécessaire",
-    "status": "completed"
+    "content": "Lancer la soumission OAuth des sitemaps si la connexion est active",
+    "status": "in_progress"
+  },
+  {
+    "content": "Confirmer le résultat et les éventuels blocages restants",
+    "status": "pending"
   }
 ]
