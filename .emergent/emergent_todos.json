@@ -1,22 +1,14 @@
 [
   {
-    "content": "Analyser le menu global et les boutons du portail à faire varier toutes les 10 secondes",
+    "content": "Modifier la section visuelle hero du portail selon la capture (suppression texte + bannière étirée + animation vidéo)",
     "status": "completed"
   },
   {
-    "content": "Déplacer la bulle flottante au bord gauche centré",
+    "content": "Appliquer la même logique aux autres images similaires de la même section",
     "status": "completed"
   },
   {
-    "content": "Implémenter la rotation automatique texte + redirection sur les boutons du portail",
-    "status": "completed"
-  },
-  {
-    "content": "Implémenter la rotation automatique texte + redirection sur les boutons du menu global",
-    "status": "completed"
-  },
-  {
-    "content": "Vérifier avec build, captures et tests frontend",
+    "content": "Vérifier avec build, capture et test frontend",
     "status": "in_progress"
   }
 ]

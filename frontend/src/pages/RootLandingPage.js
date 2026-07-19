@@ -156,25 +156,22 @@ export default function RootLandingPage() {
 
               <div className="grid gap-4" data-testid="root-landing-hero-visual">
                 <Card className="rgb-neon overflow-hidden rounded-[2rem] border-white/15 bg-white/[0.05] shadow-[0_30px_90px_-40px_rgba(0,0,0,0.95)]">
-                  <div className="relative aspect-[16/11] overflow-hidden">
-                    <img src={heroImage} alt="Univers anime Lovanet" className="h-full w-full object-cover" data-testid="home-hero-image" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/78 via-black/14 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                      <div className="rounded-[1.5rem] border border-white/15 bg-white/[0.08] p-4 backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]">
-                        <p className="text-[11px] uppercase tracking-[0.3em] text-white/58">Portail</p>
-                        <p className="mt-2 text-2xl font-semibold text-white neon-rgb-text-soft" data-testid="home-hero-visual-title">
-                          Entrer
-                        </p>
-                      </div>
-                    </div>
+                  <div className="relative aspect-[21/8] overflow-hidden">
+                    <img src={heroImage} alt="Univers anime Lovanet" className="h-full w-full object-cover scale-[1.03]" data-testid="home-hero-image" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/16" />
+                    <div className="absolute inset-0 opacity-35 mix-blend-screen bg-[linear-gradient(115deg,transparent_12%,rgba(255,255,255,0.28)_22%,transparent_34%,transparent_58%,rgba(255,255,255,0.22)_68%,transparent_82%)] animate-[shimmer_8s_linear_infinite]" />
+                    <div className="absolute inset-0 opacity-25 bg-[radial-gradient(circle_at_20%_20%,rgba(255,120,220,0.28),transparent_28%),radial-gradient(circle_at_80%_30%,rgba(34,211,238,0.22),transparent_24%),radial-gradient(circle_at_75%_80%,rgba(255,190,92,0.2),transparent_20%)] animate-pulse-glow" />
+                    <div className="absolute inset-0 opacity-[0.16] bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_18%,transparent_82%,rgba(255,255,255,0.08)_100%)]" />
                   </div>
                 </Card>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
                   <Card className="rgb-neon overflow-hidden rounded-[1.5rem] border-white/15 bg-white/[0.05]">
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img src={mangaBanner} alt="Décor manga futuriste" className="h-full w-full object-cover" data-testid="home-hero-secondary-image" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/72 to-transparent" />
+                    <div className="relative aspect-[16/7] overflow-hidden">
+                      <img src={mangaBanner} alt="Décor manga futuriste" className="h-full w-full object-cover scale-[1.03]" data-testid="home-hero-secondary-image" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/16 via-transparent to-black/18" />
+                      <div className="absolute inset-0 opacity-30 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.22),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.2),transparent_24%)] animate-pulse-glow" />
                     </div>
                   </Card>
                   <Card className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] backdrop-blur-2xl" data-testid="home-hero-aside-card">
