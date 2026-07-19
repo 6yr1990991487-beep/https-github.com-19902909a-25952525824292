@@ -26,7 +26,6 @@ import { ThemeBubble } from "./components/ThemeBubble";
 import { CartProvider } from "./context/CartContext";
 import { CartDrawer } from "./components/CartDrawer";
 import GoogleTranslate from "./components/GoogleTranslate";
-import { HologramOverlay } from "./components/HologramOverlay";
 import { LocalizedHead } from "./components/LocalizedHead";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
 
@@ -78,6 +77,7 @@ const AppShell = () => {
   const isHubPreviewRoute = pathname.startsWith("/hub/") || LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/hub/`));
   const rootPaths = new Set(["/", ...LOCALE_PREFIXES.map((lang) => `/${lang}`)]);
   const isRootLandingRoute = rootPaths.has(pathname);
+  const isCatalogLikeRoute = pathname.startsWith("/anime-catalog") || pathname.startsWith("/tiktok") || pathname.startsWith("/anime-countdown") || LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/anime-catalog`) || pathname.startsWith(`/${lang}/tiktok`) || pathname.startsWith(`/${lang}/anime-countdown`));
 
   return (
     <CartProvider>
@@ -104,10 +104,9 @@ const AppShell = () => {
         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isHubPreviewRoute && !isRootLandingRoute && <ThemeBubble />}
+      {!isHubPreviewRoute && <ThemeBubble />}
       {!isHubPreviewRoute && <CartDrawer />}
-      {!isHubPreviewRoute && !isRootLandingRoute && !pathname.startsWith('/anime-catalog') && !pathname.startsWith('/tiktok') && !pathname.startsWith('/anime-countdown') && !LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/anime-catalog`) || pathname.startsWith(`/${lang}/tiktok`) || pathname.startsWith(`/${lang}/anime-countdown`)) && <GoogleTranslate />}
-      {!isHubPreviewRoute && !isRootLandingRoute && !pathname.startsWith('/anime-catalog') && !pathname.startsWith('/tiktok') && !pathname.startsWith('/anime-countdown') && !LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/anime-catalog`) || pathname.startsWith(`/${lang}/tiktok`) || pathname.startsWith(`/${lang}/anime-countdown`)) && <HologramOverlay />}
+      {!isHubPreviewRoute && !isRootLandingRoute && !isCatalogLikeRoute && <GoogleTranslate />}
     </CartProvider>
   );
 };

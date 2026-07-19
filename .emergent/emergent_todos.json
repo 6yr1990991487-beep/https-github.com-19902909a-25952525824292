@@ -1,6 +1,14 @@
 [
   {
-    "content": "Vérifier avec build, captures et tests frontend",
+    "content": "Appliquer le thème du menu au footer et aux mentions de bas de page sur tout le site",
     "status": "completed"
+  },
+  {
+    "content": "Repositionner la bulle flottante à mi-hauteur bord droit et créer une icône 3D animée multi-formes",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier avec build, captures et tests frontend",
+    "status": "in_progress"
   }
 ]
