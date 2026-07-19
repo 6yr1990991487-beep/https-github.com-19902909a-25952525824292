@@ -1,14 +1,6 @@
 [
   {
-    "content": "Stabiliser les fichiers modifiés et réparer l’état intermédiaire (FerryBackground, AnimeCatalog, TikTok, À venir)",
-    "status": "in_progress"
-  },
-  {
-    "content": "Appliquer précisément les suppressions/retouches demandées sur les zones capturées",
-    "status": "pending"
-  },
-  {
     "content": "Vérifier avec build, captures et tests frontend",
-    "status": "pending"
+    "status": "completed"
   }
 ]
