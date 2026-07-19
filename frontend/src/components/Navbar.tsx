@@ -1,25 +1,8 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, Sparkles, ShoppingBag, Youtube, Play, Music2, Film, Mail, Compass, ShoppingCart, Home, ScrollText, ChevronDown } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Sparkles, ShoppingBag, Youtube, Play, Music2, Film, Mail, Compass, ShoppingCart, Home, ScrollText } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
-
-const navItems = [
-  { to: "/", label: "Portail" },
-  { to: "/anime-moments", label: "Anime Moments" },
-  { to: "/lecteurs-video", label: "Lecteurs vidéo" },
-  { to: "/chaine-youtube", label: "YouTube" },
-  { to: "/prime-video", label: "Prime Vidéo" },
-  { to: "/tiktok", label: "TikTok" },
-  { to: "/anime-countdown", label: "À venir" },
-  { to: "/anime-catalog", label: "Catalogue" },
-  { to: "/decouvrir", label: "Univers Lovanet" },
-  { to: "/actualites", label: "Actualités" },
-];
-
-const extraItems = [
-  { to: "/contact", label: "Contact" },
-];
 
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
@@ -29,12 +12,26 @@ const navTestIds: Record<string, string> = {
   "/actualites": "navbar-news-link",
 };
 
-const shopSubItems = [
-  { to: "/shop", label: "Boutique collector", desc: "Affiches, collectors, vêtements" },
-  { to: "/shop?category=poster", label: "Affiches", desc: "Posters et artworks premium" },
-  { to: "/shop?category=apparel", label: "Vêtements", desc: "Mode anime & pièces RGB" },
-  { to: "/shop?category=collector", label: "Collectors", desc: "Objets collector et éditions limitées" },
+const rotatingDestinations = [
+  { to: "/", label: "Portail", icon: Home },
+  { to: "/anime-moments", label: "Anime Moments", icon: Film },
+  { to: "/lecteurs-video", label: "Lecteurs vidéo", icon: Film },
+  { to: "/chaine-youtube", label: "YouTube", icon: Youtube },
+  { to: "/prime-video", label: "Prime Vidéo", icon: Play },
+  { to: "/tiktok", label: "TikTok", icon: Music2 },
+  { to: "/anime-countdown", label: "À venir", icon: Play },
+  { to: "/anime-catalog", label: "Catalogue", icon: Film },
+  { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
+  { to: "/actualites", label: "Actualités", icon: Sparkles },
+  { to: "/shop", label: "Boutique", icon: ShoppingBag },
+  { to: "/contact", label: "Contact", icon: Mail },
 ];
+
+const desktopSlotCount = 10;
+const menuRotationIntervalMs = 10000;
+
+const getRotatingDestination = (slotIndex: number, rotationIndex: number) =>
+  rotatingDestinations[(slotIndex + rotationIndex) % rotatingDestinations.length];
 
 const megaSections = [
   { to: "/", label: "Portail", desc: "Nouvelle landing Lovanet", icon: Home },
@@ -52,16 +49,19 @@ const megaSections = [
   { to: "/legals", label: "Mentions légales", desc: "CGV & confidentialité", icon: ScrollText },
 ];
 
-
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
-  const [shopSubmenuOpen, setShopSubmenuOpen] = useState(false);
+  const [menuRotationIndex, setMenuRotationIndex] = useState(0);
   const megaRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<number | null>(null);
   const { count, setOpen: setCartOpen } = useCart();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const isActivePath = (to: string) => (to === "/" ? pathname === "/" : pathname === to || pathname.startsWith(to + "/"));
+
+  const rotatingNavItems = Array.from({ length: desktopSlotCount }, (_, index) => getRotatingDestination(index, menuRotationIndex));
+  const rotatingCta = getRotatingDestination(desktopSlotCount, menuRotationIndex);
 
   const scheduleClose = () => {
     if (closeTimer.current) window.clearTimeout(closeTimer.current);
@@ -80,6 +80,13 @@ export const Navbar = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setMenuRotationIndex((value) => (value + 1) % rotatingDestinations.length);
+    }, menuRotationIntervalMs);
+    return () => window.clearInterval(id);
   }, []);
 
   return (
@@ -128,58 +135,39 @@ export const Navbar = () => {
         </div>
 
         <nav className="hidden lg:flex items-center gap-1 mx-auto perspective-[800px]">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/"}
-              data-testid={navTestIds[item.to]}
-              className={({ isActive }) =>
-                cn(
+          {rotatingNavItems.map((item, index) => {
+            const active = isActivePath(item.to);
+            return (
+              <Link
+                key={`desktop-rotating-nav-${index}-${item.to}`}
+                to={item.to}
+                data-testid={`navbar-rotating-link-${index + 1}`}
+                className={cn(
                   "nav-3d btn-magnetic relative px-4 py-2 text-sm rounded-full transition-all duration-300 hover:-translate-y-0.5",
-                  isActive
+                  active
                     ? "neon-rgb-text bg-white/[0.09] border border-white/25 backdrop-blur-xl shadow-[0_0_18px_hsl(var(--neon-cyan)/0.5),inset_0_1px_0_rgba(255,255,255,0.15)]"
                     : "neon-rgb-text-soft hover:drop-shadow-[0_0_10px_hsl(var(--neon-cyan)/0.7)]"
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+                )}
+              >
+                <span key={`desktop-label-${index}-${item.to}-${menuRotationIndex}`} className="inline-block animate-in fade-in zoom-in-95 duration-500">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="relative hidden md:block" onMouseLeave={() => setShopSubmenuOpen(false)}>
+        <div className="relative hidden md:block">
           <button
             type="button"
-            onMouseEnter={() => setShopSubmenuOpen(true)}
-            onClick={() => setShopSubmenuOpen((v) => !v)}
+            onClick={() => navigate(rotatingCta.to)}
             className="btn-magnetic tilt-card inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/6 px-5 py-2 text-sm font-semibold text-white backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_12px_32px_-18px_rgba(0,0,0,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/35 hover:bg-white/12 hover:shadow-[0_16px_36px_-18px_rgba(90,220,255,0.45)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
-            data-testid="desktop-shop-submenu-trigger"
+            data-testid="desktop-rotating-cta-button"
           >
-            <span className="neon-rgb-text">Boutique</span>
-            <ChevronDown className={cn("h-4 w-4 text-white/80 transition-transform duration-300", shopSubmenuOpen && "rotate-180")} />
+            <span key={`desktop-cta-${rotatingCta.to}-${menuRotationIndex}`} className="neon-rgb-text inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+              {rotatingCta.label}
+            </span>
           </button>
-          {shopSubmenuOpen && (
-            <div
-              className="absolute right-0 top-[calc(100%+12px)] w-[320px] rounded-3xl border border-white/15 bg-white/[0.06] p-3 backdrop-blur-2xl shadow-[0_18px_60px_-24px_hsl(var(--neon-magenta)/0.55)]"
-              data-testid="desktop-shop-submenu-panel"
-            >
-              <div className="grid gap-2">
-                {shopSubItems.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setShopSubmenuOpen(false)}
-                    className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition-all duration-300 hover:border-white/25 hover:bg-white/[0.08]"
-                    data-testid={`desktop-shop-submenu-item-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                  >
-                    <span className="block text-sm font-semibold text-white neon-rgb-text">{item.label}</span>
-                    <span className="block text-xs text-white/60 mt-1">{item.desc}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
         <button
           type="button"
@@ -207,7 +195,6 @@ export const Navbar = () => {
         </button>
       </div>
 
-      {/* Mega menu panel */}
       {megaOpen && (
         <div
           id="mega-menu-panel"
@@ -223,65 +210,62 @@ export const Navbar = () => {
               <div className="pointer-events-none absolute -top-24 -left-24 h-56 w-56 rounded-full bg-fuchsia-400/20 blur-3xl animate-pulse-glow" />
               <div className="pointer-events-none absolute -bottom-24 -right-24 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl animate-pulse-glow" />
               <div className="relative">
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.35em] text-white/70 font-display flex items-center gap-2">
-                  <Sparkles className="w-3 h-3 neon-rgb-icon" strokeWidth={1.8} />
-                  <span className="neon-rgb-text">Menu Lovanet</span>
-                </p>
-                <button
-                  onClick={() => setMegaOpen(false)}
-                  className="p-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 text-white/80 backdrop-blur transition-all"
-                  aria-label="Fermer le méga-menu"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
-                {megaSections.map((s) => {
-                  const active = isActivePath(s.to);
-                  return (
-                    <Link
-                      key={s.to}
-                      to={s.to}
-                      role="menuitem"
-                      aria-current={active ? "page" : undefined}
-                      data-testid={navTestIds[s.to] ?? undefined}
-                      onClick={() => setMegaOpen(false)}
-                      className={cn(
-                        "group relative flex items-start gap-3 p-2.5 sm:p-3 rounded-2xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 active:scale-[0.98] overflow-hidden",
-                        active
-                          ? "border-white/40 bg-white/[0.12] shadow-[0_10px_30px_-14px_hsl(var(--neon-cyan)/0.7),inset_0_1px_0_rgba(255,255,255,0.18)]"
-                          : "border-white/10 bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/25 hover:shadow-[0_14px_34px_-14px_hsl(var(--neon-cyan)/0.55)]"
-                      )}
-                    >
-                      <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-fuchsia-400/10 via-transparent to-cyan-400/10" />
-                      {active && (
-                        <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-6 w-[3px] rounded-r-full bg-gradient-to-b from-fuchsia-400 to-cyan-400 shadow-[0_0_10px_hsl(var(--neon-cyan)/0.7)]" />
-                      )}
-                      <span className={cn(
-                        "shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/15 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/30 group-hover:scale-110 group-hover:rotate-[-4deg]",
-                        active ? "text-white bg-white/10 border-white/30" : "text-white/85 group-hover:text-white"
-                      )}>
-                        <s.icon className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
-                      </span>
-                      <span className="min-w-0 relative">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.35em] text-white/70 font-display flex items-center gap-2">
+                    <Sparkles className="w-3 h-3 neon-rgb-icon" strokeWidth={1.8} />
+                    <span className="neon-rgb-text">Menu Lovanet</span>
+                  </p>
+                  <button
+                    onClick={() => setMegaOpen(false)}
+                    className="p-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 text-white/80 backdrop-blur transition-all"
+                    aria-label="Fermer le méga-menu"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3">
+                  {megaSections.map((s) => {
+                    const active = isActivePath(s.to);
+                    return (
+                      <Link
+                        key={s.to}
+                        to={s.to}
+                        role="menuitem"
+                        aria-current={active ? "page" : undefined}
+                        data-testid={navTestIds[s.to] ?? undefined}
+                        onClick={() => setMegaOpen(false)}
+                        className={cn(
+                          "group relative flex items-start gap-3 p-2.5 sm:p-3 rounded-2xl border backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 active:scale-[0.98] overflow-hidden",
+                          active
+                            ? "border-white/40 bg-white/[0.12] shadow-[0_10px_30px_-14px_hsl(var(--neon-cyan)/0.7),inset_0_1px_0_rgba(255,255,255,0.18)]"
+                            : "border-white/10 bg-white/[0.04] hover:bg-white/[0.09] hover:border-white/25 hover:shadow-[0_14px_34px_-14px_hsl(var(--neon-cyan)/0.55)]"
+                        )}
+                      >
+                        <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-fuchsia-400/10 via-transparent to-cyan-400/10" />
+                        {active && (
+                          <span className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-6 w-[3px] rounded-r-full bg-gradient-to-b from-fuchsia-400 to-cyan-400 shadow-[0_0_10px_hsl(var(--neon-cyan)/0.7)]" />
+                        )}
                         <span className={cn(
-                          "block font-display font-semibold text-[13px] sm:text-sm transition-colors leading-tight neon-rgb-text",
+                          "shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/15 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] transition-all duration-300 group-hover:bg-white/10 group-hover:border-white/30 group-hover:scale-110 group-hover:rotate-[-4deg]",
+                          active ? "text-white bg-white/10 border-white/30" : "text-white/85 group-hover:text-white"
                         )}>
-                          {s.label}
+                          <s.icon className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
                         </span>
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
+                        <span className="min-w-0 relative">
+                          <span className="block font-display font-semibold text-[13px] sm:text-sm transition-colors leading-tight neon-rgb-text">
+                            {s.label}
+                          </span>
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Mobile drawer — glass transparent */}
       {open && (
         <>
           <div
@@ -299,48 +283,29 @@ export const Navbar = () => {
                   <span className="neon-rgb-text">Navigation</span>
                 </p>
                 <nav className="grid gap-1.5">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden" data-testid="mobile-shop-submenu-group">
-                    <button
-                      type="button"
-                      onClick={() => setShopSubmenuOpen((v) => !v)}
-                      className="group flex w-full items-center gap-3 px-3 py-2.5 text-left"
-                      data-testid="mobile-shop-submenu-trigger"
-                    >
-                      <span className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border border-white/15 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]">
-                        <ShoppingBag className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-display font-semibold text-sm leading-tight neon-rgb-text">Boutique</span>
-                      </span>
-                      <ChevronDown className={cn("w-4 h-4 text-white/80 transition-transform duration-300", shopSubmenuOpen && "rotate-180")}/>
-                    </button>
-                    {shopSubmenuOpen && (
-                      <div className="grid gap-1.5 border-t border-white/10 px-2 pb-2 pt-2">
-                        {shopSubItems.map((item) => (
-                          <NavLink
-                            key={item.to}
-                            to={item.to}
-                            onClick={() => { setOpen(false); setShopSubmenuOpen(false); }}
-                            className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-white/90 hover:bg-white/[0.08] hover:border-white/25"
-                            data-testid={`mobile-shop-submenu-item-${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-                          >
-                            <span className="block text-sm font-semibold neon-rgb-text">{item.label}</span>
-                            <span className="block text-xs text-white/55 mt-1">{item.desc}</span>
-                          </NavLink>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {megaSections.filter((s) => s.to !== "/shop").map((s) => {
-                    const active = isActivePath(s.to);
+                  <Link
+                    to={rotatingCta.to}
+                    onClick={() => setOpen(false)}
+                    className="group flex items-center gap-3 px-3 py-2.5 rounded-2xl border border-white/20 bg-white/[0.08] text-white/95 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_0_18px_hsl(var(--neon-cyan)/0.4)]"
+                    data-testid="mobile-rotating-cta-link"
+                  >
+                    <span className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-white/8 border border-white/15 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]">
+                      <rotatingCta.icon className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
+                    </span>
+                    <span key={`mobile-cta-${rotatingCta.to}-${menuRotationIndex}`} className="block font-display font-semibold text-sm leading-tight neon-rgb-text animate-in fade-in zoom-in-95 duration-500">
+                      {rotatingCta.label}
+                    </span>
+                  </Link>
+                  {rotatingNavItems.map((item, index) => {
+                    const active = isActivePath(item.to);
+                    const Icon = item.icon;
                     return (
-                      <NavLink
-                        key={s.to}
-                        to={s.to}
-                        end={s.to === "/"}
+                      <Link
+                        key={`mobile-${index}-${item.to}`}
+                        to={item.to}
                         onClick={() => setOpen(false)}
                         aria-current={active ? "page" : undefined}
-                        data-testid={navTestIds[s.to] ?? undefined}
+                        data-testid={`mobile-rotating-link-${index + 1}`}
                         className={cn(
                           "group flex items-center gap-3 px-3 py-2.5 rounded-2xl border backdrop-blur-xl transition-all duration-300 active:scale-[0.98]",
                           active
@@ -352,15 +317,15 @@ export const Navbar = () => {
                           "shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-white/5 border border-white/15 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15)]",
                           active && "bg-white/10 border-white/30"
                         )}>
-                          <s.icon className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
+                          <Icon className="w-[18px] h-[18px] neon-rgb-icon" strokeWidth={1.8} />
                         </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block font-display font-semibold text-sm leading-tight neon-rgb-text">{s.label}</span>
+                        <span key={`mobile-label-${index}-${item.to}-${menuRotationIndex}`} className="block font-display font-semibold text-sm leading-tight neon-rgb-text animate-in fade-in zoom-in-95 duration-500">
+                          {item.label}
                         </span>
                         {active && (
-                          <span className="shrink-0 h-2 w-2 rounded-full bg-gradient-to-br from-fuchsia-400 to-cyan-400 shadow-[0_0_10px_hsl(var(--neon-cyan)/0.7)]" />
+                          <span className="ml-auto shrink-0 h-2 w-2 rounded-full bg-gradient-to-br from-fuchsia-400 to-cyan-400 shadow-[0_0_10px_hsl(var(--neon-cyan)/0.7)]" />
                         )}
-                      </NavLink>
+                      </Link>
                     );
                   })}
                 </nav>

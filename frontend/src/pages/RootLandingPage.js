@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { ProductArtwork } from "@/components/ProductArtwork";
@@ -12,18 +13,32 @@ import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 
+const rotatingPortalDestinations = [
+  { to: "/anime-moments", label: "Anime Moments", icon: Film },
+  { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
+  { to: "/actualites", label: "Actualités", icon: Newspaper },
+  { to: "/shop", label: "Boutique", icon: ShoppingBag },
+  { to: "/chaine-youtube", label: "YouTube", icon: Youtube },
+  { to: "/prime-video", label: "Prime Vidéo", icon: Play },
+  { to: "/tiktok", label: "TikTok", icon: Play },
+  { to: "/anime-catalog", label: "Catalogue", icon: Star },
+  { to: "/anime-countdown", label: "À venir", icon: Play },
+  { to: "/lecteurs-video", label: "Lecteurs vidéo", icon: Film },
+  { to: "/contact", label: "Contact", icon: Newspaper },
+];
+
 const portalCards = [
-  { to: "/anime-moments", title: "Anime Moments", subtitle: "Page immersive", image: heroImage, icon: Film, testId: "home-portal-anime-moments-card" },
-  { to: "/decouvrir", title: "Univers Lovanet", subtitle: "Hubs & exploration", image: mangaBanner, icon: Compass, testId: "home-portal-discover-card" },
-  { to: "/actualites", title: "Actualités", subtitle: "News & nouveautés", image: heroImage, icon: Newspaper, testId: "home-portal-news-card" },
-  { to: "/shop", title: "Boutique collector", subtitle: "Éditions & drops", image: mangaBanner, icon: ShoppingBag, testId: "home-portal-shop-card" },
+  { title: "Portail A", subtitle: "Rotation", image: heroImage, testId: "home-portal-anime-moments-card" },
+  { title: "Portail B", subtitle: "Rotation", image: mangaBanner, testId: "home-portal-discover-card" },
+  { title: "Portail C", subtitle: "Rotation", image: heroImage, testId: "home-portal-news-card" },
+  { title: "Portail D", subtitle: "Rotation", image: mangaBanner, testId: "home-portal-shop-card" },
 ];
 
 const platformCards = [
-  { to: "/chaine-youtube", title: "YouTube", icon: Youtube, testId: "home-platform-youtube-card" },
-  { to: "/tiktok", title: "TikTok", icon: Play, testId: "home-platform-tiktok-card" },
-  { to: "/prime-video", title: "Prime Vidéo", icon: Play, testId: "home-platform-prime-card" },
-  { to: "/anime-catalog", title: "Catalogue", icon: Star, testId: "home-platform-catalog-card" },
+  { title: "Plateforme A", testId: "home-platform-youtube-card" },
+  { title: "Plateforme B", testId: "home-platform-tiktok-card" },
+  { title: "Plateforme C", testId: "home-platform-prime-card" },
+  { title: "Plateforme D", testId: "home-platform-catalog-card" },
 ];
 
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
@@ -50,15 +65,36 @@ const luxuryGlowLeft =
   "pointer-events-none absolute -top-24 -left-24 h-64 w-64 rounded-full bg-fuchsia-400/18 blur-3xl";
 const luxuryGlowRight =
   "pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-cyan-400/18 blur-3xl";
-const luxuryPill =
-  "rounded-full border border-white/20 bg-white/[0.06] px-4 py-1.5 text-[11px] uppercase tracking-[0.3em] text-white/88 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_0_22px_hsl(var(--neon-magenta)/0.12)]";
-const luxuryHeading = "mt-2 font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft";
-const luxuryIcon =
-  "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const secondaryButton =
   "rounded-full border border-white/20 bg-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_12px_32px_-18px_rgba(0,0,0,0.55)] backdrop-blur-xl hover:border-white/35 hover:bg-white/[0.12] hover:shadow-[0_16px_36px_-18px_rgba(90,220,255,0.45)]";
+const luxuryIcon =
+  "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
+const portalRotationIntervalMs = 10000;
+
+const getPortalDestination = (slotIndex, rotationIndex) =>
+  rotatingPortalDestinations[(slotIndex + rotationIndex) % rotatingPortalDestinations.length];
 
 export default function RootLandingPage() {
+  const [rotationIndex, setRotationIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setRotationIndex((value) => (value + 1) % rotatingPortalDestinations.length);
+    }, portalRotationIntervalMs);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
+  const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
+  const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
+  const heroShop = useMemo(() => getPortalDestination(3, rotationIndex), [rotationIndex]);
+  const portalEntries = useMemo(() => portalCards.map((card, index) => ({ ...card, action: getPortalDestination(index, rotationIndex) })), [rotationIndex]);
+  const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
+  const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
+  const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
+  const finalPrimary = useMemo(() => getPortalDestination(7, rotationIndex), [rotationIndex]);
+  const finalSecondary = useMemo(() => getPortalDestination(8, rotationIndex), [rotationIndex]);
+
   return (
     <PageShell>
       <Helmet>
@@ -86,28 +122,32 @@ export default function RootLandingPage() {
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <Button asChild size="lg" className="btn-neon-rainbow min-h-[50px] rounded-full px-8 text-sm font-semibold text-white" data-testid="home-hero-primary-cta-button">
-                    <Link to="/anime-moments">
-                      Anime Moments
-                      <ArrowRight className="h-4 w-4" />
+                    <Link to={heroPrimary.to}>
+                      <span key={`hero-primary-${heroPrimary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                        {heroPrimary.label}
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
                     </Link>
                   </Button>
                   <Button asChild variant="glass" size="lg" className={secondaryButton} data-testid="home-hero-secondary-cta-button">
-                    <Link to="/decouvrir">
-                      Univers Lovanet
-                      <Compass className="h-4 w-4 neon-rgb-icon" />
+                    <Link to={heroSecondary.to}>
+                      <span key={`hero-secondary-${heroSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                        {heroSecondary.label}
+                        <Compass className="h-4 w-4 neon-rgb-icon" />
+                      </span>
                     </Link>
                   </Button>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3" data-testid="home-hero-highlights-grid">
-                  {[
-                    { label: "Anime Moments", testId: "home-hero-highlight-1" },
-                    { label: "Contenus", testId: "home-hero-highlight-2" },
-                    { label: "Boutique", testId: "home-hero-highlight-3" },
-                  ].map((item) => (
-                    <Card key={item.testId} className="rounded-[1.5rem] border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]" data-testid={item.testId}>
+                  {[heroPrimary, heroSecondary, heroNews].map((item, index) => (
+                    <Card key={`hero-highlight-${index}-${item.to}`} className="rounded-[1.5rem] border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]" data-testid={`home-hero-highlight-${index + 1}`}>
                       <CardContent className="p-4">
-                        <div className="h-9 rounded-xl border border-white/10 bg-white/[0.04] shadow-[0_0_18px_rgba(255,255,255,0.06)]" />
+                        <div className="flex items-center justify-center h-9 rounded-xl border border-white/10 bg-white/[0.04] shadow-[0_0_18px_rgba(255,255,255,0.06)] text-sm font-semibold text-white neon-rgb-text-soft">
+                          <span key={`hero-highlight-label-${index}-${item.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">
+                            {item.label}
+                          </span>
+                        </div>
                       </CardContent>
                     </Card>
                   ))}
@@ -140,12 +180,12 @@ export default function RootLandingPage() {
                   <Card className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] backdrop-blur-2xl" data-testid="home-hero-aside-card">
                     <CardContent className="flex h-full flex-col justify-center gap-3 p-5">
                       <p className="text-[11px] uppercase tracking-[0.3em] text-white/58">Accès direct</p>
-                      <Link to="/actualites" className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-news">
-                        <span className="neon-rgb-text-soft">Actualités</span>
+                      <Link to={heroNews.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-news">
+                        <span key={`hero-news-${heroNews.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
                         <ArrowRight className="h-4 w-4 neon-rgb-icon" />
                       </Link>
-                      <Link to="/shop" className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-shop">
-                        <span className="neon-rgb-text-soft">Boutique</span>
+                      <Link to={heroShop.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-shop">
+                        <span key={`hero-shop-${heroShop.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroShop.label}</span>
                         <ArrowRight className="h-4 w-4 neon-rgb-icon" />
                       </Link>
                     </CardContent>
@@ -163,14 +203,14 @@ export default function RootLandingPage() {
             <div className="relative">
               <div className="mb-8 space-y-2">
                 <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">Portails</p>
-                <h2 className={luxuryHeading} data-testid="home-quick-portal-heading">Accès principaux</h2>
+                <h2 className="mt-2 font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft" data-testid="home-quick-portal-heading">Accès principaux</h2>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                {portalCards.map((card) => {
-                  const Icon = card.icon;
+                {portalEntries.map((card, index) => {
+                  const Icon = card.action.icon;
                   return (
-                    <Link key={card.to} to={card.to} className="group block" data-testid={card.testId}>
+                    <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block" data-testid={card.testId}>
                       <Card className={`${luxuryCard} rgb-neon`}>
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
                         <div className="grid gap-0 sm:grid-cols-[1.02fr_0.98fr]">
@@ -181,7 +221,9 @@ export default function RootLandingPage() {
                               </div>
                               <div>
                                 <p className="text-[11px] uppercase tracking-[0.28em] text-white/46">{card.subtitle}</p>
-                                <h3 className="mt-2 font-display text-2xl font-black text-white neon-rgb-text-soft">{card.title}</h3>
+                                <h3 className="mt-2 font-display text-2xl font-black text-white neon-rgb-text-soft">
+                                  <span key={`portal-card-${index}-${card.action.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{card.action.label}</span>
+                                </h3>
                               </div>
                             </div>
                             <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white/92">
@@ -190,7 +232,7 @@ export default function RootLandingPage() {
                             </span>
                           </CardContent>
                           <div className="relative min-h-[250px] overflow-hidden">
-                            <img src={card.image} alt={card.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            <img src={card.image} alt={card.action.label} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-black/72" />
                           </div>
                         </div>
@@ -211,23 +253,27 @@ export default function RootLandingPage() {
               <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-48 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)]" data-testid="home-platforms-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-platforms-button">
-                  <Link to="/lecteurs-video">
-                    Lecteurs vidéo
-                    <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                  <Link to={heroSecondary.to}>
+                    <span key={`platform-cta-${heroSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                      {heroSecondary.label}
+                      <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                    </span>
                   </Link>
                 </Button>
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {platformCards.map((card) => {
-                  const Icon = card.icon;
+                {platformEntries.map((card, index) => {
+                  const Icon = card.action.icon;
                   return (
-                    <Link key={card.to} to={card.to} className="group block" data-testid={card.testId}>
+                    <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block" data-testid={card.testId}>
                       <Card className={`${luxuryCard} h-full`}>
                         <CardContent className="space-y-4 p-6">
                           <div className={luxuryIcon}>
                             <Icon className="h-5 w-5 neon-rgb-icon" />
                           </div>
-                          <p className="text-xl font-semibold text-white neon-rgb-text-soft">{card.title}</p>
+                          <p className="text-xl font-semibold text-white neon-rgb-text-soft">
+                            <span key={`platform-card-${index}-${card.action.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{card.action.label}</span>
+                          </p>
                         </CardContent>
                       </Card>
                     </Link>
@@ -246,12 +292,14 @@ export default function RootLandingPage() {
               <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">À regarder</p>
-                  <h2 className={luxuryHeading} data-testid="home-featured-videos-heading">Vidéos</h2>
+                  <h2 className="mt-2 font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft" data-testid="home-featured-videos-heading">Vidéos</h2>
                 </div>
                 <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="home-featured-videos-youtube-button">
-                  <Link to="/chaine-youtube">
-                    YouTube
-                    <Youtube className="h-4 w-4" />
+                  <Link to={featuredVideoAction.to}>
+                    <span key={`video-action-${featuredVideoAction.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                      {featuredVideoAction.label}
+                      <Youtube className="h-4 w-4" />
+                    </span>
                   </Link>
                 </Button>
               </div>
@@ -270,9 +318,11 @@ export default function RootLandingPage() {
               <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-44 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(232,121,249,0.1)]" data-testid="home-news-preview-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-news-preview-button">
-                  <Link to="/actualites">
-                    Actualités
-                    <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                  <Link to={newsAction.to}>
+                    <span key={`news-action-${newsAction.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                      {newsAction.label}
+                      <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                    </span>
                   </Link>
                 </Button>
               </div>
@@ -310,15 +360,19 @@ export default function RootLandingPage() {
                   <div className="h-12 w-60 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(232,121,249,0.1)]" data-testid="home-final-cta-heading-placeholder" />
                   <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <Button asChild size="lg" className="btn-neon-rainbow rounded-full text-white" data-testid="home-final-cta-primary-button">
-                      <Link to="/shop">
-                        Boutique
-                        <ArrowRight className="h-4 w-4" />
+                      <Link to={finalPrimary.to}>
+                        <span key={`final-primary-${finalPrimary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                          {finalPrimary.label}
+                          <ArrowRight className="h-4 w-4" />
+                        </span>
                       </Link>
                     </Button>
                     <Button asChild variant="glass" size="lg" className={secondaryButton} data-testid="home-final-cta-secondary-button">
-                      <Link to="/actualites">
-                        Nouveautés
-                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                      <Link to={finalSecondary.to}>
+                        <span key={`final-secondary-${finalSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                          {finalSecondary.label}
+                          <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                        </span>
                       </Link>
                     </Button>
                   </div>

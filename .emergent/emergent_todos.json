@@ -1,10 +1,18 @@
 [
   {
-    "content": "Appliquer le thème du menu au footer et aux mentions de bas de page sur tout le site",
+    "content": "Analyser le menu global et les boutons du portail à faire varier toutes les 10 secondes",
     "status": "completed"
   },
   {
-    "content": "Repositionner la bulle flottante à mi-hauteur bord droit et créer une icône 3D animée multi-formes",
+    "content": "Déplacer la bulle flottante au bord gauche centré",
+    "status": "completed"
+  },
+  {
+    "content": "Implémenter la rotation automatique texte + redirection sur les boutons du portail",
+    "status": "completed"
+  },
+  {
+    "content": "Implémenter la rotation automatique texte + redirection sur les boutons du menu global",
     "status": "completed"
   },
   {

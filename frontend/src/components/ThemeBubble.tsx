@@ -1,13 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, X } from "lucide-react";
 
-/**
- * Floating theme bubble. Positioned middle-right with a premium menu-like panel.
- * The trigger icon is an animated geometric totem that morphs across multiple
- * futuristic shapes: neon ring/target, crystal, diamond, hex star, orbit,
- * prism, pulse core, and comet flare.
- */
-
 type ThemeKey = "default" | "midnight" | "sunset" | "forest" | "candy";
 
 type Theme = {
@@ -22,72 +15,18 @@ type Theme = {
 };
 
 const THEMES: Theme[] = [
-  {
-    key: "default",
-    label: "Anime Night",
-    swatch: "linear-gradient(135deg,#3b82f6,#ec4899)",
-    background: "220 30% 8%",
-    card: "220 25% 11%",
-    border: "220 20% 18%",
-    primary: "211 100% 55%",
-    hero: "linear-gradient(135deg,hsl(220 35% 6%) 0%,hsl(220 30% 10%) 50%,hsl(220 25% 14%) 100%)",
-  },
-  {
-    key: "midnight",
-    label: "Midnight Indigo",
-    swatch: "linear-gradient(135deg,#0a0a1a,#4f46e5)",
-    background: "245 45% 7%",
-    card: "245 40% 11%",
-    border: "245 30% 20%",
-    primary: "250 95% 68%",
-    hero: "linear-gradient(135deg,hsl(245 50% 5%) 0%,hsl(250 45% 11%) 50%,hsl(260 40% 16%) 100%)",
-  },
-  {
-    key: "sunset",
-    label: "Sunset Blaze",
-    swatch: "linear-gradient(135deg,#ff6b35,#e84393)",
-    background: "18 50% 8%",
-    card: "16 45% 12%",
-    border: "14 35% 22%",
-    primary: "20 95% 60%",
-    hero: "linear-gradient(135deg,hsl(18 55% 6%) 0%,hsl(340 45% 11%) 50%,hsl(280 40% 16%) 100%)",
-  },
-  {
-    key: "forest",
-    label: "Forest Moss",
-    swatch: "linear-gradient(135deg,#1a3c2a,#a0c49d)",
-    background: "150 35% 7%",
-    card: "150 30% 11%",
-    border: "150 25% 20%",
-    primary: "150 70% 50%",
-    hero: "linear-gradient(135deg,hsl(150 40% 5%) 0%,hsl(155 35% 10%) 50%,hsl(170 30% 14%) 100%)",
-  },
-  {
-    key: "candy",
-    label: "Candy Pop",
-    swatch: "linear-gradient(135deg,#67e8f9,#c4b5fd)",
-    background: "260 35% 10%",
-    card: "260 30% 14%",
-    border: "260 25% 24%",
-    primary: "320 90% 65%",
-    hero: "linear-gradient(135deg,hsl(200 70% 12%) 0%,hsl(260 60% 16%) 50%,hsl(320 60% 18%) 100%)",
-  },
+  { key: "default", label: "Anime Night", swatch: "linear-gradient(135deg,#3b82f6,#ec4899)", background: "220 30% 8%", card: "220 25% 11%", border: "220 20% 18%", primary: "211 100% 55%", hero: "linear-gradient(135deg,hsl(220 35% 6%) 0%,hsl(220 30% 10%) 50%,hsl(220 25% 14%) 100%)" },
+  { key: "midnight", label: "Midnight Indigo", swatch: "linear-gradient(135deg,#0a0a1a,#4f46e5)", background: "245 45% 7%", card: "245 40% 11%", border: "245 30% 20%", primary: "250 95% 68%", hero: "linear-gradient(135deg,hsl(245 50% 5%) 0%,hsl(250 45% 11%) 50%,hsl(260 40% 16%) 100%)" },
+  { key: "sunset", label: "Sunset Blaze", swatch: "linear-gradient(135deg,#ff6b35,#e84393)", background: "18 50% 8%", card: "16 45% 12%", border: "14 35% 22%", primary: "20 95% 60%", hero: "linear-gradient(135deg,hsl(18 55% 6%) 0%,hsl(340 45% 11%) 50%,hsl(280 40% 16%) 100%)" },
+  { key: "forest", label: "Forest Moss", swatch: "linear-gradient(135deg,#1a3c2a,#a0c49d)", background: "150 35% 7%", card: "150 30% 11%", border: "150 25% 20%", primary: "150 70% 50%", hero: "linear-gradient(135deg,hsl(150 40% 5%) 0%,hsl(155 35% 10%) 50%,hsl(170 30% 14%) 100%)" },
+  { key: "candy", label: "Candy Pop", swatch: "linear-gradient(135deg,#67e8f9,#c4b5fd)", background: "260 35% 10%", card: "260 30% 14%", border: "260 25% 24%", primary: "320 90% 65%", hero: "linear-gradient(135deg,hsl(200 70% 12%) 0%,hsl(260 60% 16%) 50%,hsl(320 60% 18%) 100%)" },
 ];
 
 const STORAGE_KEY = "lovanet:theme";
 const ACCENT_STORAGE_KEY = "lovanet:accent";
 
 type Tone = "dark" | "black" | "white";
-type Accent = {
-  key: string;
-  label: string;
-  swatch: string;
-  hue: number;
-  sat: number;
-  tone: Tone;
-  customTint?: string;
-  animated?: boolean;
-};
+type Accent = { key: string; label: string; swatch: string; hue: number; sat: number; tone: Tone; customTint?: string; animated?: boolean; };
 
 const ACCENTS: Accent[] = [
   { key: "off", label: "Aucune", swatch: "linear-gradient(135deg,#333,#666)", hue: 0, sat: 0, tone: "dark" },
@@ -101,55 +40,11 @@ const ACCENTS: Accent[] = [
   { key: "blue", label: "Bleu", swatch: "#3b82f6", hue: 217, sat: 90, tone: "dark" },
   { key: "purple", label: "Violet", swatch: "#8b5cf6", hue: 262, sat: 85, tone: "dark" },
   { key: "pink", label: "Rose", swatch: "#ec4899", hue: 328, sat: 85, tone: "dark" },
-  { key: "ivory", label: "Ivoire", swatch: "#fffbe6", hue: 50, sat: 30, tone: "white" },
-  { key: "cream", label: "Crème", swatch: "#f5e6c8", hue: 38, sat: 40, tone: "dark" },
-  { key: "sand", label: "Sable", swatch: "#d4b483", hue: 36, sat: 50, tone: "dark" },
-  { key: "taupe", label: "Taupe", swatch: "#8b7355", hue: 30, sat: 30, tone: "dark" },
-  { key: "coral", label: "Corail", swatch: "#ff7f6b", hue: 8, sat: 80, tone: "dark" },
-  { key: "salmon", label: "Saumon", swatch: "#fa8072", hue: 6, sat: 70, tone: "dark" },
-  { key: "rose", label: "Rose pâle", swatch: "#f9c0d9", hue: 335, sat: 60, tone: "dark" },
-  { key: "lavender", label: "Lavande", swatch: "#b497d6", hue: 270, sat: 55, tone: "dark" },
-  { key: "mint", label: "Menthe", swatch: "#98ddca", hue: 160, sat: 55, tone: "dark" },
-  { key: "sage", label: "Sauge", swatch: "#9caf88", hue: 90, sat: 35, tone: "dark" },
-  { key: "olive", label: "Olive", swatch: "#808000", hue: 60, sat: 80, tone: "dark" },
-  { key: "teal", label: "Sarcelle", swatch: "#008080", hue: 180, sat: 90, tone: "dark" },
-  { key: "navy", label: "Marine", swatch: "#1e3a8a", hue: 226, sat: 75, tone: "dark" },
-  { key: "indigo", label: "Indigo", swatch: "#4338ca", hue: 244, sat: 75, tone: "dark" },
-  { key: "plum", label: "Prune", swatch: "#6b2c5e", hue: 313, sat: 55, tone: "dark" },
-  { key: "burgundy", label: "Bordeaux", swatch: "#800020", hue: 345, sat: 95, tone: "dark" },
-  { key: "brown", label: "Brun", swatch: "#6f4e37", hue: 24, sat: 50, tone: "dark" },
-  { key: "slate", label: "Ardoise", swatch: "#475569", hue: 215, sat: 25, tone: "dark" },
-  { key: "fluo-pink", label: "Fluo Rose", swatch: "#ff00d4", hue: 320, sat: 100, tone: "dark" },
-  { key: "fluo-green", label: "Fluo Vert", swatch: "#39ff14", hue: 113, sat: 100, tone: "dark" },
-  { key: "fluo-yellow", label: "Fluo Jaune", swatch: "#ffff33", hue: 60, sat: 100, tone: "dark" },
-  { key: "fluo-orange", label: "Fluo Orange", swatch: "#ff6700", hue: 24, sat: 100, tone: "dark" },
-  { key: "fluo-cyan", label: "Fluo Cyan", swatch: "#00ffff", hue: 180, sat: 100, tone: "dark" },
-  { key: "fluo-blue", label: "Fluo Bleu", swatch: "#1f51ff", hue: 224, sat: 100, tone: "dark" },
-  { key: "fluo-purple", label: "Fluo Violet", swatch: "#bf00ff", hue: 285, sat: 100, tone: "dark" },
-  { key: "fluo-red", label: "Fluo Rouge", swatch: "#ff073a", hue: 351, sat: 100, tone: "dark" },
-  { key: "fluo-lime", label: "Fluo Lime", swatch: "#ccff00", hue: 72, sat: 100, tone: "dark" },
-  { key: "fluo-magenta", label: "Fluo Magenta", swatch: "#ff00ff", hue: 300, sat: 100, tone: "dark" },
-  { key: "fluo-mint", label: "Fluo Menthe", swatch: "#00ff9f", hue: 158, sat: 100, tone: "dark" },
-  { key: "fluo-peach", label: "Fluo Pêche", swatch: "#ff9966", hue: 18, sat: 100, tone: "dark" },
-  { key: "fluo-sky", label: "Fluo Ciel", swatch: "#7df9ff", hue: 184, sat: 100, tone: "dark" },
-  { key: "fluo-violet", label: "Fluo Vio.", swatch: "#9d00ff", hue: 277, sat: 100, tone: "dark" },
-  { key: "fluo-gold", label: "Fluo Or", swatch: "#ffd700", hue: 51, sat: 100, tone: "dark" },
   ...([
     { k: "anim-rgb", l: "RGB", g: "linear-gradient(135deg,#ff0080,#7928ca,#0070f3,#00d4ff,#39ff14,#ffd700,#ff0080)" },
     { k: "anim-aurora", l: "Aurore", g: "linear-gradient(135deg,#00c9ff,#92fe9d,#fc466b,#3f5efb,#00c9ff)" },
-    { k: "anim-sunset", l: "Couché", g: "linear-gradient(135deg,#ff6e7f,#bfe9ff,#ff9966,#ff5e62,#ff6e7f)" },
-    { k: "anim-ocean", l: "Océan", g: "linear-gradient(135deg,#2e3192,#1bffff,#0f2027,#2c5364,#2e3192)" },
-    { k: "anim-candy", l: "Bonbon", g: "linear-gradient(135deg,#ff9a9e,#fad0c4,#fbc2eb,#a18cd1,#ff9a9e)" },
-    { k: "anim-jungle", l: "Jungle", g: "linear-gradient(135deg,#134e5e,#71b280,#a8e063,#56ab2f,#134e5e)" },
-    { k: "anim-fire", l: "Feu", g: "linear-gradient(135deg,#f12711,#f5af19,#ff512f,#dd2476,#f12711)" },
-    { k: "anim-ice", l: "Glace", g: "linear-gradient(135deg,#83a4d4,#b6fbff,#a1c4fd,#c2e9fb,#83a4d4)" },
-    { k: "anim-galaxy", l: "Galaxie", g: "linear-gradient(135deg,#0f0c29,#302b63,#24243e,#7f00ff,#0f0c29)" },
     { k: "anim-neon", l: "Néon", g: "linear-gradient(135deg,#fc00ff,#00dbde,#ff00aa,#00ff88,#fc00ff)" },
-    { k: "anim-vapor", l: "Vaporwave", g: "linear-gradient(135deg,#ff71ce,#01cdfe,#05ffa1,#b967ff,#ff71ce)" },
-    { k: "anim-rainbow", l: "Arc-en-ciel", g: "linear-gradient(90deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#9400d3,#ff0000)" },
-  ].map((x) => ({
-    key: x.k, label: x.l, swatch: x.g, hue: 0, sat: 0, tone: "dark" as Tone, customTint: x.g, animated: true,
-  }))),
+  ].map((x) => ({ key: x.k, label: x.l, swatch: x.g, hue: 0, sat: 0, tone: "dark" as Tone, customTint: x.g, animated: true }))),
 ];
 
 const applyTheme = (t: Theme) => {
@@ -169,60 +64,23 @@ const applyTheme = (t: Theme) => {
 
 const applyAccent = (a: Accent) => {
   const r = document.documentElement.style;
-
   if (a.key === "off") {
-    [
-      "--background", "--foreground", "--card", "--card-foreground",
-      "--popover", "--popover-foreground", "--secondary", "--muted",
-      "--muted-foreground", "--border", "--input", "--primary",
-      "--primary-foreground", "--accent", "--accent-foreground",
-      "--ring", "--site-tint",
-    ].forEach((v) => r.removeProperty(v));
+    ["--background", "--foreground", "--card", "--card-foreground", "--popover", "--popover-foreground", "--secondary", "--muted", "--muted-foreground", "--border", "--input", "--primary", "--primary-foreground", "--accent", "--accent-foreground", "--ring", "--site-tint"].forEach((v) => r.removeProperty(v));
     document.body.style.removeProperty("background");
     document.body.style.removeProperty("background-color");
     return;
   }
 
-  let bg: string, card: string, border: string, primary: string, fg: string, primaryFg: string, mutedFg: string, tint: string;
-
-  if (a.tone === "black") {
-    bg = "0 0% 0%";
-    card = "0 0% 6%";
-    border = "0 0% 22%";
-    primary = "0 0% 100%";
-    fg = "0 0% 98%";
-    primaryFg = "0 0% 0%";
-    mutedFg = "0 0% 70%";
-    tint = "radial-gradient(1200px 800px at 20% 0%, hsl(0 0% 8%) 0%, hsl(0 0% 0%) 60%), #000";
-  } else if (a.tone === "white") {
-    bg = "0 0% 100%";
-    card = "0 0% 97%";
-    border = "0 0% 80%";
-    primary = "0 0% 0%";
-    fg = "0 0% 8%";
-    primaryFg = "0 0% 100%";
-    mutedFg = "0 0% 30%";
-    tint = "radial-gradient(1200px 800px at 20% 0%, hsl(0 0% 96%) 0%, hsl(0 0% 100%) 60%), #fff";
-  } else {
-    bg = `${a.hue} ${a.sat}% 10%`;
-    card = `${a.hue} ${Math.min(a.sat, 70)}% 14%`;
-    border = `${a.hue} ${a.sat}% 38%`;
-    primary = `${a.hue} ${Math.min(100, a.sat + 5)}% 58%`;
-    fg = "0 0% 98%";
-    primaryFg = "0 0% 100%";
-    mutedFg = `${a.hue} 25% 78%`;
-    tint = `radial-gradient(1200px 900px at 15% -10%, hsl(${a.hue} ${a.sat}% 28%) 0%, hsl(${a.hue} ${a.sat}% 12%) 45%, hsl(${a.hue} ${Math.max(20, a.sat - 20)}% 6%) 100%)`;
-  }
+  let bg = `${a.hue} ${a.sat}% 10%`;
+  let card = `${a.hue} ${Math.min(a.sat, 70)}% 14%`;
+  let border = `${a.hue} ${a.sat}% 38%`;
+  let primary = `${a.hue} ${Math.min(100, a.sat + 5)}% 58%`;
+  let fg = "0 0% 98%";
+  let primaryFg = "0 0% 100%";
+  let mutedFg = `${a.hue} 25% 78%`;
+  let tint = `radial-gradient(1200px 900px at 15% -10%, hsl(${a.hue} ${a.sat}% 28%) 0%, hsl(${a.hue} ${a.sat}% 12%) 45%, hsl(${a.hue} ${Math.max(20, a.sat - 20)}% 6%) 100%)`;
 
   if (a.customTint) tint = a.customTint;
-
-  if (a.key.startsWith("fluo-")) {
-    const hex = a.swatch;
-    bg = `${a.hue} 100% 12%`;
-    border = `${a.hue} 100% 55%`;
-    primary = `${a.hue} 100% 60%`;
-    tint = `radial-gradient(1400px 1000px at 15% -10%, ${hex} 0%, ${hex}cc 25%, hsl(${a.hue} 90% 18%) 60%, hsl(${a.hue} 80% 8%) 100%)`;
-  }
 
   r.setProperty("--background", bg);
   r.setProperty("--foreground", fg);
@@ -245,13 +103,8 @@ const applyAccent = (a: Accent) => {
 
   document.body.style.background = tint;
   document.body.style.backgroundAttachment = "fixed";
-  if (a.animated) {
-    document.body.style.backgroundSize = "400% 400%";
-    document.body.style.animation = "lovanet-bg-shift 18s ease infinite";
-  } else {
-    document.body.style.backgroundSize = "";
-    document.body.style.animation = "";
-  }
+  document.body.style.backgroundSize = a.animated ? "400% 400%" : "";
+  document.body.style.animation = a.animated ? "lovanet-bg-shift 18s ease infinite" : "";
 };
 
 const SHAPES = [
@@ -269,9 +122,7 @@ const AnimatedThemeGlyph = ({ active }: { active: boolean }) => {
   const [shapeIndex, setShapeIndex] = useState(0);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      setShapeIndex((i) => (i + 1) % SHAPES.length);
-    }, 1400);
+    const id = window.setInterval(() => setShapeIndex((i) => (i + 1) % SHAPES.length), 1400);
     return () => window.clearInterval(id);
   }, []);
 
@@ -279,45 +130,11 @@ const AnimatedThemeGlyph = ({ active }: { active: boolean }) => {
 
   return (
     <div className="relative z-10 flex h-8 w-8 items-center justify-center" data-testid="theme-bubble-animated-glyph">
-      <span
-        className="absolute inset-0 rounded-full border border-white/20 bg-white/[0.06] backdrop-blur-xl"
-        style={{
-          boxShadow: active
-            ? "0 0 24px rgba(34,211,238,0.35), 0 0 32px rgba(232,121,249,0.28), inset 0 1px 0 rgba(255,255,255,0.18)"
-            : "0 0 18px rgba(34,211,238,0.22), 0 0 24px rgba(232,121,249,0.18), inset 0 1px 0 rgba(255,255,255,0.15)",
-        }}
-      />
-      <span
-        className="absolute inset-[4px] rounded-full"
-        style={{
-          background: "conic-gradient(from 0deg,#ff4fd8,#7c3aed,#22d3ee,#fbbf24,#ff4fd8)",
-          filter: "blur(8px)",
-          opacity: active ? 0.8 : 0.65,
-          animation: "lovanet-glyph-spin 8s linear infinite",
-        }}
-      />
-      <span
-        className="absolute inset-[7px] rounded-full border border-white/10 bg-[rgba(8,6,18,0.82)]"
-        style={{ transform: `rotate(${rotation})` }}
-      />
+      <span className="absolute inset-0 rounded-full border border-white/20 bg-white/[0.06] backdrop-blur-xl" style={{ boxShadow: active ? "0 0 24px rgba(34,211,238,0.35), 0 0 32px rgba(232,121,249,0.28), inset 0 1px 0 rgba(255,255,255,0.18)" : "0 0 18px rgba(34,211,238,0.22), 0 0 24px rgba(232,121,249,0.18), inset 0 1px 0 rgba(255,255,255,0.15)" }} />
+      <span className="absolute inset-[4px] rounded-full" style={{ background: "conic-gradient(from 0deg,#ff4fd8,#7c3aed,#22d3ee,#fbbf24,#ff4fd8)", filter: "blur(8px)", opacity: active ? 0.8 : 0.65, animation: "lovanet-glyph-spin 8s linear infinite" }} />
+      <span className="absolute inset-[7px] rounded-full border border-white/10 bg-[rgba(8,6,18,0.82)]" style={{ transform: `rotate(${rotation})` }} />
       {SHAPES.map((shape, index) => (
-        <svg
-          key={shape.key}
-          viewBox={shape.viewBox}
-          className="absolute h-6 w-6 transition-all duration-700"
-          style={{
-            opacity: shapeIndex === index ? 1 : 0,
-            transform: `scale(${shapeIndex === index ? 1 : 0.7}) rotate(${shapeIndex === index ? 0 : -24}deg) translateZ(${shapeIndex === index ? 0 : -8}px)`,
-            filter: shapeIndex === index ? "drop-shadow(0 0 8px rgba(34,211,238,0.45)) drop-shadow(0 0 10px rgba(232,121,249,0.35))" : "none",
-          }}
-          fill="none"
-          stroke="white"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          {shape.element}
-        </svg>
+        <svg key={shape.key} viewBox={shape.viewBox} className="absolute h-6 w-6 transition-all duration-700" style={{ opacity: shapeIndex === index ? 1 : 0, transform: `scale(${shapeIndex === index ? 1 : 0.7}) rotate(${shapeIndex === index ? 0 : -24}deg)`, filter: shapeIndex === index ? "drop-shadow(0 0 8px rgba(34,211,238,0.45)) drop-shadow(0 0 10px rgba(232,121,249,0.35))" : "none" }} fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{shape.element}</svg>
       ))}
       <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white/80" />
     </div>
@@ -336,9 +153,11 @@ export const ThemeBubble = () => {
     setActive(t.key);
 
     const savedAccent = localStorage.getItem(ACCENT_STORAGE_KEY) ?? "off";
-    const a = ACCENTS.find((x) => x.key === savedAccent) ?? ACCENTS.find((x) => x.key === "off")!;
-    applyAccent(a);
-    setAccent(a.key);
+    const a = ACCENTS.find((x) => x.key === savedAccent) ?? ACCENTS.find((x) => x.key === "off");
+    if (a) {
+      applyAccent(a);
+      setAccent(a.key);
+    }
   }, []);
 
   const pick = (t: Theme) => {
@@ -356,47 +175,13 @@ export const ThemeBubble = () => {
   };
 
   return (
-    <div className="fixed right-4 top-1/2 z-[70] flex -translate-y-1/2 flex-row-reverse items-center gap-3 md:right-5" data-testid="theme-bubble-shell">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Personnaliser le thème"
-        data-testid="theme-bubble-toggle"
-        className="group relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-[rgba(9,7,20,0.72)] shadow-[0_18px_50px_-18px_rgba(0,0,0,0.6),0_0_30px_rgba(34,211,238,0.18),0_0_34px_rgba(232,121,249,0.14)] backdrop-blur-2xl transition-transform duration-300 hover:scale-105"
-      >
-        <span
-          className="absolute inset-0 opacity-95"
-          style={{
-            background: "linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02) 38%,rgba(255,255,255,0.08))",
-          }}
-        />
-        <span
-          className="absolute inset-[1px] rounded-full"
-          style={{
-            background: "conic-gradient(from 0deg,rgba(255,79,216,0.26),rgba(124,58,237,0.18),rgba(34,211,238,0.24),rgba(251,191,36,0.16),rgba(255,79,216,0.26))",
-            animation: "lovanet-bg-shift 10s ease infinite",
-          }}
-        />
-        <AnimatedThemeGlyph active={open} />
-        {open && (
-          <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-[rgba(10,6,20,0.9)] text-white shadow-[0_0_12px_rgba(255,255,255,0.12)]">
-            <X className="h-3.5 w-3.5" />
-          </span>
-        )}
-      </button>
-
+    <div className="fixed left-4 top-1/2 z-[70] flex -translate-y-1/2 items-center gap-3 md:left-5" data-testid="theme-bubble-shell">
       {open && (
         <div className="w-[300px] rounded-[1.75rem] border border-white/15 bg-[rgba(9,7,20,0.84)] p-4 shadow-[0_24px_80px_-26px_rgba(0,0,0,0.7),0_0_34px_rgba(34,211,238,0.12),0_0_34px_rgba(232,121,249,0.1)] backdrop-blur-2xl animate-scale-in" data-testid="theme-bubble-panel">
           <p className="mb-3 px-1 text-[10px] uppercase tracking-[0.3em] text-white/55">Ambiance</p>
           <div className="grid grid-cols-5 gap-2">
             {THEMES.map((t) => (
-              <button
-                key={t.key}
-                onClick={() => pick(t)}
-                title={t.label}
-                aria-label={t.label}
-                className={`relative h-10 w-10 rounded-full border border-white/15 transition-transform hover:scale-110 ${active === t.key && accent === "off" ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`}
-                style={{ background: t.swatch }}
-              />
+              <button key={t.key} onClick={() => pick(t)} title={t.label} aria-label={t.label} className={`relative h-10 w-10 rounded-full border border-white/15 transition-transform hover:scale-110 ${active === t.key && accent === "off" ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`} style={{ background: t.swatch }} />
             ))}
           </div>
 
@@ -405,25 +190,20 @@ export const ThemeBubble = () => {
           <p className="mb-3 px-1 text-[10px] uppercase tracking-[0.3em] text-white/55">Couleur du fond</p>
           <div className="grid grid-cols-6 gap-2">
             {ACCENTS.map((a) => (
-              <button
-                key={a.key}
-                onClick={() => pickAccent(a)}
-                title={a.label}
-                aria-label={a.label}
-                className={`relative h-9 w-9 rounded-full border border-white/15 transition-transform hover:scale-110 ${accent === a.key ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`}
-                style={{ background: a.swatch }}
-              >
-                {a.key === "off" && (
-                  <span className="absolute inset-0 flex items-center justify-center text-[8px] text-white/70">OFF</span>
-                )}
+              <button key={a.key} onClick={() => pickAccent(a)} title={a.label} aria-label={a.label} className={`relative h-9 w-9 rounded-full border border-white/15 transition-transform hover:scale-110 ${accent === a.key ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`} style={{ background: a.swatch }}>
+                {a.key === "off" && <span className="absolute inset-0 flex items-center justify-center text-[8px] text-white/70">OFF</span>}
               </button>
             ))}
           </div>
-          <p className="mt-3 px-1 text-[10px] text-white/48">
-            {accent !== "off" ? `Fond : ${ACCENTS.find((a) => a.key === accent)?.label}` : THEMES.find((t) => t.key === active)?.label}
-          </p>
+          <p className="mt-3 px-1 text-[10px] text-white/48">{accent !== "off" ? `Fond : ${ACCENTS.find((a) => a.key === accent)?.label}` : THEMES.find((t) => t.key === active)?.label}</p>
         </div>
       )}
+      <button onClick={() => setOpen((o) => !o)} aria-label="Personnaliser le thème" data-testid="theme-bubble-toggle" className="group relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-[rgba(9,7,20,0.72)] shadow-[0_18px_50px_-18px_rgba(0,0,0,0.6),0_0_30px_rgba(34,211,238,0.18),0_0_34px_rgba(232,121,249,0.14)] backdrop-blur-2xl transition-transform duration-300 hover:scale-105">
+        <span className="absolute inset-0 opacity-95" style={{ background: "linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02) 38%,rgba(255,255,255,0.08))" }} />
+        <span className="absolute inset-[1px] rounded-full" style={{ background: "conic-gradient(from 0deg,rgba(255,79,216,0.26),rgba(124,58,237,0.18),rgba(34,211,238,0.24),rgba(251,191,36,0.16),rgba(255,79,216,0.26))", animation: "lovanet-bg-shift 10s ease infinite" }} />
+        <AnimatedThemeGlyph active={open} />
+        {open && <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-[rgba(10,6,20,0.9)] text-white shadow-[0_0_12px_rgba(255,255,255,0.12)]"><X className="h-3.5 w-3.5" /></span>}
+      </button>
     </div>
   );
 };
