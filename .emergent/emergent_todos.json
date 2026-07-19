@@ -1,6 +1,14 @@
 [
   {
-    "content": "Vérifier avec build, capture et test frontend",
+    "content": "Identifier les classes globales du thème menu à unifier (textes, bordures, icônes, boutons)",
     "status": "completed"
+  },
+  {
+    "content": "Uniformiser la signature RGB sur tout le thème menu avec fond verre léger transparent",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier avec build, captures et test frontend",
+    "status": "in_progress"
   }
 ]
