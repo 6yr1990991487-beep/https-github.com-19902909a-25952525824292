@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "content": "Obtenir le playbook OAuth Google Search Console et préparer le flux backend",
+    "status": "in_progress"
+  },
+  {
+    "content": "Implémenter les endpoints OAuth Search Console côté backend",
+    "status": "pending"
+  },
+  {
+    "content": "Préparer les URI de redirection preview/production et le statut OAuth",
+    "status": "pending"
+  },
+  {
+    "content": "Tester le flux OAuth/Search Console avec testing agent",
+    "status": "pending"
+  }
+]
