@@ -1,12 +1,15 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Request
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import RedirectResponse
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import Any, Dict, List, Optional
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials as GoogleOAuthCredentials
+from google.auth.transport.requests import Request as GoogleAuthRequest
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import asyncio
@@ -15,6 +18,7 @@ import json
 import logging
 import os
 import re
+import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
@@ -24,11 +28,13 @@ APP_DIR = ROOT_DIR.parent
 PUBLIC_DIR = APP_DIR / "frontend" / "public"
 MANIFEST_PATH = APP_DIR / "extraction" / "manifest" / "lovanet_manifest.json"
 GOOGLE_CREDENTIALS_PATH = Path(os.environ.get("GOOGLE_SEARCH_CONSOLE_CREDENTIALS_FILE", "/tmp/google-search-console-service-account.json"))
+GOOGLE_OAUTH_CLIENT_PATH = Path(os.environ.get("GOOGLE_SEARCH_CONSOLE_OAUTH_CLIENT_FILE", "/tmp/google-search-console-oauth-client.json"))
 GOOGLE_SITE_VERIFICATION = "eDW28NAvAT9tr_dkYRKphCLRed_tlkJefXfYLvPbqd0"
 SEARCH_CONSOLE_PROPERTIES = [
     "https://lovanet.fr/",
     "https://animemomentsofficiel.fr/",
     "https://animeofficiel.fr/",
+    "https://animemomentsanimeofficiel.fr/",
 ]
 SEARCH_CONSOLE_SITEMAPS = [
     "https://lovanet.fr/sitemap.xml",
@@ -44,6 +50,15 @@ SEARCH_CONSOLE_SITEMAPS = [
     "https://animeofficiel.fr/sitemap-animeofficiel-fr.xml",
     "https://animeofficiel.fr/sitemap-catalog-animeofficiel-fr.xml",
 ]
+OAUTH_CALLBACK_CANDIDATES = [
+    "https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback",
+    "https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback",
+    "https://animeofficiel.fr/api/seo/search-console/oauth/callback",
+    "https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback",
+]
+GOOGLE_OAUTH_SCOPES = ["https://www.googleapis.com/auth/webmasters"]
+GOOGLE_OAUTH_AUTH_URI = "https://accounts.google.com/o/oauth2/auth"
+GOOGLE_OAUTH_TOKEN_URI = "https://oauth2.googleapis.com/token"
 load_dotenv(ROOT_DIR / ".env")
 
 mongo_url = os.environ["MONGO_URL"]
@@ -129,15 +144,28 @@ def serialize_doc(doc: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
-def request_json(url: str, method: str = "GET", body: Optional[dict] = None, timeout: int = 25) -> dict:
+def request_json(
+    url: str,
+    method: str = "GET",
+    body: Optional[dict] = None,
+    timeout: int = 25,
+    headers: Optional[Dict[str, str]] = None,
+    form: Optional[Dict[str, str]] = None,
+) -> dict:
     data = None
-    headers = {"User-Agent": UA, "Accept": "application/json"}
-    if body is not None:
+    req_headers = {"User-Agent": UA, "Accept": "application/json"}
+    if headers:
+        req_headers.update(headers)
+    if form is not None:
+        data = urllib.parse.urlencode(form).encode("utf-8")
+        req_headers["Content-Type"] = "application/x-www-form-urlencoded"
+    elif body is not None:
         data = json.dumps(body).encode("utf-8")
-        headers["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        req_headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8", "replace"))
+        payload = resp.read().decode("utf-8", "replace")
+        return json.loads(payload) if payload.strip() else {}
 
 
 def request_text(url: str, timeout: int = 20) -> tuple[int, str]:
@@ -257,6 +285,248 @@ def search_console_credentials_ready() -> bool:
     return GOOGLE_CREDENTIALS_PATH.exists() and GOOGLE_CREDENTIALS_PATH.is_file()
 
 
+def oauth_client_ready() -> bool:
+    return GOOGLE_OAUTH_CLIENT_PATH.exists() and GOOGLE_OAUTH_CLIENT_PATH.is_file()
+
+
+def get_oauth_client_config() -> Dict[str, Any]:
+    if not oauth_client_ready():
+        return {}
+    try:
+        payload = json.loads(GOOGLE_OAUTH_CLIENT_PATH.read_text(encoding="utf-8"))
+        web = payload.get("web") or {}
+        redirect_uris = web.get("redirect_uris", [])
+        redirect_uri = next((uri for uri in redirect_uris if uri in OAUTH_CALLBACK_CANDIDATES), redirect_uris[0] if redirect_uris else None)
+        return {
+            "client_id": web.get("client_id"),
+            "auth_uri": web.get("auth_uri") or GOOGLE_OAUTH_AUTH_URI,
+            "token_uri": web.get("token_uri") or GOOGLE_OAUTH_TOKEN_URI,
+            "auth_provider_x509_cert_url": web.get("auth_provider_x509_cert_url"),
+            "redirect_uris": redirect_uris,
+            "redirect_uri": redirect_uri,
+            "project_id": web.get("project_id"),
+            "client_secret": web.get("client_secret"),
+        }
+    except Exception:
+        return {}
+
+
+def oauth_credentials_document_key() -> str:
+    return "google-search-console-oauth"
+
+
+def choose_oauth_redirect_uri(request: Request) -> Optional[str]:
+    cfg = get_oauth_client_config()
+    redirect_uris = cfg.get("redirect_uris", [])
+    current_origin = f"{request.url.scheme}://{request.headers.get('host', '').strip()}"
+    candidate = f"{current_origin}/api/seo/search-console/oauth/callback"
+    if candidate in redirect_uris:
+        return candidate
+    return next((uri for uri in redirect_uris if uri in OAUTH_CALLBACK_CANDIDATES), redirect_uris[0] if redirect_uris else None)
+
+
+def build_google_oauth_url(state: str, redirect_uri: str) -> str:
+    cfg = get_oauth_client_config()
+    if not cfg.get("client_id") or not redirect_uri:
+        raise RuntimeError("OAuth client web configuration missing or invalid")
+    params = {
+        "client_id": cfg["client_id"],
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": " ".join(GOOGLE_OAUTH_SCOPES),
+        "access_type": "offline",
+        "include_granted_scopes": "true",
+        "prompt": "consent",
+        "state": state,
+    }
+    return f"{cfg.get('auth_uri', GOOGLE_OAUTH_AUTH_URI)}?{urllib.parse.urlencode(params)}"
+
+
+def make_oauth_state() -> str:
+    return str(uuid.uuid4())
+
+
+async def get_oauth_state_record(state: str) -> Optional[Dict[str, Any]]:
+    return await db.oauth_state.find_one({"state": state}, {"_id": 0})
+
+
+async def store_oauth_state(state: str, redirect_after: str, redirect_uri: str) -> Dict[str, Any]:
+    doc = {
+        "state": state,
+        "redirect_after": redirect_after,
+        "redirect_uri": redirect_uri,
+        "created_at": utc_now_iso(),
+    }
+    await db.oauth_state.update_one({"state": state}, {"$set": doc}, upsert=True)
+    return doc
+
+
+async def consume_oauth_state(state: str) -> Optional[Dict[str, Any]]:
+    doc = await get_oauth_state_record(state)
+    if doc:
+        await db.oauth_state.delete_one({"state": state})
+    return doc
+
+
+def oauth_token_response_to_doc(token_data: Dict[str, Any]) -> Dict[str, Any]:
+    now = datetime.now(timezone.utc)
+    expires_in = int(token_data.get("expires_in", 3600))
+    return {
+        "key": oauth_credentials_document_key(),
+        "provider": "google-search-console-oauth",
+        "access_token": token_data.get("access_token"),
+        "refresh_token": token_data.get("refresh_token"),
+        "scope": token_data.get("scope", " ".join(GOOGLE_OAUTH_SCOPES)),
+        "token_type": token_data.get("token_type", "Bearer"),
+        "expires_at": (now + timedelta(seconds=expires_in)).isoformat(),
+        "updated_at": utc_now_iso(),
+    }
+
+
+async def save_oauth_credentials(token_data: Dict[str, Any]) -> Dict[str, Any]:
+    existing = await db.oauth_credentials.find_one({"key": oauth_credentials_document_key()}, {"_id": 0}) or {}
+    doc = oauth_token_response_to_doc(token_data)
+    if not doc.get("refresh_token") and existing.get("refresh_token"):
+        doc["refresh_token"] = existing.get("refresh_token")
+    await db.oauth_credentials.update_one({"key": oauth_credentials_document_key()}, {"$set": doc}, upsert=True)
+    return doc
+
+
+async def get_saved_oauth_credentials() -> Optional[Dict[str, Any]]:
+    return await db.oauth_credentials.find_one({"key": oauth_credentials_document_key()}, {"_id": 0})
+
+
+def build_google_credentials_from_saved(saved: Dict[str, Any]) -> GoogleOAuthCredentials:
+    cfg = get_oauth_client_config()
+    return GoogleOAuthCredentials(
+        token=saved.get("access_token"),
+        refresh_token=saved.get("refresh_token"),
+        token_uri=cfg.get("token_uri") or GOOGLE_OAUTH_TOKEN_URI,
+        client_id=cfg.get("client_id"),
+        client_secret=cfg.get("client_secret"),
+        scopes=GOOGLE_OAUTH_SCOPES,
+    )
+
+
+async def ensure_fresh_oauth_access_token() -> Dict[str, Any]:
+    saved = await get_saved_oauth_credentials()
+    if not saved:
+        raise RuntimeError("OAuth credentials not connected")
+    credentials = build_google_credentials_from_saved(saved)
+    expired = True
+    try:
+        expired_at = datetime.fromisoformat(str(saved.get("expires_at")).replace("Z", "+00:00"))
+        expired = expired_at <= datetime.now(timezone.utc) + timedelta(seconds=60)
+    except Exception:
+        expired = True
+    if expired:
+        if not saved.get("refresh_token"):
+            raise RuntimeError("OAuth refresh token missing")
+        await asyncio.to_thread(credentials.refresh, GoogleAuthRequest())
+        token_data = {
+            "access_token": credentials.token,
+            "refresh_token": credentials.refresh_token,
+            "scope": " ".join(credentials.scopes or GOOGLE_OAUTH_SCOPES),
+            "token_type": "Bearer",
+            "expires_in": int((credentials.expiry - datetime.now(timezone.utc)).total_seconds()) if credentials.expiry else 3600,
+        }
+        saved = await save_oauth_credentials(token_data)
+    return saved
+
+
+async def fetch_search_console_oauth_status() -> Dict[str, Any]:
+    cfg = get_oauth_client_config()
+    base = {
+        "mode": "oauth",
+        "required_scope": GOOGLE_OAUTH_SCOPES[0],
+        "client_ready": oauth_client_ready(),
+        "client_type": "web" if cfg.get("client_id") else None,
+        "redirect_uri": cfg.get("redirect_uri"),
+        "redirect_uris": cfg.get("redirect_uris", []),
+        "properties": SEARCH_CONSOLE_PROPERTIES,
+        "sitemaps_ready": SEARCH_CONSOLE_SITEMAPS,
+        "start_url": "/api/seo/search-console/oauth/start",
+    }
+    if not cfg.get("client_id") or not cfg.get("redirect_uri"):
+        return {
+            **base,
+            "connected": False,
+            "status": "oauth_client_missing",
+            "message": "Le client OAuth Web Google n'est pas correctement configuré.",
+            "property_access": [],
+        }
+    saved = await get_saved_oauth_credentials()
+    if not saved:
+        return {
+            **base,
+            "connected": False,
+            "status": "not_connected",
+            "message": "Connexion OAuth Google Search Console requise.",
+            "property_access": [],
+        }
+    try:
+        fresh = await ensure_fresh_oauth_access_token()
+        headers = {"Authorization": f"Bearer {fresh.get('access_token')}"}
+        sites = await asyncio.to_thread(lambda: request_json("https://www.googleapis.com/webmasters/v3/sites", timeout=30, headers=headers))
+        entries = sites.get("siteEntry", [])
+        property_access = [
+            {
+                "site_url": entry.get("siteUrl"),
+                "permission_level": entry.get("permissionLevel"),
+                "verified": entry.get("permissionLevel") != "siteUnverifiedUser",
+            }
+            for entry in entries
+            if entry.get("siteUrl") in SEARCH_CONSOLE_PROPERTIES or entry.get("siteUrl", "").startswith("sc-domain:")
+        ]
+        return {
+            **base,
+            "connected": True,
+            "status": "ok",
+            "message": "Connexion OAuth Search Console active.",
+            "property_access": property_access,
+        }
+    except Exception as exc:
+        return {
+            **base,
+            "connected": False,
+            "status": "oauth_error",
+            "message": str(exc),
+            "property_access": [],
+        }
+
+
+async def submit_search_console_sitemaps_oauth() -> Dict[str, Any]:
+    status = await fetch_search_console_oauth_status()
+    if status.get("status") != "ok":
+        return {**status, "submitted": []}
+    fresh = await ensure_fresh_oauth_access_token()
+    headers = {"Authorization": f"Bearer {fresh.get('access_token')}"}
+    property_access = {row.get("site_url"): row for row in status.get("property_access", [])}
+    submitted = []
+    final_status = "ok"
+    for sitemap_url in SEARCH_CONSOLE_SITEMAPS:
+        target_property = next((site for site in SEARCH_CONSOLE_PROPERTIES if sitemap_url.startswith(site)), "https://lovanet.fr/")
+        access = property_access.get(target_property)
+        if not access:
+            submitted.append({"site_url": target_property, "sitemap_url": sitemap_url, "status": "skipped", "message": "Propriété non accessible via le compte OAuth connecté."})
+            final_status = "partial"
+            continue
+        endpoint = f"https://www.googleapis.com/webmasters/v3/sites/{urllib.parse.quote(target_property, safe='')}/sitemaps/{urllib.parse.quote(sitemap_url, safe='')}"
+        try:
+            await asyncio.to_thread(lambda ep=endpoint: request_json(ep, method="PUT", timeout=30, headers=headers))
+            submitted.append({"site_url": target_property, "sitemap_url": sitemap_url, "status": "submitted"})
+        except urllib.error.HTTPError as exc:
+            payload = exc.read().decode("utf-8", "replace") if hasattr(exc, "read") else str(exc)
+            submitted.append({"site_url": target_property, "sitemap_url": sitemap_url, "status": "error", "message": payload or str(exc)})
+            final_status = "partial"
+        except Exception as exc:
+            submitted.append({"site_url": target_property, "sitemap_url": sitemap_url, "status": "error", "message": str(exc)})
+            final_status = "partial"
+    now = utc_now_iso()
+    await db.sync_state.update_one({"key": "google-search-console-oauth"}, {"$set": {"key": "google-search-console-oauth", "status": final_status, "last_run_at": now, "meta": {"submitted": submitted}}}, upsert=True)
+    return {**status, "status": final_status, "submitted": submitted, "submitted_at": now}
+
+
 def get_search_console_service_account_info() -> Dict[str, Any]:
     if not search_console_credentials_ready():
         return {}
@@ -285,6 +555,7 @@ def get_search_console_service():
 
 async def fetch_search_console_status() -> Dict[str, Any]:
     service_account_info = get_search_console_service_account_info()
+    oauth_status = await fetch_search_console_oauth_status()
     base = {
         "verification_meta": GOOGLE_SITE_VERIFICATION,
         "required_scope": "https://www.googleapis.com/auth/webmasters",
@@ -292,6 +563,7 @@ async def fetch_search_console_status() -> Dict[str, Any]:
         "sitemaps_ready": SEARCH_CONSOLE_SITEMAPS,
         "credentials_detected": search_console_credentials_ready(),
         "service_account": service_account_info,
+        "oauth": oauth_status,
     }
     if not search_console_credentials_ready():
         return {
@@ -673,6 +945,61 @@ async def sync_prime_public() -> Dict[str, Any]:
     except Exception as exc:
         state = await update_sync_state("prime", "degraded", error=str(exc)[:500], meta={"note": "Prime Video has no public API and may block unauthenticated crawlers."})
         return {"status": "degraded", "error": str(exc), "state": state}
+
+
+@api_router.get("/seo/search-console/oauth/start")
+async def search_console_oauth_start(request: Request, redirect_after: str = "/actualites"):
+    cfg = get_oauth_client_config()
+    redirect_uri = choose_oauth_redirect_uri(request)
+    if not cfg.get("client_id") or not redirect_uri:
+        raise HTTPException(status_code=400, detail="Le client OAuth Web Google n'est pas configuré correctement.")
+    state = make_oauth_state()
+    await store_oauth_state(state, redirect_after=redirect_after, redirect_uri=redirect_uri)
+    return RedirectResponse(build_google_oauth_url(state, redirect_uri), status_code=302)
+
+
+@api_router.get("/seo/search-console/oauth/callback")
+async def search_console_oauth_callback(request: Request, code: Optional[str] = None, state: Optional[str] = None, error: Optional[str] = None):
+    if error:
+        raise HTTPException(status_code=400, detail=f"Erreur OAuth Google: {error}")
+    if not code or not state:
+        raise HTTPException(status_code=400, detail="Paramètres OAuth manquants.")
+    saved_state = await consume_oauth_state(state)
+    if not saved_state:
+        raise HTTPException(status_code=400, detail="State OAuth invalide ou expiré.")
+    cfg = get_oauth_client_config()
+    token_data = await asyncio.to_thread(
+        lambda: request_json(
+            cfg.get("token_uri") or GOOGLE_OAUTH_TOKEN_URI,
+            method="POST",
+            timeout=30,
+            form={
+                "code": code,
+                "client_id": cfg.get("client_id"),
+                "client_secret": cfg.get("client_secret"),
+                "redirect_uri": saved_state.get("redirect_uri") or cfg.get("redirect_uri"),
+                "grant_type": "authorization_code",
+            },
+        )
+    )
+    await save_oauth_credentials(token_data)
+    redirect_after = saved_state.get("redirect_after") or "/actualites"
+    target = redirect_after if redirect_after.startswith("http") else f"{request.url.scheme}://{request.headers.get('host', '').strip()}{redirect_after}"
+    if "?" in target:
+        target = f"{target}&gsc_oauth=connected"
+    else:
+        target = f"{target}?gsc_oauth=connected"
+    return RedirectResponse(target, status_code=302)
+
+
+@api_router.get("/seo/search-console/oauth/status")
+async def search_console_oauth_status():
+    return await fetch_search_console_oauth_status()
+
+
+@api_router.post("/seo/search-console/oauth/submit")
+async def search_console_oauth_submit():
+    return await submit_search_console_sitemaps_oauth()
 
 
 async def sync_all_external(trigger: str = "manual") -> Dict[str, Any]:

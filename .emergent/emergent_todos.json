@@ -9,22 +9,22 @@
   },
   {
     "content": "Obtenir un vrai JSON OAuth Google de type Web application",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Implémenter les endpoints OAuth Search Console côté backend",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Ajouter le statut/soumission OAuth dans le flux Search Console existant",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Redémarrer et valider techniquement le flux OAuth",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Lancer le testing agent pour vérifier OAuth/Search Console",
-    "status": "pending"
+    "status": "in_progress"
   }
 ]

@@ -605,6 +605,214 @@ class LovanetAPITester:
             
         return success
 
+    def test_oauth_status(self):
+        """Test OAuth status endpoint - returns OAuth client readiness"""
+        success, data = self.run_test(
+            "OAuth Status",
+            "GET",
+            "/seo/search-console/oauth/status",
+            200
+        )
+        if success:
+            mode = data.get("mode")
+            client_ready = data.get("client_ready")
+            client_type = data.get("client_type")
+            redirect_uri = data.get("redirect_uri")
+            redirect_uris = data.get("redirect_uris", [])
+            connected = data.get("connected")
+            status = data.get("status")
+            required_scope = data.get("required_scope")
+            
+            print(f"   ✓ Mode: {mode}")
+            print(f"   ✓ Client ready: {client_ready}")
+            print(f"   ✓ Client type: {client_type}")
+            print(f"   ✓ Connected: {connected}")
+            print(f"   ✓ Status: {status}")
+            print(f"   ✓ Required scope: {required_scope}")
+            print(f"   ✓ Redirect URI: {redirect_uri}")
+            print(f"   ✓ Redirect URIs count: {len(redirect_uris)}")
+            
+            # Validate OAuth client configuration
+            if client_ready and client_type == "web":
+                print(f"   ✓ OAuth Web client is configured")
+            else:
+                print(f"   ⚠ OAuth client not ready or not web type")
+            
+            # Check if preview and production callback URIs are present
+            preview_callback = "https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback"
+            production_callbacks = [
+                "https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback",
+                "https://animeofficiel.fr/api/seo/search-console/oauth/callback",
+                "https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback"
+            ]
+            
+            if preview_callback in redirect_uris:
+                print(f"   ✓ Preview callback URI present")
+            else:
+                print(f"   ⚠ Preview callback URI not found in redirect_uris")
+            
+            production_found = [uri for uri in production_callbacks if uri in redirect_uris]
+            if production_found:
+                print(f"   ✓ Production callback URIs present: {len(production_found)}")
+            else:
+                print(f"   ⚠ No production callback URIs found")
+            
+            # Expected: not_connected is acceptable (no user consent yet)
+            if status == "not_connected":
+                print(f"   ✓ Status 'not_connected' is acceptable (no user consent yet)")
+            elif status == "ok":
+                print(f"   ✓ OAuth is connected and working")
+            
+        return success
+
+    def test_oauth_start(self):
+        """Test OAuth start endpoint - should return 302 redirect to Google"""
+        url = f"{BASE_URL}/seo/search-console/oauth/start"
+        headers = {'Content-Type': 'application/json'}
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing OAuth Start Redirect...")
+        
+        try:
+            # Don't follow redirects to check the 302 response
+            response = requests.get(url, headers=headers, allow_redirects=False, timeout=10)
+            
+            if response.status_code == 302:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: 302 (redirect)")
+                
+                # Check redirect location
+                location = response.headers.get("Location", "")
+                print(f"   ✓ Redirect location: {location[:100]}...")
+                
+                # Validate redirect URL contains expected OAuth parameters
+                if "accounts.google.com/o/oauth2/auth" in location:
+                    print(f"   ✓ Redirects to Google OAuth")
+                else:
+                    print(f"   ⚠ Redirect URL doesn't point to Google OAuth")
+                
+                # Check for required OAuth parameters
+                if "client_id=" in location:
+                    print(f"   ✓ Contains client_id parameter")
+                else:
+                    print(f"   ⚠ Missing client_id parameter")
+                
+                if "response_type=code" in location:
+                    print(f"   ✓ Contains response_type=code")
+                else:
+                    print(f"   ⚠ Missing or incorrect response_type")
+                
+                if "scope=" in location and "webmasters" in location:
+                    print(f"   ✓ Contains webmasters scope")
+                else:
+                    print(f"   ⚠ Missing webmasters scope")
+                
+                if "redirect_uri=" in location:
+                    print(f"   ✓ Contains redirect_uri parameter")
+                    # Extract redirect_uri to check if it's the preview callback
+                    import urllib.parse
+                    parsed = urllib.parse.parse_qs(urllib.parse.urlparse(location).query)
+                    redirect_uri = parsed.get("redirect_uri", [""])[0]
+                    if "actualites-hub.preview.emergentagent.com" in redirect_uri:
+                        print(f"   ✓ Redirect URI uses preview domain")
+                else:
+                    print(f"   ⚠ Missing redirect_uri parameter")
+                
+                if "state=" in location:
+                    print(f"   ✓ Contains state parameter (CSRF protection)")
+                else:
+                    print(f"   ⚠ Missing state parameter")
+                
+                return True
+            else:
+                print(f"❌ Failed - Expected 302, got {response.status_code}")
+                print(f"   Response: {response.text[:200]}")
+                self.failed_tests.append({
+                    "test": "OAuth Start Redirect",
+                    "expected": 302,
+                    "actual": response.status_code,
+                    "response": response.text[:200]
+                })
+                return False
+                
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            self.failed_tests.append({"test": "OAuth Start Redirect", "error": str(e)})
+            return False
+
+    def test_search_console_status_includes_oauth(self):
+        """Test that /seo/search-console/status includes nested oauth status"""
+        success, data = self.run_test(
+            "Search Console Status (with OAuth nested)",
+            "GET",
+            "/seo/search-console/status",
+            200
+        )
+        if success:
+            oauth_status = data.get("oauth")
+            service_account = data.get("service_account")
+            
+            print(f"   ✓ Service account info present: {bool(service_account)}")
+            print(f"   ✓ OAuth status nested: {bool(oauth_status)}")
+            
+            if oauth_status:
+                oauth_mode = oauth_status.get("mode")
+                oauth_connected = oauth_status.get("connected")
+                oauth_client_ready = oauth_status.get("client_ready")
+                oauth_status_value = oauth_status.get("status")
+                
+                print(f"   ✓ OAuth mode: {oauth_mode}")
+                print(f"   ✓ OAuth connected: {oauth_connected}")
+                print(f"   ✓ OAuth client ready: {oauth_client_ready}")
+                print(f"   ✓ OAuth status: {oauth_status_value}")
+                
+                # Validate OAuth status is properly nested
+                if oauth_mode == "oauth":
+                    print(f"   ✓ OAuth mode correctly set")
+                else:
+                    print(f"   ⚠ OAuth mode not set correctly")
+            else:
+                print(f"   ❌ OAuth status not nested in response")
+                return False
+            
+        return success
+
+    def test_oauth_submit_not_connected(self):
+        """Test OAuth submit endpoint handles not_connected state gracefully"""
+        success, data = self.run_test(
+            "OAuth Submit (not_connected handling)",
+            "POST",
+            "/seo/search-console/oauth/submit",
+            200
+        )
+        if success:
+            status = data.get("status")
+            submitted = data.get("submitted", [])
+            message = data.get("message", "")
+            
+            print(f"   ✓ Status: {status}")
+            print(f"   ✓ Submitted count: {len(submitted)}")
+            
+            # Expected: graceful handling of not_connected state
+            if status == "not_connected":
+                print(f"   ✓ Gracefully handles not_connected state")
+                if message:
+                    print(f"   ✓ Message: {message[:80]}")
+            elif status == "oauth_client_missing":
+                print(f"   ✓ Gracefully handles oauth_client_missing state")
+                if message:
+                    print(f"   ✓ Message: {message[:80]}")
+            elif status == "ok":
+                print(f"   ✓ OAuth is connected and submission succeeded")
+                for item in submitted[:3]:
+                    print(f"   ✓ {item.get('sitemap_url')}: {item.get('status')}")
+            elif status == "partial":
+                print(f"   ✓ OAuth is connected, partial submission")
+            else:
+                print(f"   ℹ Status: {status}")
+            
+        return success
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
@@ -642,6 +850,13 @@ class LovanetAPITester:
         self.test_tiktok_strict_filtering()
         self.test_search_console_status()
         self.test_search_console_submit()
+
+        # Run OAuth-specific tests
+        print("\n### OAUTH SEARCH CONSOLE TESTS ###")
+        self.test_oauth_status()
+        self.test_oauth_start()
+        self.test_search_console_status_includes_oauth()
+        self.test_oauth_submit_not_connected()
 
         # Print summary
         print("\n" + "=" * 60)
