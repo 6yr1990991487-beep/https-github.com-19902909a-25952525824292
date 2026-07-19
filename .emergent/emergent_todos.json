@@ -1,6 +1,14 @@
 [
   {
-    "content": "Relancer vérifications frontend, captures et tests",
+    "content": "Analyser le thème exact de la navbar à réappliquer sur la page portail",
     "status": "completed"
+  },
+  {
+    "content": "Harmoniser la landing / avec le thème du menu (textes, cartes, badges, boutons)",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier le rendu avec build + captures + tests frontend",
+    "status": "in_progress"
   }
 ]
