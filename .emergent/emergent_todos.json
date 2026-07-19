@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "content": "Ouvrir le flux OAuth Search Console depuis le preview et vérifier l’étape atteinte",
+    "status": "completed"
+  },
+  {
+    "content": "Confirmer si une action humaine de connexion Google est nécessaire",
+    "status": "completed"
+  }
+]
