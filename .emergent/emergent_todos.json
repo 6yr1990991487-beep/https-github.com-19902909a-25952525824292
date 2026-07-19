@@ -1,14 +1,6 @@
 [
   {
-    "content": "Modifier la section visuelle hero du portail selon la capture (suppression texte + bannière étirée + animation vidéo)",
-    "status": "completed"
-  },
-  {
-    "content": "Appliquer la même logique aux autres images similaires de la même section",
-    "status": "completed"
-  },
-  {
     "content": "Vérifier avec build, capture et test frontend",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]
