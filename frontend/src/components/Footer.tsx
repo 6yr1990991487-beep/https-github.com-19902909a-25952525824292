@@ -1,114 +1,102 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Mail, Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
+const footerLinks = [
+  { to: "/", label: "Portail" },
+  { to: "/anime-moments", label: "Anime Moments" },
+  { to: "/decouvrir", label: "Univers Lovanet" },
+  { to: "/lecteurs-video", label: "Lecteurs vidéo" },
+  { to: "/actualites", label: "Actualités" },
+  { to: "/shop", label: "Boutique" },
+];
+
+const destinations = [
+  { to: "/anime-moments", label: "Anime Moments", icon: Film },
+  { to: "/decouvrir", label: "Découvrir", icon: Compass },
+  { to: "/chaine-youtube", label: "YouTube", icon: Youtube },
+  { to: "/prime-video", label: "Prime Vidéo", icon: PlayCircle },
+  { to: "/actualites", label: "Actualités", icon: Newspaper },
+  { to: "/shop", label: "Shop", icon: ShoppingBag },
+];
 
 export const Footer = () => {
-  const [email, setEmail] = useState("");
   return (
-    <footer className="border-t border-border bg-card/40 mt-24">
-      {/* SEO — Sitelinks empilés (rendu accessible, structure crawlable) */}
-      <nav aria-label="Lovanet — Plateforme officielle dédiée à l'anime" className="container mx-auto px-4 lg:px-8 pt-10">
-        <p className="sr-only">Lovanet — Plateforme officielle dédiée à l'anime · Anime.Moments.officiel &amp; AnimemomentsAnimeofficiel · Animés à venir, Catalogue, Boutique.</p>
-        <ul className="grid gap-1 text-sm text-muted-foreground">
-          <li><Link to="/" className="hover:text-primary">Portail Lovanet →</Link></li>
-          <li><Link to="/anime-moments" className="hover:text-primary">Anime Moments →</Link></li>
-          <li><Link to="/anime-catalog" className="hover:text-primary">Catalogue →</Link></li>
-          <li><Link to="/decouvrir" className="hover:text-primary">Univers Lovanet →</Link></li>
-          <li><Link to="/shop" className="hover:text-primary">Boutique →</Link></li>
-          <li>
-            <Link to="/chaine-youtube" className="hover:text-primary">AnimemomentsAnimeofficiel → YouTube</Link>{" "}
-            <a href="https://www.youtube.com/@animemomentsanimeofficiel" target="_blank" rel="noopener noreferrer" className="text-[10px] uppercase tracking-wider text-primary/80 hover:text-primary">↗ partenaire</a>
-          </li>
-          <li>
-            <Link to="/chaine-youtube" className="hover:text-primary">AnimemomentsAnimeofficiel →</Link>{" "}
-            <a href="https://www.youtube.com/@animemomentsanimeofficiel" target="_blank" rel="noopener noreferrer" className="text-[10px] uppercase tracking-wider text-primary/80 hover:text-primary">↗ partenaire</a>
-          </li>
-          <li>
-            <Link to="/prime-video" className="hover:text-primary">Anime.Moments.officiel → Prime Video</Link>{" "}
-            <a href="https://www.primevideo.com/search/ref=atv_nb_sr?phrase=anime" target="_blank" rel="noopener noreferrer" className="text-[10px] uppercase tracking-wider text-primary/80 hover:text-primary">↗ partenaire</a>
-          </li>
-          <li>
-            <Link to="/tiktok" className="hover:text-primary">Anime.Moments.officiel → TikTok</Link>{" "}
-            <a href="https://www.tiktok.com/@anime.moments.officiel" target="_blank" rel="noopener noreferrer" className="text-[10px] uppercase tracking-wider text-primary/80 hover:text-primary">↗ partenaire</a>
-          </li>
-          <li><Link to="/anime-countdown" className="hover:text-primary">À venir →</Link></li>
-        </ul>
-      </nav>
-      <div className="container mx-auto px-4 lg:px-8 py-12 grid gap-10 md:grid-cols-4">
-        <div className="space-y-3">
-          <Link to="/" className="font-display font-extrabold tracking-wider text-lg">
-            Lovanet
+    <footer className="mt-24 border-t border-white/10 bg-black/35 backdrop-blur-xl">
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8">
+        <div className="space-y-5">
+          <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
+            <span className="font-display text-2xl font-black tracking-[0.14em] text-white">LOVANET</span>
           </Link>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            Plateforme officielle Lovanet — catalogue d'animés, épisodes en streaming et séries manga sur Prime Video, YouTube et TikTok.
+          <p className="max-w-xl text-sm leading-7 text-white/62" data-testid="footer-description">
+            Portail anime et manga pensé pour explorer les vidéos, les actualités, les univers immersifs et la boutique collector dans une expérience visuelle premium.
           </p>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="glass" className="rounded-full border-white/15 bg-white/[0.05] text-white" data-testid="footer-contact-button">
+              <Link to="/contact">
+                <Mail className="h-4 w-4" />
+                Contact
+              </Link>
+            </Button>
+            <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">
+              <Link to="/anime-moments">
+                <Film className="h-4 w-4" />
+                Explorer Anime Moments
+              </Link>
+            </Button>
+          </div>
         </div>
 
-        <div>
-          <h4 className="text-xs font-semibold mb-3 tracking-[0.25em] text-primary uppercase">Navigation</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/" className="hover:text-primary">Portail</Link></li>
-            <li><Link to="/anime-moments" className="hover:text-primary">Anime Moments</Link></li>
-            <li><Link to="/lecteurs-video" className="hover:text-primary">Lecteurs vidéo</Link></li>
-            <li><Link to="/chaine-youtube" className="hover:text-primary">YouTube</Link></li>
-            <li><Link to="/prime-video" className="hover:text-primary">Prime Vidéo</Link></li>
-            <li><Link to="/tiktok" className="hover:text-primary">TikTok</Link></li>
-            <li><Link to="/actualites" className="hover:text-primary">Actualités anime →</Link></li>
-            <li><Link to="/shop" className="hover:text-primary">Shop</Link></li>
-          </ul>
-        </div>
+        <div className="grid gap-8 sm:grid-cols-2">
+          <div>
+            <h4 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-cyan-100/70">Navigation</h4>
+            <ul className="space-y-3 text-sm text-white/72">
+              {footerLinks.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to} className="transition-colors hover:text-white" data-testid={`footer-link-${item.label.toLowerCase().replace(/\s+/g, "-")}`}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h4 className="text-xs font-semibold mb-3 tracking-[0.25em] text-primary uppercase">Communauté</h4>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>
-              <a href="https://www.youtube.com/channel/UC0T9pcWA9_lpdB6-ZucZYmw" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-                YouTube · @animemomentsAnimeofficiel
-              </a>
-            </li>
-            <li>
-              <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-                TikTok officiel
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="text-xs font-semibold mb-3 tracking-[0.25em] text-primary uppercase">Newsletter</h4>
-          <p className="text-sm text-muted-foreground mb-3">Reçois les meilleurs moments anime chaque semaine.</p>
-          <form
-            onSubmit={(e) => { e.preventDefault(); setEmail(""); }}
-            className="flex gap-2"
-          >
-            <Input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="ton@email.fr"
-              className="rounded-full bg-secondary border-border"
-            />
-            <Button type="submit" className="rounded-full">OK</Button>
-          </form>
+          <div>
+            <h4 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-fuchsia-100/70">Destinations</h4>
+            <ul className="grid gap-3 text-sm text-white/72">
+              {destinations.map((item) => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="inline-flex items-center gap-2 transition-colors hover:text-white"
+                    data-testid={`footer-destination-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="container mx-auto px-4 lg:px-8 py-4 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 justify-between">
-          <span>© {new Date().getFullYear()} Lovanet — Anime Moments. Tous droits réservés.</span>
-          <span className="space-x-3">
-            <Link to="/anime-moments" className="hover:text-primary">Manga animé</Link>
+      <div className="border-t border-white/10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-4 text-xs text-white/48 sm:px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+          <span data-testid="footer-copyright">© {new Date().getFullYear()} Lovanet — Anime Moments.</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/legals" className="transition-colors hover:text-white" data-testid="footer-legals-link">Mentions légales</Link>
             <span>·</span>
-            <Link to="/chaine-youtube" className="hover:text-primary">YouTube</Link>
-            <span>·</span>
-            <Link to="/tiktok" className="hover:text-primary">TikTok</Link>
-            <span>·</span>
-            <Link to="/shop" className="hover:text-primary">Shop</Link>
-            <span>·</span>
-            <Link to="/legals" className="hover:text-primary">Mentions légales</Link>
-          </span>
+            <a
+              href="https://www.youtube.com/@animemomentsanimeofficiel"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-white"
+              data-testid="footer-youtube-external-link"
+            >
+              YouTube officiel
+            </a>
+          </div>
         </div>
       </div>
     </footer>

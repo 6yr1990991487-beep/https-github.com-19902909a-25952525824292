@@ -1,18 +1,14 @@
 [
   {
-    "content": "Mettre à jour la navbar et les liens internes concernés",
+    "content": "Retirer uniquement les éléments exacts vus en capture (bulle flottante, hologrammes/images parasites, textes footer ciblés)",
     "status": "completed"
   },
   {
-    "content": "Corriger les erreurs de lint dans Legals.tsx",
+    "content": "Refondre la page portail / en vraie vitrine premium centrée contenu et accès",
     "status": "completed"
   },
   {
-    "content": "Vérifier le frontend avec lint/build/captures",
+    "content": "Relancer vérifications frontend, captures et tests",
     "status": "in_progress"
-  },
-  {
-    "content": "Lancer le testing agent frontend et corriger les éventuelles régressions",
-    "status": "pending"
   }
 ]

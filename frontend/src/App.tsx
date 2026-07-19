@@ -1,8 +1,8 @@
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import RootLandingPage from "./pages/RootLandingPage";
 import ChaineYoutube from "./pages/ChaineYoutube";
@@ -31,10 +31,6 @@ import { LocalizedHead } from "./components/LocalizedHead";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
 
 const queryClient = new QueryClient();
-
-// Every localized language other than the default (French) gets its own URL
-// prefix so Google indexes distinct pages per language: /en/shop, /ja/,
-// /es/anime-catalog, etc. LocalizedHead reads the prefix and swaps meta.
 const LOCALE_PREFIXES = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
 const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
@@ -57,9 +53,6 @@ const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
   { path: "/hub/ferry", element: <HubFerryStandalone /> },
 ];
 
-// Legacy / friendly aliases -> canonical branded routes. Keeps old inbound
-// links working and matches the Google sitelinks ordering (YouTube, Discover,
-// Prime Video, TikTok, Shop, Countdown, Catalog).
 const REDIRECTS: Array<{ from: string; to: string }> = [
   { from: "/home", to: "/anime-moments" },
   { from: "/accueil", to: "/anime-moments" },
@@ -81,7 +74,10 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
 
 const AppShell = () => {
   const location = useLocation();
-  const isHubPreviewRoute = location.pathname.startsWith("/hub/") || LOCALE_PREFIXES.some((lang) => location.pathname.startsWith(`/${lang}/hub/`));
+  const pathname = location.pathname;
+  const isHubPreviewRoute = pathname.startsWith("/hub/") || LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/hub/`));
+  const rootPaths = new Set(["/", ...LOCALE_PREFIXES.map((lang) => `/${lang}`)]);
+  const isRootLandingRoute = rootPaths.has(pathname);
 
   return (
     <CartProvider>
@@ -106,13 +102,12 @@ const AppShell = () => {
         ))}
         <Route path="/admin/sync" element={<SyncDashboard />} />
         <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      {!isHubPreviewRoute && <ThemeBubble />}
+      {!isHubPreviewRoute && !isRootLandingRoute && <ThemeBubble />}
       {!isHubPreviewRoute && <CartDrawer />}
-      {!isHubPreviewRoute && <GoogleTranslate />}
-      {!isHubPreviewRoute && <HologramOverlay />}
+      {!isHubPreviewRoute && !isRootLandingRoute && <GoogleTranslate />}
+      {!isHubPreviewRoute && !isRootLandingRoute && <HologramOverlay />}
     </CartProvider>
   );
 };

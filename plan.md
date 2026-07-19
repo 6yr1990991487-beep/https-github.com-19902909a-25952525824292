@@ -180,25 +180,28 @@
 
 ---
 
-### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ⏳ IN PROGRESS
+### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
 
 #### Phase 9.1 — Routing ✅ DONE
 - `/` devient la **nouvelle landing page** (pas “Accueil”).
 - L’actuelle home est déplacée vers `/anime-moments`.
 - Navbar, footer et liens internes principaux mis à jour pour la nouvelle structure.
 
-#### Phase 9.2 — Nouvelle landing (long format) ⏳ DONE
-- Nouvelle page racine créée avec hero, portails, storyline, passerelles plateformes, vidéos, teaser hubs 3D, preuves, FAQ, CTA final.
-- Style aligné sur les tokens néon/verre existants et cohérent avec l’identité visuelle importée.
-- `data-testid` ajoutés sur les CTA et sections critiques de la landing.
+#### Phase 9.2 — Nouvelle landing (long format) ✅ DONE
+- Landing `/` refondue une seconde fois après retour utilisateur.
+- Suppression des phrases techniques/internes, recentrage sur une vraie logique de portail visiteur.
+- Mise en avant de previews contenu, accès sections/pages, visuels premium et footer simplifié.
+- Retrait ciblé sur `/` des éléments montrés en capture : bulle flottante, hologrammes/superpositions globales parasites, widgets non désirés sur la landing.
 
 #### Phase 9.3 — SEO de la landing et de `/anime-moments` ⏳ DONE
 - `seoI18n` et `LocalizedHead` mis à jour pour la route `/anime-moments`.
 - Breadcrumbs / labels SEO adaptés à la nouvelle landing `/`.
 - Build frontend validé ; reste le passage de testing agent pour la non-régression complète.
 
-#### Phase 9.4 — Tests
-- Appeler **testing_agent** (obligatoire) pour non-régression.
+#### Phase 9.4 — Tests ✅ DONE
+- Build frontend validé après refonte.
+- Captures revues sur `/` pour confirmer la disparition des éléments gênants visibles en capture.
+- Testing agent relancé après cette itération UI.
 
 ---
 
