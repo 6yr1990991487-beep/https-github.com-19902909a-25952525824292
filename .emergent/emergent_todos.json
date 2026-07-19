@@ -1,14 +1,30 @@
 [
   {
-    "content": "Vérifier que la connexion OAuth Google Search Console est bien active",
+    "content": "Extraire le ZIP prioritaire et localiser uniquement Hub Ferry + Hub Train Station",
     "status": "completed"
   },
   {
-    "content": "Lancer la soumission OAuth des sitemaps si la connexion est active",
+    "content": "Identifier les emplacements frontend exacts pour Shop et Univers Lovanet",
     "status": "completed"
   },
   {
-    "content": "Confirmer le résultat et les éventuels blocages restants",
+    "content": "Déterminer la stratégie d’intégration identique sans casser le layout",
     "status": "completed"
+  },
+  {
+    "content": "Intégrer Hub Train Station sur /shop au-dessus de la bannière",
+    "status": "completed"
+  },
+  {
+    "content": "Intégrer Hub Ferry sous « Explorer le catalogue » sur Univers Lovanet",
+    "status": "completed"
+  },
+  {
+    "content": "Compiler et vérifier visuellement les pages modifiées",
+    "status": "in_progress"
+  },
+  {
+    "content": "Lancer le testing agent pour valider les hubs 3D",
+    "status": "pending"
   }
 ]

@@ -43,6 +43,18 @@
   - flux visible (fallback officiel quand TikTok bloque l’énumération)
 - Source officielle : `https://www.tiktok.com/@anime.moments.officiel`
 
+### Objectif (Hubs 3D — EN COURS)
+- Extraire depuis les archives fournies **uniquement** 2 hubs 3D à l’identique visuel :
+  - **Hub Ferry**
+  - **Hub Train Station**
+- Les intégrer **sans adaptation créative** (identique) si techniquement possible.
+- Implantations demandées :
+  - **Hub Train Station** : page **Shop** (`/shop`) **au-dessus de la bannière**.
+  - **Hub Ferry** : page **Univers Lovanet** (route `/decouvrir`) **en dessous** du CTA **« Explorer le catalogue »**.
+- **Source de vérité extraction hubs** :
+  - archive initiale : `49003I909E0-main.zip`
+  - **nouvelle archive prioritaire** si les hubs ne sont pas complets : `0nnnnryg5ew4554876-main` (upload utilisateur)
+
 ### Domaines / cibles SEO (confirmé utilisateur)
 - Domaine primaire (canonique) : `https://lovanet.fr`
 - Domaines secondaires à traiter **PARTOUT** (SEO + JSON‑LD + sitemaps + meta) :
@@ -60,7 +72,7 @@
 
 ### Statut environnements
 - Deux environnements existent : **Preview** (dev) + **Production** (`https://animemomentsofficiel.fr`).
-- Priorité utilisateur : **les deux** → corrections faites en **Preview**, puis **redeploy** nécessaire pour pousser en production.
+- Priorité utilisateur : **les deux** → implémentation en **Preview**, puis **redeploy** nécessaire pour pousser en production.
 
 ### Validation attendue (clarifiée)
 - Attendu : **soumission technique** (sitemaps/pages/images/vidéos/news/catalogue) + **vérification des signaux SEO** (meta/JSON‑LD/miniatures/descriptions/routes indexables).
@@ -72,6 +84,11 @@
   - `videos = 1297`
   - `news = 30`
   - `products = 76`
+- Search Console (preview, OAuth) :
+  - ✅ OAuth connecté
+  - ✅ Soumission technique effectuée sur `lovanet.fr`
+  - ⚠️ `animemomentsofficiel.fr` : 403 (permissions Google insuffisantes)
+  - ⚠️ `animeofficiel.fr` : propriété à ajouter/valider dans Search Console
 
 ### Statut actuel (projet)
 - ✅ Phase 1 terminée (extraction/inventaire/mirror).
@@ -79,9 +96,8 @@
 - ✅ Phase 3 terminée (auto-sync externe + UI + tests).
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
 - ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
-- ⚠️ Blocage externe service account : la soumission réelle Search Console reste en état `api_access_not_configured` tant que l’API Search Console n’est pas activée sur le projet `dynamic-cove-502914-u0`.
-- ✅ **NOUVEAU : Phase 6 (OAuth Search Console) implémentée et testée** (testing_agent iteration_7).
-  - État actuel attendu : `not_connected` tant que le consentement Google n’a pas été effectué via `/oauth/start`.
+- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée (lovanet.fr OK) **en preview**.
+- ⏳ Prochaine grande tâche : **Hubs 3D** (extraction ZIP + intégration pages).
 
 ---
 
@@ -114,122 +130,100 @@
 #### Phase 5.4 — Harmonisation SEO logo statique ✅ DONE
 - Références SEO vers `lovanet-logo-custom.png` (LocalizedHead / Actualites / index.html / structured-data.json / robots.txt / script SEO).
 
-#### Phase 5.5 — Search Console (mode Service Account) ✅ DONE (avec dépendance externe)
-1) ✅ Balise meta vérification (1 seule occurrence globale).
-2) ✅ Endpoints backend :
-   - `GET /api/seo/search-console/status`
-   - `POST /api/seo/search-console/submit`
-3) ✅ Gestion d’état : retourne `api_access_not_configured` + URL d’activation quand l’API Google Search Console est désactivée.
-4) ✅ Support multi-propriétés + sitemaps multi-domaines.
-5) ⚠️ Dépendance externe : activer l’API Search Console + partager les propriétés au service account.
+#### Phase 5.5 — Search Console (service account + OAuth) ✅ DONE (preview)
+- Meta vérification en place.
+- Endpoints service account : `GET/POST /api/seo/search-console/*`.
+- Endpoints OAuth : `GET /api/seo/search-console/oauth/*` + `POST /api/seo/search-console/oauth/submit`.
+- Connexion OAuth réalisée (preview) et soumission exécutée :
+  - ✅ `lovanet.fr`: sitemaps soumis
+  - ⚠️ `animemomentsofficiel.fr`: 403 permissions insuffisantes
+  - ⚠️ `animeofficiel.fr`: propriété non accessible tant qu’elle n’est pas validée et partagée
 
-#### Phase 5.6 — Validation des sitemaps / RSS / JSON‑LD ✅ DONE
-- Fichiers validés dans `/frontend/public` :
-  - `sitemap.xml` + index
-  - `sitemap-pages.xml`
-  - `sitemap-images.xml`
-  - `sitemap-videos.xml`
-  - `sitemap-products.xml`
-  - `sitemap-news.xml`
-  - `sitemap-books.xml`
-  - `sitemap-catalog.xml` + chunks (`sitemap-catalog-1.xml`, `sitemap-catalog-2.xml`)
-  - sitemaps multi-domaines (`sitemap-animemomentsofficiel-fr.xml`, `sitemap-animeofficiel-fr.xml` + déclinaisons)
-  - `rss.xml`, `atom.xml`
-  - `structured-data.json`
+#### Phase 5.6 — Validation sitemaps / RSS / JSON‑LD ✅ DONE
+- Sitemaps complets + catalogue chunké, RSS/Atom, JSON‑LD Organization/WebSite/WebPage validés.
 
-#### Phase 5.7 — TikTok : expérience complète restaurée ✅ DONE (validée)
-- UI riche (player + carrousel) si vidéos disponibles.
-- Fallback officiel : widget profil TikTok via oEmbed quand la sync renvoie 0 vidéo.
+#### Phase 5.7 — TikTok UX ✅ DONE
+- Player + carrousel (si items disponibles)
+- fallback widget officiel TikTok si la sync renvoie 0.
 
-#### Phase 5.8 — Multi-domain SEO “PARTOUT” ✅ DONE (validée)
-- Ajout des domaines secondaires dans : meta/link `alternate`, JSON‑LD `Organization.sameAs`, backend export SEO.
-- Canonicals/alternates conservent les paramètres profonds (indexables) :
-  - `/shop?product=...`
-  - `/lecteurs-video?video=...`
-  - `/anime-catalog?anime=...` (title/description/canonical/JSON‑LD dédiés)
-- Catalogue : sitemap dédié chunké via `sitemap-catalog.xml`.
+#### Phase 5.8 — Multi-domain SEO « PARTOUT » ✅ DONE
+- Ajout `animemomentsofficiel.fr` + `animeofficiel.fr` dans meta/link/JSON‑LD/sitemaps.
+- Canonicals/alternates conservent les paramètres profonds : `product`, `video`, `anime`.
 
 ---
 
-### Phase 6 — Search Console OAuth (NOUVEAU) ✅ IMPLEMENTED (preview) — ⏳ à connecter
-Objectif : permettre une **soumission réelle** des sitemaps en utilisant le compte Google utilisateur.
+### Phase 6 — Search Console OAuth (connexion + soumission) ✅ COMPLETED (preview)
+- ✅ Client OAuth Web fourni et validé.
+- ✅ Flux `/oauth/start` → consentement → `/oauth/callback` fonctionnel.
+- ✅ Soumission exécutée (statut `partial` en raison des permissions Search Console).
 
-#### Phase 6.0 — Sécurisation des credentials OAuth ✅ DONE (preview-only)
-- ✅ JSON OAuth Google **Web application** uploadé par l’utilisateur.
-- ✅ Choix utilisateur : usage en preview pour l’instant.
-- ⚠️ À préparer ensuite : migration des credentials OAuth vers variables/secret manager en production.
+> Reste à faire côté Google (humain) :
+> - ajouter/valider la propriété `animeofficiel.fr` dans Search Console
+> - donner au compte OAuth un accès suffisant sur `animemomentsofficiel.fr`
 
-#### Phase 6.1 — Backend OAuth endpoints ✅ DONE (validated by testing_agent iteration_7)
-- ✅ Endpoints disponibles :
-  - `GET /api/seo/search-console/oauth/start`
-  - `GET /api/seo/search-console/oauth/callback`
-  - `GET /api/seo/search-console/oauth/status`
-  - `POST /api/seo/search-console/oauth/submit`
-- ✅ Stockage DB :
-  - `oauth_state` (state + redirect_after + redirect_uri)
-  - `oauth_credentials` (access_token + refresh_token + expires_at)
-- ✅ Refresh token: auto-refresh via `GoogleAuthRequest()` et mise à jour DB.
+---
 
-#### Phase 6.2 — Status unifié ✅ DONE
-- `GET /api/seo/search-console/status` inclut maintenant :
-  - statut service account
-  - statut OAuth imbriqué (`oauth: {...}`)
+### Phase 7 — Hubs 3D (ZIP) ⏳ PLANNED / IN PROGRESS
 
-#### Phase 6.3 — Connexion OAuth (action utilisateur) ⏳ PENDING
-- Étape manquante : réaliser le consentement Google
-  - Ouvrir : `GET /api/seo/search-console/oauth/start`
-  - Autoriser l’accès Search Console
-  - Retour automatique via `/oauth/callback`
-  - Vérifier ensuite : `/api/seo/search-console/oauth/status` doit passer à `ok`
+#### Phase 7.1 — Extraction ciblée (ZIP)
+- Télécharger et décompresser :
+  - archive #1 : `49003I909E0-main.zip`
+  - archive #2 (prioritaire si besoin) : `0nnnnryg5ew4554876-main`
+- Localiser et extraire **uniquement** les modules nécessaires aux 2 hubs :
+  - `TrainStation` (+ hooks/data utilisés)
+  - `FerryBackground` (+ `FerryTrainCityPlaza`, audio, controls)
+- Identifier les dépendances manquantes dans le projet actuel :
+  - `react-icons` (dépendance non présente actuellement)
+  - fichiers `/audio/train-announcements/*.mp3` référencés
+  - tout asset additionnel requis
+- Décider la stratégie d’intégration "identique" :
+  - intégration brute des composants + dépendances
+  - encapsulation pour éviter `position:fixed` globale du hub ferry qui écraserait tout le layout
 
-#### Phase 6.4 — Soumission sitemaps via OAuth ⏳ PENDING (après connexion)
-- Appeler : `POST /api/seo/search-console/oauth/submit`
-- Attendu : soumission technique de **tous les sitemaps** (pages/images/vidéos/produits/news/books/catalogue + multi-domain)
+#### Phase 7.2 — Intégration identique (frontend)
+- **Shop (`/shop`)** : ajouter **Hub Train Station** au-dessus de la bannière (avant `ShopHeroBanner`).
+- **Univers Lovanet (`/decouvrir`)** : ajouter **Hub Ferry** **sous** le CTA **« Explorer le catalogue »**.
+- Conserver l’apparence « identique » : shaders/textures/contrôles/caméra/animations.
+- Ajouter un lazy-load + fallback de chargement (sans changer le rendu final).
 
-#### Phase 6.5 — Déploiement production ⏳ PENDING
-- Une fois validé en preview, **redeploy** requis pour pousser en production.
+#### Phase 7.3 — Performance & compatibilité (sans changer le visuel)
+- Vérifier chargement progressif (lazy-load) et absence de blocage du rendu.
+- S’assurer que le hub 3D ne casse pas le mobile (canvas responsive, hauteur contrôlée, fallback si WebGL indisponible).
+- Attention particulière :
+  - `FerryBackground` utilise un overlay `fixed` + injection DOM (`document.body.appendChild`) : à encapsuler pour ne pas casser le reste du site.
+
+#### Phase 7.4 — Tests & validation
+- Build frontend.
+- Test navigation : Shop + Univers Lovanet.
+- Vérifier que les hubs s’affichent aux positions demandées.
+- Appeler **testing_agent** pour valider la régression UI et la présence des hubs.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **Connecter OAuth en preview** : aller sur `/api/seo/search-console/oauth/start` et valider le consentement Google.
-2) Vérifier `/api/seo/search-console/oauth/status` → doit être `ok` + permissions sur les propriétés.
-3) Lancer `POST /api/seo/search-console/oauth/submit` et vérifier :
-   - sitemaps “submitted/partial/skipped”
-   - messages d’erreur éventuels (propriété non accessible, etc.)
-4) Si permissions manquantes : ajouter le compte Google OAuth (celui utilisé au consentement) comme propriétaire/gestionnaire des propriétés.
-5) **Production** : redeploy pour appliquer les changements (SEO + OAuth + endpoints) sur `https://animemomentsofficiel.fr`.
-6) **Suivi Search Console (UI)** : sitemaps listés, erreurs d’exploration, couverture, indexing video/image/news.
+1) **Phase 7.1** : analyser `0nnnnryg5ew4554876-main` (prioritaire) + fallback vers `49003I909E0-main.zip` si besoin.
+2) Copier/intégrer dans le projet actuel uniquement les composants/hook/data requis + ajouter dépendances npm manquantes (notamment `react-icons`).
+3) **Phase 7.2** : intégrer Train Station sur `/shop` au-dessus du hero.
+4) **Phase 7.2** : intégrer Ferry sous « Explorer le catalogue » sur `/decouvrir`.
+5) **Phase 7.3** : encapsuler Ferry pour éviter les effets globaux (`fixed`/DOM injection) tout en gardant le rendu.
+6) **Phase 7.4** : tests + rapport testing_agent.
+7) **Production** : redeploy pour pousser les hubs 3D + endpoints OAuth live.
 
 ---
 
 ## 4) Success Criteria
-### Atteints (Phases 1–4)
+
+### Atteints (Phases 1–6)
 - Socle complet + import Lovable + auto-sync + pages + tests.
+- SEO complet : meta/JSON‑LD/sitemaps/RSS + multi-domain.
+- Search Console OAuth : connecté + soumission lancée sur `lovanet.fr`.
 
-### Atteints (Phase 5 — en preview)
-- Logo navbar intégré.
-- Favicon/touch icons générés.
-- `/shop` JSON‑LD enrichi (`aggregateRating` + `review`).
-- `/actualites` meta description non dupliquée.
-- Search Console meta + endpoints backend (service account) + message d’activation API.
-- Sitemaps/RSS/JSON‑LD validés, catalogue chunké + multi-domain.
-- TikTok : page `/tiktok` non vide + expérience visible restaurée (fallback widget officiel).
-- Multi-domain SEO : `animemomentsofficiel.fr` + `animeofficiel.fr` présents **PARTOUT**.
-
-### Atteints (Phase 6 — OAuth)
-- ✅ Endpoints OAuth implémentés.
-- ✅ Client OAuth Web reconnu (callbacks preview + domaines prod).
-- ✅ Tests backend + sanity frontend validés (testing_agent iteration_7).
-
-### À atteindre (restant — connexion OAuth + soumission + déploiement)
-- ⏳ Réaliser le consentement OAuth (passer `not_connected` → `ok`).
-- ⏳ Soumission réelle des sitemaps via OAuth (si propriétés accessibles).
-- ⏳ Redeploy en production.
-- 📈 Après déploiement : vérifier l’état d’exploration et les rapports (sans promesse d’indexation finale).
+### À atteindre (Phase 7)
+- Hub 3D **Train Station** visible sur `/shop` au bon emplacement (au-dessus de la bannière).
+- Hub 3D **Ferry** visible sur `/decouvrir` sous « Explorer le catalogue ».
+- Intégration « identique » au ZIP sans casse responsive.
 
 ### Contraintes / transparence
-- Corrections en preview → **redeploy** nécessaire pour production.
-- Search Console service account : dépend de l’activation API + permissions sur les propriétés.
-- Search Console OAuth : dépend du consentement utilisateur + permissions sur les propriétés + stockage sécurisé des tokens.
+- Modifs en preview → **redeploy** nécessaire pour production.
 - Indexation Google : non garantie (on garantit la soumission + présence des signaux).
+- Hubs 3D : dépendances WebGL/ThreeJS doivent rester compatibles (fallback si nécessaire).

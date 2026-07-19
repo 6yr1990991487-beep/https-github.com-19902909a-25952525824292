@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageShell } from "@/components/PageShell";
+import { HubEmbedFrame } from "@/components/HubEmbedFrame";
 import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
 import { videos, thumb } from "@/data/videos";
 import { ShoppingBag, Youtube, Music2, Play, Film, Calendar, Sparkles, ArrowRight } from "lucide-react";
@@ -243,7 +244,6 @@ const Discover = () => {
               </div>
             </div>
 
-            {/* 3D showcase card cluster */}
             <div
               className="relative h-[340px] md:h-[420px] lg:h-[480px]"
               style={{ transformStyle: "preserve-3d", transform: `rotateX(${tilt.y * -6}deg) rotateY(${tilt.x * 8}deg)`, transition: "transform 0.2s ease-out" }}
@@ -282,14 +282,22 @@ const Discover = () => {
                   </div>
                 );
               })}
-              {/* Floating glow ring */}
               <div aria-hidden className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[80%] rounded-full opacity-40 blur-2xl pointer-events-none"
                 style={{ background: "conic-gradient(from 0deg, #e879f9, #38bdf8, #fde68a, #e879f9)" }} />
             </div>
           </div>
+
+          <div className="mt-10" data-testid="discover-ferry-hub-anchor">
+            <HubEmbedFrame
+              src="/hub/ferry"
+              title="Hub Ferry"
+              description="Import 3D identique du hub Ferry, positionné sous « Explorer le catalogue » sur Univers Lovanet."
+              heightClassName="h-[620px] md:h-[760px]"
+              testId="discover-ferry-hub"
+            />
+          </div>
         </div>
 
-        {/* wave divider */}
         <div aria-hidden className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(240,171,252,0.5), transparent)" }} />
       </section>
 
@@ -360,7 +368,7 @@ const Discover = () => {
           <div aria-hidden className="absolute inset-0 opacity-40"
             style={{ background: "conic-gradient(from 90deg at 50% 50%, transparent, rgba(240,171,252,0.15), transparent 40%)" }} />
           <h3 className="relative font-display text-2xl md:text-4xl font-black text-white mb-3">
-            Tout l'univers Lovanet en un clic
+            Tout l’univers Lovanet en un clic
           </h3>
           <p className="relative text-sm md:text-base text-white/70 max-w-xl mx-auto mb-6">
             YouTube · TikTok · Prime · Catalogue · Shop — connectés au même hub officiel.
@@ -373,7 +381,7 @@ const Discover = () => {
               boxShadow: "0 20px 40px -12px rgba(232,121,249,0.5)",
             }}
           >
-            Retour à l'accueil <ArrowRight className="w-4 h-4" />
+            Retour à l’accueil <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>

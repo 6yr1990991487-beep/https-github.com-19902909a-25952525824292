@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
+import { HubEmbedFrame } from "@/components/HubEmbedFrame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -224,6 +225,16 @@ const Shop = () => {
 
   return (
     <PageShell>
+      <section className="container mx-auto px-3 sm:px-4 lg:px-8 pt-6 sm:pt-8 pb-5" data-testid="shop-train-station-hub-section">
+        <HubEmbedFrame
+          src="/hub/train-station"
+          title="Hub Train Station"
+          description="Import 3D identique du hub Train Station, implanté au-dessus de la bannière Shop comme demandé."
+          heightClassName="h-[620px] md:h-[780px]"
+          testId="shop-train-station-hub"
+        />
+      </section>
+
       {/* HERO BANNER auto-slide (image + vidéo) */}
       <ShopHeroBanner
         products={heroProducts}

@@ -19,6 +19,8 @@ import Discover from "./pages/Discover";
 import OAuthConsent from "./pages/OAuthConsent";
 import SyncDashboard from "./pages/SyncDashboard";
 import Actualites from "./pages/Actualites";
+import HubTrainStationStandalone from "./pages/HubTrainStationStandalone";
+import HubFerryStandalone from "./pages/HubFerryStandalone";
 import { ThemeBubble } from "./components/ThemeBubble";
 import { CartProvider } from "./context/CartContext";
 import { CartDrawer } from "./components/CartDrawer";
@@ -49,6 +51,8 @@ const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
   { path: "/actualites", element: <Actualites /> },
   { path: "/actualites/:slug", element: <Actualites /> },
   { path: "/decouvrir", element: <Discover /> },
+  { path: "/hub/train-station", element: <HubTrainStationStandalone /> },
+  { path: "/hub/ferry", element: <HubFerryStandalone /> },
 ];
 
 // Legacy / friendly aliases -> canonical branded routes. Keeps old inbound
