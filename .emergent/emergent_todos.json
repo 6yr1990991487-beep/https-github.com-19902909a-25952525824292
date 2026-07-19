@@ -5,10 +5,10 @@
   },
   {
     "content": "Lancer la soumission OAuth des sitemaps si la connexion est active",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Confirmer le résultat et les éventuels blocages restants",
-    "status": "pending"
+    "status": "completed"
   }
 ]
