@@ -28,8 +28,8 @@
 - Finaliser l’automatisation Search Console :
   - soumission/validation des sitemaps via **Google Search Console API**
   - **2 modes d’authentification** :
-    - **service account JSON** (déjà intégré) — utile si la propriété est partagée avec le compte de service + API activée
-    - **OAuth Web client** (en cours) — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
+    - **service account JSON** — utile si la propriété est partagée avec le compte de service + API activée
+    - **OAuth Web client** — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
 
 > ⚠️ Sécurité (prioritaire)
 > - ne jamais exposer le *client secret* OAuth (ni l’écrire dans le code/plan/logs)
@@ -80,10 +80,8 @@
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
 - ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
 - ⚠️ Blocage externe service account : la soumission réelle Search Console reste en état `api_access_not_configured` tant que l’API Search Console n’est pas activée sur le projet `dynamic-cove-502914-u0`.
-- ✅ L’utilisateur a uploadé un JSON OAuth Google.
-- ⚠️ **Blocage identifié** : le JSON OAuth fourni est de type **`installed` (desktop)**, pas **`web application`**.
-  - Un client **installed** n’est pas compatible avec un callback web sur les domaines (preview/production).
-  - Pour finaliser le flux OAuth réel, il faut un **OAuth client de type Web application** avec les redirect URIs listées.
+- ✅ **NOUVEAU : Phase 6 (OAuth Search Console) implémentée et testée** (testing_agent iteration_7).
+  - État actuel attendu : `not_connected` tant que le consentement Google n’a pas été effectué via `/oauth/start`.
 
 ---
 
@@ -122,7 +120,7 @@
    - `GET /api/seo/search-console/status`
    - `POST /api/seo/search-console/submit`
 3) ✅ Gestion d’état : retourne `api_access_not_configured` + URL d’activation quand l’API Google Search Console est désactivée.
-4) ✅ Support multi-propriétés : `lovanet.fr`, `animemomentsofficiel.fr`, `animeofficiel.fr` + sitemaps multi-domaines.
+4) ✅ Support multi-propriétés + sitemaps multi-domaines.
 5) ⚠️ Dépendance externe : activer l’API Search Console + partager les propriétés au service account.
 
 #### Phase 5.6 — Validation des sitemaps / RSS / JSON‑LD ✅ DONE
@@ -147,55 +145,61 @@
 - Ajout des domaines secondaires dans : meta/link `alternate`, JSON‑LD `Organization.sameAs`, backend export SEO.
 - Canonicals/alternates conservent les paramètres profonds (indexables) :
   - `/shop?product=...`
-  - `/anime-catalog?anime=...` (inclut title/description/canonical/JSON‑LD dédiés)
+  - `/lecteurs-video?video=...`
+  - `/anime-catalog?anime=...` (title/description/canonical/JSON‑LD dédiés)
 - Catalogue : sitemap dédié chunké via `sitemap-catalog.xml`.
 
-### Phase 6 — Search Console OAuth (NOUVEAU) ⏳ IN PROGRESS (bloqué)
+---
+
+### Phase 6 — Search Console OAuth (NOUVEAU) ✅ IMPLEMENTED (preview) — ⏳ à connecter
 Objectif : permettre une **soumission réelle** des sitemaps en utilisant le compte Google utilisateur.
 
 #### Phase 6.0 — Sécurisation des credentials OAuth ✅ DONE (preview-only)
-- ✅ JSON OAuth Google uploadé par l’utilisateur.
+- ✅ JSON OAuth Google **Web application** uploadé par l’utilisateur.
 - ✅ Choix utilisateur : usage en preview pour l’instant.
 - ⚠️ À préparer ensuite : migration des credentials OAuth vers variables/secret manager en production.
 
-#### Phase 6.1 — Compatibilité du client OAuth ⚠️ BLOCKED
-- ✅ Analyse effectuée : le JSON fourni est **`installed`**, pas **`web`**.
-- ⚠️ Action requise côté Google Cloud : créer/téléverser un **OAuth client “Web application”**.
-- ⚠️ Tant que le JSON “web” n’est pas fourni :
-  - on peut garder le code “prêt” (endpoints existants en mode stub)
-  - mais on ne peut pas réaliser un flux OAuth complet avec callback sur le domaine.
-
-#### Phase 6.2 — Backend OAuth endpoints (authorization code flow) ⏳ READY-TO-IMPLEMENT (en attente du JSON web)
-- Endpoints cibles :
+#### Phase 6.1 — Backend OAuth endpoints ✅ DONE (validated by testing_agent iteration_7)
+- ✅ Endpoints disponibles :
   - `GET /api/seo/search-console/oauth/start`
   - `GET /api/seo/search-console/oauth/callback`
   - `GET /api/seo/search-console/oauth/status`
   - `POST /api/seo/search-console/oauth/submit`
-- Stockage DB : document `google-search-console-oauth` (refresh token, scopes, expires_at, email si dispo).
-- Gestion refresh token + invalidation + “reconnect required”.
+- ✅ Stockage DB :
+  - `oauth_state` (state + redirect_after + redirect_uri)
+  - `oauth_credentials` (access_token + refresh_token + expires_at)
+- ✅ Refresh token: auto-refresh via `GoogleAuthRequest()` et mise à jour DB.
 
-#### Phase 6.3 — Configuration Google Cloud (bloquant externe) ⏳
-- Redirect URIs à configurer sur le **client Web application** :
-  - Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
-  - Production : `https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback`
-  - + `https://animeofficiel.fr/api/seo/search-console/oauth/callback`
-  - + `https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback`
-- Scopes : `https://www.googleapis.com/auth/webmasters`
+#### Phase 6.2 — Status unifié ✅ DONE
+- `GET /api/seo/search-console/status` inclut maintenant :
+  - statut service account
+  - statut OAuth imbriqué (`oauth: {...}`)
 
-#### Phase 6.4 — Validation (obligatoire) ⏳
-- Tester : start → consentement → callback → status → submit sitemaps.
-- Lancer `testing_agent` après implémentation.
+#### Phase 6.3 — Connexion OAuth (action utilisateur) ⏳ PENDING
+- Étape manquante : réaliser le consentement Google
+  - Ouvrir : `GET /api/seo/search-console/oauth/start`
+  - Autoriser l’accès Search Console
+  - Retour automatique via `/oauth/callback`
+  - Vérifier ensuite : `/api/seo/search-console/oauth/status` doit passer à `ok`
+
+#### Phase 6.4 — Soumission sitemaps via OAuth ⏳ PENDING (après connexion)
+- Appeler : `POST /api/seo/search-console/oauth/submit`
+- Attendu : soumission technique de **tous les sitemaps** (pages/images/vidéos/produits/news/books/catalogue + multi-domain)
+
+#### Phase 6.5 — Déploiement production ⏳ PENDING
+- Une fois validé en preview, **redeploy** requis pour pousser en production.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **Google Cloud (bloquant)** : créer un OAuth client **Web application** + ajouter les redirect URIs (preview + production + animeofficiel.fr + animemomentsanimeofficiel.fr).
-2) Fournir le **JSON OAuth “web”** (upload) ou configurer `GOOGLE_OAUTH_CLIENT_ID/SECRET` + redirect URI.
-3) Implémenter `/oauth/start`, `/oauth/callback`, `/oauth/status`, `/oauth/submit` + stockage refresh token.
-4) **Soumission technique (OAuth)** : soumettre tous les sitemaps (pages/images/vidéos/produits/news/books/catalogue + multi-domain).
-5) **Testing** : lancer `testing_agent` (obligatoire).
-6) **Production** : redeploy pour pousser toutes les corrections de preview en production.
-7) **Suivi** : contrôler dans Search Console (UI) : sitemaps listés, erreurs d’exploration, couverture.
+1) **Connecter OAuth en preview** : aller sur `/api/seo/search-console/oauth/start` et valider le consentement Google.
+2) Vérifier `/api/seo/search-console/oauth/status` → doit être `ok` + permissions sur les propriétés.
+3) Lancer `POST /api/seo/search-console/oauth/submit` et vérifier :
+   - sitemaps “submitted/partial/skipped”
+   - messages d’erreur éventuels (propriété non accessible, etc.)
+4) Si permissions manquantes : ajouter le compte Google OAuth (celui utilisé au consentement) comme propriétaire/gestionnaire des propriétés.
+5) **Production** : redeploy pour appliquer les changements (SEO + OAuth + endpoints) sur `https://animemomentsofficiel.fr`.
+6) **Suivi Search Console (UI)** : sitemaps listés, erreurs d’exploration, couverture, indexing video/image/news.
 
 ---
 
@@ -213,13 +217,19 @@ Objectif : permettre une **soumission réelle** des sitemaps en utilisant le com
 - TikTok : page `/tiktok` non vide + expérience visible restaurée (fallback widget officiel).
 - Multi-domain SEO : `animemomentsofficiel.fr` + `animeofficiel.fr` présents **PARTOUT**.
 
-### À atteindre (restant — OAuth & déploiement)
-- ⏳ Search Console OAuth : authentification + soumission réelle des sitemaps via compte Google utilisateur (**bloqué tant que client web non fourni**).
-- ✅ Redeploy en production pour appliquer les changements.
+### Atteints (Phase 6 — OAuth)
+- ✅ Endpoints OAuth implémentés.
+- ✅ Client OAuth Web reconnu (callbacks preview + domaines prod).
+- ✅ Tests backend + sanity frontend validés (testing_agent iteration_7).
+
+### À atteindre (restant — connexion OAuth + soumission + déploiement)
+- ⏳ Réaliser le consentement OAuth (passer `not_connected` → `ok`).
+- ⏳ Soumission réelle des sitemaps via OAuth (si propriétés accessibles).
+- ⏳ Redeploy en production.
 - 📈 Après déploiement : vérifier l’état d’exploration et les rapports (sans promesse d’indexation finale).
 
 ### Contraintes / transparence
 - Corrections en preview → **redeploy** nécessaire pour production.
 - Search Console service account : dépend de l’activation API + permissions sur les propriétés.
-- Search Console OAuth : dépend de la configuration des redirect URIs + consentement utilisateur + stockage sécurisé des tokens.
+- Search Console OAuth : dépend du consentement utilisateur + permissions sur les propriétés + stockage sécurisé des tokens.
 - Indexation Google : non garantie (on garantit la soumission + présence des signaux).
