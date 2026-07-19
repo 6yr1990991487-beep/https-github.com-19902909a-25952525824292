@@ -3,8 +3,6 @@ import { createPortal } from 'react-dom';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, OrbitControls, Text, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
-import { motion } from 'framer-motion';
-import { FiRotateCw, FiNavigation, FiEye } from 'react-icons/fi';
 import { useMobileOptimization } from '../hooks/useMobileOptimization';
 import useSoundEffects from '../hooks/useSoundEffects';
 import HubAudioControls from './HubAudioControls';
@@ -6907,83 +6905,7 @@ function FerryQualityPolish({ tod, qualityTier }) {
 // ─── Camera Buttons with pure DOM (bypass React AND Three.js event systems) ─
 function FerryCameraButtons() {
   useEffect(() => {
-    const container = document.createElement('div');
-    container.id = 'ferry-cam-btns';
-    container.style.cssText = 'position:fixed;bottom:12px;left:52px;display:flex;flex-direction:column;gap:3px;z-index:999999;pointer-events:auto;padding:3px;background:transparent;border:none;';
-    
-    const btns = [
-      { label: 'Ferry', fn: 'resetFerryCamera', icon: '⛴', testId: 'ferry-camera-ferry-button' },
-      { label: 'Yacht', fn: 'setFerrySeaView', icon: '🛥', testId: 'ferry-camera-yacht-button' },
-      { label: 'Porte-avions', fn: 'setFerryBirdView', icon: '⚓', testId: 'ferry-camera-carrier-button' },
-      { label: 'Train City', fn: 'setFerryTrainCityView', icon: '🚉', testId: 'ferry-camera-train-city-button' },
-      { label: 'Street', fn: 'setFerryStreetView', icon: '🛣', testId: 'ferry-camera-street-button' },
-    ];
-    
-    btns.forEach(({ label, fn, icon, testId }) => {
-      const btn = document.createElement('button');
-      btn.textContent = icon;
-      btn.dataset.ferryCamBtn = fn;
-      btn.setAttribute('data-testid', testId);
-      btn.setAttribute('aria-label', label);
-      btn.setAttribute('title', label);
-      btn.style.cssText = 'display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;border-radius:50%;color:#103454;font-weight:700;font-size:13px;line-height:1;background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.34);box-shadow:0 4px 12px rgba(120,180,210,0.1);cursor:pointer;touch-action:manipulation;user-select:none;transition:transform 0.15s,background 0.2s;';
-      btn.addEventListener('mouseenter', () => {
-        btn.style.background = 'rgba(255,255,255,0.3)';
-        btn.style.borderColor = 'rgba(255,255,255,0.65)';
-      });
-      btn.addEventListener('mouseleave', () => {
-        btn.style.background = 'rgba(255,255,255,0.22)';
-        btn.style.borderColor = 'rgba(255,255,255,0.45)';
-      });
-      container.appendChild(btn);
-    });
-    
-    document.body.appendChild(container);
-
-    // Use CLICK event (not pointerdown) — OrbitControls only intercepts pointerdown/move/up
-    // CLICK fires after the full press cycle and won't conflict
-    const clickHandler = (e) => {
-      const btn = e.target.closest('[data-ferry-cam-btn]');
-      if (!btn) return;
-      e.stopImmediatePropagation();
-      e.stopPropagation();
-      e.preventDefault();
-      const fn = btn.dataset.ferryCamBtn;
-      if (fn && window[fn]) window[fn]();
-      btn.style.transform = 'scale(0.9)';
-      setTimeout(() => { btn.style.transform = 'scale(1)'; }, 150);
-    };
-    
-    // Block pointerdown from reaching OrbitControls when clicking our buttons
-    const blockHandler = (e) => {
-      if (e.target.closest('[data-ferry-cam-btn]')) {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.preventDefault();
-      }
-    };
-    
-    // Register block handler as early as possible on the DOM
-    document.addEventListener('pointerdown', blockHandler, true);
-    document.addEventListener('mousedown', blockHandler, true);
-    document.addEventListener('click', clickHandler, true);
-    document.addEventListener('touchstart', (e) => {
-      if (e.target.closest('[data-ferry-cam-btn]')) {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        e.preventDefault();
-        const btn = e.target.closest('[data-ferry-cam-btn]');
-        const fn = btn.dataset.ferryCamBtn;
-        if (fn && window[fn]) window[fn]();
-      }
-    }, { capture: true, passive: false });
-
-    return () => {
-      document.removeEventListener('pointerdown', blockHandler, true);
-      document.removeEventListener('mousedown', blockHandler, true);
-      document.removeEventListener('click', clickHandler, true);
-      document.body.removeChild(container);
-    };
+    return undefined;
   }, []);
   return null;
 }
@@ -7866,26 +7788,6 @@ const FerryBackground = memo(() => {
       
       {/* Camera buttons are created in pure DOM via FerryCameraButtons */}
       <FerryCameraButtons />
-
-      {/* 360° hint */}
-      <motion.div 
-        className="fixed top-20 right-36 sm:right-44 bg-black/90 rounded-full px-3 py-1.5 border border-cyan-500/20 flex items-center gap-2 z-10"
-        style={{ pointerEvents: 'none' }}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: [0, 1, 1, 0] }}
-        transition={{ delay: 2, duration: 6, times: [0, 0.1, 0.8, 1] }}
-      >
-        <motion.svg 
-          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          className="text-cyan-400"
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 3, repeat: 1 }}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 2v2M12 20v2M2 12h2M20 12h2" strokeLinecap="round" />
-        </motion.svg>
-        <span className="text-white/70 text-xs">360°</span>
-      </motion.div>
     </>
   );
 });

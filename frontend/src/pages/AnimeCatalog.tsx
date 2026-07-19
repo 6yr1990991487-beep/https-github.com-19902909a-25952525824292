@@ -743,27 +743,7 @@ export default function AnimeCatalog() {
           </div>
         </div>
 
-        {/* Tilt slider — lever/baisser les cartes du carrousel */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col items-center gap-2 bg-black/40 backdrop-blur px-2 py-3 rounded-full border border-white/10 pointer-events-auto">
-          <span className="text-[10px] uppercase tracking-widest text-white/60">Incliner</span>
-          <input
-            type="range"
-            min={-45}
-            max={45}
-            value={tilt}
-            onChange={(e) => setTilt(Number(e.target.value))}
-            className="h-32 w-6 accent-fuchsia-400"
-            style={{ writingMode: "vertical-lr" as any, WebkitAppearance: "slider-vertical" as any }}
-            aria-label="Lever ou baisser les cartes du carrousel"
-          />
-          <button
-            type="button"
-            onClick={() => setTilt(-8)}
-            className="text-[10px] text-white/70 hover:text-white"
-          >
-            Reset
-          </button>
-        </div>
+        {/* Tilt slider — removed per UI cleanup request */}
       </section>
 
       {/* Barre RGB fluo sous le carrousel cercle */}
@@ -784,35 +764,15 @@ export default function AnimeCatalog() {
         </div>
         {/* Search bar — RGB animated border, compact, centered, mobile-first */}
         <div className="mb-3 flex justify-center">
-          <div className="rgb-pill relative w-full max-w-xl">
-            {/* Search icon */}
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fuchsia-300/80"
-              fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </svg>
+          <div className="rgb-pill w-full max-w-xl rounded-full p-[1px] shadow-[0_10px_30px_-14px_hsl(var(--neon-magenta)/0.45),0_10px_30px_-14px_hsl(var(--neon-cyan)/0.35)]">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un anime…"
-              className="w-full bg-transparent rounded-full pl-9 pr-9 py-2 text-sm text-white placeholder:text-white/45 outline-none"
+              placeholder="Rechercher un animé…"
+              className="w-full rounded-full border border-white/10 bg-[rgba(10,6,20,0.72)] px-5 py-2.5 text-sm text-white placeholder:text-white/45 outline-none"
               aria-label="Rechercher dans le catalogue"
             />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch("")}
-                aria-label="Effacer la recherche"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-base leading-none"
-              >
-                ×
-              </button>
-            )}
           </div>
         </div>
         {/* Quick filters + sort — horizontally scrollable on tight screens, no gray. */}
@@ -875,11 +835,11 @@ export default function AnimeCatalog() {
                 ],
               },
             ].map((f) => (
-              <div key={f.key} className="rgb-pill">
+              <div key={f.key} className="rgb-pill rounded-full shadow-[0_10px_24px_-16px_hsl(var(--neon-magenta)/0.45),0_10px_24px_-16px_hsl(var(--neon-cyan)/0.35)]">
                 <select
                   value={f.value}
                   onChange={(e) => f.onChange(e.target.value)}
-                  className="appearance-none bg-transparent rounded-full pl-3 pr-7 py-1.5 text-white/90 outline-none cursor-pointer"
+                  className="appearance-none rounded-full border border-white/10 bg-[rgba(10,6,20,0.72)] pl-4 pr-8 py-2 text-white/90 outline-none cursor-pointer backdrop-blur-xl"
                   aria-label={f.label}
                 >
                   {f.options.map((o) => (
@@ -899,7 +859,7 @@ export default function AnimeCatalog() {
               <button
                 type="button"
                 onClick={() => { setFilterGenre("all"); setFilterStatus("all"); setMinScore(0); setMinYear(0); setSortBy("default"); setSearch(""); }}
-                className="rgb-pill px-3 py-1.5 text-white/90 hover:text-white"
+                className="rgb-pill rounded-full border border-white/10 bg-[rgba(10,6,20,0.72)] px-4 py-2 text-white/90 shadow-[0_10px_24px_-16px_hsl(var(--neon-magenta)/0.45),0_10px_24px_-16px_hsl(var(--neon-cyan)/0.35)] hover:text-white"
               >
                 Réinitialiser
               </button>

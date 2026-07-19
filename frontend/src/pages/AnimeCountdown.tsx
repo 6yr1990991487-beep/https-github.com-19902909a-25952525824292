@@ -119,7 +119,9 @@ export default function AnimeCountdown() {
         try {
           localStorage.setItem("lovanet.cache.countdown.v2", JSON.stringify(list));
           localStorage.removeItem("lovanet.cache.countdown");
-        } catch {}
+        } catch {
+          // ignore cache write failure
+        }
       }
     } catch (e) {
       console.error("AniList fetch error", e);
@@ -132,13 +134,17 @@ export default function AnimeCountdown() {
     try {
       const c = localStorage.getItem("lovanet.cache.countdown.v2");
       if (c) { setItems(JSON.parse(c)); setLoading(false); }
-    } catch {}
+    } catch {
+      // ignore cache read failure
+    }
     try {
       const e = localStorage.getItem("lovanet.cache.countdown.expanded");
       if (e) setExpanded(JSON.parse(e));
       const t = localStorage.getItem("lovanet.cache.countdown.theme");
       if (t) setThemeIdx(Number(t) || 0);
-    } catch {}
+    } catch {
+      // ignore cache read failure
+    }
     fetchData();
     const sync = setInterval(fetchData, 1000 * 60 * 3); // auto-sync every 3 min
     const tick = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 1000);
@@ -158,12 +164,16 @@ export default function AnimeCountdown() {
   useEffect(() => {
     try {
       localStorage.setItem("lovanet.cache.countdown.expanded", JSON.stringify(expanded));
-    } catch {}
+    } catch {
+      // ignore cache write failure
+    }
   }, [expanded]);
   useEffect(() => {
     try {
       localStorage.setItem("lovanet.cache.countdown.theme", String(themeIdx));
-    } catch {}
+    } catch {
+      // ignore cache write failure
+    }
   }, [themeIdx]);
 
   return (
@@ -179,7 +189,7 @@ export default function AnimeCountdown() {
           className="text-3xl md:text-5xl font-black tracking-wide"
           style={{ color: theme.titleColor }}
         >
-          Animés à venir — Compte à rebours
+          Animés à venir
         </h1>
 
         {/* Theme picker */}
@@ -360,7 +370,7 @@ export default function AnimeCountdown() {
                             </p>
                           ) : (
                             <p className="italic" style={{ color: theme.muted }}>
-                              Synopsis en cours d'importation… actualisation automatique.
+                              Synopsis en cours d’importation… mise à jour automatique.
                             </p>
                           )}
                         </div>

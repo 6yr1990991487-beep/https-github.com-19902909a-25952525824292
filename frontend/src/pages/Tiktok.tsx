@@ -150,22 +150,15 @@ const Tiktok = () => {
     <PageShell>
       <ManualSyncButton platform="tiktok" label="Sync TikTok" onDone={() => window.location.reload()} />
       <section className="container mx-auto px-4 lg:px-8 py-12 text-center" data-testid="tiktok-page-hero">
-        <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Feed officiel</p>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold">
-          <span className="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-rose-500 bg-clip-text text-transparent">
-            TikTok
-          </span>
-        </h1>
         <div className="mt-4">
           <a
             href="https://www.tiktok.com/@anime.moments.officiel"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white"
-            style={{ background: "var(--gradient-magenta)" }}
+            className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_hsl(var(--neon-magenta)/0.5),0_12px_32px_-16px_hsl(var(--neon-cyan)/0.35)] backdrop-blur-xl"
             data-testid="tiktok-official-link"
           >
-            Ouvrir TikTok @anime.moments.officiel <ExternalLink className="w-4 h-4" />
+            Ouvrir TikTok <ExternalLink className="w-4 h-4" />
           </a>
         </div>
       </section>
@@ -175,33 +168,33 @@ const Tiktok = () => {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-xs font-bold flex items-center gap-1.5">
-                  <Music2 className="w-3.5 h-3.5" /> TikTok officiel
+                <div className="rgb-pill px-3 py-1.5 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] text-white text-xs font-bold flex items-center gap-1.5 shadow-[0_12px_32px_-16px_hsl(var(--neon-magenta)/0.45),0_12px_32px_-16px_hsl(var(--neon-cyan)/0.3)] backdrop-blur-xl">
+                  <Music2 className="w-3.5 h-3.5" /> TikTok
                 </div>
                 <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground" data-testid="tiktok-feed-mode">
-                  {hasSyncedVideos ? `Feed vidéo · ${safeIdx + 1}/${list.length}` : "Widget officiel du profil"}
+                  {hasSyncedVideos ? `${safeIdx + 1}/${list.length}` : "Widget officiel"}
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setMuted((m) => !m)}
-                  className="px-3 py-2 rounded-full bg-secondary border border-border text-xs font-semibold hover:border-pink-500/60 transition-colors flex items-center gap-1.5"
+                  className="rgb-pill px-3 py-2 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] text-xs font-semibold text-white hover:border-pink-500/60 transition-colors flex items-center gap-1.5 shadow-[0_12px_28px_-18px_hsl(var(--neon-magenta)/0.45),0_12px_28px_-18px_hsl(var(--neon-cyan)/0.3)] backdrop-blur-xl"
                   data-testid="tiktok-mute-toggle"
                 >
                   {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                   {muted ? "Son OFF" : "Son ON"}
                 </button>
-                <div className="inline-flex p-1 rounded-full bg-secondary border border-border">
+                <div className="rgb-pill inline-flex p-1 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] shadow-[0_12px_28px_-18px_hsl(var(--neon-magenta)/0.45),0_12px_28px_-18px_hsl(var(--neon-cyan)/0.3)] backdrop-blur-xl">
                   <button
                     onClick={() => setOrientation("vertical")}
-                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold", orientation === "vertical" ? "bg-background" : "text-muted-foreground")}
+                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "vertical" ? "bg-white/12 shadow-[0_0_18px_rgba(232,121,249,0.22)]" : "text-white/55")}
                     data-testid="tiktok-orientation-vertical"
                   >
                     ▯ Vertical
                   </button>
                   <button
                     onClick={() => setOrientation("horizontal")}
-                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold", orientation === "horizontal" ? "bg-background" : "text-muted-foreground")}
+                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "horizontal" ? "bg-white/12 shadow-[0_0_18px_rgba(34,211,238,0.22)]" : "text-white/55")}
                     data-testid="tiktok-orientation-horizontal"
                   >
                     ▭ Horizontal
@@ -349,11 +342,10 @@ const Tiktok = () => {
                     href={v.videoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white"
-                    style={{ background: "var(--gradient-magenta)" }}
+                    className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_hsl(var(--neon-magenta)/0.5),0_12px_32px_-16px_hsl(var(--neon-cyan)/0.35)] backdrop-blur-xl"
                     data-testid="tiktok-open-original-link"
                   >
-                    Ouvrir l'original <ExternalLink className="w-4 h-4" />
+                    Ouvrir l’original <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
               </>
@@ -361,14 +353,8 @@ const Tiktok = () => {
 
             {!loading && !hasSyncedVideos && (
               <div className="rounded-[28px] border border-white/12 bg-white/[0.04] backdrop-blur-xl p-4 md:p-6 shadow-[0_20px_60px_-30px_hsl(var(--neon-magenta)/0.55)]" data-testid="tiktok-official-profile-widget">
-                <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-pink-300">Profil officiel intégré</p>
-                    <h2 className="font-display text-2xl font-bold text-white">@anime.moments.officiel</h2>
-                  </div>
-                  <p className="text-sm text-muted-foreground max-w-xl">
-                    TikTok bloque temporairement la remontée automatique des vidéos dans notre environnement. Le profil officiel et son lecteur restent visibles directement ci-dessous.
-                  </p>
+                <div className="mb-4">
+                  <h2 className="font-display text-2xl font-bold text-white">@anime.moments.officiel</h2>
                 </div>
                 <blockquote
                   className="tiktok-embed"
@@ -390,16 +376,12 @@ const Tiktok = () => {
 
           <aside className="space-y-4" data-testid="tiktok-side-panel">
             <div className="rounded-[28px] border border-white/12 bg-white/[0.04] backdrop-blur-xl p-5 shadow-[0_20px_60px_-35px_hsl(var(--neon-cyan)/0.5)]">
-              <h3 className="font-display text-xl font-bold text-white mb-2">Accès direct au TikTok officiel</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Ouvre la chaîne TikTok officielle pour voir toutes les vidéos, carrousels et publications en direct sur le profil source.
-              </p>
+              <h3 className="font-display text-xl font-bold text-white mb-2">TikTok officiel</h3>
               <a
                 href="https://www.tiktok.com/@anime.moments.officiel"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white"
-                style={{ background: "var(--gradient-magenta)" }}
+                className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-[rgba(10,6,20,0.72)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_hsl(var(--neon-magenta)/0.5),0_12px_32px_-16px_hsl(var(--neon-cyan)/0.35)] backdrop-blur-xl"
                 data-testid="tiktok-profile-cta"
               >
                 Voir le profil officiel <ExternalLink className="w-4 h-4" />
@@ -407,11 +389,10 @@ const Tiktok = () => {
             </div>
 
             <div className="rounded-[28px] border border-white/12 bg-white/[0.04] backdrop-blur-xl p-5 shadow-[0_20px_60px_-35px_hsl(var(--neon-magenta)/0.45)]" data-testid="tiktok-status-card">
-              <h3 className="font-display text-xl font-bold text-white mb-2">État du flux</h3>
+              <h3 className="font-display text-xl font-bold text-white mb-2">Flux</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>• Source cible : <span className="text-white">@anime.moments.officiel</span></li>
-                <li>• Mode actuel : <span className="text-white">{hasSyncedVideos ? "lecteur + carrousel vidéos" : "widget officiel TikTok"}</span></li>
-                <li>• Mise à jour : <span className="text-white">best-effort automatique</span></li>
+                <li>• <span className="text-white">@anime.moments.officiel</span></li>
+                <li>• <span className="text-white">{hasSyncedVideos ? "lecteur + carrousel" : "widget TikTok"}</span></li>
               </ul>
             </div>
           </aside>

@@ -106,8 +106,8 @@ const AppShell = () => {
       </Routes>
       {!isHubPreviewRoute && !isRootLandingRoute && <ThemeBubble />}
       {!isHubPreviewRoute && <CartDrawer />}
-      {!isHubPreviewRoute && !isRootLandingRoute && <GoogleTranslate />}
-      {!isHubPreviewRoute && !isRootLandingRoute && <HologramOverlay />}
+      {!isHubPreviewRoute && !isRootLandingRoute && !pathname.startsWith('/anime-catalog') && !pathname.startsWith('/tiktok') && !pathname.startsWith('/anime-countdown') && !LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/anime-catalog`) || pathname.startsWith(`/${lang}/tiktok`) || pathname.startsWith(`/${lang}/anime-countdown`)) && <GoogleTranslate />}
+      {!isHubPreviewRoute && !isRootLandingRoute && !pathname.startsWith('/anime-catalog') && !pathname.startsWith('/tiktok') && !pathname.startsWith('/anime-countdown') && !LOCALE_PREFIXES.some((lang) => pathname.startsWith(`/${lang}/anime-catalog`) || pathname.startsWith(`/${lang}/tiktok`) || pathname.startsWith(`/${lang}/anime-countdown`)) && <HologramOverlay />}
     </CartProvider>
   );
 };
