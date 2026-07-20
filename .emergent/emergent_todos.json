@@ -1,14 +1,10 @@
 [
   {
-    "content": "Localiser sur la page portail la zone avec les boutons Prime Vidéo / TikTok",
+    "content": "Adapter la grande vidéo du bas du portail en format vertical plus compact, alignée à gauche",
     "status": "completed"
   },
   {
-    "content": "Ajouter la vidéo en lecteur auto personnalisé thème menu RGB transparent",
-    "status": "completed"
-  },
-  {
-    "content": "Vérifier avec build, capture et test frontend",
+    "content": "Vérifier avec build et capture sur le portail",
     "status": "in_progress"
   }
 ]
