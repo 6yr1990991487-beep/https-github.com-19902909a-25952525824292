@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle } from "lucide-react";
+import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const footerLinks = [
@@ -36,17 +36,6 @@ export const Footer = () => {
               Portail anime et manga, navigation premium, univers immersifs et accès directs vers les sections principales.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                variant="glass"
-                className="rounded-full border-white/15 bg-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_20px_rgba(34,211,238,0.12)]"
-                data-testid="footer-contact-button"
-              >
-                <Link to="/contact">
-                  <Mail className="h-4 w-4" />
-                  Contact
-                </Link>
-              </Button>
               <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">
                 <Link to="/anime-moments">
                   <Film className="h-4 w-4" />
