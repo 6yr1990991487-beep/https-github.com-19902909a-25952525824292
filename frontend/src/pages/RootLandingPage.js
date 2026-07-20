@@ -12,6 +12,7 @@ import { SEO_NEWS } from "@/data/seoNews";
 import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
+import portalButtonsZoneVideo from "@/assets/portal-buttons-zone-video.mp4";
 import portalZoneReplacement from "@/assets/portal-zone-replacement.mp4";
 import portalThemeVideo from "@/assets/portal-theme-video.mp4";
 import portalThemeVideoSquare from "@/assets/portal-theme-video-square.mp4";
@@ -294,6 +295,22 @@ export default function RootLandingPage() {
                     </Link>
                   );
                 })}
+              </div>
+
+              <div className="rgb-neon relative mt-6 overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05]" data-testid="home-platforms-zone-video-player">
+                <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/44 via-transparent to-black/8" />
+                <div className="pointer-events-none absolute inset-0 z-[1] opacity-22 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.2)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.16)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+                <div className="pointer-events-none absolute inset-0 z-[1] opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.16),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.15),transparent_24%)] animate-pulse-glow" />
+                <video
+                  className="h-[520px] w-full object-cover"
+                  src={portalButtonsZoneVideo}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  data-testid="home-platforms-zone-video"
+                />
               </div>
             </div>
           </div>
