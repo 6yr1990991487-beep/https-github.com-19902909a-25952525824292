@@ -1,6 +1,22 @@
 [
   {
-    "content": "Vérifier avec build, capture et test frontend en preview",
-    "status": "completed"
+    "content": "Concevoir et implémenter un catalogue dynamique 500+ options dans la bulle flottante",
+    "status": "in_progress"
+  },
+  {
+    "content": "Appliquer fortement les thèmes au site entier avec lisibilité automatique du texte",
+    "status": "pending"
+  },
+  {
+    "content": "Ajouter des raccourcis d’ouverture de personnalisation aux zones clés si nécessaire",
+    "status": "pending"
+  },
+  {
+    "content": "Retirer ensuite la vidéo du bas visible dans le bloc de la capture",
+    "status": "pending"
+  },
+  {
+    "content": "Vérifier avec build, captures et tests frontend",
+    "status": "pending"
   }
 ]
