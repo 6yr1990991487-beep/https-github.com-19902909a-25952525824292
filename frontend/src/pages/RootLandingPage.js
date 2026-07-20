@@ -13,6 +13,7 @@ import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 import portalThemeVideo from "@/assets/portal-theme-video.mp4";
+import portalThemeVideoSquare from "@/assets/portal-theme-video-square.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -78,6 +79,7 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [videoMuted, setVideoMuted] = useState(true);
+  const [squareVideoMuted, setSquareVideoMuted] = useState(true);
   const portalVideoRef = useRef(null);
 
   useEffect(() => {
@@ -403,7 +405,7 @@ export default function RootLandingPage() {
                 </Link>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[340px_1fr] lg:items-start">
+              <div className="grid gap-6 lg:grid-cols-[340px_340px_1fr] lg:items-start">
                 <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] lg:max-w-[340px]" data-testid="home-bottom-theme-video-player">
                   <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
                   <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
@@ -429,6 +431,35 @@ export default function RootLandingPage() {
                     >
                       {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
                       {videoMuted ? "Muet" : "Son"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] lg:max-w-[340px]" data-testid="home-bottom-square-video-player">
+                  <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
+                  <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
+                  <video
+                    className="aspect-square w-full object-cover"
+                    src={portalThemeVideoSquare}
+                    autoPlay
+                    muted={squareVideoMuted}
+                    loop
+                    playsInline
+                    preload="auto"
+                    data-testid="home-bottom-square-video"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/38 via-transparent to-black/8" />
+                  <div className="pointer-events-none absolute inset-0 opacity-26 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_10s_linear_infinite]" />
+                  <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_24%_24%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_78%_22%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
+                  <div className="absolute bottom-5 right-5 z-10 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSquareVideoMuted((value) => !value)}
+                      className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
+                      data-testid="home-bottom-square-video-mute-button"
+                    >
+                      {squareVideoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
+                      {squareVideoMuted ? "Muet" : "Son"}
                     </button>
                   </div>
                 </div>
