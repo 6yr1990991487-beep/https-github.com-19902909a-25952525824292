@@ -1,10 +1,6 @@
 [
   {
-    "content": "Ajouter les 2 images améliorées/animées sur la page Contact, une à gauche et une à droite au-dessus du formulaire",
-    "status": "completed"
-  },
-  {
     "content": "Vérifier avec build, captures et test frontend",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]
