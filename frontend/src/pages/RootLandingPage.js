@@ -405,7 +405,7 @@ export default function RootLandingPage() {
                 </Link>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[340px_340px_1fr] lg:items-start">
+              <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start">
                 <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] lg:max-w-[340px]" data-testid="home-bottom-theme-video-player">
                   <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
                   <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
@@ -435,11 +435,11 @@ export default function RootLandingPage() {
                   </div>
                 </div>
 
-                <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] lg:max-w-[340px]" data-testid="home-bottom-square-video-player">
+                <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] w-full" data-testid="home-bottom-square-video-player">
                   <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
                   <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
                   <video
-                    className="aspect-square w-full object-cover"
+                    className="h-[620px] w-full object-cover"
                     src={portalThemeVideoSquare}
                     autoPlay
                     muted={squareVideoMuted}
@@ -463,8 +463,6 @@ export default function RootLandingPage() {
                     </button>
                   </div>
                 </div>
-
-                <div className="hidden lg:block rounded-[2rem] border border-white/10 bg-white/[0.03] min-h-[620px]" aria-hidden="true" />
               </div>
             </div>
           </div>

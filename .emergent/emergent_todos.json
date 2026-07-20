@@ -1,14 +1,10 @@
 [
   {
-    "content": "Télécharger la 2e vidéo et adapter la zone basse du portail en disposition verticale + carré",
+    "content": "Agrandir la vidéo carrée du bas du portail pour occuper tout l’espace vide restant",
     "status": "completed"
   },
   {
-    "content": "Activer/valider l’autoplay sur les 2 vidéos",
-    "status": "completed"
-  },
-  {
-    "content": "Vérifier avec build, capture et test frontend",
+    "content": "Vérifier avec build et capture sur le portail",
     "status": "in_progress"
   }
 ]
