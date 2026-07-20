@@ -44,13 +44,9 @@ const Contact = () => {
           </div>
 
           <div className="mx-auto max-w-xl">
-            <div className="w-12 h-12 rounded-2xl bg-primary/15 text-primary flex items-center justify-center mb-4">
-              <Mail className="w-6 h-6" />
-            </div>
-            <p className="text-xs uppercase tracking-[0.25em] text-primary mb-2">Contact</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-extrabold mb-3">Écris à Lovanet</h1>
-            <p className="mb-6 text-sm sm:text-base text-white/68 neon-rgb-text-soft" data-testid="contact-subtitle">
-              missive ecrite Animeofficiel
+            <h1 className="font-display text-4xl sm:text-5xl font-extrabold mb-2">Écris à Lovanet</h1>
+            <p className="mb-6 font-display text-lg sm:text-xl font-bold neon-rgb-text" data-testid="contact-subtitle">
+              Missive écrite Animeofficiel
             </p>
 
             <form
