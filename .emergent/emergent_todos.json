@@ -1,10 +1,6 @@
 [
   {
-    "content": "Agrandir la vidéo carrée du bas du portail pour occuper tout l’espace vide restant",
+    "content": "Vérifier avec build, capture et test frontend",
     "status": "completed"
-  },
-  {
-    "content": "Vérifier avec build et capture sur le portail",
-    "status": "in_progress"
   }
 ]

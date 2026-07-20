@@ -12,6 +12,7 @@ import { SEO_NEWS } from "@/data/seoNews";
 import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
+import portalZoneReplacement from "@/assets/portal-zone-replacement.mp4";
 import portalThemeVideo from "@/assets/portal-theme-video.mp4";
 import portalThemeVideoSquare from "@/assets/portal-theme-video-square.mp4";
 
@@ -160,78 +161,50 @@ export default function RootLandingPage() {
               </div>
 
               <div className="grid gap-4" data-testid="root-landing-hero-visual">
-                <Card className="rgb-neon overflow-hidden rounded-[2rem] border-white/15 bg-white/[0.05] shadow-[0_30px_90px_-40px_rgba(0,0,0,0.95)]">
-                  <div className="relative aspect-[21/8] overflow-hidden">
-                    <img src={heroImage} alt="Univers anime Lovanet" className="h-full w-full object-cover scale-[1.03]" data-testid="home-hero-image" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/16" />
-                    <div className="absolute inset-0 opacity-35 mix-blend-screen bg-[linear-gradient(115deg,transparent_12%,rgba(255,255,255,0.28)_22%,transparent_34%,transparent_58%,rgba(255,255,255,0.22)_68%,transparent_82%)] animate-[shimmer_8s_linear_infinite]" />
-                    <div className="absolute inset-0 opacity-25 bg-[radial-gradient(circle_at_20%_20%,rgba(255,120,220,0.28),transparent_28%),radial-gradient(circle_at_80%_30%,rgba(34,211,238,0.22),transparent_24%),radial-gradient(circle_at_75%_80%,rgba(255,190,92,0.2),transparent_20%)] animate-pulse-glow" />
-                    <div className="absolute inset-0 opacity-[0.16] bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,transparent_18%,transparent_82%,rgba(255,255,255,0.08)_100%)]" />
+                <div className="rgb-neon relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05]" data-testid="home-hero-zone-replacement-player">
+                  <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
+                  <div className="pointer-events-none absolute left-5 top-10 z-10 h-12 w-56 max-w-[65%] rounded-[1.35rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
+                  <video
+                    ref={portalVideoRef}
+                    className="h-[520px] w-full object-cover"
+                    src={portalZoneReplacement}
+                    autoPlay
+                    muted={videoMuted}
+                    loop
+                    playsInline
+                    preload="auto"
+                    data-testid="home-hero-zone-replacement-video"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                  <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+                  <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
+                  <div className="absolute left-5 top-[5.25rem] z-10 flex flex-wrap gap-3">
+                    <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-link-news">
+                      <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link to={heroNews.to} className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-link-shop">
+                      <span key={`hero-news-overlay-${heroNews.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link to="/prime-video" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-prime-link">
+                      Prime Vidéo <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link to="/tiktok" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-tiktok-link">
+                      TikTok <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </div>
-                </Card>
-
-                <div className="grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
-                  <Card className="rgb-neon overflow-hidden rounded-[1.5rem] border-white/15 bg-white/[0.05]">
-                    <div className="relative aspect-[16/7] overflow-hidden">
-                      <img src={mangaBanner} alt="Décor manga futuriste" className="h-full w-full object-cover scale-[1.03]" data-testid="home-hero-secondary-image" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/16 via-transparent to-black/18" />
-                      <div className="absolute inset-0 opacity-30 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.22),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.2),transparent_24%)] animate-pulse-glow" />
-                    </div>
-                  </Card>
-                  <Card className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] backdrop-blur-2xl" data-testid="home-hero-aside-card">
-                    <CardContent className="flex h-full flex-col justify-start gap-3 p-5">
-                      <p className="text-[11px] uppercase tracking-[0.3em] text-white/58">Accès direct</p>
-                      <div className="flex flex-col gap-3">
-                        <Link to={heroNews.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-news">
-                          <span key={`hero-news-${heroNews.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
-                          <ArrowRight className="h-4 w-4 neon-rgb-icon" />
-                        </Link>
-                        <Link to={heroShop.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-shop">
-                          <span key={`hero-shop-${heroShop.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroShop.label}</span>
-                          <ArrowRight className="h-4 w-4 neon-rgb-icon" />
-                        </Link>
-                      </div>
-
-                      <div className="rgb-neon relative mt-2 overflow-hidden rounded-[1.6rem] border border-white/15 bg-white/[0.05]" data-testid="home-hero-theme-video-player">
-                        <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
-                        <div className="pointer-events-none absolute left-5 top-10 z-10 h-12 w-56 max-w-[65%] rounded-[1.35rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
-                        <video
-                          ref={portalVideoRef}
-                          className="h-[290px] w-full object-cover"
-                          src={portalThemeVideo}
-                          autoPlay
-                          muted={videoMuted}
-                          loop
-                          playsInline
-                          preload="auto"
-                          data-testid="home-hero-theme-video"
-                        />
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/46 via-transparent to-black/10" />
-                        <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-                        <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
-                        <div className="absolute left-5 top-[5.25rem] z-10 flex gap-3">
-                          <Link to="/prime-video" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-prime-link">
-                            Prime Vidéo <ArrowRight className="h-4 w-4" />
-                          </Link>
-                          <Link to="/tiktok" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-tiktok-link">
-                            TikTok <ArrowRight className="h-4 w-4" />
-                          </Link>
-                        </div>
-                        <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setVideoMuted((value) => !value)}
-                            className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
-                            data-testid="home-hero-video-mute-button"
-                          >
-                            {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
-                            {videoMuted ? "Muet" : "Son"}
-                          </button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setVideoMuted((value) => !value)}
+                      className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
+                      data-testid="home-hero-video-mute-button"
+                    >
+                      {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
+                      {videoMuted ? "Muet" : "Son"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
