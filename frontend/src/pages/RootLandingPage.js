@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { ProductArtwork } from "@/components/ProductArtwork";
@@ -12,6 +12,7 @@ import { SEO_NEWS } from "@/data/seoNews";
 import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
+import portalThemeVideo from "@/assets/portal-theme-video.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -76,6 +77,8 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const portalVideoRef = useRef(null);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -175,16 +178,56 @@ export default function RootLandingPage() {
                     </div>
                   </Card>
                   <Card className="rounded-[1.5rem] border border-white/15 bg-white/[0.07] backdrop-blur-2xl" data-testid="home-hero-aside-card">
-                    <CardContent className="flex h-full flex-col justify-center gap-3 p-5">
+                    <CardContent className="flex h-full flex-col justify-start gap-3 p-5">
                       <p className="text-[11px] uppercase tracking-[0.3em] text-white/58">Accès direct</p>
-                      <Link to={heroNews.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-news">
-                        <span key={`hero-news-${heroNews.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
-                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
-                      </Link>
-                      <Link to={heroShop.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-shop">
-                        <span key={`hero-shop-${heroShop.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroShop.label}</span>
-                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
-                      </Link>
+                      <div className="flex flex-col gap-3">
+                        <Link to={heroNews.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-news">
+                          <span key={`hero-news-${heroNews.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
+                          <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                        </Link>
+                        <Link to={heroShop.to} className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/[0.12]" data-testid="home-hero-link-shop">
+                          <span key={`hero-shop-${heroShop.to}-${rotationIndex}`} className="neon-rgb-text-soft animate-in fade-in zoom-in-95 duration-500">{heroShop.label}</span>
+                          <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                        </Link>
+                      </div>
+
+                      <div className="rgb-neon relative mt-2 overflow-hidden rounded-[1.6rem] border border-white/15 bg-white/[0.05]" data-testid="home-hero-theme-video-player">
+                        <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
+                        <div className="pointer-events-none absolute left-5 top-10 z-10 h-12 w-56 max-w-[65%] rounded-[1.35rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
+                        <video
+                          ref={portalVideoRef}
+                          className="h-[290px] w-full object-cover"
+                          src={portalThemeVideo}
+                          autoPlay
+                          muted={videoMuted}
+                          loop
+                          playsInline
+                          preload="auto"
+                          data-testid="home-hero-theme-video"
+                        />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/46 via-transparent to-black/10" />
+                        <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+                        <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
+                        <div className="absolute left-5 top-[5.25rem] z-10 flex gap-3">
+                          <Link to="/prime-video" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-prime-link">
+                            Prime Vidéo <ArrowRight className="h-4 w-4" />
+                          </Link>
+                          <Link to="/tiktok" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-tiktok-link">
+                            TikTok <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </div>
+                        <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setVideoMuted((value) => !value)}
+                            className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
+                            data-testid="home-hero-video-mute-button"
+                          >
+                            {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
+                            {videoMuted ? "Muet" : "Son"}
+                          </button>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>

@@ -1,6 +1,14 @@
 [
   {
-    "content": "Vérifier avec build, captures et test frontend",
+    "content": "Localiser sur la page portail la zone avec les boutons Prime Vidéo / TikTok",
     "status": "completed"
+  },
+  {
+    "content": "Ajouter la vidéo en lecteur auto personnalisé thème menu RGB transparent",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier avec build, capture et test frontend",
+    "status": "in_progress"
   }
 ]
