@@ -1,22 +1,30 @@
 [
   {
-    "content": "Concevoir et implémenter un catalogue dynamique 500+ options dans la bulle flottante",
+    "content": "Mettre à jour le plan de phase pour la refonte ThemeBubble 500+ et suppression de la vidéo basse",
+    "status": "completed"
+  },
+  {
+    "content": "Analyser les composants UI et le styling global nécessaires à la nouvelle ThemeBubble",
+    "status": "completed"
+  },
+  {
+    "content": "Réécrire ThemeBubble avec catalogue dynamique 500+, recherche, filtres/récents/favoris et bulle ultra-lumineuse",
+    "status": "completed"
+  },
+  {
+    "content": "Étendre index.css avec tokens globaux de thème et contraste automatique appliqué au site",
     "status": "in_progress"
   },
   {
-    "content": "Appliquer fortement les thèmes au site entier avec lisibilité automatique du texte",
-    "status": "pending"
+    "content": "Retirer la section vidéo du bas de RootLandingPage.js",
+    "status": "completed"
   },
   {
-    "content": "Ajouter des raccourcis d’ouverture de personnalisation aux zones clés si nécessaire",
-    "status": "pending"
+    "content": "Vérifier frontend (build/lint/captures) puis corriger les éventuels bugs",
+    "status": "in_progress"
   },
   {
-    "content": "Retirer ensuite la vidéo du bas visible dans le bloc de la capture",
-    "status": "pending"
-  },
-  {
-    "content": "Vérifier avec build, captures et tests frontend",
+    "content": "Lancer le testing agent frontend et traiter tous les retours",
     "status": "pending"
   }
 ]

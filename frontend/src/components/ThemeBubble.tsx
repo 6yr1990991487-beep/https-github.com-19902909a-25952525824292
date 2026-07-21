@@ -1,110 +1,458 @@
 import { useEffect, useMemo, useState } from "react";
-import { Sparkles, X } from "lucide-react";
+import {
+  Check,
+  Clock3,
+  Gem,
+  RefreshCcw,
+  Search,
+  Shuffle,
+  Sparkles,
+  Star,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
-type ThemeKey = "default" | "midnight" | "sunset" | "forest" | "candy";
+type ThemeMood = "all" | "neon" | "glass" | "cyber" | "glacier" | "pearl" | "prism" | "mono";
 
-type Theme = {
-  key: ThemeKey;
+type ThemeOption = {
+  id: string;
   label: string;
+  family: string;
+  finish: string;
+  variant: string;
+  mood: Exclude<ThemeMood, "all">;
+  tags: string[];
   swatch: string;
-  background: string;
-  card: string;
-  border: string;
-  primary: string;
-  hero: string;
+  backgroundHex: string;
+  backgroundHsl: string;
+  cardHex: string;
+  cardHsl: string;
+  card2Hex: string;
+  card2Hsl: string;
+  borderHex: string;
+  borderHsl: string;
+  primaryHex: string;
+  primaryHsl: string;
+  accentHex: string;
+  accentHsl: string;
+  tertiaryHex: string;
+  tertiaryHsl: string;
+  foregroundHex: string;
+  foregroundHsl: string;
+  cardForegroundHex: string;
+  cardForegroundHsl: string;
+  overlayForegroundHex: string;
+  overlayForegroundHsl: string;
+  mutedHex: string;
+  mutedHsl: string;
+  primaryForegroundHex: string;
+  primaryForegroundHsl: string;
+  pageTint: string;
+  heroGradient: string;
+  overlay: string;
+  overlayStrong: string;
+  glow: string;
+  glowSoft: string;
+  borderSoft: string;
+  borderStrong: string;
+  noiseOpacity: string;
+  ringHex: string;
+  ringHsl: string;
+  pillHsl: string;
 };
 
-const THEMES: Theme[] = [
-  { key: "default", label: "Anime Night", swatch: "linear-gradient(135deg,#3b82f6,#ec4899)", background: "220 30% 8%", card: "220 25% 11%", border: "220 20% 18%", primary: "211 100% 55%", hero: "linear-gradient(135deg,hsl(220 35% 6%) 0%,hsl(220 30% 10%) 50%,hsl(220 25% 14%) 100%)" },
-  { key: "midnight", label: "Midnight Indigo", swatch: "linear-gradient(135deg,#0a0a1a,#4f46e5)", background: "245 45% 7%", card: "245 40% 11%", border: "245 30% 20%", primary: "250 95% 68%", hero: "linear-gradient(135deg,hsl(245 50% 5%) 0%,hsl(250 45% 11%) 50%,hsl(260 40% 16%) 100%)" },
-  { key: "sunset", label: "Sunset Blaze", swatch: "linear-gradient(135deg,#ff6b35,#e84393)", background: "18 50% 8%", card: "16 45% 12%", border: "14 35% 22%", primary: "20 95% 60%", hero: "linear-gradient(135deg,hsl(18 55% 6%) 0%,hsl(340 45% 11%) 50%,hsl(280 40% 16%) 100%)" },
-  { key: "forest", label: "Forest Moss", swatch: "linear-gradient(135deg,#1a3c2a,#a0c49d)", background: "150 35% 7%", card: "150 30% 11%", border: "150 25% 20%", primary: "150 70% 50%", hero: "linear-gradient(135deg,hsl(150 40% 5%) 0%,hsl(155 35% 10%) 50%,hsl(170 30% 14%) 100%)" },
-  { key: "candy", label: "Candy Pop", swatch: "linear-gradient(135deg,#67e8f9,#c4b5fd)", background: "260 35% 10%", card: "260 30% 14%", border: "260 25% 24%", primary: "320 90% 65%", hero: "linear-gradient(135deg,hsl(200 70% 12%) 0%,hsl(260 60% 16%) 50%,hsl(320 60% 18%) 100%)" },
-];
-
-const STORAGE_KEY = "lovanet:theme";
-const ACCENT_STORAGE_KEY = "lovanet:accent";
-
-type Tone = "dark" | "black" | "white";
-type Accent = { key: string; label: string; swatch: string; hue: number; sat: number; tone: Tone; customTint?: string; animated?: boolean; };
-
-const ACCENTS: Accent[] = [
-  { key: "off", label: "Aucune", swatch: "linear-gradient(135deg,#333,#666)", hue: 0, sat: 0, tone: "dark" },
-  { key: "black", label: "Noir pur", swatch: "#000", hue: 0, sat: 0, tone: "black" },
-  { key: "white", label: "Blanc", swatch: "#fff", hue: 0, sat: 0, tone: "white" },
-  { key: "red", label: "Rouge", swatch: "#ef4444", hue: 0, sat: 85, tone: "dark" },
-  { key: "orange", label: "Orange", swatch: "#f97316", hue: 24, sat: 90, tone: "dark" },
-  { key: "yellow", label: "Jaune", swatch: "#eab308", hue: 45, sat: 90, tone: "dark" },
-  { key: "green", label: "Vert", swatch: "#22c55e", hue: 142, sat: 75, tone: "dark" },
-  { key: "cyan", label: "Cyan", swatch: "#06b6d4", hue: 188, sat: 90, tone: "dark" },
-  { key: "blue", label: "Bleu", swatch: "#3b82f6", hue: 217, sat: 90, tone: "dark" },
-  { key: "purple", label: "Violet", swatch: "#8b5cf6", hue: 262, sat: 85, tone: "dark" },
-  { key: "pink", label: "Rose", swatch: "#ec4899", hue: 328, sat: 85, tone: "dark" },
-  ...([
-    { k: "anim-rgb", l: "RGB", g: "linear-gradient(135deg,#ff0080,#7928ca,#0070f3,#00d4ff,#39ff14,#ffd700,#ff0080)" },
-    { k: "anim-aurora", l: "Aurore", g: "linear-gradient(135deg,#00c9ff,#92fe9d,#fc466b,#3f5efb,#00c9ff)" },
-    { k: "anim-neon", l: "Néon", g: "linear-gradient(135deg,#fc00ff,#00dbde,#ff00aa,#00ff88,#fc00ff)" },
-  ].map((x) => ({ key: x.k, label: x.l, swatch: x.g, hue: 0, sat: 0, tone: "dark" as Tone, customTint: x.g, animated: true }))),
-];
-
-const applyTheme = (t: Theme) => {
-  const r = document.documentElement.style;
-  r.setProperty("--background", t.background);
-  r.setProperty("--card", t.card);
-  r.setProperty("--popover", t.card);
-  r.setProperty("--secondary", t.card);
-  r.setProperty("--muted", t.card);
-  r.setProperty("--border", t.border);
-  r.setProperty("--input", t.border);
-  r.setProperty("--primary", t.primary);
-  r.setProperty("--accent", t.primary);
-  r.setProperty("--ring", t.primary);
-  r.setProperty("--gradient-hero", t.hero);
+type FamilyDef = {
+  key: string;
+  label: string;
+  hue: number;
+  tags: string[];
 };
 
-const applyAccent = (a: Accent) => {
-  const r = document.documentElement.style;
-  if (a.key === "off") {
-    ["--background", "--foreground", "--card", "--card-foreground", "--popover", "--popover-foreground", "--secondary", "--muted", "--muted-foreground", "--border", "--input", "--primary", "--primary-foreground", "--accent", "--accent-foreground", "--ring", "--site-tint"].forEach((v) => r.removeProperty(v));
-    document.body.style.removeProperty("background");
-    document.body.style.removeProperty("background-color");
-    return;
+type VariantDef = {
+  key: string;
+  label: string;
+  saturationShift: number;
+  lightnessShift: number;
+  neonShift: number;
+  backgroundLift: number;
+  tags: string[];
+};
+
+type FinishDef = {
+  key: string;
+  label: string;
+  mood: Exclude<ThemeMood, "all">;
+  hueShift: number;
+  saturationBoost: number;
+  backgroundOffset: number;
+  cardLift: number;
+  brightness: number;
+  tags: string[];
+};
+
+const STORAGE_KEY = "lovanet:theme-v2";
+const FAVORITES_KEY = "lovanet:theme-favorites";
+const RECENTS_KEY = "lovanet:theme-recents";
+const DEFAULT_THEME_ID = "azure-cosmic-rgb";
+const RECENT_LIMIT = 18;
+const BRIGHT_TEXT = "#f7faff";
+const DARK_TEXT = "#0b1020";
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const toHslToken = (h: number, s: number, l: number) => `${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%`;
+
+const hslToRgb = (h: number, s: number, l: number) => {
+  const hue = ((h % 360) + 360) % 360;
+  const sat = clamp(s, 0, 100) / 100;
+  const light = clamp(l, 0, 100) / 100;
+  const c = (1 - Math.abs(2 * light - 1)) * sat;
+  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+  const m = light - c / 2;
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if (hue < 60) {
+    r = c;
+    g = x;
+  } else if (hue < 120) {
+    r = x;
+    g = c;
+  } else if (hue < 180) {
+    g = c;
+    b = x;
+  } else if (hue < 240) {
+    g = x;
+    b = c;
+  } else if (hue < 300) {
+    r = x;
+    b = c;
+  } else {
+    r = c;
+    b = x;
   }
 
-  let bg = `${a.hue} ${a.sat}% 10%`;
-  let card = `${a.hue} ${Math.min(a.sat, 70)}% 14%`;
-  let border = `${a.hue} ${a.sat}% 38%`;
-  let primary = `${a.hue} ${Math.min(100, a.sat + 5)}% 58%`;
-  let fg = "0 0% 98%";
-  let primaryFg = "0 0% 100%";
-  let mutedFg = `${a.hue} 25% 78%`;
-  let tint = `radial-gradient(1200px 900px at 15% -10%, hsl(${a.hue} ${a.sat}% 28%) 0%, hsl(${a.hue} ${a.sat}% 12%) 45%, hsl(${a.hue} ${Math.max(20, a.sat - 20)}% 6%) 100%)`;
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255),
+  };
+};
 
-  if (a.customTint) tint = a.customTint;
+const rgbToHex = (r: number, g: number, b: number) =>
+  `#${[r, g, b]
+    .map((channel) => clamp(channel, 0, 255).toString(16).padStart(2, "0"))
+    .join("")}`;
 
-  r.setProperty("--background", bg);
-  r.setProperty("--foreground", fg);
-  r.setProperty("--card", card);
-  r.setProperty("--card-foreground", fg);
-  r.setProperty("--popover", card);
-  r.setProperty("--popover-foreground", fg);
-  r.setProperty("--secondary", card);
-  r.setProperty("--muted", card);
-  r.setProperty("--muted-foreground", mutedFg);
-  r.setProperty("--border", border);
-  r.setProperty("--input", border);
-  r.setProperty("--primary", primary);
-  r.setProperty("--primary-foreground", primaryFg);
-  r.setProperty("--accent", primary);
-  r.setProperty("--accent-foreground", primaryFg);
-  r.setProperty("--ring", primary);
-  r.setProperty("--site-tint", tint);
-  r.setProperty("--gradient-hero", tint);
+const hslToHex = (h: number, s: number, l: number) => {
+  const { r, g, b } = hslToRgb(h, s, l);
+  return rgbToHex(r, g, b);
+};
 
-  document.body.style.background = tint;
+const hexToRgb = (hex: string) => {
+  const normalized = hex.replace("#", "");
+  const full = normalized.length === 3
+    ? normalized.split("").map((part) => `${part}${part}`).join("")
+    : normalized;
+
+  return {
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16),
+  };
+};
+
+const rgbToHslToken = (r: number, g: number, b: number) => {
+  const red = r / 255;
+  const green = g / 255;
+  const blue = b / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const delta = max - min;
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1));
+    switch (max) {
+      case red:
+        h = 60 * (((green - blue) / delta) % 6);
+        break;
+      case green:
+        h = 60 * ((blue - red) / delta + 2);
+        break;
+      default:
+        h = 60 * ((red - green) / delta + 4);
+        break;
+    }
+  }
+
+  return toHslToken((h + 360) % 360, s * 100, l * 100);
+};
+
+const hexToHslToken = (hex: string) => {
+  const { r, g, b } = hexToRgb(hex);
+  return rgbToHslToken(r, g, b);
+};
+
+const srgbToLinear = (value: number) => {
+  const normalized = value / 255;
+  return normalized <= 0.03928
+    ? normalized / 12.92
+    : ((normalized + 0.055) / 1.055) ** 2.4;
+};
+
+const relativeLuminance = (hex: string) => {
+  const { r, g, b } = hexToRgb(hex);
+  return 0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b);
+};
+
+const contrastRatio = (first: string, second: string) => {
+  const luminanceA = relativeLuminance(first);
+  const luminanceB = relativeLuminance(second);
+  const lighter = Math.max(luminanceA, luminanceB);
+  const darker = Math.min(luminanceA, luminanceB);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
+const mixHex = (first: string, second: string, amount: number) => {
+  const ratio = clamp(amount, 0, 1);
+  const left = hexToRgb(first);
+  const right = hexToRgb(second);
+  return rgbToHex(
+    Math.round(left.r + (right.r - left.r) * ratio),
+    Math.round(left.g + (right.g - left.g) * ratio),
+    Math.round(left.b + (right.b - left.b) * ratio),
+  );
+};
+
+const alphaHex = (hex: string, opacity: number) => {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${clamp(opacity, 0, 1).toFixed(3)})`;
+};
+
+const pickReadableTextColor = (background: string, minimum = 4.5) => {
+  const candidates = [BRIGHT_TEXT, "#edf4ff", "#dbeafe", DARK_TEXT, "#111827"];
+  const match = candidates.find((candidate) => contrastRatio(background, candidate) >= minimum);
+  return match ?? (relativeLuminance(background) > 0.22 ? DARK_TEXT : BRIGHT_TEXT);
+};
+
+const readStoredArray = (key: string) => {
+  if (typeof window === "undefined") return [] as string[];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(key) ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : [];
+  } catch {
+    return [];
+  }
+};
+
+const normalize = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+const FAMILY_DEFS: FamilyDef[] = [
+  { key: "azure", label: "Azur", hue: 205, tags: ["bleu", "ocean", "electrique"] },
+  { key: "sakura", label: "Sakura", hue: 334, tags: ["rose", "anime", "dream"] },
+  { key: "emerald", label: "Émeraude", hue: 152, tags: ["vert", "nature", "luxe"] },
+  { key: "violet", label: "Violet", hue: 272, tags: ["mystique", "electro", "nuit"] },
+  { key: "ember", label: "Ember", hue: 16, tags: ["magma", "feu", "sunset"] },
+  { key: "glacier", label: "Glacier", hue: 190, tags: ["ice", "froid", "cristal"] },
+  { key: "gold", label: "Or", hue: 46, tags: ["gold", "royal", "collector"] },
+  { key: "ruby", label: "Ruby", hue: 352, tags: ["ruby", "intense", "brillant"] },
+  { key: "mint", label: "Menthe", hue: 168, tags: ["mint", "fresh", "clean"] },
+  { key: "cobalt", label: "Cobalt", hue: 224, tags: ["cobalt", "deep", "tech"] },
+  { key: "amethyst", label: "Améthyste", hue: 286, tags: ["gemme", "neon", "crystal"] },
+  { key: "teal", label: "Lagune", hue: 182, tags: ["lagoon", "cyan", "glass"] },
+  { key: "sunrise", label: "Aube", hue: 28, tags: ["orange", "golden", "warm"] },
+  { key: "pearl", label: "Perle", hue: 214, tags: ["pearl", "lunaire", "frost"] },
+  { key: "obsidian", label: "Obsidienne", hue: 248, tags: ["mono", "shadow", "dark"] },
+  { key: "lime", label: "Lime", hue: 104, tags: ["lime", "arcade", "cyber"] },
+];
+
+const VARIANT_DEFS: VariantDef[] = [
+  { key: "cosmic", label: "Cosmic", saturationShift: 10, lightnessShift: -4, neonShift: 14, backgroundLift: -2, tags: ["cosmic", "space"] },
+  { key: "eclipse", label: "Éclipse", saturationShift: -4, lightnessShift: -8, neonShift: 8, backgroundLift: -4, tags: ["eclipse", "shadow"] },
+  { key: "luxe", label: "Luxe", saturationShift: 6, lightnessShift: 2, neonShift: 18, backgroundLift: 0, tags: ["luxe", "premium"] },
+  { key: "pulse", label: "Pulse", saturationShift: 14, lightnessShift: 0, neonShift: 22, backgroundLift: 1, tags: ["pulse", "energy"] },
+];
+
+const FINISH_DEFS: FinishDef[] = [
+  { key: "rgb", label: "RGB", mood: "neon", hueShift: 0, saturationBoost: 14, backgroundOffset: -2, cardLift: 8, brightness: 6, tags: ["rgb", "rainbow", "animated"] },
+  { key: "cyber", label: "Cyber", mood: "cyber", hueShift: 20, saturationBoost: 16, backgroundOffset: -3, cardLift: 7, brightness: 8, tags: ["cyber", "tech", "future"] },
+  { key: "glacier", label: "Glacier", mood: "glacier", hueShift: -18, saturationBoost: -6, backgroundOffset: 1, cardLift: 10, brightness: 2, tags: ["glacier", "ice", "frost"] },
+  { key: "pearl", label: "Pearl", mood: "pearl", hueShift: -8, saturationBoost: -12, backgroundOffset: 2, cardLift: 12, brightness: 0, tags: ["pearl", "soft", "luminous"] },
+  { key: "transparent-brilliant", label: "Transparent Brilliant", mood: "glass", hueShift: 10, saturationBoost: 4, backgroundOffset: -1, cardLift: 14, brightness: 10, tags: ["transparent", "brilliant", "glass"] },
+  { key: "prism", label: "Prism", mood: "prism", hueShift: 32, saturationBoost: 10, backgroundOffset: -1, cardLift: 9, brightness: 9, tags: ["prism", "spectrum", "refraction"] },
+  { key: "aurora", label: "Aurora", mood: "glass", hueShift: 46, saturationBoost: 8, backgroundOffset: 0, cardLift: 11, brightness: 7, tags: ["aurora", "north", "fluid"] },
+  { key: "velvet", label: "Velvet", mood: "mono", hueShift: -24, saturationBoost: -18, backgroundOffset: -2, cardLift: 6, brightness: -1, tags: ["velvet", "mono", "shadow"] },
+  { key: "holo", label: "Holo", mood: "neon", hueShift: 58, saturationBoost: 12, backgroundOffset: 0, cardLift: 10, brightness: 9, tags: ["holo", "hologram", "color-shift"] },
+  { key: "glasswave", label: "Glasswave", mood: "glass", hueShift: -34, saturationBoost: 6, backgroundOffset: 1, cardLift: 13, brightness: 5, tags: ["glass", "wave", "liquid"] },
+];
+
+const buildThemeCatalog = () => {
+  const themes: ThemeOption[] = [];
+
+  FAMILY_DEFS.forEach((family) => {
+    VARIANT_DEFS.forEach((variant) => {
+      FINISH_DEFS.forEach((finish) => {
+        const baseHue = (family.hue + finish.hueShift + 360) % 360;
+        const saturation = clamp(72 + variant.saturationShift + finish.saturationBoost, 24, 98);
+        const backgroundLightness = clamp(10 + variant.backgroundLift + finish.backgroundOffset, 5, 20);
+        const cardLightness = clamp(backgroundLightness + finish.cardLift, 14, 28);
+        const card2Lightness = clamp(cardLightness + 3, 18, 34);
+        const primaryLightness = clamp(58 + variant.lightnessShift + finish.brightness, 45, 74);
+        const accentHue = (baseHue + 38) % 360;
+        const tertiaryHue = (baseHue + 124) % 360;
+
+        const backgroundHex = hslToHex(baseHue, clamp(saturation - 32, 12, 78), backgroundLightness);
+        const cardHex = hslToHex(baseHue, clamp(saturation - 24, 18, 82), cardLightness);
+        const card2Hex = hslToHex(accentHue, clamp(saturation - 18, 24, 88), card2Lightness);
+        const borderHex = mixHex(card2Hex, BRIGHT_TEXT, finish.mood === "glass" || finish.mood === "pearl" ? 0.24 : 0.12);
+        const primaryHex = hslToHex(baseHue, clamp(saturation + 6, 36, 100), primaryLightness);
+        const accentHex = hslToHex(accentHue, clamp(saturation + 2, 34, 100), clamp(primaryLightness + 2, 50, 78));
+        const tertiaryHex = hslToHex(tertiaryHue, clamp(saturation + 4, 32, 100), clamp(primaryLightness + 1, 46, 80));
+
+        const foregroundHex = pickReadableTextColor(backgroundHex);
+        const cardForegroundHex = pickReadableTextColor(cardHex);
+        const overlayForegroundHex = pickReadableTextColor(mixHex(backgroundHex, cardHex, 0.52));
+        const primaryForegroundHex = pickReadableTextColor(primaryHex, 3.2);
+        const mutedHex = mixHex(cardForegroundHex, cardHex, 0.42);
+        const overlayAlpha = finish.mood === "glass" || finish.mood === "pearl" ? 0.76 : 0.82;
+        const overlay = alphaHex(mixHex(backgroundHex, cardHex, 0.58), overlayAlpha);
+        const overlayStrong = alphaHex(mixHex(backgroundHex, DARK_TEXT, 0.48), clamp(overlayAlpha + 0.09, 0.76, 0.92));
+        const pageTint = `radial-gradient(circle at 14% 18%, ${alphaHex(primaryHex, 0.18)} 0%, transparent 26%), radial-gradient(circle at 84% 16%, ${alphaHex(accentHex, 0.16)} 0%, transparent 22%), radial-gradient(circle at 50% 100%, ${alphaHex(tertiaryHex, 0.14)} 0%, transparent 30%), linear-gradient(160deg, ${backgroundHex} 0%, ${mixHex(backgroundHex, cardHex, 0.58)} 52%, ${mixHex(backgroundHex, DARK_TEXT, 0.3)} 100%)`;
+        const heroGradient = `linear-gradient(135deg, ${alphaHex(mixHex(backgroundHex, DARK_TEXT, 0.22), 0.96)} 0%, ${alphaHex(cardHex, 0.96)} 52%, ${alphaHex(card2Hex, 0.94)} 100%)`;
+        const swatch = `linear-gradient(135deg, ${alphaHex(primaryHex, 0.98)} 0%, ${alphaHex(accentHex, 0.92)} 52%, ${alphaHex(tertiaryHex, 0.9)} 100%)`;
+
+        themes.push({
+          id: `${family.key}-${variant.key}-${finish.key}`,
+          label: `${family.label} ${variant.label} ${finish.label}`,
+          family: family.label,
+          finish: finish.label,
+          variant: variant.label,
+          mood: finish.mood,
+          tags: [family.label, variant.label, finish.label, ...family.tags, ...variant.tags, ...finish.tags],
+          swatch,
+          backgroundHex,
+          backgroundHsl: hexToHslToken(backgroundHex),
+          cardHex,
+          cardHsl: hexToHslToken(cardHex),
+          card2Hex,
+          card2Hsl: hexToHslToken(card2Hex),
+          borderHex,
+          borderHsl: hexToHslToken(borderHex),
+          primaryHex,
+          primaryHsl: hexToHslToken(primaryHex),
+          accentHex,
+          accentHsl: hexToHslToken(accentHex),
+          tertiaryHex,
+          tertiaryHsl: hexToHslToken(tertiaryHex),
+          foregroundHex,
+          foregroundHsl: hexToHslToken(foregroundHex),
+          cardForegroundHex,
+          cardForegroundHsl: hexToHslToken(cardForegroundHex),
+          overlayForegroundHex,
+          overlayForegroundHsl: hexToHslToken(overlayForegroundHex),
+          mutedHex,
+          mutedHsl: hexToHslToken(mutedHex),
+          primaryForegroundHex,
+          primaryForegroundHsl: hexToHslToken(primaryForegroundHex),
+          pageTint,
+          heroGradient,
+          overlay,
+          overlayStrong,
+          glow: `0 0 18px ${alphaHex(primaryHex, 0.3)}, 0 0 44px ${alphaHex(accentHex, 0.2)}`,
+          glowSoft: `0 0 12px ${alphaHex(primaryHex, 0.18)}, 0 0 28px ${alphaHex(tertiaryHex, 0.12)}`,
+          borderSoft: alphaHex(BRIGHT_TEXT, 0.14),
+          borderStrong: alphaHex(BRIGHT_TEXT, 0.24),
+          noiseOpacity: finish.mood === "glass" || finish.mood === "pearl" ? "0.036" : "0.028",
+          ringHex: mixHex(primaryHex, BRIGHT_TEXT, 0.22),
+          ringHsl: hexToHslToken(mixHex(primaryHex, BRIGHT_TEXT, 0.22)),
+          pillHsl: toHslToken(baseHue, clamp(saturation - 12, 18, 88), clamp(cardLightness + 4, 20, 36)),
+        });
+      });
+    });
+  });
+
+  return themes;
+};
+
+const THEME_CATALOG = buildThemeCatalog();
+
+const applyTheme = (theme: ThemeOption) => {
+  const root = document.documentElement;
+  const styles = root.style;
+
+  styles.setProperty("--background", theme.backgroundHsl);
+  styles.setProperty("--foreground", theme.foregroundHsl);
+  styles.setProperty("--card", theme.cardHsl);
+  styles.setProperty("--card-foreground", theme.cardForegroundHsl);
+  styles.setProperty("--popover", theme.card2Hsl);
+  styles.setProperty("--popover-foreground", theme.overlayForegroundHsl);
+  styles.setProperty("--secondary", theme.card2Hsl);
+  styles.setProperty("--secondary-foreground", theme.cardForegroundHsl);
+  styles.setProperty("--muted", theme.card2Hsl);
+  styles.setProperty("--muted-foreground", theme.mutedHsl);
+  styles.setProperty("--border", theme.borderHsl);
+  styles.setProperty("--input", theme.borderHsl);
+  styles.setProperty("--primary", theme.primaryHsl);
+  styles.setProperty("--primary-foreground", theme.primaryForegroundHsl);
+  styles.setProperty("--accent", theme.accentHsl);
+  styles.setProperty("--accent-foreground", theme.primaryForegroundHsl);
+  styles.setProperty("--ring", theme.ringHsl);
+  styles.setProperty("--surface", theme.cardHsl);
+  styles.setProperty("--surface-elevated", theme.card2Hsl);
+  styles.setProperty("--pill", theme.pillHsl);
+  styles.setProperty("--neon-cyan", theme.primaryHsl);
+  styles.setProperty("--neon-magenta", theme.accentHsl);
+  styles.setProperty("--neon-purple", theme.tertiaryHsl);
+  styles.setProperty("--gradient-hero", theme.heroGradient);
+  styles.setProperty("--gradient-neon", `linear-gradient(135deg, ${theme.primaryHex} 0%, ${theme.accentHex} 52%, ${theme.tertiaryHex} 100%)`);
+  styles.setProperty("--glow-cyan", `0 8px 30px ${alphaHex(theme.primaryHex, 0.35)}`);
+  styles.setProperty("--glow-magenta", `0 8px 30px ${alphaHex(theme.accentHex, 0.28)}`);
+  styles.setProperty("--glow-subtle", `0 6px 22px ${alphaHex(DARK_TEXT, 0.42)}`);
+  styles.setProperty("--site-tint", theme.pageTint);
+
+  styles.setProperty("--theme-bg", theme.backgroundHex);
+  styles.setProperty("--theme-card", theme.cardHex);
+  styles.setProperty("--theme-card-2", theme.card2Hex);
+  styles.setProperty("--theme-border", theme.borderHex);
+  styles.setProperty("--theme-border-soft", theme.borderSoft);
+  styles.setProperty("--theme-border-strong", theme.borderStrong);
+  styles.setProperty("--theme-overlay", theme.overlay);
+  styles.setProperty("--theme-overlay-strong", theme.overlayStrong);
+  styles.setProperty("--theme-fg-on-bg", theme.foregroundHex);
+  styles.setProperty("--theme-fg-on-card", theme.cardForegroundHex);
+  styles.setProperty("--theme-fg-on-overlay", theme.overlayForegroundHex);
+  styles.setProperty("--theme-muted", theme.mutedHex);
+  styles.setProperty("--theme-link", theme.primaryHex);
+  styles.setProperty("--theme-link-hover", theme.accentHex);
+  styles.setProperty("--theme-glow", theme.glow);
+  styles.setProperty("--theme-glow-2", theme.glowSoft);
+  styles.setProperty("--theme-ring", theme.ringHex);
+  styles.setProperty("--theme-neon-a", theme.primaryHex);
+  styles.setProperty("--theme-neon-b", theme.accentHex);
+  styles.setProperty("--theme-neon-c", theme.tertiaryHex);
+  styles.setProperty("--theme-noise-opacity", theme.noiseOpacity);
+
+  root.dataset.themeId = theme.id;
+  root.dataset.themeMood = theme.mood;
+  root.style.colorScheme = "dark";
+  document.body.style.background = theme.pageTint;
   document.body.style.backgroundAttachment = "fixed";
-  document.body.style.backgroundSize = a.animated ? "400% 400%" : "";
-  document.body.style.animation = a.animated ? "lovanet-bg-shift 18s ease infinite" : "";
+  document.body.style.color = theme.foregroundHex;
 };
 
 const SHAPES = [
@@ -118,93 +466,339 @@ const SHAPES = [
   { key: "comet", viewBox: "0 0 64 64", element: <><path d="M14 34h22" /><path d="M10 28h16" /><path d="M18 40h12" /><circle cx="42" cy="24" r="9" /></> },
 ];
 
-const AnimatedThemeGlyph = ({ active }: { active: boolean }) => {
+const AnimatedThemeGlyph = ({ open }: { open: boolean }) => {
   const [shapeIndex, setShapeIndex] = useState(0);
 
   useEffect(() => {
-    const id = window.setInterval(() => setShapeIndex((i) => (i + 1) % SHAPES.length), 1400);
+    const id = window.setInterval(() => setShapeIndex((value) => (value + 1) % SHAPES.length), 1400);
     return () => window.clearInterval(id);
   }, []);
 
-  const rotation = useMemo(() => `${shapeIndex * 45}deg`, [shapeIndex]);
-
   return (
-    <div className="relative z-10 flex h-8 w-8 items-center justify-center" data-testid="theme-bubble-animated-glyph">
-      <span className="absolute inset-0 rounded-full border border-white/20 bg-white/[0.06] backdrop-blur-xl" style={{ boxShadow: active ? "0 0 24px rgba(34,211,238,0.35), 0 0 32px rgba(232,121,249,0.28), inset 0 1px 0 rgba(255,255,255,0.18)" : "0 0 18px rgba(34,211,238,0.22), 0 0 24px rgba(232,121,249,0.18), inset 0 1px 0 rgba(255,255,255,0.15)" }} />
-      <span className="absolute inset-[4px] rounded-full" style={{ background: "conic-gradient(from 0deg,#ff4fd8,#7c3aed,#22d3ee,#fbbf24,#ff4fd8)", filter: "blur(8px)", opacity: active ? 0.8 : 0.65, animation: "lovanet-glyph-spin 8s linear infinite" }} />
-      <span className="absolute inset-[7px] rounded-full border border-white/10 bg-[rgba(8,6,18,0.82)]" style={{ transform: `rotate(${rotation})` }} />
+    <div className="relative z-10 flex h-10 w-10 items-center justify-center md:h-11 md:w-11" data-testid="theme-bubble-glyph">
+      <span className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.08] backdrop-blur-2xl" style={{ boxShadow: open ? "0 0 24px rgba(56,189,248,0.38), 0 0 48px rgba(232,121,249,0.32), inset 0 1px 0 rgba(255,255,255,0.22)" : "0 0 18px rgba(56,189,248,0.28), 0 0 34px rgba(232,121,249,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" }} />
+      <span className="absolute inset-[3px] rounded-full opacity-95" style={{ background: "conic-gradient(from 0deg,var(--theme-neon-a),var(--theme-neon-b),var(--theme-neon-c),var(--theme-neon-a))", filter: "blur(8px)", animation: "lovanet-glyph-spin 8s linear infinite" }} />
+      <span className="absolute inset-[6px] rounded-full border border-white/10 bg-[rgba(8,10,20,0.84)]" />
       {SHAPES.map((shape, index) => (
-        <svg key={shape.key} viewBox={shape.viewBox} className="absolute h-6 w-6 transition-all duration-700" style={{ opacity: shapeIndex === index ? 1 : 0, transform: `scale(${shapeIndex === index ? 1 : 0.7}) rotate(${shapeIndex === index ? 0 : -24}deg)`, filter: shapeIndex === index ? "drop-shadow(0 0 8px rgba(34,211,238,0.45)) drop-shadow(0 0 10px rgba(232,121,249,0.35))" : "none" }} fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{shape.element}</svg>
+        <svg
+          key={shape.key}
+          viewBox={shape.viewBox}
+          className="absolute h-7 w-7 transition-[transform,opacity,filter] duration-700"
+          style={{
+            opacity: shapeIndex === index ? 1 : 0,
+            transform: `scale(${shapeIndex === index ? 1 : 0.72}) rotate(${shapeIndex === index ? 0 : -16}deg)`,
+            filter: shapeIndex === index ? "drop-shadow(0 0 10px rgba(255,255,255,0.6)) drop-shadow(0 0 16px rgba(56,189,248,0.38))" : "none",
+          }}
+          fill="none"
+          stroke="white"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {shape.element}
+        </svg>
       ))}
-      <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white/80" />
+      <Sparkles className="absolute -right-1 -top-1 h-4 w-4 text-white/90" />
     </div>
   );
 };
 
+const moodFilters: { key: ThemeMood; label: string }[] = [
+  { key: "all", label: "Tous" },
+  { key: "neon", label: "Néon" },
+  { key: "glass", label: "Glass" },
+  { key: "cyber", label: "Cyber" },
+  { key: "glacier", label: "Glacier" },
+  { key: "pearl", label: "Pearl" },
+  { key: "prism", label: "Prism" },
+  { key: "mono", label: "Mono" },
+];
+
 export const ThemeBubble = () => {
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<ThemeKey>("default");
-  const [accent, setAccent] = useState<string>("off");
+  const [activeThemeId, setActiveThemeId] = useState(DEFAULT_THEME_ID);
+  const [tab, setTab] = useState("all");
+  const [mood, setMood] = useState<ThemeMood>("all");
+  const [query, setQuery] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [recents, setRecents] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  const activeTheme = useMemo(
+    () => THEME_CATALOG.find((theme) => theme.id === activeThemeId) ?? THEME_CATALOG[0],
+    [activeThemeId],
+  );
 
   useEffect(() => {
-    const saved = (localStorage.getItem(STORAGE_KEY) as ThemeKey | null) ?? "default";
-    const t = THEMES.find((x) => x.key === saved) ?? THEMES[0];
-    applyTheme(t);
-    setActive(t.key);
-
-    const savedAccent = localStorage.getItem(ACCENT_STORAGE_KEY) ?? "off";
-    const a = ACCENTS.find((x) => x.key === savedAccent) ?? ACCENTS.find((x) => x.key === "off");
-    if (a) {
-      applyAccent(a);
-      setAccent(a.key);
-    }
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(max-width: 767px)");
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
   }, []);
 
-  const pick = (t: Theme) => {
-    applyTheme(t);
-    localStorage.setItem(STORAGE_KEY, t.key);
-    setActive(t.key);
-    const a = ACCENTS.find((x) => x.key === accent);
-    if (a && a.key !== "off") applyAccent(a);
+  useEffect(() => {
+    const savedTheme = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    const theme = THEME_CATALOG.find((item) => item.id === savedTheme) ?? THEME_CATALOG.find((item) => item.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
+    applyTheme(theme);
+    setActiveThemeId(theme.id);
+    setFavorites(readStoredArray(FAVORITES_KEY));
+    setRecents(readStoredArray(RECENTS_KEY));
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(RECENTS_KEY, JSON.stringify(recents));
+  }, [recents]);
+
+  const filteredByTab = useMemo(() => {
+    if (tab === "favorites") {
+      return THEME_CATALOG.filter((theme) => favorites.includes(theme.id));
+    }
+    if (tab === "recent") {
+      const order = new Map(recents.map((id, index) => [id, index]));
+      return THEME_CATALOG
+        .filter((theme) => order.has(theme.id))
+        .sort((left, right) => (order.get(left.id) ?? 0) - (order.get(right.id) ?? 0));
+    }
+    return THEME_CATALOG;
+  }, [favorites, recents, tab]);
+
+  const visibleThemes = useMemo(() => {
+    const search = normalize(query);
+    return filteredByTab.filter((theme) => {
+      const moodMatch = mood === "all" || theme.mood === mood;
+      const searchMatch = !search || normalize([theme.label, theme.family, theme.finish, theme.variant, ...theme.tags].join(" ")).includes(search);
+      return moodMatch && searchMatch;
+    });
+  }, [filteredByTab, mood, query]);
+
+  const updateRecents = (themeId: string) => {
+    setRecents((previous) => [themeId, ...previous.filter((id) => id !== themeId)].slice(0, RECENT_LIMIT));
   };
 
-  const pickAccent = (a: Accent) => {
-    applyAccent(a);
-    localStorage.setItem(ACCENT_STORAGE_KEY, a.key);
-    setAccent(a.key);
+  const handleApplyTheme = (theme: ThemeOption, notify = true) => {
+    applyTheme(theme);
+    setActiveThemeId(theme.id);
+    updateRecents(theme.id);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(STORAGE_KEY, theme.id);
+    }
+    if (notify) {
+      toast.success(`Thème appliqué : ${theme.label}`, {
+        description: `${theme.family} · ${theme.variant} · ${theme.finish}`,
+      });
+    }
   };
 
-  return (
-    <div className="fixed left-4 top-1/2 z-[70] flex -translate-y-1/2 items-center gap-3 md:left-5" data-testid="theme-bubble-shell">
-      {open && (
-        <div className="w-[300px] rounded-[1.75rem] border border-white/15 bg-[rgba(9,7,20,0.84)] p-4 shadow-[0_24px_80px_-26px_rgba(0,0,0,0.7),0_0_34px_rgba(34,211,238,0.12),0_0_34px_rgba(232,121,249,0.1)] backdrop-blur-2xl animate-scale-in" data-testid="theme-bubble-panel">
-          <p className="mb-3 px-1 text-[10px] uppercase tracking-[0.3em] text-white/55">Ambiance</p>
-          <div className="grid grid-cols-5 gap-2">
-            {THEMES.map((t) => (
-              <button key={t.key} onClick={() => pick(t)} title={t.label} aria-label={t.label} className={`relative h-10 w-10 rounded-full border border-white/15 transition-transform hover:scale-110 ${active === t.key && accent === "off" ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`} style={{ background: t.swatch }} />
-            ))}
+  const handleToggleFavorite = (themeId: string) => {
+    setFavorites((previous) =>
+      previous.includes(themeId) ? previous.filter((id) => id !== themeId) : [themeId, ...previous].slice(0, 32),
+    );
+  };
+
+  const handleRandomTheme = () => {
+    const pool = visibleThemes.length > 0 ? visibleThemes : THEME_CATALOG;
+    const randomTheme = pool[Math.floor(Math.random() * pool.length)];
+    handleApplyTheme(randomTheme);
+  };
+
+  const handleResetTheme = () => {
+    const fallback = THEME_CATALOG.find((theme) => theme.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
+    handleApplyTheme(fallback);
+    setMood("all");
+    setQuery("");
+    setTab("all");
+  };
+
+  const panelBody = (
+    <div className="theme-orb-panel flex h-full flex-col overflow-hidden" data-testid="theme-panel-sheet">
+      <div className="theme-orb-panel-highlight" aria-hidden="true" />
+      <div className="relative flex h-full flex-col">
+        <div className="border-b border-white/10 px-4 pb-4 pt-3 md:px-5 md:pt-4">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <p className="theme-text-muted text-[11px] uppercase tracking-[0.34em]">Theme Bubble</p>
+              <h3 className="theme-text-main mt-2 font-display text-2xl font-black" data-testid="theme-panel-heading">Catalogue dynamique</h3>
+              <p className="theme-text-muted mt-2 text-sm leading-6">
+                {THEME_CATALOG.length}+ variantes lumineuses appliquées au site entier, avec contraste automatique.
+              </p>
+            </div>
+            <div className="theme-glass-chip inline-flex min-h-[44px] items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold text-white/90">
+              <Gem className="h-4 w-4 neon-rgb-icon" />
+              <span data-testid="theme-active-label">{activeTheme.label}</span>
+            </div>
           </div>
 
-          <div className="my-4 h-px bg-white/10" />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Rechercher une famille, un effet, une ambiance…"
+              className="theme-search-input h-11 rounded-2xl pl-10 pr-4 text-sm text-white placeholder:text-white/42"
+              data-testid="theme-search-input"
+            />
+          </div>
 
-          <p className="mb-3 px-1 text-[10px] uppercase tracking-[0.3em] text-white/55">Couleur du fond</p>
-          <div className="grid grid-cols-6 gap-2">
-            {ACCENTS.map((a) => (
-              <button key={a.key} onClick={() => pickAccent(a)} title={a.label} aria-label={a.label} className={`relative h-9 w-9 rounded-full border border-white/15 transition-transform hover:scale-110 ${accent === a.key ? "ring-2 ring-white/70 ring-offset-2 ring-offset-[rgba(9,7,20,0.84)]" : ""}`} style={{ background: a.swatch }}>
-                {a.key === "off" && <span className="absolute inset-0 flex items-center justify-center text-[8px] text-white/70">OFF</span>}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {moodFilters.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => setMood(option.key)}
+                className={cn("theme-chip", mood === option.key && "theme-chip-active")}
+                data-testid={`theme-mood-filter-${option.key}`}
+              >
+                {option.label}
               </button>
             ))}
           </div>
-          <p className="mt-3 px-1 text-[10px] text-white/48">{accent !== "off" ? `Fond : ${ACCENTS.find((a) => a.key === accent)?.label}` : THEMES.find((t) => t.key === active)?.label}</p>
         </div>
-      )}
-      <button onClick={() => setOpen((o) => !o)} aria-label="Personnaliser le thème" data-testid="theme-bubble-toggle" className="group relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-[rgba(9,7,20,0.72)] shadow-[0_18px_50px_-18px_rgba(0,0,0,0.6),0_0_30px_rgba(34,211,238,0.18),0_0_34px_rgba(232,121,249,0.14)] backdrop-blur-2xl transition-transform duration-300 hover:scale-105">
-        <span className="absolute inset-0 opacity-95" style={{ background: "linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02) 38%,rgba(255,255,255,0.08))" }} />
-        <span className="absolute inset-[1px] rounded-full" style={{ background: "conic-gradient(from 0deg,rgba(255,79,216,0.26),rgba(124,58,237,0.18),rgba(34,211,238,0.24),rgba(251,191,36,0.16),rgba(255,79,216,0.26))", animation: "lovanet-bg-shift 10s ease infinite" }} />
-        <AnimatedThemeGlyph active={open} />
-        {open && <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full border border-white/15 bg-[rgba(10,6,20,0.9)] text-white shadow-[0_0_12px_rgba(255,255,255,0.12)]"><X className="h-3.5 w-3.5" /></span>}
-      </button>
+
+        <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3 md:px-5" data-testid="theme-tabs-root">
+          <TabsList className="theme-tabs-list grid h-auto grid-cols-3 rounded-2xl p-1">
+            <TabsTrigger value="all" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-all">Tous</TabsTrigger>
+            <TabsTrigger value="favorites" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-favorites">Favoris</TabsTrigger>
+            <TabsTrigger value="recent" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-recent">Récents</TabsTrigger>
+          </TabsList>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={handleRandomTheme} className="theme-action-button rounded-full" data-testid="theme-random-button">
+              <Shuffle className="h-4 w-4" />
+              Surprise
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={handleResetTheme} className="theme-action-button rounded-full" data-testid="theme-reset-button">
+              <RefreshCcw className="h-4 w-4" />
+              Réinitialiser
+            </Button>
+            <div className="theme-glass-chip inline-flex min-h-[36px] items-center gap-2 rounded-full px-3 py-2 text-xs text-white/82" data-testid="theme-results-count">
+              <Clock3 className="h-4 w-4 neon-rgb-icon" />
+              {visibleThemes.length} résultat{visibleThemes.length > 1 ? "s" : ""}
+            </div>
+          </div>
+
+          {(["all", "favorites", "recent"] as const).map((currentTab) => (
+            <TabsContent key={currentTab} value={currentTab} className="mt-4 min-h-0 flex-1">
+              <ScrollArea className="h-[58vh] pr-2 md:h-[calc(100vh-23rem)]">
+                {visibleThemes.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3 pb-4 xl:grid-cols-3">
+                    {visibleThemes.map((theme) => {
+                      const isActive = theme.id === activeThemeId;
+                      const isFavorite = favorites.includes(theme.id);
+                      return (
+                        <article
+                          key={theme.id}
+                          className={cn("theme-swatch-card", isActive && "theme-swatch-card-active")}
+                          data-testid={`theme-swatch-card-${theme.id}`}
+                          style={{ contentVisibility: "auto", containIntrinsicSize: "240px" }}
+                        >
+                          <div className="theme-swatch-preview" style={{ background: theme.swatch }}>
+                            <span className="theme-swatch-gloss" />
+                            <button
+                              type="button"
+                              onClick={() => handleToggleFavorite(theme.id)}
+                              className={cn("theme-favorite-button", isFavorite && "theme-favorite-button-active")}
+                              aria-label={isFavorite ? `Retirer ${theme.label} des favoris` : `Ajouter ${theme.label} aux favoris`}
+                              data-testid={`theme-favorite-button-${theme.id}`}
+                            >
+                              <Star className={cn("h-4 w-4", isFavorite && "fill-current")} />
+                            </button>
+                            {isActive && (
+                              <span className="theme-active-badge" data-testid={`theme-active-badge-${theme.id}`}>
+                                <Check className="h-3.5 w-3.5" /> Active
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-1 flex-col gap-3 p-3">
+                            <div>
+                              <h4 className="theme-text-main line-clamp-2 font-display text-sm font-bold">{theme.label}</h4>
+                              <p className="theme-text-muted mt-1 text-[11px] uppercase tracking-[0.24em]">
+                                {theme.family} · {theme.finish}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-1.5">
+                              {[theme.variant, theme.mood, theme.finish].map((chip) => (
+                                <span key={`${theme.id}-${chip}`} className="theme-mini-chip">
+                                  {chip}
+                                </span>
+                              ))}
+                            </div>
+
+                            <Button
+                              type="button"
+                              onClick={() => handleApplyTheme(theme)}
+                              className={cn("w-full rounded-2xl text-sm font-semibold", isActive ? "btn-neon-rainbow" : "theme-apply-button")}
+                              data-testid={`theme-apply-button-${theme.id}`}
+                            >
+                              {isActive ? "Thème actif" : "Appliquer"}
+                            </Button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="theme-empty-state" data-testid="theme-empty-state">
+                    <Sparkles className="h-6 w-6 neon-rgb-icon" />
+                    <div>
+                      <p className="theme-text-main font-display text-lg font-bold">Aucun thème trouvé</p>
+                      <p className="theme-text-muted mt-1 text-sm">Essayez une autre recherche ou changez d’ambiance.</p>
+                    </div>
+                  </div>
+                )}
+              </ScrollArea>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
+  );
+
+  return (
+    <>
+      <Button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Ouvrir la Theme Bubble"
+        data-testid="theme-bubble-button"
+        className="theme-orb-button fixed bottom-4 right-4 z-[80] h-14 w-14 rounded-full p-0 md:bottom-6 md:right-6 md:h-16 md:w-16"
+      >
+        <span className="theme-orb-halo" aria-hidden="true" />
+        <span className="theme-orb-core" aria-hidden="true" />
+        <AnimatedThemeGlyph open={open} />
+      </Button>
+
+      {!isMobile ? (
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetContent side="right" className="w-full max-w-[720px] border-none bg-transparent p-3 shadow-none sm:max-w-[720px]" data-testid="theme-desktop-sheet">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Catalogue des thèmes Lovanet</SheetTitle>
+              <SheetDescription>Plus de 500 thèmes dynamiques avec contraste automatique.</SheetDescription>
+            </SheetHeader>
+            {panelBody}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Drawer open={open} onOpenChange={setOpen}>
+          <DrawerContent className="max-h-[90vh] border-none bg-transparent px-2 pb-2 shadow-none" data-testid="theme-mobile-drawer">
+            <DrawerHeader className="sr-only">
+              <DrawerTitle>Catalogue des thèmes Lovanet</DrawerTitle>
+              <DrawerDescription>Plus de 500 thèmes dynamiques avec contraste automatique.</DrawerDescription>
+            </DrawerHeader>
+            {panelBody}
+          </DrawerContent>
+        </Drawer>
+      )}
+    </>
   );
 };
 

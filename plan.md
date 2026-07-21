@@ -77,169 +77,83 @@
   - **retirer tout le texte** ajouté autour des hubs
   - **désactiver la rotation automatique caméra** et les **changements automatiques de scène** sur les 2 hubs
 
-### Domaines / cibles SEO (confirmé utilisateur)
-- Domaine primaire (canonique) : `https://lovanet.fr`
-- Domaines secondaires à traiter **PARTOUT** :
-  - `https://animemomentsofficiel.fr`
-  - `https://animeofficiel.fr`
-  - `https://animemomentsanimeofficiel.fr` (ajouté pour propriétés GSC/OAuth)
-
-### Domaines (OAuth redirect URIs) — confirmé utilisateur
-- Callback Preview : `https://actualites-hub.preview.emergentagent.com/api/seo/search-console/oauth/callback`
-- Callback Production : `https://animemomentsofficiel.fr/api/seo/search-console/oauth/callback`
-- Callbacks additionnels :
-  - `https://animeofficiel.fr/api/seo/search-console/oauth/callback`
-  - `https://animemomentsanimeofficiel.fr/api/seo/search-console/oauth/callback`
-
-### Statut environnements
-- Deux environnements existent : **Preview** (dev) + **Production** (`https://animemomentsofficiel.fr`).
-- Priorité utilisateur : **les deux** → implémentation en **Preview**, puis **redeploy** nécessaire pour pousser en production.
-
-### Validation attendue (clarifiée)
-- Attendu : **soumission technique** (sitemaps/pages/images/vidéos/news/catalogue) + **vérification des signaux SEO**.
-- Non garanti : **indexation finale** (décision/crawl Google).
-
-### Statut actuel (mesuré)
-- SEO export (preview) :
-  - `catalogCount = 1500`
-  - `videos = 1297`
-  - `news = 30`
-  - `products = 76`
-- Search Console (preview, OAuth) :
-  - ✅ OAuth connecté
-  - ✅ Soumission technique effectuée sur `lovanet.fr`
-  - ⚠️ `animemomentsofficiel.fr` : 403 (permissions Google insuffisantes)
-  - ⚠️ `animeofficiel.fr` : propriété à ajouter/valider dans Search Console
+### Objectif Personnalisation extrême (NOUVEAU — confirmé utilisateur)
+- Refaire totalement la **ThemeBubble** pour supporter **500+ thèmes générés dynamiquement**.
+- Appliquer le thème **globalement** (menus, footer, fonds, overlays, bordures, glow, surfaces glass, textes) **sans casser** l’esthétique RGB néon transparente existante.
+- Implémenter une **logique de contraste automatique** pour empêcher tout texte illisible.
+- Rendre la bulle **très lumineuse / brillante** et supprimer complètement l’état visible **OFF**.
+- Retirer la **vidéo du bas** sur la Root Landing Page (`/`).
 
 ### Statut actuel (projet)
 - ✅ Phase 1 terminée (extraction/inventaire/mirror).
 - ✅ Phase 2 terminée (V1 full-stack + tests).
 - ✅ Phase 3 terminée (auto-sync externe + UI + tests).
 - ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
-- ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) **en preview**.
-- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée **en preview**.
-- ⏳ Phase 7 (Hubs 3D) : intégration faite mais **bug runtime + UX** à valider (testing agent requis).
-- ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales (en cours).
-- ⏳ Phase 9 (Nouvelle page d’arrivée) : à implémenter (`/` landing, home → `/anime-moments`).
+- ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) en preview.
+- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée en preview.
+- ⏳ Phase 7 (Hubs 3D) : intégration faite mais bug runtime + UX à valider.
+- ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales.
+- ✅ Phase 9 (Nouvelle page d’arrivée) terminée.
+- ⏳ Phase 10 (ThemeBubble 500+ + contraste global + retrait vidéo basse) : EN COURS.
 
 ---
 
 ## 2) Implementation Steps
 
 ### Phase 1 — POC Core (Isolation): extraction + inventaire + rendu minimal ✅ COMPLETED
-
 ### Phase 2 — V1 App Development (MVP): pages + dynamiques internes ✅ COMPLETED
-
 ### Phase 3 — External Auto-Sync Parity + Fidelity UI ✅ COMPLETED
-
 ### Phase 4 — Import du projet source Lovable/GitHub/ZIP ✅ COMPLETED
-
 ### Phase 5 — SEO + Search Console + TikTok + Multi-domain ✅ COMPLETED (preview)
-
 ### Phase 6 — Search Console OAuth (connexion + soumission) ✅ COMPLETED (preview)
-
----
-
-### Phase 7 — Hubs 3D (ZIP) ⏳ IN PROGRESS
-
-#### Phase 7.1 — Extraction ciblée (ZIP) ✅ DONE
-- Archive utilisable : `49003I909E0-main.zip` (composants hubs copiés dans le projet).
-- Archive `0nnnnryg5ew4554876-main` : téléchargement **vide** (`Content-Length 0`) → non exploitable.
-
-#### Phase 7.2 — Intégration “identique” (frontend) ✅ DONE
-- `/shop` : hub Train Station au-dessus de la bannière.
-- `/decouvrir` : hub Ferry sous « Explorer le catalogue ».
-- Stratégie : routes internes `/hub/train-station` + `/hub/ferry` + intégration iframe.
-
-#### Phase 7.3 — Stabilisation (BUGFIX/UX) ⏳ TODO (critique)
-- Corriger définitivement le crash Ferry : `Cannot read properties of undefined (reading 'testid')`.
-- Retirer les titres/texte autour des hubs.
-- Désactiver auto rotation caméra / auto changements de scène (Ferry + Train Station).
-
-#### Phase 7.4 — Tests & validation ⏳ TODO
-- Smoke test : `/shop`, `/decouvrir`, `/hub/ferry`, `/hub/train-station`.
-- Appeler **testing_agent** (obligatoire).
-
----
-
-### Phase 8 — UI / Brand polish (menu + logo + mentions légales) ⏳ IN PROGRESS
-
-#### Phase 8.1 — Menu / boutons (RGB + blanc transparent)
-- Texte **Lovanet** : style boutons principaux.
-- **Boutique** : sous-menu desktop + mobile, style RGB + blanc transparent.
-
-#### Phase 8.2 — Logo menu + favicon (nouvelle couleur + icône 3D)
-- Variante logo “3D” (menu + favicon) + cohérence SEO.
-
-#### Phase 8.3 — Mentions légales
-- Retirer les blocs `Éditeur du site` et `Hébergement` demandés.
-
-#### Phase 8.4 — Tests UI
-- Smoke test navigation desktop + mobile.
-- Appeler **testing_agent** (obligatoire).
-
----
-
+### Phase 7 — Hubs 3D ⏳ IN PROGRESS
+### Phase 8 — UI / Brand polish ⏳ IN PROGRESS
 ### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
 
-#### Phase 9.1 — Routing ✅ DONE
-- `/` devient la **nouvelle landing page** (pas “Accueil”).
-- L’actuelle home est déplacée vers `/anime-moments`.
-- Navbar, footer et liens internes principaux mis à jour pour la nouvelle structure.
+### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ⏳ IN PROGRESS
 
-#### Phase 9.2 — Nouvelle landing (long format) ✅ DONE
-- Landing `/` refondue une seconde fois après retour utilisateur.
-- Suppression des phrases techniques/internes, recentrage sur une vraie logique de portail visiteur.
-- Mise en avant de previews contenu, accès sections/pages, visuels premium et footer simplifié.
-- Retrait ciblé sur `/` des éléments montrés en capture : bulle flottante, hologrammes/superpositions globales parasites, widgets non désirés sur la landing.
+#### Phase 10.1 — Architecture de thème globale ⏳ TODO
+- Ajouter des tokens sémantiques globaux pilotés par ThemeBubble.
+- Conserver la signature visuelle RGB néon transparente déjà en place.
+- Prévoir `fg-on-bg`, `fg-on-card`, `fg-on-overlay` calculés automatiquement.
 
-#### Phase 9.3 — SEO de la landing et de `/anime-moments` ⏳ DONE
-- `seoI18n` et `LocalizedHead` mis à jour pour la route `/anime-moments`.
-- Breadcrumbs / labels SEO adaptés à la nouvelle landing `/`.
-- Build frontend validé ; reste le passage de testing agent pour la non-régression complète.
+#### Phase 10.2 — ThemeBubble 500+ ⏳ TODO
+- Générer dynamiquement un catalogue de 500+ thèmes à partir de familles, nuances et effets.
+- Ajouter recherche, onglets (tous / favoris / récents), random, reset.
+- Supprimer l’état OFF visible.
+- Rendre la bulle plus brillante et premium.
 
-#### Phase 9.4 — Tests ✅ DONE
-- Build frontend validé après refonte.
-- Captures revues sur `/` pour confirmer la disparition des éléments gênants visibles en capture.
-- Testing agent relancé après cette itération UI.
+#### Phase 10.3 — Application globale + contraste ⏳ TODO
+- Appliquer les thèmes sur navbar, footer, fonds, bordures, glow, overlays et surfaces.
+- Garantir la lisibilité automatique avec logique de contraste WCAG.
+- Préserver les animations RGB existantes, avec fallback reduced-motion.
+
+#### Phase 10.4 — Root landing cleanup ⏳ TODO
+- Retirer la section vidéo du bas de `/`.
+- Conserver uniquement la vidéo hero utile à l’expérience.
+
+#### Phase 10.5 — Validation frontend ⏳ TODO
+- Build frontend.
+- Contrôle visuel par capture.
+- Testing agent frontend obligatoire après implémentation.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) **Phase 7.3** : corriger crash Ferry (`testid`) + supprimer texte hubs + désactiver auto-cam/auto-scènes.
-2) **Phase 7.4** : rebuild + smoke + **testing_agent** (obligatoire).
-3) **Phase 8** : menu (Boutique sous-menu + style), logo/favicons, Mentions légales.
-4) **Phase 8.4** : **testing_agent** (obligatoire) UI + hubs.
-5) **Phase 9** : nouvelle landing `/` + déplacer home en `/anime-moments` + SEO/sitemaps.
-6) **Phase 9.4** : **testing_agent** (obligatoire) landing + routing.
-7) **Production** : redeploy final pour pousser en production.
+1) Phase 10.1 : étendre les tokens de thème globaux.
+2) Phase 10.2 : réécrire ThemeBubble pour 500+ thèmes dynamiques.
+3) Phase 10.3 : appliquer le contraste automatique sur tout le site.
+4) Phase 10.4 : retirer la vidéo du bas de la landing `/`.
+5) Phase 10.5 : build + captures + testing agent frontend.
+6) Revenir aux phases 7/8 restantes après stabilisation du chantier visuel demandé.
 
 ---
 
 ## 4) Success Criteria
-
-### Atteints (Phases 1–6)
-- Socle complet + import Lovable + auto-sync + pages + tests.
-- SEO complet : meta/JSON‑LD/sitemaps/RSS + multi-domain.
-- Search Console OAuth : connecté + soumission lancée sur `lovanet.fr`.
-
-### À atteindre (Phase 7)
-- `/shop` : hub Train Station visible, **sans texte**, **sans auto-cam**.
-- `/decouvrir` : hub Ferry visible, **sans texte**, **sans auto-cam**.
-- Plus d’erreur runtime `testid`.
-
-### À atteindre (Phase 8)
-- Texte **Lovanet** dans le menu stylé comme les boutons principaux.
-- **Boutique** en sous-menu (desktop + mobile) + style RGB + blanc transparent.
-- Logo menu + favicon : nouvelle couleur + look “icône 3D”.
-- Mentions légales : suppression des blocs demandés.
-
-### À atteindre (Phase 9)
-- Nouvelle page d’arrivée premium sur `/` (pas “Accueil”).
-- Home déplacée vers `/anime-moments` et accessible.
-- SEO/sitemaps/canonicals mis à jour.
-
-### Contraintes / transparence
-- Modifs en preview → **redeploy** nécessaire pour production.
-- Indexation Google : non garantie.
-- Hubs 3D : dépendances WebGL/ThreeJS doivent rester compatibles (fallback si nécessaire).
+- ThemeBubble affiche et gère **500+ thèmes** générés dynamiquement.
+- Aucun état visible « OFF ».
+- Le thème s’applique globalement (navbar, footer, fonds, overlays, bordures, glow).
+- Le texte reste lisible automatiquement sur tous les thèmes.
+- La landing `/` n’affiche plus la vidéo du bas.
+- Le frontend compile et passe les vérifications visuelles + testing agent.
+- Les régressions sur l’esthétique transparente RGB néon restent nulles ou minimales.

@@ -4,18 +4,14 @@ import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube,
 import { useEffect, useMemo, useState, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
-import { ProductArtwork } from "@/components/ProductArtwork";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SEO_NEWS } from "@/data/seoNews";
-import { SHOP_PRODUCTS } from "@/data/shopProducts";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 import portalButtonsZoneVideo from "@/assets/portal-buttons-zone-video.mp4";
 import portalZoneReplacement from "@/assets/portal-zone-replacement.mp4";
-import portalThemeVideo from "@/assets/portal-theme-video.mp4";
-import portalThemeVideoSquare from "@/assets/portal-theme-video-square.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -51,8 +47,6 @@ const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   testId: `home-news-card-${index + 1}`,
 }));
 
-const featuredProducts = SHOP_PRODUCTS.slice(0, 4);
-
 const pageStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -81,7 +75,6 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [videoMuted, setVideoMuted] = useState(true);
-  const [squareVideoMuted, setSquareVideoMuted] = useState(true);
   const portalVideoRef = useRef(null);
 
   useEffect(() => {
@@ -94,13 +87,10 @@ export default function RootLandingPage() {
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
   const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
-  const heroShop = useMemo(() => getPortalDestination(3, rotationIndex), [rotationIndex]);
   const portalEntries = useMemo(() => portalCards.map((card, index) => ({ ...card, action: getPortalDestination(index, rotationIndex) })), [rotationIndex]);
   const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
   const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
-  const finalPrimary = useMemo(() => getPortalDestination(7, rotationIndex), [rotationIndex]);
-  const finalSecondary = useMemo(() => getPortalDestination(8, rotationIndex), [rotationIndex]);
 
   return (
     <PageShell>
@@ -376,83 +366,6 @@ export default function RootLandingPage() {
                     </Card>
                   </Link>
                 ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-bottom-video-section">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
-            <div className={luxuryGlowLeft} />
-            <div className={luxuryGlowRight} />
-            <div className="relative">
-              <div className="mb-6 flex flex-wrap gap-3" data-testid="home-bottom-video-actions">
-                <Link to="/tiktok" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-bottom-video-tiktok-link">
-                  TikTok <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link to="/anime-catalog" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-bottom-video-catalog-link">
-                  Catalogue <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-
-              <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] lg:items-start">
-                <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] lg:max-w-[340px]" data-testid="home-bottom-theme-video-player">
-                  <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
-                  <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
-                  <video
-                    className="h-[620px] w-full object-cover"
-                    src={portalThemeVideo}
-                    autoPlay
-                    muted={videoMuted}
-                    loop
-                    playsInline
-                    preload="auto"
-                    data-testid="home-bottom-theme-video"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/42 via-transparent to-black/8" />
-                  <div className="pointer-events-none absolute inset-0 opacity-26 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-                  <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
-                  <div className="absolute bottom-5 right-5 z-10 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setVideoMuted((value) => !value)}
-                      className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
-                      data-testid="home-bottom-video-mute-button"
-                    >
-                      {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
-                      {videoMuted ? "Muet" : "Son"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="rgb-neon relative overflow-hidden rounded-[2.2rem] border border-white/15 bg-white/[0.05] w-full" data-testid="home-bottom-square-video-player">
-                  <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-16 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
-                  <div className="pointer-events-none absolute left-5 top-10 z-10 h-10 w-36 rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
-                  <video
-                    className="h-[620px] w-full object-cover"
-                    src={portalThemeVideoSquare}
-                    autoPlay
-                    muted={squareVideoMuted}
-                    loop
-                    playsInline
-                    preload="auto"
-                    data-testid="home-bottom-square-video"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/38 via-transparent to-black/8" />
-                  <div className="pointer-events-none absolute inset-0 opacity-26 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_10s_linear_infinite]" />
-                  <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_24%_24%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_78%_22%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
-                  <div className="absolute bottom-5 right-5 z-10 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSquareVideoMuted((value) => !value)}
-                      className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
-                      data-testid="home-bottom-square-video-mute-button"
-                    >
-                      {squareVideoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
-                      {squareVideoMuted ? "Muet" : "Son"}
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

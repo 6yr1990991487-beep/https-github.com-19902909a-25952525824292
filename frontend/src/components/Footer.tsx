@@ -21,18 +21,18 @@ const destinations = [
 ];
 
 const footerPanel =
-  "rounded-[2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] backdrop-blur-2xl shadow-[0_24px_80px_-26px_rgba(0,0,0,0.72),0_0_34px_rgba(34,211,238,0.08),0_0_34px_rgba(232,121,249,0.08)]";
+  "theme-panel-surface rounded-[2rem]";
 
 export const Footer = () => {
   return (
     <footer className="mt-24 px-4 pb-10 sm:px-6 lg:px-8">
       <div className={`mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
-        <div className="grid gap-8 border-b border-white/10 px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
+        <div className="grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
           <div className="space-y-5">
             <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
-              <span className="font-display text-2xl font-black tracking-[0.16em] text-white neon-rgb-text-soft">LOVANET</span>
+              <span className="font-display text-2xl font-black tracking-[0.16em] theme-text-main neon-rgb-text-soft">LOVANET</span>
             </Link>
-            <p className="max-w-xl text-sm leading-7 text-white/62" data-testid="footer-description">
+            <p className="theme-text-muted max-w-xl text-sm leading-7" data-testid="footer-description">
               Portail anime et manga, navigation premium, univers immersifs et accès directs vers les sections principales.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -46,14 +46,14 @@ export const Footer = () => {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] px-4 py-5 backdrop-blur-xl">
-              <h4 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-white/58">Navigation</h4>
-              <ul className="space-y-3 text-sm text-white/78">
+            <div className="theme-subpanel px-4 py-5">
+              <h4 className="theme-text-muted mb-4 text-[11px] uppercase tracking-[0.3em]">Navigation</h4>
+              <ul className="space-y-3 text-sm theme-text-main">
                 {footerLinks.map((item) => (
                   <li key={item.to}>
                     <Link
                       to={item.to}
-                      className="transition-colors hover:text-white"
+                      className="theme-link-inline transition-colors"
                       data-testid={`footer-link-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       {item.label}
@@ -63,17 +63,17 @@ export const Footer = () => {
               </ul>
             </div>
 
-            <div className="rounded-[1.6rem] border border-white/10 bg-white/[0.04] px-4 py-5 backdrop-blur-xl">
-              <h4 className="mb-4 text-[11px] uppercase tracking-[0.3em] text-white/58">Destinations</h4>
-              <ul className="grid gap-3 text-sm text-white/78">
+            <div className="theme-subpanel px-4 py-5">
+              <h4 className="theme-text-muted mb-4 text-[11px] uppercase tracking-[0.3em]">Destinations</h4>
+              <ul className="grid gap-3 text-sm theme-text-main">
                 {destinations.map((item) => (
                   <li key={item.to}>
                     <Link
                       to={item.to}
-                      className="inline-flex items-center gap-2 transition-colors hover:text-white"
+                      className="theme-link-inline inline-flex items-center gap-2 transition-colors"
                       data-testid={`footer-destination-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                     >
-                      <item.icon className="h-4 w-4 text-white/72" />
+                      <item.icon className="h-4 w-4 neon-rgb-icon" />
                       {item.label}
                     </Link>
                   </li>
@@ -83,12 +83,12 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 px-5 py-4 text-xs text-white/52 sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+        <div className="theme-text-muted flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <span className="neon-rgb-text-mini" data-testid="footer-copyright">
             © {new Date().getFullYear()} Lovanet — Anime Moments.
           </span>
-          <div className="flex flex-wrap items-center gap-3 text-white/60">
-            <Link to="/legals" className="transition-colors hover:text-white" data-testid="footer-legals-link">
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/legals" className="theme-link-inline transition-colors" data-testid="footer-legals-link">
               Mentions légales
             </Link>
             <span>·</span>
@@ -96,7 +96,7 @@ export const Footer = () => {
               href="https://www.youtube.com/@animemomentsanimeofficiel"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-white"
+              className="theme-link-inline transition-colors"
               data-testid="footer-youtube-external-link"
             >
               YouTube officiel
