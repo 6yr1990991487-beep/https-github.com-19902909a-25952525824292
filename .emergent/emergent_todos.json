@@ -1,14 +1,14 @@
 [
   {
-    "content": "Déplacer l’ancienne vidéo au bord droit du panneau et agrandir la nouvelle vidéo sur toute la zone libre gauche+centre",
-    "status": "completed"
+    "content": "Réadapter le format de l’ancienne vidéo pour qu’elle ne soit plus verticale et maximiser l’espace des deux vidéos",
+    "status": "in_progress"
   },
   {
-    "content": "Conserver les boutons/texte/liens existants sans les supprimer",
-    "status": "completed"
+    "content": "Conserver le placement général validé et seulement optimiser dimensions/cadrage",
+    "status": "pending"
   },
   {
-    "content": "Vérifier visuellement le nouveau swap des vidéos",
-    "status": "completed"
+    "content": "Vérifier visuellement le nouveau rendu des deux vidéos",
+    "status": "pending"
   }
 ]

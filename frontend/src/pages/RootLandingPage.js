@@ -165,10 +165,10 @@ export default function RootLandingPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-[1.42fr_0.58fr] lg:items-stretch" data-testid="root-landing-hero-visual">
+              <div className="grid gap-4 lg:grid-cols-[1.18fr_0.82fr] lg:items-stretch" data-testid="root-landing-hero-visual">
                 <div className="relative overflow-hidden rounded-[2rem]" data-testid="capture-panel-embedded-video-shell">
                   <video
-                    className="h-[clamp(360px,48vw,540px)] w-full object-contain object-center"
+                    className="h-[clamp(400px,52vw,560px)] w-full object-cover object-center"
                     src={embeddedHeroCaptureVideo}
                     autoPlay
                     muted
@@ -182,7 +182,7 @@ export default function RootLandingPage() {
                 <div className="relative overflow-hidden rounded-[2rem] justify-self-end" data-testid="home-hero-zone-replacement-player">
                   <video
                     ref={portalVideoRef}
-                    className="h-[clamp(360px,48vw,540px)] w-full object-cover object-[52%_50%]"
+                    className="h-[clamp(400px,52vw,560px)] w-full object-contain object-center"
                     src={rootCaptureZoneVideo}
                     autoPlay
                     muted={videoMuted}
