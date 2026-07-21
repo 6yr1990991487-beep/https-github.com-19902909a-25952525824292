@@ -1,14 +1,18 @@
 [
   {
-    "content": "Ajuster le panneau capture gauche pour ne garder que la vidéo adaptée exactement à la zone libre montrée + les boutons dessous",
+    "content": "Remplacer les 3 champs sombres de gauche par la nouvelle vidéo, dans toute la zone délimitée au-dessus des boutons",
     "status": "completed"
   },
   {
-    "content": "Supprimer les éléments résiduels non voulus dans ce panneau (titres, overlays, éléments superflus)",
+    "content": "Supprimer entièrement le panneau où se trouve actuellement la nouvelle vidéo",
     "status": "completed"
   },
   {
-    "content": "Vérifier visuellement que la vidéo remplit bien la zone du haut et que le panneau voisin reste intact",
+    "content": "Conserver la grande vidéo voisine existante et ses boutons",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier visuellement le résultat final exact",
     "status": "completed"
   }
 ]

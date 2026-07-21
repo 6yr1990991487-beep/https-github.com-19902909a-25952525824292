@@ -176,12 +176,12 @@ export default function RootLandingPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]" data-testid="root-landing-hero-visual">
+              <div className="grid gap-4 lg:grid-cols-[1.08fr_0.92fr]" data-testid="root-landing-hero-visual">
                 <div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(9,24,41,0.98),rgba(6,18,33,0.96))] p-4" data-testid="capture-deck">
-                  <div className="space-y-4 rounded-[1.6rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,23,39,0.98),rgba(6,18,31,0.98))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-                    <div className="relative overflow-hidden rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,31,53,0.94),rgba(8,22,38,0.94))]" data-testid="capture-panel-embedded-video-shell">
+                  <div className="space-y-5">
+                    <div className="relative overflow-hidden rounded-[1.85rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,31,53,0.94),rgba(8,22,38,0.94))]" data-testid="capture-panel-embedded-video-shell">
                       <video
-                        className="h-[332px] w-full object-cover object-center"
+                        className="h-[314px] w-full object-contain object-center"
                         src={embeddedHeroCaptureVideo}
                         autoPlay
                         muted
