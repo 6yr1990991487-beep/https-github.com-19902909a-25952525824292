@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RefreshCw, CheckCircle2, AlertTriangle, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Platform = "youtube" | "tiktok" | "prime" | "all";
+type Platform = "youtube" | "tiktok" | "prime" | "news" | "all";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -18,24 +18,22 @@ type Props = {
   className?: string;
 };
 
-// Client-side cache keys wiped on a "full sync". We keep the mapping narrow
-// per platform so a full-sync on /tiktok does NOT nuke the Prime or catalog
-// caches (that used to force every page to refetch heavy data pointlessly).
-//
-// Each entry is either an exact localStorage key or a prefix ending in ".".
 const CACHE_MAP: Record<Platform, readonly string[]> = {
   youtube: [
-    "lovanet.cache.yt.",       // yt.manga.v1, yt.anime.*, etc.
+    "lovanet.cache.yt.",
     "lovanet.cache.ytIds",
   ],
   tiktok: [
-    "lovanet.cache.tiktok.",   // reserved for future TikTok client cache
+    "lovanet.cache.tiktok.",
   ],
   prime: [
     "lovanet.cache.prime.",
   ],
+  news: [
+    "lovanet.cache.news.",
+  ],
   all: [
-    "lovanet.cache.",          // wipe everything under the app prefix
+    "lovanet.cache.",
   ],
 };
 
@@ -43,7 +41,6 @@ function matchesAny(key: string, patterns: readonly string[]): boolean {
   return patterns.some((p) => (p.endsWith(".") ? key.startsWith(p) : key === p));
 }
 
-/** Purge only the localStorage caches belonging to a given platform. */
 export function clearClientCaches(platform: Platform = "all") {
   const patterns = CACHE_MAP[platform] ?? CACHE_MAP.all;
   try {
@@ -51,15 +48,11 @@ export function clearClientCaches(platform: Platform = "all") {
       const key = localStorage.key(i);
       if (key && matchesAny(key, patterns)) localStorage.removeItem(key);
     }
-  } catch { /* ignore quota / privacy-mode errors */ }
+  } catch (error) {
+    console.debug("clearClientCaches ignored", error);
+  }
 }
 
-/**
- * Bouton universel de synchronisation manuelle. Deux modes :
- *  - Sync incrémental (bouton principal) : rafraîchit les dernières vidéos.
- *  - Full sync (⚡) : force un rescan complet, purge les caches localStorage
- *    et supprime les vidéos disparues côté plateforme (garbage collection).
- */
 export const ManualSyncButton = ({
   platform = "all",
   label = "Sync manuel",
@@ -124,7 +117,7 @@ export const ManualSyncButton = ({
         onClick={() => run(false)}
         disabled={state === "loading"}
         aria-label="Lancer une synchronisation incrémentale"
-        title="Rafraîchit les dernières vidéos publiées"
+        title="Rafraîchit les derniers contenus publiés"
         className={cn(
           "inline-flex items-center gap-2 rounded-l-full px-4 py-2 text-sm font-medium transition-all",
           tone,
@@ -145,8 +138,8 @@ export const ManualSyncButton = ({
         type="button"
         onClick={() => run(true)}
         disabled={state === "loading"}
-        aria-label="Lancer un full sync : purge le cache et régénère toutes les miniatures"
-        title="Full sync : purge le cache local, régénère miniatures/titres et nettoie les vidéos supprimées"
+        aria-label="Lancer un full sync : purge le cache et régénère le flux"
+        title="Full sync : purge le cache local et relance un refresh complet"
         className={cn(
           "inline-flex items-center gap-1 rounded-r-full px-3 py-2 text-sm font-semibold transition-all border-l border-white/20",
           state === "loading" && mode === "full"

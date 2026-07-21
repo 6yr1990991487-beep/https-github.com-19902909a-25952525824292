@@ -9,22 +9,34 @@
   },
   {
     "content": "Obtenir des guidelines design premium dédiées à la nouvelle page Actualités",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Mettre à jour le plan de refonte Actualités premium + backend auto complet",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Implémenter le backend d’agrégation automatique des vraies sources",
-    "status": "pending"
+    "status": "completed"
+  },
+  {
+    "content": "Corriger les imports/backend lint bloquants pour le module news",
+    "status": "completed"
+  },
+  {
+    "content": "Tester les sources news réelles et ajuster la base de sources si nécessaire",
+    "status": "completed"
   },
   {
     "content": "Refondre la page Actualités avec sections premium, carrousels, widgets et bannières animées",
-    "status": "pending"
+    "status": "completed"
+  },
+  {
+    "content": "Corriger la fiabilité visuelle des images externes via proxy sécurisé",
+    "status": "completed"
   },
   {
     "content": "Tester la nouvelle page Actualités et corriger tous les retours",
-    "status": "pending"
+    "status": "in_progress"
   }
 ]

@@ -95,6 +95,8 @@
 - ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales.
 - ✅ Phase 9 (Nouvelle page d’arrivée) terminée.
 - ✅ Phase 10 (ThemeBubble 500+ + contraste global + retrait vidéo basse) : TERMINÉE.
+- ✅ Phase 11 (Remplacement ciblé des zones par vidéos utilisateur) : TERMINÉE.
+- ⏳ Phase 12 (Refonte Actualités premium + backend auto vraies sources) : EN COURS.
 
 ---
 
@@ -111,7 +113,31 @@
 ### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
 
 ### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ✅ COMPLETED
-### Phase 11 — Remplacement ciblé des zones par vidéos utilisateur ⏳ IN PROGRESS
+### Phase 11 — Remplacement ciblé des zones par vidéos utilisateur ✅ COMPLETED
+### Phase 12 — Refonte Actualités premium + backend auto vraies sources ⏳ IN PROGRESS
+
+#### Phase 12.1 — Architecture éditoriale + sources ⏳ TODO
+- Remplacer le contenu statique/générique de `/actualites` par une architecture alimentée par de vraies sources.
+- Prioriser APIs publiques + RSS + sites éditoriaux disposant de flux publics.
+- Cœur éditorial: anime/manga + streaming + jeux + culture pop japonaise.
+
+#### Phase 12.2 — Backend d’agrégation automatique ⏳ TODO
+- Ajouter des collections Mongo dédiées aux news agrégées, sources, refresh status et déduplication.
+- Implémenter ingestion RSS/API publique (ANN, Crunchyroll, MAL, Gematsu, Siliconera, IGN, AniList enrichissement, autres flux publics sûrs).
+- Normaliser, catégoriser, dédupliquer, scorer les tendances et rafraîchir automatiquement via scheduler.
+- Exposer des endpoints premium pour listing, hero, tendances, widgets, sources, détail article.
+
+#### Phase 12.3 — Refonte premium `/actualites` ⏳ TODO
+- Hero éditorial premium avec top story + stories secondaires.
+- Ticker live, bento grid, carrousels thématiques, widgets sticky, bannières animées, cartes sophistiquées.
+- Conserver et dépasser l’esthétique de `/decouvrir` avec lisibilité forte et crédibilité des sources.
+
+#### Phase 12.4 — Détail article premium ⏳ TODO
+- Refaire `/actualites/:slug` avec lecture premium, source, date, tags, contenus liés et CTA vers source originale.
+
+#### Phase 12.5 — Validation complète ⏳ TODO
+- Vérifier SEO/meta non cassés.
+- Tester backend + frontend + rendu visuel + absence de contenu inventé.
 
 #### Phase 11.1 — Intégration vidéo zone capture gauche ⏳ TODO
 - Injecter la vidéo utilisateur 1 dans la zone visuelle de capture sur `/`.
@@ -155,10 +181,10 @@
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) Revenir aux phases 7/8 restantes : polish menu/logo/favicons/sous-menu Boutique si encore à finaliser.
-2) Étendre le contrôle visuel des thèmes sur les pages longues (catalogue, TikTok, countdown, actualités).
-3) Prévoir des raccourcis d’accès à la personnalisation pour les zones éloignées de la bulle si demandé.
-4) Préparer la prochaine itération de validation production après redéploiement utilisateur.
+1) Implémenter le backend d’agrégation news à partir de vraies sources publiques (RSS + APIs).
+2) Exposer les endpoints dédiés à la nouvelle page Actualités premium.
+3) Refaire complètement `/actualites` et `/actualites/:slug` en expérience magazine premium.
+4) Tester puis préparer validation preview avant redéploiement production par l’utilisateur.
 
 ---
 

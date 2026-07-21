@@ -813,6 +813,255 @@ class LovanetAPITester:
             
         return success
 
+    def test_news_home(self):
+        """Test Phase 12: News home endpoint"""
+        success, data = self.run_test(
+            "News Home",
+            "GET",
+            "/news/home",
+            200
+        )
+        if success:
+            hero = data.get("hero", [])
+            featured = data.get("featured", [])
+            latest = data.get("latest", [])
+            rails = data.get("rails", {})
+            trending = data.get("trending", [])
+            calendar = data.get("calendar", [])
+            sources = data.get("sources", [])
+            
+            print(f"   ✓ Hero items: {len(hero)}")
+            print(f"   ✓ Featured items: {len(featured)}")
+            print(f"   ✓ Latest items: {len(latest)}")
+            print(f"   ✓ Rails categories: {len(rails)}")
+            print(f"   ✓ Trending items: {len(trending)}")
+            print(f"   ✓ Calendar items: {len(calendar)}")
+            print(f"   ✓ Sources: {len(sources)}")
+            
+            # Check rails categories
+            if rails:
+                print(f"   ✓ Rails: {', '.join(rails.keys())}")
+            
+            # Validate structure
+            if hero and len(hero) > 0:
+                sample = hero[0]
+                if sample.get("slug") and sample.get("title"):
+                    print(f"   ✓ Hero item has slug and title")
+                if sample.get("source_name"):
+                    print(f"   ✓ Hero item has source_name: {sample['source_name']}")
+            
+            # Check if data is real or fallback
+            if sources and len(sources) > 0:
+                print(f"   ✓ Real news sources detected")
+            else:
+                print(f"   ⚠ No sources (may be using fallback)")
+                
+        return success
+
+    def test_news_list(self):
+        """Test Phase 12: News list endpoint with filters"""
+        # Test basic list
+        success1, data1 = self.run_test(
+            "News List - All",
+            "GET",
+            "/news",
+            200,
+            params={"limit": 24}
+        )
+        if success1:
+            items = data1.get("items", [])
+            total = data1.get("total", 0)
+            source = data1.get("source", "unknown")
+            print(f"   ✓ News items: {len(items)}, total: {total}, source: {source}")
+            
+            if items:
+                sample = items[0]
+                if sample.get("slug") and sample.get("title"):
+                    print(f"   ✓ Sample has slug and title")
+                if sample.get("categories"):
+                    print(f"   ✓ Sample categories: {', '.join(sample['categories'][:3])}")
+
+        # Test category filter
+        success2, data2 = self.run_test(
+            "News List - Category Filter (anime)",
+            "GET",
+            "/news",
+            200,
+            params={"categories": "anime", "limit": 12}
+        )
+        if success2:
+            items = data2.get("items", [])
+            print(f"   ✓ Anime news: {len(items)}")
+
+        # Test search
+        success3, data3 = self.run_test(
+            "News List - Search",
+            "GET",
+            "/news",
+            200,
+            params={"q": "anime", "limit": 12}
+        )
+        if success3:
+            items = data3.get("items", [])
+            print(f"   ✓ Search results: {len(items)}")
+
+        # Test source filter
+        success4, data4 = self.run_test(
+            "News List - Source Filter",
+            "GET",
+            "/news",
+            200,
+            params={"source": "AniList", "limit": 12}
+        )
+        if success4:
+            items = data4.get("items", [])
+            print(f"   ✓ AniList news: {len(items)}")
+
+        return success1 and success2 and success3 and success4
+
+    def test_news_sources(self):
+        """Test Phase 12: News sources endpoint"""
+        success, data = self.run_test(
+            "News Sources",
+            "GET",
+            "/news/sources",
+            200
+        )
+        if success:
+            sources = data.get("items", [])
+            print(f"   ✓ News sources: {len(sources)}")
+            
+            if sources:
+                # Show sample sources
+                for source in sources[:5]:
+                    name = source.get("name", "N/A")
+                    status = source.get("status", "N/A")
+                    last_count = source.get("last_count", 0)
+                    print(f"   ✓ {name}: {status}, last_count={last_count}")
+            else:
+                print(f"   ⚠ No sources returned (may need to run sync first)")
+                    
+        return success
+
+    def test_news_detail(self):
+        """Test Phase 12: News detail endpoint"""
+        # First get a news item to test detail
+        success_list, data_list = self.run_test(
+            "News List (for detail test)",
+            "GET",
+            "/news",
+            200,
+            params={"limit": 1}
+        )
+        
+        if success_list and data_list.get("items"):
+            slug = data_list["items"][0].get("slug")
+            if slug:
+                success, data = self.run_test(
+                    f"News Detail - {slug}",
+                    "GET",
+                    f"/news/{slug}",
+                    200
+                )
+                if success:
+                    item = data.get("item", {})
+                    related = data.get("related", [])
+                    source = data.get("source", "unknown")
+                    
+                    print(f"   ✓ Item slug: {item.get('slug')}")
+                    print(f"   ✓ Item title: {item.get('title', 'N/A')[:50]}")
+                    print(f"   ✓ Related items: {len(related)}")
+                    print(f"   ✓ Source: {source}")
+                    
+                    if item.get("content") or item.get("description"):
+                        print(f"   ✓ Item has content/description")
+                    if item.get("published_at"):
+                        print(f"   ✓ Item has published_at: {item['published_at']}")
+                    if item.get("source_name"):
+                        print(f"   ✓ Item source_name: {item['source_name']}")
+                        
+                return success
+        
+        print("   ⚠ No news items available to test detail endpoint")
+        return False
+
+    def test_news_image_proxy(self):
+        """Test Phase 12: News image proxy endpoint"""
+        # Test with a valid allowed domain
+        test_url = "https://cdn.myanimelist.net/images/anime/1/1.jpg"
+        success, _ = self.run_test(
+            "News Image Proxy - Allowed Domain",
+            "GET",
+            f"/news/image-proxy?url={test_url}",
+            200
+        )
+        if success:
+            print(f"   ✓ Image proxy works for allowed domain")
+        
+        # Test with disallowed domain (should return 403)
+        test_url_bad = "https://evil.com/image.jpg"
+        url = f"{BASE_URL}/news/image-proxy?url={test_url_bad}"
+        headers = {'Content-Type': 'application/json'}
+        
+        self.tests_run += 1
+        print(f"\n🔍 Testing News Image Proxy - Disallowed Domain...")
+        
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+            if response.status_code == 403:
+                self.tests_passed += 1
+                print(f"✅ Passed - Status: 403 (correctly blocked)")
+                return True
+            else:
+                print(f"❌ Failed - Expected 403, got {response.status_code}")
+                self.failed_tests.append({
+                    "test": "News Image Proxy - Disallowed Domain",
+                    "expected": 403,
+                    "actual": response.status_code
+                })
+                return False
+        except Exception as e:
+            print(f"❌ Failed - Error: {str(e)}")
+            self.failed_tests.append({"test": "News Image Proxy - Disallowed Domain", "error": str(e)})
+            return False
+
+    def test_sync_news(self):
+        """Test Phase 12: Manual news sync"""
+        success, data = self.run_test(
+            "Manual Sync - News",
+            "POST",
+            "/sync/news",
+            200
+        )
+        if success:
+            status = data.get("status")
+            inserted = data.get("inserted", 0)
+            updated = data.get("updated", 0)
+            meta = data.get("meta", {})
+            
+            print(f"   ✓ Sync status: {status}")
+            print(f"   ✓ Inserted: {inserted}, Updated: {updated}")
+            
+            if meta:
+                sources = meta.get("sources", {})
+                count = meta.get("count", 0)
+                print(f"   ✓ Total articles: {count}")
+                print(f"   ✓ Sources synced: {len(sources)}")
+                
+                # Show per-source results
+                for source_id, source_data in list(sources.items())[:5]:
+                    source_status = source_data.get("status", "N/A")
+                    source_count = source_data.get("count", 0)
+                    print(f"   ✓ {source_id}: {source_status}, count={source_count}")
+            
+            # Expected: ok or degraded (some sources may fail)
+            if status in {"ok", "degraded"}:
+                print(f"   ✓ News sync completed with status: {status}")
+            elif status == "error":
+                print(f"   ⚠ News sync error: {data.get('error', 'Unknown')[:100]}")
+                
+        return success
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("=" * 60)
@@ -857,6 +1106,15 @@ class LovanetAPITester:
         self.test_oauth_start()
         self.test_search_console_status_includes_oauth()
         self.test_oauth_submit_not_connected()
+
+        # Run Phase 12 News tests
+        print("\n### PHASE 12 NEWS TESTS ###")
+        self.test_news_home()
+        self.test_news_list()
+        self.test_news_sources()
+        self.test_news_detail()
+        self.test_news_image_proxy()
+        self.test_sync_news()
 
         # Print summary
         print("\n" + "=" * 60)

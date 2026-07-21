@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
@@ -13,6 +13,7 @@ from google.auth.transport.requests import Request as GoogleAuthRequest
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import asyncio
+import hashlib
 import html
 import json
 import logging
@@ -22,6 +23,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 
 ROOT_DIR = Path(__file__).parent
 APP_DIR = ROOT_DIR.parent
@@ -168,8 +171,11 @@ def request_json(
         return json.loads(payload) if payload.strip() else {}
 
 
-def request_text(url: str, timeout: int = 20) -> tuple[int, str]:
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"})
+def request_text(url: str, timeout: int = 20, headers: Optional[Dict[str, str]] = None) -> tuple[int, str]:
+    req_headers = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"}
+    if headers:
+        req_headers.update(headers)
+    req = urllib.request.Request(url, headers=req_headers)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.status, resp.read().decode("utf-8", "replace")
 
@@ -773,6 +779,7 @@ async def sync_anilist_catalog(page: int = 1, per_page: int = 50) -> Dict[str, A
           coverImage { large extraLarge }
           bannerImage
           trailer { id site thumbnail }
+          nextAiringEpisode { airingAt episode }
         }
       }
     }
@@ -783,6 +790,7 @@ async def sync_anilist_catalog(page: int = 1, per_page: int = 50) -> Dict[str, A
         for anime in data.get("data", {}).get("Page", {}).get("media", []):
             title = anime.get("title") or {}
             trailer = anime.get("trailer") or {}
+            next_airing = anime.get("nextAiringEpisode") or {}
             docs.append({
                 "provider": "anilist",
                 "external_id": anime.get("id"),
@@ -795,6 +803,8 @@ async def sync_anilist_catalog(page: int = 1, per_page: int = 50) -> Dict[str, A
                 "cover": (anime.get("coverImage") or {}).get("extraLarge") or (anime.get("coverImage") or {}).get("large"),
                 "banner": anime.get("bannerImage"),
                 "trailerId": trailer.get("id") if trailer.get("site") == "youtube" else None,
+                "nextEpisode": next_airing.get("episode"),
+                "nextAiringAt": datetime.fromtimestamp(int(next_airing.get("airingAt")), tz=timezone.utc) if next_airing.get("airingAt") else None,
                 "url": f"https://lovanet.fr/anime-catalog#anime-{anime.get('id')}",
                 "sync_source": "anilist-graphql",
             })
@@ -947,6 +957,688 @@ async def sync_prime_public() -> Dict[str, Any]:
         return {"status": "degraded", "error": str(exc), "state": state}
 
 
+NEWS_SOURCE_DEFS = [
+    {
+        "id": "ann-newsroom",
+        "name": "Anime News Network",
+        "source_group": "Anime News Network",
+        "type": "rss",
+        "feed_url": "https://www.animenewsnetwork.com/newsroom/rss.xml",
+        "site_url": "https://www.animenewsnetwork.com/",
+        "categories": ["anime", "manga", "industry"],
+        "region": "global",
+        "language": "en",
+        "priority": 10,
+        "verified": True,
+    },
+    {
+        "id": "ann-all",
+        "name": "Anime News Network All",
+        "source_group": "Anime News Network",
+        "type": "rss",
+        "feed_url": "https://www.animenewsnetwork.com/all/rss.xml",
+        "site_url": "https://www.animenewsnetwork.com/",
+        "categories": ["anime", "manga", "culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 8,
+        "verified": True,
+    },
+    {
+        "id": "crunchyroll-news-en",
+        "name": "Crunchyroll News",
+        "source_group": "Crunchyroll",
+        "type": "rss",
+        "feed_url": "https://cr-news-api-service.prd.crunchyrollsvc.com/v1/en-US/rss",
+        "site_url": "https://www.crunchyroll.com/news",
+        "categories": ["anime", "streaming", "culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 9,
+        "verified": True,
+    },
+    {
+        "id": "myanimelist-news",
+        "name": "MyAnimeList News",
+        "source_group": "MyAnimeList",
+        "type": "rss",
+        "feed_url": "https://myanimelist.net/rss/news.xml",
+        "site_url": "https://myanimelist.net/news",
+        "categories": ["anime", "manga", "community"],
+        "region": "global",
+        "language": "en",
+        "priority": 8,
+        "verified": True,
+    },
+    {
+        "id": "gematsu-feed",
+        "name": "Gematsu",
+        "source_group": "Gematsu",
+        "type": "rss",
+        "feed_url": "https://www.gematsu.com/feed",
+        "site_url": "https://www.gematsu.com/",
+        "categories": ["gaming", "japan", "culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 7,
+        "verified": True,
+    },
+    {
+        "id": "siliconera-feed",
+        "name": "Siliconera",
+        "source_group": "Siliconera",
+        "type": "rss",
+        "feed_url": "https://www.siliconera.com/feed",
+        "site_url": "https://www.siliconera.com/",
+        "categories": ["gaming", "anime", "manga", "culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 7,
+        "verified": True,
+    },
+    {
+        "id": "ign-games",
+        "name": "IGN Games",
+        "source_group": "IGN",
+        "type": "rss",
+        "feed_url": "https://feeds.ign.com/ign/games",
+        "site_url": "https://www.ign.com/games",
+        "categories": ["gaming", "pop-culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 5,
+        "verified": True,
+    },
+    {
+        "id": "polygon-main",
+        "name": "Polygon",
+        "source_group": "Polygon",
+        "type": "rss",
+        "feed_url": "https://www.polygon.com/rss/index.xml",
+        "site_url": "https://www.polygon.com/",
+        "categories": ["gaming", "anime", "pop-culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 6,
+        "verified": True,
+    },
+    {
+        "id": "anime2you-feed",
+        "name": "Anime2You",
+        "source_group": "Anime2You",
+        "type": "rss",
+        "feed_url": "https://www.anime2you.de/feed/",
+        "site_url": "https://www.anime2you.de/",
+        "categories": ["anime", "manga", "culture"],
+        "region": "eu",
+        "language": "de",
+        "priority": 6,
+        "verified": True,
+    },
+    {
+        "id": "otaku-usa-feed",
+        "name": "Otaku USA",
+        "source_group": "Otaku USA",
+        "type": "rss",
+        "feed_url": "https://otakuusamagazine.com/feed/",
+        "site_url": "https://otakuusamagazine.com/",
+        "categories": ["anime", "manga", "culture", "pop-culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 6,
+        "verified": True,
+    },
+    {
+        "id": "gamesradar-news",
+        "name": "GamesRadar News",
+        "source_group": "GamesRadar",
+        "type": "rss",
+        "feed_url": "https://www.gamesradar.com/feeds/articletype/news/",
+        "site_url": "https://www.gamesradar.com/",
+        "categories": ["gaming", "pop-culture"],
+        "region": "global",
+        "language": "en",
+        "priority": 5,
+        "verified": True,
+    },
+    {
+        "id": "anilist-editorial-enrichment",
+        "name": "AniList Trends & Airing",
+        "source_group": "AniList",
+        "type": "api",
+        "feed_url": "https://graphql.anilist.co",
+        "site_url": "https://anilist.co/",
+        "categories": ["anime", "manga", "trending", "calendar"],
+        "region": "global",
+        "language": "en",
+        "priority": 10,
+        "verified": True,
+    },
+]
+
+NEWS_CATEGORY_LABELS = {
+    "anime": "Anime",
+    "manga": "Manga",
+    "streaming": "Streaming",
+    "gaming": "Gaming",
+    "pop-culture": "Pop-culture JP",
+    "japan": "Japon",
+    "culture": "Culture",
+    "community": "Communauté",
+    "industry": "Industrie",
+    "trending": "Tendances",
+    "calendar": "Sorties",
+}
+
+NEWS_IMAGE_ALLOWED_DOMAINS = {
+    "anilist.co",
+    "myanimelist.net",
+    "anime2you.de",
+    "crunchyroll.com",
+    "gematsu.com",
+    "siliconera.com",
+    "polygon.com",
+    "polygonimages.com",
+    "storyblok.com",
+    "ign.com",
+    "ignimgs.com",
+    "otakuusamagazine.com",
+    "gamesradar.com",
+    "futurecdn.net",
+}
+
+NEWS_SOURCE_WEIGHT = {
+    "Anime News Network": 1.35,
+    "Crunchyroll": 1.24,
+    "MyAnimeList": 1.16,
+    "AniList": 1.28,
+    "Siliconera": 1.1,
+    "Gematsu": 1.08,
+    "Polygon": 1.03,
+    "IGN": 0.96,
+    "Anime2You": 1.05,
+    "Otaku USA": 1.04,
+    "GamesRadar": 0.98,
+}
+
+
+def strip_tags(value: str) -> str:
+    return re.sub(r"<[^>]+>", " ", value or "").replace("\xa0", " ").strip()
+
+
+def parse_datetime_safe(value: Optional[str]) -> datetime:
+    if not value:
+        return datetime.now(timezone.utc)
+    try:
+        dt = parsedate_to_datetime(value)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except Exception:
+        pass
+    try:
+        normalized = str(value).replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except Exception:
+        return datetime.now(timezone.utc)
+
+
+def parse_xml_feed(xml_text: str) -> List[Dict[str, Any]]:
+    root = ET.fromstring(xml_text)
+    items: List[Dict[str, Any]] = []
+    atom_ns = "{http://www.w3.org/2005/Atom}"
+    content_ns = "{http://purl.org/rss/1.0/modules/content/}"
+    media_ns = "{http://search.yahoo.com/mrss/}"
+
+    def node_text(node: Optional[ET.Element]) -> str:
+        if node is None:
+            return ""
+        return " ".join(part.strip() for part in node.itertext() if str(part).strip()).strip()
+
+    if root.tag.endswith("rss") or root.tag.endswith("RDF"):
+        container = root.find("channel")
+        candidates = container.findall("item") if container is not None else root.findall("item")
+        for item in candidates:
+            tags = [node_text(cat) for cat in item.findall("category") if node_text(cat)]
+            enclosure = item.find("enclosure")
+            media_content = item.find(f"{media_ns}content")
+            media_thumbnail = item.find(f"{media_ns}thumbnail")
+            items.append({
+                "title": node_text(item.find("title")),
+                "link": node_text(item.find("link")),
+                "id": node_text(item.find("guid")) or node_text(item.find("link")) or node_text(item.find("title")),
+                "summary": node_text(item.find("description")) or node_text(item.find(f"{content_ns}encoded")),
+                "published": node_text(item.find("pubDate")) or node_text(item.find("dc:date")),
+                "author": node_text(item.find("author")) or node_text(item.find("dc:creator")),
+                "tags": tags,
+                "image": (media_thumbnail.get("url") if media_thumbnail is not None else None)
+                    or (media_content.get("url") if media_content is not None else None)
+                    or (enclosure.get("url") if enclosure is not None and (enclosure.get("type") or "").startswith("image") else None),
+            })
+        return items
+
+    entries = root.findall(f"{atom_ns}entry")
+    for entry in entries:
+        links = entry.findall(f"{atom_ns}link")
+        alt_link = next((link.get("href") for link in links if link.get("rel") in {None, "alternate"} and link.get("href")), None)
+        image = next((link.get("href") for link in links if (link.get("type") or "").startswith("image") and link.get("href")), None)
+        tags = [cat.get("term") for cat in entry.findall(f"{atom_ns}category") if cat.get("term")]
+        items.append({
+            "title": node_text(entry.find(f"{atom_ns}title")),
+            "link": alt_link,
+            "id": node_text(entry.find(f"{atom_ns}id")) or alt_link or node_text(entry.find(f"{atom_ns}title")),
+            "summary": node_text(entry.find(f"{atom_ns}summary")) or node_text(entry.find(f"{atom_ns}content")),
+            "published": node_text(entry.find(f"{atom_ns}updated")) or node_text(entry.find(f"{atom_ns}published")),
+            "author": node_text(entry.find(f"{atom_ns}author")),
+            "tags": tags,
+            "image": image,
+        })
+    return items
+
+
+def slugify_text(value: str) -> str:
+    normalized = re.sub(r"[^a-z0-9]+", "-", (value or "").lower()).strip("-")
+    return normalized or str(uuid.uuid4())
+
+
+def score_news_item(source_group: str, published_at: datetime, categories: List[str], title: str) -> float:
+    age_hours = max((datetime.now(timezone.utc) - published_at).total_seconds() / 3600, 0)
+    freshness = max(0.0, 100 - min(age_hours * 2.6, 90))
+    source_weight = NEWS_SOURCE_WEIGHT.get(source_group, 1.0)
+    category_bonus = sum(4 for category in categories if category in {"anime", "manga", "streaming", "gaming", "pop-culture"})
+    hot_bonus = 0
+    if re.search(r"trailer|season|episode|release|announced|breaking|premiere|launch|adaptation|movie|game", title or "", flags=re.I):
+        hot_bonus += 10
+    return round((freshness + category_bonus + hot_bonus) * source_weight, 2)
+
+
+def infer_news_categories(title: str, summary: str, source_categories: List[str]) -> List[str]:
+    haystack = f"{title} {summary}".lower()
+    detected = set(source_categories or [])
+    keyword_map = {
+        "anime": ["anime", "episode", "season", "studio", "trailer", "ova", "tv anime"],
+        "manga": ["manga", "chapter", "serialization", "shonen", "shojo", "light novel"],
+        "streaming": ["crunchyroll", "netflix", "prime video", "streaming", "simulcast", "disney+"],
+        "gaming": ["game", "switch", "playstation", "xbox", "steam", "rpg", "jrpg", "nintendo"],
+        "pop-culture": ["cosplay", "merch", "event", "convention", "music", "idol", "figure"],
+    }
+    for key, patterns in keyword_map.items():
+        if any(pattern in haystack for pattern in patterns):
+            detected.add(key)
+    if not detected:
+        detected.add("anime")
+    preferred_order = ["anime", "manga", "streaming", "gaming", "pop-culture", "culture", "japan", "industry", "community", "trending", "calendar"]
+    ordered = [item for item in preferred_order if item in detected]
+    ordered.extend(item for item in detected if item not in ordered)
+    return ordered[:5]
+
+
+def extract_first_image(summary: str) -> Optional[str]:
+    match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', summary or "", flags=re.I)
+    return match.group(1) if match else None
+
+
+@api_router.post("/sync/news")
+async def sync_news_endpoint():
+    return await sync_news_sources()
+
+
+
+async def fetch_rss_source_items(source_def: Dict[str, Any], limit: int = 24) -> List[Dict[str, Any]]:
+    request_headers = {"Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.6"}
+    status, text = await asyncio.to_thread(lambda: request_text(source_def["feed_url"], timeout=25, headers=request_headers))
+    if status >= 400:
+        raise RuntimeError(f"Feed unreachable: {source_def['feed_url']} ({status})")
+    parsed_items = parse_xml_feed(text)
+    docs: List[Dict[str, Any]] = []
+    for raw in parsed_items[:limit]:
+        title = strip_tags(raw.get("title") or "")
+        summary_raw = raw.get("summary") or ""
+        summary = strip_tags(summary_raw)
+        link = (raw.get("link") or "").strip()
+        if not title or not link:
+            continue
+        published_at = parse_datetime_safe(raw.get("published"))
+        categories = infer_news_categories(title, summary, source_def.get("categories", []))
+        article_hash = hashlib.sha1(f"{source_def['id']}|{link}|{title}".encode("utf-8")).hexdigest()
+        image = raw.get("image") or extract_first_image(summary_raw)
+        docs.append({
+            "source_id": source_def["id"],
+            "source_group": source_def["source_group"],
+            "source_name": source_def["name"],
+            "source_url": source_def.get("site_url"),
+            "feed_url": source_def.get("feed_url"),
+            "type": "rss",
+            "external_id": raw.get("id") or link,
+            "hash": article_hash,
+            "slug": f"{source_def['id']}-{slugify_text(title)[:72]}",
+            "title": title,
+            "description": summary[:420],
+            "excerpt": summary[:760],
+            "content": summary_raw[:4000],
+            "image": image,
+            "published_at": published_at,
+            "author": strip_tags(raw.get("author") or source_def["name"]),
+            "categories": categories,
+            "tags": list(dict.fromkeys((raw.get("tags") or [])[:8] + [source_def["source_group"]])),
+            "source_path": link,
+            "source_domain": urllib.parse.urlparse(link).netloc,
+            "language": source_def.get("language", "en"),
+            "region": source_def.get("region", "global"),
+            "is_breaking": score_news_item(source_def["source_group"], published_at, categories, title) >= 92,
+            "is_featured": False,
+            "trending_score": score_news_item(source_def["source_group"], published_at, categories, title),
+            "verified": source_def.get("verified", True),
+            "raw": {"status": status},
+            "sync_source": f"rss:{source_def['id']}",
+        })
+    return docs
+
+
+async def build_anilist_editorial_news(limit: int = 18) -> List[Dict[str, Any]]:
+    query = """
+    query ($page: Int, $perPage: Int) {
+      Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, sort: [TRENDING_DESC, POPULARITY_DESC]) {
+          id
+          title { romaji english native }
+          description(asHtml: false)
+          seasonYear
+          averageScore
+          genres
+          coverImage { large extraLarge }
+          bannerImage
+          siteUrl
+          status
+          trailer { id site thumbnail }
+          nextAiringEpisode { airingAt episode }
+        }
+      }
+    }
+    """
+    data = await asyncio.to_thread(lambda: request_json("https://graphql.anilist.co", method="POST", body={"query": query, "variables": {"page": 1, "perPage": limit}}))
+    docs: List[Dict[str, Any]] = []
+    for anime in data.get("data", {}).get("Page", {}).get("media", [])[:limit]:
+        title_obj = anime.get("title") or {}
+        title = title_obj.get("english") or title_obj.get("romaji") or title_obj.get("native") or "Anime"
+        summary = strip_tags(anime.get("description") or "")
+        cover = (anime.get("coverImage") or {}).get("extraLarge") or (anime.get("coverImage") or {}).get("large")
+        banner = anime.get("bannerImage")
+        next_episode = anime.get("nextAiringEpisode") or {}
+        published_at = datetime.now(timezone.utc)
+        if next_episode.get("airingAt"):
+            published_at = datetime.fromtimestamp(int(next_episode.get("airingAt")), tz=timezone.utc)
+        subtitle = f"Épisode {next_episode.get('episode')} à venir" if next_episode.get("episode") else f"Score AniList {anime.get('averageScore') or '—'}"
+        categories = infer_news_categories(title, summary, ["anime", "trending", "calendar"])
+        score = score_news_item("AniList", published_at, categories, title) + 6
+        docs.append({
+            "source_id": "anilist-editorial-enrichment",
+            "source_group": "AniList",
+            "source_name": "AniList Trends & Airing",
+            "source_url": "https://anilist.co/",
+            "feed_url": "https://graphql.anilist.co",
+            "type": "api",
+            "external_id": str(anime.get("id")),
+            "hash": hashlib.sha1(f"anilist|{anime.get('id')}|{title}".encode("utf-8")).hexdigest(),
+            "slug": f"anilist-{anime.get('id')}-{slugify_text(title)[:64]}",
+            "title": title,
+            "description": subtitle,
+            "excerpt": summary[:760],
+            "content": summary[:4000],
+            "image": banner or cover,
+            "published_at": published_at,
+            "author": "AniList Editorial GraphQL",
+            "categories": categories,
+            "tags": list(dict.fromkeys((anime.get("genres") or [])[:6] + ["AniList", "Tendance", "Sortie"])),
+            "source_path": anime.get("siteUrl") or f"https://anilist.co/anime/{anime.get('id')}",
+            "source_domain": "anilist.co",
+            "language": "en",
+            "region": "global",
+            "is_breaking": next_episode.get("episode") is not None,
+            "is_featured": True,
+            "trending_score": round(score, 2),
+            "verified": True,
+            "anime_ref": {
+                "id": anime.get("id"),
+                "score": anime.get("averageScore"),
+                "year": anime.get("seasonYear"),
+                "status": anime.get("status"),
+                "cover": cover,
+                "banner": banner,
+                "nextEpisode": next_episode.get("episode"),
+                "nextAiringAt": published_at.isoformat() if next_episode.get("airingAt") else None,
+            },
+            "sync_source": "api:anilist-editorial",
+        })
+    return docs
+
+
+async def seed_news_sources() -> None:
+    for source in NEWS_SOURCE_DEFS:
+        doc = {
+            **source,
+            "updated_at": utc_now_iso(),
+            "status": "active",
+        }
+        await db.news_sources.update_one({"id": source["id"]}, {"$set": doc, "$setOnInsert": {"created_at": utc_now_iso()}}, upsert=True)
+
+
+async def sync_news_sources(limit_per_source: int = 18) -> Dict[str, Any]:
+    await seed_news_sources()
+    inserted = 0
+    updated = 0
+    per_source: List[Dict[str, Any]] = []
+    all_docs: List[Dict[str, Any]] = []
+    for source in NEWS_SOURCE_DEFS:
+        try:
+            if source["type"] == "rss":
+                docs = await fetch_rss_source_items(source, limit=limit_per_source)
+            else:
+                docs = await build_anilist_editorial_news(limit=min(limit_per_source, 18))
+            counts = await upsert_many("news_articles", docs, ["source_id", "external_id"])
+            inserted += counts.get("inserted", 0)
+            updated += counts.get("updated", 0)
+            all_docs.extend(docs)
+            fetched_at = utc_now_iso()
+            await db.news_sources.update_one(
+                {"id": source["id"]},
+                {"$set": {"last_run_at": fetched_at, "last_success_at": fetched_at, "last_count": len(docs), "status": "ok", "last_error": None}},
+                upsert=True,
+            )
+            per_source.append({"source_id": source["id"], "status": "ok", "count": len(docs)})
+        except Exception as exc:
+            await db.news_sources.update_one(
+                {"id": source["id"]},
+                {"$set": {"last_run_at": utc_now_iso(), "status": "degraded", "last_error": str(exc)[:500]}},
+                upsert=True,
+            )
+            per_source.append({"source_id": source["id"], "status": "degraded", "error": str(exc)[:200], "count": 0})
+    if all_docs:
+        sorted_docs = sorted(all_docs, key=lambda item: (item.get("trending_score", 0), item.get("published_at") or datetime.now(timezone.utc)), reverse=True)
+        top_hashes = {item["hash"] for item in sorted_docs[:12] if item.get("hash")}
+        await db.news_articles.update_many({}, {"$set": {"is_featured": False}})
+        if top_hashes:
+            await db.news_articles.update_many({"hash": {"$in": list(top_hashes)}}, {"$set": {"is_featured": True}})
+    status = "ok" if any(row.get("status") == "ok" for row in per_source) else "degraded"
+    state = await update_sync_state("news", status, inserted=inserted, updated=updated, meta={"sources": per_source, "count": len(all_docs)})
+    return {"status": status, "inserted": inserted, "updated": updated, "count": len(all_docs), "sources": per_source, "state": state}
+
+
+async def build_news_fallback(limit: int = 36) -> List[Dict[str, Any]]:
+    catalog = await db.catalog_items.find({}, {"_id": 0}).sort("score", -1).limit(12).to_list(12)
+    fallback: List[Dict[str, Any]] = []
+    now = datetime.now(timezone.utc)
+    for index, anime in enumerate(catalog):
+        title = anime.get("title") or f"Anime {index + 1}"
+        fallback.append({
+            "id": f"fallback-{index + 1}",
+            "source_id": "anilist-editorial-enrichment",
+            "source_group": "AniList",
+            "source_name": "AniList Trends & Airing",
+            "title": title,
+            "description": f"Tendance anime premium autour de {title}.",
+            "excerpt": anime.get("summary") or "Actualité premium générée depuis les métadonnées AniList disponibles.",
+            "content": anime.get("summary") or "",
+            "image": anime.get("banner") or anime.get("cover"),
+            "published_at": (anime.get("nextAiringAt") or now).isoformat() if not isinstance(anime.get("nextAiringAt"), str) else anime.get("nextAiringAt"),
+            "author": "AniList Editorial GraphQL",
+            "categories": infer_news_categories(title, anime.get("summary") or "", ["anime", "trending"]),
+            "tags": list(dict.fromkeys((anime.get("genres") or [])[:6] + ["AniList"])),
+            "source_path": anime.get("url") or "https://anilist.co/",
+            "source_domain": "anilist.co",
+            "is_breaking": False,
+            "is_featured": index < 4,
+            "trending_score": float(anime.get("score") or 70),
+            "verified": True,
+            "anime_ref": {
+                "id": anime.get("id"),
+                "score": anime.get("score"),
+                "year": anime.get("year"),
+                "cover": anime.get("cover"),
+                "banner": anime.get("banner"),
+            },
+        })
+    return fallback[:limit]
+
+
+def build_news_response_item(doc: Dict[str, Any]) -> Dict[str, Any]:
+    item = serialize_doc(doc)
+    item.setdefault("id", item.get("hash") or item.get("external_id") or str(uuid.uuid4()))
+    item.setdefault("categoryLabels", [NEWS_CATEGORY_LABELS.get(cat, cat.title()) for cat in item.get("categories", [])])
+    return item
+
+
+
+def is_allowed_news_image(url: str) -> bool:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    host = (parsed.netloc or "").lower()
+    return any(host == domain or host.endswith(f".{domain}") for domain in NEWS_IMAGE_ALLOWED_DOMAINS)
+
+
+@api_router.get("/news/image-proxy")
+async def news_image_proxy(url: str):
+    if not is_allowed_news_image(url):
+        raise HTTPException(status_code=400, detail="Domaine image non autorisé.")
+
+    def _download():
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": UA,
+                "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+                "Referer": "https://lovanet.fr/actualites",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            return resp.headers.get_content_type() or "image/jpeg", resp.read()
+
+    try:
+        media_type, data = await asyncio.to_thread(_download)
+        if not media_type.startswith("image/"):
+            media_type = "image/jpeg"
+        return Response(content=data, media_type=media_type, headers={"Cache-Control": "public, max-age=1800"})
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Image distante indisponible: {str(exc)[:120]}")
+
+
+
+@api_router.get("/news")
+async def get_news(
+    category: Optional[str] = None,
+    source: Optional[str] = None,
+    q: Optional[str] = None,
+    sort: str = Query("trending", pattern="^(trending|recent)$"),
+    featured_only: bool = False,
+    limit: int = Query(24, ge=1, le=120),
+    offset: int = Query(0, ge=0),
+):
+    filt: Dict[str, Any] = {}
+    if category and category != "all":
+        filt["categories"] = category
+    if source and source != "all":
+        filt["source_id"] = source
+    if featured_only:
+        filt["is_featured"] = True
+    if q:
+        filt["$or"] = [
+            {"title": {"$regex": q, "$options": "i"}},
+            {"excerpt": {"$regex": q, "$options": "i"}},
+            {"tags": {"$regex": q, "$options": "i"}},
+        ]
+    total = await db.news_articles.count_documents(filt)
+    sort_spec = [("trending_score", -1), ("published_at", -1)] if sort == "trending" else [("published_at", -1), ("trending_score", -1)]
+    docs = await db.news_articles.find(filt, {"_id": 0}).sort(sort_spec).skip(offset).limit(limit).to_list(limit)
+    source_name = "mongodb"
+    if not docs:
+        docs = await build_news_fallback(limit=limit)
+        if category and category != "all":
+            docs = [item for item in docs if category in item.get("categories", [])]
+        if source and source != "all":
+            docs = [item for item in docs if item.get("source_id") == source]
+        total = len(docs)
+        source_name = "fallback"
+    categories = [{"id": key, "label": label} for key, label in NEWS_CATEGORY_LABELS.items() if key in {cat for doc in docs for cat in doc.get("categories", [])} or key in {"anime", "manga", "streaming", "gaming", "pop-culture"}]
+    return {"items": [build_news_response_item(doc) for doc in docs], "total": total, "offset": offset, "limit": limit, "source": source_name, "categories": categories}
+
+
+@api_router.get("/news/home")
+async def get_news_home():
+    docs = await db.news_articles.find({}, {"_id": 0}).sort([("trending_score", -1), ("published_at", -1)]).limit(80).to_list(80)
+    if not docs:
+        docs = await build_news_fallback(limit=24)
+    featured = [build_news_response_item(doc) for doc in docs if doc.get("is_featured")][:6] or [build_news_response_item(doc) for doc in docs[:6]]
+    latest = [build_news_response_item(doc) for doc in sorted(docs, key=lambda item: item.get("published_at") or "", reverse=True)[:14]]
+    rails: Dict[str, List[Dict[str, Any]]] = {}
+    for category in ["anime", "manga", "streaming", "gaming", "pop-culture"]:
+        rails[category] = [build_news_response_item(doc) for doc in docs if category in doc.get("categories", [])][:12]
+    sources = await db.news_sources.find({}, {"_id": 0}).sort("priority", -1).to_list(20)
+    calendar_items = [build_news_response_item(doc) for doc in docs if "calendar" in doc.get("categories", []) or (doc.get("anime_ref") or {}).get("nextEpisode")][:10]
+    return {
+        "hero": featured[:3],
+        "featured": featured,
+        "latest": latest,
+        "rails": rails,
+        "trending": [build_news_response_item(doc) for doc in docs[:10]],
+        "calendar": calendar_items,
+        "sources": [serialize_doc(source) for source in sources],
+        "updated_at": utc_now_iso(),
+    }
+
+
+@api_router.get("/news/sources")
+async def get_news_sources():
+    rows = await db.news_sources.find({}, {"_id": 0}).sort("priority", -1).to_list(50)
+    return {"items": rows}
+
+
+@api_router.get("/news/{slug}")
+async def get_news_detail(slug: str):
+    doc = await db.news_articles.find_one({"slug": slug}, {"_id": 0})
+    source_name = "mongodb"
+    if not doc:
+        fallback = await build_news_fallback(limit=36)
+        doc = next((item for item in fallback if item.get("slug") == slug), None)
+        source_name = "fallback"
+    if not doc:
+        raise HTTPException(status_code=404, detail="Article introuvable.")
+    related = await db.news_articles.find(
+        {
+            "slug": {"$ne": slug},
+            "$or": [
+                {"categories": {"$in": doc.get("categories", [])[:2]}},
+                {"source_id": doc.get("source_id")},
+            ],
+        },
+        {"_id": 0},
+    ).sort([("trending_score", -1), ("published_at", -1)]).limit(8).to_list(8)
+    return {"item": build_news_response_item(doc), "related": [build_news_response_item(item) for item in related], "source": source_name}
+
+
 @api_router.get("/seo/search-console/oauth/start")
 async def search_console_oauth_start(request: Request, redirect_after: str = "/actualites"):
     cfg = get_oauth_client_config()
@@ -1012,6 +1704,7 @@ async def sync_all_external(trigger: str = "manual") -> Dict[str, Any]:
             "catalog_anilist": await sync_anilist_catalog(),
             "tiktok": await sync_tiktok_public(),
             "prime": await sync_prime_public(),
+            "news": await sync_news_sources(),
         }
         search_console = await maybe_submit_search_console_sitemaps(trigger=trigger)
         overall = "ok" if all(v.get("status") in {"ok", "degraded", "skipped", "partial", "api_access_not_configured"} for v in [*results.values(), search_console]) else "partial"
@@ -1185,6 +1878,8 @@ async def admin_sync_run(payload: SyncRunRequest):
         return await sync_youtube_videos()
     if target in {"catalog", "anilist", "catalog:anilist"}:
         return await sync_anilist_catalog()
+    if target in {"news", "actualites"}:
+        return await sync_news_sources()
     if target == "tiktok":
         return await sync_tiktok_public()
     if target == "prime":
@@ -1292,7 +1987,13 @@ async def startup_event():
     global scheduler_task
     await db.videos.create_index([("platform", 1), ("external_id", 1)], unique=True)
     await db.catalog_items.create_index([("provider", 1), ("external_id", 1)], unique=True)
+    await db.news_articles.create_index([("source_id", 1), ("external_id", 1)], unique=True)
+    await db.news_articles.create_index([("hash", 1)], unique=True)
+    await db.news_articles.create_index([("slug", 1)], unique=True)
+    await db.news_articles.create_index([("published_at", -1), ("trending_score", -1)])
+    await db.news_sources.create_index("id", unique=True)
     await db.sync_state.create_index("key", unique=True)
+    await seed_news_sources()
     if scheduler_task is None or scheduler_task.done():
         scheduler_task = asyncio.create_task(sync_scheduler_loop())
         logger.info("Lovanet auto-sync scheduler started every %s seconds", SYNC_INTERVAL_SECONDS)
