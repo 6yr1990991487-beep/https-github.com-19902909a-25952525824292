@@ -94,7 +94,7 @@
 - ⏳ Phase 7 (Hubs 3D) : intégration faite mais bug runtime + UX à valider.
 - ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales.
 - ✅ Phase 9 (Nouvelle page d’arrivée) terminée.
-- ⏳ Phase 10 (ThemeBubble 500+ + contraste global + retrait vidéo basse) : EN COURS.
+- ✅ Phase 10 (ThemeBubble 500+ + contraste global + retrait vidéo basse) : TERMINÉE.
 
 ---
 
@@ -110,29 +110,29 @@
 ### Phase 8 — UI / Brand polish ⏳ IN PROGRESS
 ### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
 
-### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ⏳ IN PROGRESS
+### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ✅ COMPLETED
 
-#### Phase 10.1 — Architecture de thème globale ⏳ TODO
+#### Phase 10.1 — Architecture de thème globale ✅ COMPLETED
 - Ajouter des tokens sémantiques globaux pilotés par ThemeBubble.
 - Conserver la signature visuelle RGB néon transparente déjà en place.
 - Prévoir `fg-on-bg`, `fg-on-card`, `fg-on-overlay` calculés automatiquement.
 
-#### Phase 10.2 — ThemeBubble 500+ ⏳ TODO
+#### Phase 10.2 — ThemeBubble 500+ ✅ COMPLETED
 - Générer dynamiquement un catalogue de 500+ thèmes à partir de familles, nuances et effets.
 - Ajouter recherche, onglets (tous / favoris / récents), random, reset.
 - Supprimer l’état OFF visible.
 - Rendre la bulle plus brillante et premium.
 
-#### Phase 10.3 — Application globale + contraste ⏳ TODO
+#### Phase 10.3 — Application globale + contraste ✅ COMPLETED
 - Appliquer les thèmes sur navbar, footer, fonds, bordures, glow, overlays et surfaces.
 - Garantir la lisibilité automatique avec logique de contraste WCAG.
 - Préserver les animations RGB existantes, avec fallback reduced-motion.
 
-#### Phase 10.4 — Root landing cleanup ⏳ TODO
+#### Phase 10.4 — Root landing cleanup ✅ COMPLETED
 - Retirer la section vidéo du bas de `/`.
 - Conserver uniquement la vidéo hero utile à l’expérience.
 
-#### Phase 10.5 — Validation frontend ⏳ TODO
+#### Phase 10.5 — Validation frontend ✅ COMPLETED
 - Build frontend.
 - Contrôle visuel par capture.
 - Testing agent frontend obligatoire après implémentation.
@@ -140,12 +140,10 @@
 ---
 
 ## 3) Next Actions (ordre d’exécution)
-1) Phase 10.1 : étendre les tokens de thème globaux.
-2) Phase 10.2 : réécrire ThemeBubble pour 500+ thèmes dynamiques.
-3) Phase 10.3 : appliquer le contraste automatique sur tout le site.
-4) Phase 10.4 : retirer la vidéo du bas de la landing `/`.
-5) Phase 10.5 : build + captures + testing agent frontend.
-6) Revenir aux phases 7/8 restantes après stabilisation du chantier visuel demandé.
+1) Revenir aux phases 7/8 restantes : polish menu/logo/favicons/sous-menu Boutique si encore à finaliser.
+2) Étendre le contrôle visuel des thèmes sur les pages longues (catalogue, TikTok, countdown, actualités).
+3) Prévoir des raccourcis d’accès à la personnalisation pour les zones éloignées de la bulle si demandé.
+4) Préparer la prochaine itération de validation production après redéploiement utilisateur.
 
 ---
 
