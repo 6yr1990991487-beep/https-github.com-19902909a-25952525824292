@@ -1,18 +1,14 @@
 [
   {
-    "content": "Placer la nouvelle vidéo dans la grande zone gauche au-dessus des boutons, à la place des champs barrés",
-    "status": "in_progress"
+    "content": "Déplacer l’ancienne vidéo au bord droit du panneau et agrandir la nouvelle vidéo sur toute la zone libre gauche+centre",
+    "status": "completed"
   },
   {
-    "content": "Supprimer entièrement le petit panneau séparé contenant actuellement la nouvelle vidéo",
-    "status": "pending"
+    "content": "Conserver les boutons/texte/liens existants sans les supprimer",
+    "status": "completed"
   },
   {
-    "content": "Conserver l’autre vidéo et son panneau inchangés",
-    "status": "pending"
-  },
-  {
-    "content": "Nettoyer le code inutilisé puis vérifier visuellement",
-    "status": "pending"
+    "content": "Vérifier visuellement le nouveau swap des vidéos",
+    "status": "completed"
   }
 ]
