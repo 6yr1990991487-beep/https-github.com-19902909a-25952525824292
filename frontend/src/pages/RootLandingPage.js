@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX, Sparkles, Layers3, Palette } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
@@ -69,12 +69,20 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
-const captureVariants = [
-  { key: "cyan-shift", accent: "var(--theme-neon-a)", accentSecondary: "var(--theme-neon-b)", glow: "rgba(56,189,248,0.18)" },
-  { key: "magenta-shift", accent: "var(--theme-neon-b)", accentSecondary: "var(--theme-neon-c)", glow: "rgba(244,114,182,0.18)" },
-  { key: "violet-shift", accent: "var(--theme-neon-c)", accentSecondary: "var(--theme-neon-a)", glow: "rgba(168,85,247,0.18)" },
-];
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+const embeddedHeroCaptureVideo = "/root-capture-video-latest.mp4";
+const capturePanelButtonRows = {
+  primary: [
+    { to: "/anime-countdown", label: "À venir" },
+    { to: "/lecteurs-video", label: "Lecteurs vidéo" },
+  ],
+  secondary: [
+    { to: "/anime-countdown", label: "À venir" },
+    { to: "/lecteurs-video", label: "Lecteurs vidéo" },
+    { to: "/contact", label: "Contact" },
+  ],
+};
+
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
   rotatingPortalDestinations[(slotIndex + rotationIndex) % rotatingPortalDestinations.length];
@@ -82,8 +90,6 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [videoMuted, setVideoMuted] = useState(true);
-  const [captureVariantIndex, setCaptureVariantIndex] = useState(0);
-  const [captureLayoutSeed, setCaptureLayoutSeed] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const portalVideoRef = useRef(null);
 
@@ -97,16 +103,8 @@ export default function RootLandingPage() {
       setRotationIndex((value) => (value + 1) % rotatingPortalDestinations.length);
     }, portalRotationIntervalMs);
 
-    const captureId = media.matches
-      ? null
-      : window.setInterval(() => {
-          setCaptureVariantIndex((value) => (value + 1) % captureVariants.length);
-          setCaptureLayoutSeed((value) => (value + 1) % 4);
-        }, 14500);
-
     return () => {
       window.clearInterval(rotationId);
-      if (captureId) window.clearInterval(captureId);
       media.removeEventListener?.("change", syncReduced);
     };
   }, []);
@@ -118,19 +116,6 @@ export default function RootLandingPage() {
   const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
   const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
-  const captureVariant = useMemo(() => captureVariants[captureVariantIndex % captureVariants.length], [captureVariantIndex]);
-  const captureDeckItems = useMemo(() => {
-    const entries = [
-      { key: "primary", title: heroPrimary.label, subtitle: "Accès premium", icon: Sparkles, to: heroPrimary.to },
-      { key: "secondary", title: heroSecondary.label, subtitle: "Navigation rapide", icon: Layers3, to: heroSecondary.to },
-      { key: "news", title: heroNews.label, subtitle: "Focus éditorial", icon: Newspaper, to: heroNews.to },
-      { key: "video", title: featuredVideoAction.label, subtitle: "Vidéo immersive", icon: Play, to: featuredVideoAction.to },
-      { key: "color", title: newsAction.label, subtitle: "Pulse RGB", icon: Palette, to: newsAction.to },
-    ];
-    if (reducedMotion) return entries.slice(0, 4);
-    const shift = captureLayoutSeed % entries.length;
-    return entries.slice(shift).concat(entries.slice(0, shift)).slice(0, 4);
-  }, [heroPrimary, heroSecondary, heroNews, featuredVideoAction, newsAction, captureLayoutSeed, reducedMotion]);
 
   return (
     <PageShell>
@@ -191,95 +176,95 @@ export default function RootLandingPage() {
                 </div>
               </div>
 
-              <div className="grid gap-4" data-testid="root-landing-hero-visual">
-                <div
-                  className="capture-deck-shell rgb-neon relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05] p-3 sm:p-4"
-                  data-testid="capture-deck"
-                  style={{ "--capture-accent": captureVariant.accent, "--capture-accent-secondary": captureVariant.accentSecondary }}
-                >
-                  <div className="grid gap-4 md:grid-cols-12">
-                    <div className="md:col-span-7">
-                      <div className="relative overflow-hidden rounded-[1.7rem] border border-white/12 bg-white/[0.04]" data-testid="home-hero-zone-replacement-player">
-                        <div className="pointer-events-none absolute left-4 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
-                        <div className="pointer-events-none absolute left-4 top-10 z-10 h-12 w-48 max-w-[70%] rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
-                        <video
-                          ref={portalVideoRef}
-                          className="mobile-safe-video w-full object-cover object-[48%_50%] scale-[1.02]"
-                          src={rootCaptureZoneVideo}
-                          autoPlay
-                          muted={videoMuted}
-                          loop
-                          playsInline
-                          preload="metadata"
-                          data-testid="home-hero-zone-replacement-video"
-                        />
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/46 via-transparent to-black/12" />
-                        <div className={reducedMotion ? "pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.12)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.08)_74%,transparent_88%)]" : "pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]"} />
-                        <div className="pointer-events-none absolute inset-0 opacity-18" style={{ background: `radial-gradient(circle at 18% 30%, ${captureVariant.glow}, transparent 26%), radial-gradient(circle at 82% 28%, color-mix(in srgb, ${captureVariant.accentSecondary} 18%, transparent), transparent 24%)` }} />
-                        <div className="absolute left-4 right-4 top-[5.2rem] z-10 flex max-w-[92%] flex-wrap gap-2 sm:gap-3">
-                          <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-news">
-                            <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                          <Link to={heroNews.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-shop">
-                            <span key={`hero-news-overlay-${heroNews.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                        </div>
-                        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex flex-wrap gap-2">
-                            <Link to="/prime-video" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-prime-link">
-                              Prime Vidéo <ArrowRight className="h-4 w-4" />
-                            </Link>
-                            <Link to="/tiktok" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-tiktok-link">
-                              TikTok <ArrowRight className="h-4 w-4" />
-                            </Link>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setVideoMuted((value) => !value)}
-                            className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
-                            data-testid="home-hero-video-mute-button"
-                          >
-                            {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
-                            {videoMuted ? "Muet" : "Son"}
-                          </button>
-                        </div>
-                      </div>
+              <div className="grid gap-4 lg:grid-cols-[0.92fr_1.08fr]" data-testid="root-landing-hero-visual">
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(9,24,41,0.98),rgba(6,18,33,0.96))] p-4" data-testid="capture-deck">
+                  <div className="space-y-4 rounded-[1.6rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,23,39,0.98),rgba(6,18,31,0.98))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                    <div className="relative overflow-hidden rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,31,53,0.94),rgba(8,22,38,0.94))]" data-testid="capture-panel-embedded-video-shell">
+                      <video
+                        className="h-[332px] w-full object-cover object-center"
+                        src={embeddedHeroCaptureVideo}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        data-testid="capture-panel-embedded-video"
+                      />
                     </div>
 
-                    <div className="space-y-4 md:col-span-5">
-                      <div className="capture-preview-chip relative overflow-hidden rounded-[1.5rem] p-4">
-                        <div className="flex items-center justify-between gap-3">
-                          <div>
-                            <p className="text-[11px] uppercase tracking-[0.24em] text-white/52">Capture deck</p>
-                            <h3 className="mt-2 font-display text-xl font-black text-white">Variations douces</h3>
-                          </div>
-                          <span className="rgb-pill inline-flex min-h-[36px] items-center rounded-full px-3 py-2 text-[11px] font-semibold text-white">{captureVariant.key.replace("-", " ")}</span>
-                        </div>
-                        <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-1">
-                          {captureDeckItems.map((item, index) => {
-                            const Icon = item.icon;
-                            return (
-                              <Link
-                                key={`${item.key}-${item.to}-${captureLayoutSeed}-${index}`}
-                                to={item.to}
-                                className="capture-preview-chip relative flex min-h-[88px] items-center gap-3 rounded-[1.2rem] px-4 py-3 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/25 hover:shadow-[0_18px_40px_-28px_rgba(0,0,0,0.68)]"
-                                data-testid={`capture-preview-card-${index + 1}`}
-                              >
-                                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                                  <Icon className="h-4 w-4" />
-                                </span>
-                                <span className="min-w-0">
-                                  <span className="block text-[11px] uppercase tracking-[0.22em] text-white/48">{item.subtitle}</span>
-                                  <span className="mt-1 block text-sm font-semibold text-white">{item.title}</span>
-                                </span>
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
+                    <div className="flex flex-wrap gap-3" data-testid="capture-panel-primary-buttons-row">
+                      {capturePanelButtonRows.primary.map((item, index) => (
+                        <Link
+                          key={`capture-panel-primary-${item.to}-${index}`}
+                          to={item.to}
+                          className="inline-flex min-h-[46px] items-center gap-2 rounded-full border border-white/14 bg-[rgba(19,41,69,0.84)] px-5 py-2.5 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-white/24 hover:shadow-[0_16px_38px_-28px_rgba(0,0,0,0.76)]"
+                          data-testid={`capture-panel-primary-button-${index + 1}`}
+                        >
+                          {item.label}
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      ))}
                     </div>
+
+                    <div className="grid grid-cols-3 gap-3" data-testid="capture-panel-secondary-buttons-row">
+                      {capturePanelButtonRows.secondary.map((item, index) => (
+                        <Link
+                          key={`capture-panel-secondary-${item.to}-${index}`}
+                          to={item.to}
+                          className="flex min-h-[64px] items-center justify-center rounded-[1.25rem] border border-white/12 bg-[rgba(8,23,40,0.9)] px-3 py-3 text-center text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-white/24 hover:shadow-[0_16px_38px_-28px_rgba(0,0,0,0.76)]"
+                          data-testid={`capture-panel-secondary-button-${index + 1}`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(9,24,41,0.98),rgba(6,18,33,0.96))]" data-testid="home-hero-zone-replacement-player">
+                  <div className="pointer-events-none absolute left-4 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
+                  <div className="pointer-events-none absolute left-4 top-10 z-10 h-12 w-48 max-w-[70%] rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
+                  <video
+                    ref={portalVideoRef}
+                    className="mobile-safe-video w-full object-cover object-[48%_50%] scale-[1.02]"
+                    src={rootCaptureZoneVideo}
+                    autoPlay
+                    muted={videoMuted}
+                    loop
+                    playsInline
+                    preload="metadata"
+                    data-testid="home-hero-zone-replacement-video"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/46 via-transparent to-black/12" />
+                  <div className={reducedMotion ? "pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.12)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.08)_74%,transparent_88%)]" : "pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]"} />
+                  <div className="absolute left-4 right-4 top-[5.2rem] z-10 flex max-w-[92%] flex-wrap gap-2 sm:gap-3">
+                    <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-news">
+                      <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                    <Link to={heroNews.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-shop">
+                      <span key={`hero-news-overlay-${heroNews.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Link to="/prime-video" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-prime-link">
+                        Prime Vidéo <ArrowRight className="h-4 w-4" />
+                      </Link>
+                      <Link to="/tiktok" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-tiktok-link">
+                        TikTok <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setVideoMuted((value) => !value)}
+                      className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
+                      data-testid="home-hero-video-mute-button"
+                    >
+                      {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
+                      {videoMuted ? "Muet" : "Son"}
+                    </button>
                   </div>
                 </div>
               </div>

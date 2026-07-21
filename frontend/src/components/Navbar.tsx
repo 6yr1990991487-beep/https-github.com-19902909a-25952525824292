@@ -173,14 +173,17 @@ export const Navbar = () => {
         <div className="mx-auto max-w-[1120px]">
           <div className="relative">
             <div className="nav-theme-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
-              <div className="flex shrink-0 items-center gap-2" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="flex items-center gap-2" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
                 {renderLogo()}
                 <button
                   type="button"
                   aria-haspopup="true"
                   aria-expanded={megaOpen}
                   aria-controls="mega-menu-panel"
-                  onClick={() => setMegaOpen((value) => !value)}
+                  onClick={() => {
+                    cancelClose();
+                    setMegaOpen((value) => !value);
+                  }}
                   onMouseEnter={() => {
                     cancelClose();
                     setMegaOpen(true);
@@ -265,7 +268,7 @@ export const Navbar = () => {
                 role="menu"
                 onMouseEnter={cancelClose}
                 onMouseLeave={scheduleClose}
-                className="absolute left-0 right-0 top-full mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 lg:block"
+                className="absolute left-0 right-0 top-full z-[70] mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 lg:block"
               >
                 <div className="nav-theme-shell relative overflow-hidden rounded-[1.8rem] p-3 sm:p-5 lg:p-6" data-testid="desktop-mega-menu-panel">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,color-mix(in_srgb,var(--nav-theme-accent)_18%,transparent),transparent_24%),radial-gradient(circle_at_84%_14%,color-mix(in_srgb,var(--nav-theme-accent-2)_14%,transparent),transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%)]" />

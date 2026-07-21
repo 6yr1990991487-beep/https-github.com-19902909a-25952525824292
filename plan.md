@@ -236,3 +236,11 @@
 4) Nettoyage des mentions inutiles sur `/actualites`
 5) Correctifs SEO frontend restants
 6) Lint + tests + corrections
+
+
+### Ajustement demandé après validation visuelle — panneau capture droit (landing `/`) ⏳ IN PROGRESS
+- Cibler uniquement le panneau droit de la zone hero/capture deck.
+- Retirer le fond RGB arrière-plan visible dans ce panneau, les surcouches internes, les 3 petits champs en haut et les cartes/sections verticales du dessous.
+- Conserver intactes les vidéos voisines et leurs calques.
+- Intégrer la nouvelle vidéo utilisateur `/capture-deck-user-video.mp4` exactement dans la forme/zone rectangulaire montrée par la maquette, sous les boutons.
+- Prendre en compte le bug mineur du rapport de test: mega menu desktop non ouvert au clic sur le bouton sparkles.

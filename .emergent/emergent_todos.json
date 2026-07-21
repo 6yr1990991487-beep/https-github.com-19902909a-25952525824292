@@ -1,14 +1,14 @@
 [
   {
-    "content": "Étape 4 — Supprimer les mentions inutiles et placeholders sur /actualites",
+    "content": "Ajuster le panneau capture gauche pour ne garder que la vidéo adaptée exactement à la zone libre montrée + les boutons dessous",
     "status": "completed"
   },
   {
-    "content": "Corriger ensuite les reliquats SEO frontend : JSON-LD Shop + meta description dupliquée",
-    "status": "in_progress"
+    "content": "Supprimer les éléments résiduels non voulus dans ce panneau (titres, overlays, éléments superflus)",
+    "status": "completed"
   },
   {
-    "content": "Lancer lint frontend, vérifications visuelles, testing agent frontend et corriger tous les bugs remontés",
-    "status": "pending"
+    "content": "Vérifier visuellement que la vidéo remplit bien la zone du haut et que le panneau voisin reste intact",
+    "status": "completed"
   }
 ]
