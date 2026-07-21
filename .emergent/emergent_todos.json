@@ -1,26 +1,30 @@
 [
   {
-    "content": "Mettre à jour le plan pour l’intégration des 2 nouvelles vidéos dans les zones capturées",
+    "content": "Auditer l’existant frontend/backend de la page Actualités et des flux",
     "status": "completed"
   },
   {
-    "content": "Télécharger les deux nouvelles vidéos dans les assets frontend",
+    "content": "Rechercher les sources publiques/RSS/API fiables pour actualités anime/manga/streaming/jeux/culture pop",
     "status": "completed"
   },
   {
-    "content": "Intégrer la première vidéo dans la zone de capture gauche de la landing root avec cadrage parfait sous les boutons",
-    "status": "completed"
-  },
-  {
-    "content": "Intégrer la seconde vidéo dans la zone correspondant à la capture LOVANET avec même logique de découpe",
+    "content": "Obtenir des guidelines design premium dédiées à la nouvelle page Actualités",
     "status": "in_progress"
   },
   {
-    "content": "Vérifier visuellement par captures et corriger si nécessaire",
-    "status": "in_progress"
+    "content": "Mettre à jour le plan de refonte Actualités premium + backend auto complet",
+    "status": "pending"
   },
   {
-    "content": "Lancer le testing frontend ciblé si la modification est stable",
+    "content": "Implémenter le backend d’agrégation automatique des vraies sources",
+    "status": "pending"
+  },
+  {
+    "content": "Refondre la page Actualités avec sections premium, carrousels, widgets et bannières animées",
+    "status": "pending"
+  },
+  {
+    "content": "Tester la nouvelle page Actualités et corriger tous les retours",
     "status": "pending"
   }
 ]
