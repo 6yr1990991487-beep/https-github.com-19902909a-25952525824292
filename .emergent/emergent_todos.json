@@ -1,18 +1,18 @@
 [
   {
-    "content": "Remplacer les 3 champs sombres de gauche par la nouvelle vidéo, dans toute la zone délimitée au-dessus des boutons",
-    "status": "completed"
+    "content": "Placer la nouvelle vidéo dans la grande zone gauche au-dessus des boutons, à la place des champs barrés",
+    "status": "in_progress"
   },
   {
-    "content": "Supprimer entièrement le panneau où se trouve actuellement la nouvelle vidéo",
-    "status": "completed"
+    "content": "Supprimer entièrement le petit panneau séparé contenant actuellement la nouvelle vidéo",
+    "status": "pending"
   },
   {
-    "content": "Conserver la grande vidéo voisine existante et ses boutons",
-    "status": "completed"
+    "content": "Conserver l’autre vidéo et son panneau inchangés",
+    "status": "pending"
   },
   {
-    "content": "Vérifier visuellement le résultat final exact",
-    "status": "completed"
+    "content": "Nettoyer le code inutilisé puis vérifier visuellement",
+    "status": "pending"
   }
 ]
