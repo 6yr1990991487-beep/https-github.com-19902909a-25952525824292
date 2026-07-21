@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import footerLovanetZoneVideo from "@/assets/footer-lovanet-zone-video.mp4";
 
 const footerLinks = [
   { to: "/", label: "Portail" },
@@ -29,19 +30,37 @@ export const Footer = () => {
       <div className={`mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
         <div className="grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
           <div className="space-y-5">
-            <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
-              <span className="font-display text-2xl font-black tracking-[0.16em] theme-text-main neon-rgb-text-soft">LOVANET</span>
-            </Link>
-            <p className="theme-text-muted max-w-xl text-sm leading-7" data-testid="footer-description">
-              Portail anime et manga, navigation premium, univers immersifs et accès directs vers les sections principales.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">
-                <Link to="/anime-moments">
-                  <Film className="h-4 w-4" />
-                  Anime Moments
-                </Link>
-              </Button>
+            <div className="theme-footer-video-shell relative overflow-hidden rounded-[1.75rem] border border-[var(--theme-border-soft)]" data-testid="footer-lovanet-video-shell">
+              <video
+                className="h-[250px] w-full object-cover object-center scale-[1.01]"
+                src={footerLovanetZoneVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                data-testid="footer-lovanet-video"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(6,11,24,0.88)] via-[rgba(7,12,24,0.56)] to-[rgba(7,12,24,0.2)]" />
+              <div className="pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+              <div className="relative z-[1] flex h-full flex-col justify-between p-5 sm:p-6">
+                <div className="space-y-4 max-w-[26rem]">
+                  <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
+                    <span className="font-display text-2xl font-black tracking-[0.16em] text-white neon-rgb-text-soft">LOVANET</span>
+                  </Link>
+                  <p className="max-w-xl text-sm leading-7 text-white/78" data-testid="footer-description">
+                    Portail anime et manga, navigation premium, univers immersifs et accès directs vers les sections principales.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">
+                    <Link to="/anime-moments">
+                      <Film className="h-4 w-4" />
+                      Anime Moments
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 

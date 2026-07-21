@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "content": "Mettre à jour le plan pour l’intégration des 2 nouvelles vidéos dans les zones capturées",
+    "status": "completed"
+  },
+  {
+    "content": "Télécharger les deux nouvelles vidéos dans les assets frontend",
+    "status": "completed"
+  },
+  {
+    "content": "Intégrer la première vidéo dans la zone de capture gauche de la landing root avec cadrage parfait sous les boutons",
+    "status": "completed"
+  },
+  {
+    "content": "Intégrer la seconde vidéo dans la zone correspondant à la capture LOVANET avec même logique de découpe",
+    "status": "in_progress"
+  },
+  {
+    "content": "Vérifier visuellement par captures et corriger si nécessaire",
+    "status": "in_progress"
+  },
+  {
+    "content": "Lancer le testing frontend ciblé si la modification est stable",
+    "status": "pending"
+  }
+]

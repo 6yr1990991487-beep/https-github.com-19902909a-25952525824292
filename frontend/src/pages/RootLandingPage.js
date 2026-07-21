@@ -12,6 +12,7 @@ import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 import portalButtonsZoneVideo from "@/assets/portal-buttons-zone-video.mp4";
 import portalZoneReplacement from "@/assets/portal-zone-replacement.mp4";
+import rootCaptureZoneVideo from "@/assets/root-capture-zone-video.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -157,8 +158,8 @@ export default function RootLandingPage() {
                   <div className="pointer-events-none absolute left-5 top-10 z-10 h-12 w-56 max-w-[65%] rounded-[1.35rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
                   <video
                     ref={portalVideoRef}
-                    className="h-[520px] w-full object-cover"
-                    src={portalZoneReplacement}
+                    className="h-[520px] w-full object-cover object-[48%_50%] scale-[1.02]"
+                    src={rootCaptureZoneVideo}
                     autoPlay
                     muted={videoMuted}
                     loop
@@ -169,7 +170,7 @@ export default function RootLandingPage() {
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
                   <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
                   <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
-                  <div className="absolute left-5 top-[5.25rem] z-10 flex flex-wrap gap-3">
+                  <div className="absolute left-5 top-[5.25rem] z-10 flex max-w-[92%] flex-wrap gap-3">
                     <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-link-news">
                       <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
                       <ArrowRight className="h-4 w-4" />

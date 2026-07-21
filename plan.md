@@ -111,6 +111,21 @@
 ### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
 
 ### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ✅ COMPLETED
+### Phase 11 — Remplacement ciblé des zones par vidéos utilisateur ⏳ IN PROGRESS
+
+#### Phase 11.1 — Intégration vidéo zone capture gauche ⏳ TODO
+- Injecter la vidéo utilisateur 1 dans la zone visuelle de capture sur `/`.
+- Garder les boutons en overlay au-dessus comme les itérations précédentes.
+- Ajuster le cadrage pour épouser parfaitement le découpage demandé.
+
+#### Phase 11.2 — Intégration vidéo zone LOVANET ⏳ TODO
+- Injecter la vidéo utilisateur 2 dans la zone de gauche du footer / bloc LOVANET.
+- Préserver le texte et le bouton au-dessus de la vidéo.
+- Appliquer la même logique de découpe et de transparence premium.
+
+#### Phase 11.3 — Validation visuelle ⏳ TODO
+- Contrôle capture sur `/`.
+- Vérifier que les vidéos restent sous les boutons et ne cassent pas la lisibilité.
 
 #### Phase 10.1 — Architecture de thème globale ✅ COMPLETED
 - Ajouter des tokens sémantiques globaux pilotés par ThemeBubble.
