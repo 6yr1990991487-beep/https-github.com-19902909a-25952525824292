@@ -3,6 +3,7 @@ import {
   Check,
   Clock3,
   Gem,
+  Palette,
   RefreshCcw,
   Search,
   Shuffle,
@@ -99,10 +100,18 @@ type FinishDef = {
 const STORAGE_KEY = "lovanet:theme-v2";
 const FAVORITES_KEY = "lovanet:theme-favorites";
 const RECENTS_KEY = "lovanet:theme-recents";
+const NAV_MODE_KEY = "lovanet:nav-theme-mode";
 const DEFAULT_THEME_ID = "azure-cosmic-rgb";
 const RECENT_LIMIT = 18;
 const BRIGHT_TEXT = "#f7faff";
 const DARK_TEXT = "#0b1020";
+const NAV_PREVIEW_MODES = [
+  { id: "derived", label: "Synchronisé" },
+  { id: "intense", label: "Accentué" },
+  { id: "contrast", label: "Contraste" },
+] as const;
+
+type NavPreviewMode = (typeof NAV_PREVIEW_MODES)[number]["id"];
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
@@ -391,7 +400,38 @@ const buildThemeCatalog = () => {
 
 const THEME_CATALOG = buildThemeCatalog();
 
-const applyTheme = (theme: ThemeOption) => {
+const applyNavTheme = (theme: ThemeOption, mode: NavPreviewMode) => {
+  const root = document.documentElement;
+  const styles = root.style;
+
+  const accent = mode === "contrast" ? mixHex(theme.primaryHex, BRIGHT_TEXT, 0.24) : theme.primaryHex;
+  const accent2 = mode === "contrast" ? mixHex(theme.accentHex, BRIGHT_TEXT, 0.18) : mode === "intense" ? mixHex(theme.accentHex, BRIGHT_TEXT, 0.08) : theme.accentHex;
+  const accent3 = mode === "contrast" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.14) : mode === "intense" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.08) : theme.tertiaryHex;
+  const navBg = mode === "intense" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.34), 0.74) : mode === "contrast" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.52), 0.82) : alphaHex(mixHex(theme.backgroundHex, theme.cardHex, 0.46), 0.72);
+  const navSurface = mode === "intense" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.18), 0.9) : mode === "contrast" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.32), 0.94) : alphaHex(mixHex(theme.cardHex, theme.card2Hex, 0.28), 0.86);
+  const navText = pickReadableTextColor(mode === "contrast" ? mixHex(theme.cardHex, DARK_TEXT, 0.32) : theme.cardHex, 5);
+  const navMuted = alphaHex(navText, navText === DARK_TEXT ? 0.66 : 0.74);
+  const navBorder = mode === "contrast" ? alphaHex(accent, 0.28) : alphaHex(BRIGHT_TEXT, 0.18);
+
+  styles.setProperty("--bubble-h", String(parseInt(theme.primaryHsl.split(" ")[0], 10) || 210));
+  styles.setProperty("--bubble-s", `${parseInt(theme.primaryHsl.split(" ")[1], 10) || 92}%`);
+  styles.setProperty("--bubble-l", `${parseInt(theme.primaryHsl.split(" ")[2], 10) || 58}%`);
+  styles.setProperty("--bubble-a", accent);
+  styles.setProperty("--bubble-b", accent2);
+  styles.setProperty("--bubble-c", accent3);
+  styles.setProperty("--nav-theme-bg", navBg);
+  styles.setProperty("--nav-theme-surface", navSurface);
+  styles.setProperty("--nav-theme-border", navBorder);
+  styles.setProperty("--nav-theme-accent", accent);
+  styles.setProperty("--nav-theme-accent-2", accent2);
+  styles.setProperty("--nav-theme-accent-3", accent3);
+  styles.setProperty("--nav-theme-text", navText);
+  styles.setProperty("--nav-theme-muted", navMuted);
+  styles.setProperty("--nav-theme-shadow", `0 18px 54px -28px ${alphaHex(DARK_TEXT, 0.58)}`);
+  root.dataset.navThemeMode = mode;
+};
+
+const applyTheme = (theme: ThemeOption, navMode: NavPreviewMode = "derived") => {
   const root = document.documentElement;
   const styles = root.style;
 
@@ -446,6 +486,8 @@ const applyTheme = (theme: ThemeOption) => {
   styles.setProperty("--theme-neon-b", theme.accentHex);
   styles.setProperty("--theme-neon-c", theme.tertiaryHex);
   styles.setProperty("--theme-noise-opacity", theme.noiseOpacity);
+
+  applyNavTheme(theme, navMode);
 
   root.dataset.themeId = theme.id;
   root.dataset.themeMood = theme.mood;
@@ -523,6 +565,7 @@ export const ThemeBubble = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recents, setRecents] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const [navMode, setNavMode] = useState<NavPreviewMode>("derived");
 
   const activeTheme = useMemo(
     () => THEME_CATALOG.find((theme) => theme.id === activeThemeId) ?? THEME_CATALOG[0],
@@ -540,9 +583,12 @@ export const ThemeBubble = () => {
 
   useEffect(() => {
     const savedTheme = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    const savedNavMode = typeof window !== "undefined" ? window.localStorage.getItem(NAV_MODE_KEY) : null;
+    const mode = NAV_PREVIEW_MODES.some((item) => item.id === savedNavMode) ? (savedNavMode as NavPreviewMode) : "derived";
     const theme = THEME_CATALOG.find((item) => item.id === savedTheme) ?? THEME_CATALOG.find((item) => item.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
-    applyTheme(theme);
+    applyTheme(theme, mode);
     setActiveThemeId(theme.id);
+    setNavMode(mode);
     setFavorites(readStoredArray(FAVORITES_KEY));
     setRecents(readStoredArray(RECENTS_KEY));
   }, []);
@@ -556,6 +602,12 @@ export const ThemeBubble = () => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(RECENTS_KEY, JSON.stringify(recents));
   }, [recents]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(NAV_MODE_KEY, navMode);
+    applyNavTheme(activeTheme, navMode);
+  }, [activeTheme, navMode]);
 
   const filteredByTab = useMemo(() => {
     if (tab === "favorites") {
@@ -584,7 +636,7 @@ export const ThemeBubble = () => {
   };
 
   const handleApplyTheme = (theme: ThemeOption, notify = true) => {
-    applyTheme(theme);
+    applyTheme(theme, navMode);
     setActiveThemeId(theme.id);
     updateRecents(theme.id);
     if (typeof window !== "undefined") {
@@ -615,10 +667,20 @@ export const ThemeBubble = () => {
     setMood("all");
     setQuery("");
     setTab("all");
+    setNavMode("derived");
   };
 
+  const navPreviewStyles = useMemo(() => {
+    const accent = getComputedStyle(document.documentElement).getPropertyValue("--nav-theme-accent") || activeTheme.primaryHex;
+    const accent2 = getComputedStyle(document.documentElement).getPropertyValue("--nav-theme-accent-2") || activeTheme.accentHex;
+    const accent3 = getComputedStyle(document.documentElement).getPropertyValue("--nav-theme-accent-3") || activeTheme.tertiaryHex;
+    return {
+      background: `linear-gradient(135deg, ${accent}, ${accent2}, ${accent3})`,
+    };
+  }, [activeTheme, navMode, open]);
+
   const panelBody = (
-    <div className="theme-orb-panel flex h-full flex-col overflow-hidden" data-testid="theme-panel-sheet">
+    <div className="theme-orb-panel flex h-full flex-col overflow-hidden" data-testid="theme-bubble-panel">
       <div className="theme-orb-panel-highlight" aria-hidden="true" />
       <div className="relative flex h-full flex-col">
         <div className="border-b border-white/10 px-4 pb-4 pt-3 md:px-5 md:pt-4">
@@ -662,103 +724,155 @@ export const ThemeBubble = () => {
           </div>
         </div>
 
-        <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3 md:px-5" data-testid="theme-tabs-root">
-          <TabsList className="theme-tabs-list grid h-auto grid-cols-3 rounded-2xl p-1">
-            <TabsTrigger value="all" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-all">Tous</TabsTrigger>
-            <TabsTrigger value="favorites" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-favorites">Favoris</TabsTrigger>
-            <TabsTrigger value="recent" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-recent">Récents</TabsTrigger>
-          </TabsList>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleRandomTheme} className="theme-action-button rounded-full" data-testid="theme-random-button">
-              <Shuffle className="h-4 w-4" />
-              Surprise
-            </Button>
-            <Button type="button" variant="outline" size="sm" onClick={handleResetTheme} className="theme-action-button rounded-full" data-testid="theme-reset-button">
-              <RefreshCcw className="h-4 w-4" />
-              Réinitialiser
-            </Button>
-            <div className="theme-glass-chip inline-flex min-h-[36px] items-center gap-2 rounded-full px-3 py-2 text-xs text-white/82" data-testid="theme-results-count">
-              <Clock3 className="h-4 w-4 neon-rgb-icon" />
-              {visibleThemes.length} résultat{visibleThemes.length > 1 ? "s" : ""}
+        <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3 md:px-5">
+          <div className="mb-4 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.28em] text-white/48">Navigation menu</p>
+                <h4 className="mt-2 font-display text-lg font-black text-white">Thème du menu</h4>
+              </div>
+              <Palette className="h-5 w-5 text-white/80" />
             </div>
+            <div className="mt-4 grid grid-cols-3 gap-2" data-testid="theme-bubble-navigation-preview-row">
+              <div className="preview_chip nav-theme-shell rounded-xl p-3">
+                <span className="inline-flex min-h-[28px] items-center rounded-full px-2 text-[11px] font-semibold text-white" style={navPreviewStyles}>Actif</span>
+              </div>
+              <div className="preview_chip nav-theme-shell rounded-xl p-3">
+                <button type="button" className="nav-theme-chip nav-theme-chip-active min-h-[32px] rounded-full px-3 text-[11px] font-semibold text-white">CTA</button>
+              </div>
+              <div className="preview_chip nav-theme-shell rounded-xl p-3">
+                <div className="flex items-center justify-between rounded-full border border-white/10 px-3 py-2 text-[11px] text-white">
+                  Lien
+                  <span className="nav-theme-active-dot h-2.5 w-2.5 rounded-full" />
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {NAV_PREVIEW_MODES.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setNavMode(mode.id)}
+                  className={cn("nav-theme-chip min-h-[40px] rounded-full px-4 py-2 text-xs font-semibold", navMode === mode.id && "nav-theme-chip-active")}
+                  data-testid={`theme-bubble-nav-mode-${mode.id}`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+            <Button
+              type="button"
+              onClick={() => {
+                applyNavTheme(activeTheme, navMode);
+                toast.success("Thème du menu appliqué", {
+                  description: `Mode ${NAV_PREVIEW_MODES.find((item) => item.id === navMode)?.label?.toLowerCase() || "synchronisé"}`,
+                });
+              }}
+              className="mt-4 w-full rounded-2xl btn-neon-rainbow text-sm font-semibold"
+              data-testid="theme-bubble-apply-nav-theme-button"
+            >
+              Appliquer au menu de navigation
+            </Button>
           </div>
 
-          {(["all", "favorites", "recent"] as const).map((currentTab) => (
-            <TabsContent key={currentTab} value={currentTab} className="mt-4 min-h-0 flex-1">
-              <ScrollArea className="h-[58vh] pr-2 md:h-[calc(100vh-23rem)]">
-                {visibleThemes.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-3 pb-4 xl:grid-cols-3">
-                    {visibleThemes.map((theme) => {
-                      const isActive = theme.id === activeThemeId;
-                      const isFavorite = favorites.includes(theme.id);
-                      return (
-                        <article
-                          key={theme.id}
-                          className={cn("theme-swatch-card", isActive && "theme-swatch-card-active")}
-                          data-testid={`theme-swatch-card-${theme.id}`}
-                          style={{ contentVisibility: "auto", containIntrinsicSize: "240px" }}
-                        >
-                          <div className="theme-swatch-preview" style={{ background: theme.swatch }}>
-                            <span className="theme-swatch-gloss" />
-                            <button
-                              type="button"
-                              onClick={() => handleToggleFavorite(theme.id)}
-                              className={cn("theme-favorite-button", isFavorite && "theme-favorite-button-active")}
-                              aria-label={isFavorite ? `Retirer ${theme.label} des favoris` : `Ajouter ${theme.label} aux favoris`}
-                              data-testid={`theme-favorite-button-${theme.id}`}
-                            >
-                              <Star className={cn("h-4 w-4", isFavorite && "fill-current")} />
-                            </button>
-                            {isActive && (
-                              <span className="theme-active-badge" data-testid={`theme-active-badge-${theme.id}`}>
-                                <Check className="h-3.5 w-3.5" /> Active
-                              </span>
-                            )}
-                          </div>
+          <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col" data-testid="theme-tabs-root">
+            <TabsList className="theme-tabs-list grid h-auto grid-cols-3 rounded-2xl p-1">
+              <TabsTrigger value="all" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-all">Tous</TabsTrigger>
+              <TabsTrigger value="favorites" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-favorites">Favoris</TabsTrigger>
+              <TabsTrigger value="recent" className="theme-tab-trigger rounded-xl" data-testid="theme-tab-recent">Récents</TabsTrigger>
+            </TabsList>
 
-                          <div className="flex flex-1 flex-col gap-3 p-3">
-                            <div>
-                              <h4 className="theme-text-main line-clamp-2 font-display text-sm font-bold">{theme.label}</h4>
-                              <p className="theme-text-muted mt-1 text-[11px] uppercase tracking-[0.24em]">
-                                {theme.family} · {theme.finish}
-                              </p>
-                            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={handleRandomTheme} className="theme-action-button rounded-full" data-testid="theme-random-button">
+                <Shuffle className="h-4 w-4" />
+                Surprise
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={handleResetTheme} className="theme-action-button rounded-full" data-testid="theme-reset-button">
+                <RefreshCcw className="h-4 w-4" />
+                Réinitialiser
+              </Button>
+              <div className="theme-glass-chip inline-flex min-h-[36px] items-center gap-2 rounded-full px-3 py-2 text-xs text-white/82" data-testid="theme-results-count">
+                <Clock3 className="h-4 w-4 neon-rgb-icon" />
+                {visibleThemes.length} résultat{visibleThemes.length > 1 ? "s" : ""}
+              </div>
+            </div>
 
-                            <div className="flex flex-wrap gap-1.5">
-                              {[theme.variant, theme.mood, theme.finish].map((chip) => (
-                                <span key={`${theme.id}-${chip}`} className="theme-mini-chip">
-                                  {chip}
+            {(["all", "favorites", "recent"] as const).map((currentTab) => (
+              <TabsContent key={currentTab} value={currentTab} className="mt-4 min-h-0 flex-1">
+                <ScrollArea className="h-[48vh] pr-2 md:h-[calc(100vh-28rem)]">
+                  {visibleThemes.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-3 pb-4 xl:grid-cols-3">
+                      {visibleThemes.map((theme) => {
+                        const isActive = theme.id === activeThemeId;
+                        const isFavorite = favorites.includes(theme.id);
+                        return (
+                          <article
+                            key={theme.id}
+                            className={cn("theme-swatch-card", isActive && "theme-swatch-card-active")}
+                            data-testid={`theme-swatch-card-${theme.id}`}
+                            style={{ contentVisibility: "auto", containIntrinsicSize: "240px" }}
+                          >
+                            <div className="theme-swatch-preview" style={{ background: theme.swatch }}>
+                              <span className="theme-swatch-gloss" />
+                              <button
+                                type="button"
+                                onClick={() => handleToggleFavorite(theme.id)}
+                                className={cn("theme-favorite-button", isFavorite && "theme-favorite-button-active")}
+                                aria-label={isFavorite ? `Retirer ${theme.label} des favoris` : `Ajouter ${theme.label} aux favoris`}
+                                data-testid={`theme-favorite-button-${theme.id}`}
+                              >
+                                <Star className={cn("h-4 w-4", isFavorite && "fill-current")} />
+                              </button>
+                              {isActive && (
+                                <span className="theme-active-badge" data-testid={`theme-active-badge-${theme.id}`}>
+                                  <Check className="h-3.5 w-3.5" /> Active
                                 </span>
-                              ))}
+                              )}
                             </div>
 
-                            <Button
-                              type="button"
-                              onClick={() => handleApplyTheme(theme)}
-                              className={cn("w-full rounded-2xl text-sm font-semibold", isActive ? "btn-neon-rainbow" : "theme-apply-button")}
-                              data-testid={`theme-apply-button-${theme.id}`}
-                            >
-                              {isActive ? "Thème actif" : "Appliquer"}
-                            </Button>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="theme-empty-state" data-testid="theme-empty-state">
-                    <Sparkles className="h-6 w-6 neon-rgb-icon" />
-                    <div>
-                      <p className="theme-text-main font-display text-lg font-bold">Aucun thème trouvé</p>
-                      <p className="theme-text-muted mt-1 text-sm">Essayez une autre recherche ou changez d’ambiance.</p>
+                            <div className="flex flex-1 flex-col gap-3 p-3">
+                              <div>
+                                <h4 className="theme-text-main line-clamp-2 font-display text-sm font-bold">{theme.label}</h4>
+                                <p className="theme-text-muted mt-1 text-[11px] uppercase tracking-[0.24em]">
+                                  {theme.family} · {theme.finish}
+                                </p>
+                              </div>
+
+                              <div className="flex flex-wrap gap-1.5">
+                                {[theme.variant, theme.mood, theme.finish].map((chip) => (
+                                  <span key={`${theme.id}-${chip}`} className="theme-mini-chip">
+                                    {chip}
+                                  </span>
+                                ))}
+                              </div>
+
+                              <Button
+                                type="button"
+                                onClick={() => handleApplyTheme(theme)}
+                                className={cn("w-full rounded-2xl text-sm font-semibold", isActive ? "btn-neon-rainbow" : "theme-apply-button")}
+                                data-testid={`theme-apply-button-${theme.id}`}
+                              >
+                                {isActive ? "Thème actif" : "Appliquer"}
+                              </Button>
+                            </div>
+                          </article>
+                        );
+                      })}
                     </div>
-                  </div>
-                )}
-              </ScrollArea>
-            </TabsContent>
-          ))}
-        </Tabs>
+                  ) : (
+                    <div className="theme-empty-state" data-testid="theme-empty-state">
+                      <Sparkles className="h-6 w-6 neon-rgb-icon" />
+                      <div>
+                        <p className="theme-text-main font-display text-lg font-bold">Aucun thème trouvé</p>
+                        <p className="theme-text-muted mt-1 text-sm">Essayez une autre recherche ou changez d’ambiance.</p>
+                      </div>
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
       </div>
     </div>
   );
@@ -769,8 +883,8 @@ export const ThemeBubble = () => {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Ouvrir la Theme Bubble"
-        data-testid="theme-bubble-button"
-        className="theme-orb-button fixed bottom-4 right-4 z-[80] h-14 w-14 rounded-full p-0 md:bottom-6 md:right-6 md:h-16 md:w-16"
+        data-testid="theme-bubble-toggle"
+        className="theme-orb-button fixed bottom-4 left-4 z-[80] h-14 w-14 rounded-full p-0 sm:left-6 md:bottom-6 md:h-16 md:w-16"
       >
         <span className="theme-orb-halo" aria-hidden="true" />
         <span className="theme-orb-core" aria-hidden="true" />

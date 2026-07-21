@@ -154,7 +154,7 @@ export function LocalizedHead() {
     <Helmet>
       <html lang={HREFLANG_MAP[locale]} />
       <title>{title}</title>
-      {!pageOwnsCoreSeo && <meta name="description" content={description} />}
+      {!pageOwnsCoreSeo && <meta name="description" key="localized-description" content={description} />}
       <meta name="keywords" content={KEYWORDS} />
       <meta name="robots" content="index,follow,max-image-preview:large,max-video-preview:-1,max-snippet:-1" />
       <meta name="googlebot" content="index,follow,max-image-preview:large,max-video-preview:-1,max-snippet:-1" />

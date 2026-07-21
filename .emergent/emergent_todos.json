@@ -1,34 +1,14 @@
 [
   {
-    "content": "Auditer les composants globaux à ajuster pour mobile/tablette sur tout le site",
+    "content": "Étape 4 — Supprimer les mentions inutiles et placeholders sur /actualites",
+    "status": "completed"
+  },
+  {
+    "content": "Corriger ensuite les reliquats SEO frontend : JSON-LD Shop + meta description dupliquée",
     "status": "in_progress"
   },
   {
-    "content": "Obtenir des guidelines design responsive/navigation premium pour cette itération",
-    "status": "pending"
-  },
-  {
-    "content": "Mettre à jour le plan pour la phase mobile/tablette + ThemeBubble menu + variations auto + nettoyage",
-    "status": "pending"
-  },
-  {
-    "content": "Optimiser le menu mobile/tablette, les vidéos, cartes et carrousels pour petits écrans",
-    "status": "pending"
-  },
-  {
-    "content": "Étendre la ThemeBubble pour piloter aussi le thème du menu/navigation rapide",
-    "status": "pending"
-  },
-  {
-    "content": "Ajouter des variations automatiques aléatoires sur les zones de capture et certaines sections",
-    "status": "pending"
-  },
-  {
-    "content": "Retirer les mentions inutiles/redondantes sur les pages récentes refaites",
-    "status": "pending"
-  },
-  {
-    "content": "Tester responsive/perf/rendu puis corriger tous les retours",
+    "content": "Lancer lint frontend, vérifications visuelles, testing agent frontend et corriger tous les bugs remontés",
     "status": "pending"
   }
 ]

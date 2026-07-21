@@ -222,7 +222,7 @@ function ArticleBadge({ item }: { item: NewsItem }) {
         {theme.eyebrow}
       </Badge>
       <Badge variant="outline" className="rounded-full border-[var(--theme-border-soft)] bg-[rgba(255,255,255,0.04)] px-3 py-1 text-white/80">
-        {item.source_group || item.source_name || "Source premium"}
+        {item.source_group || item.source_name || "Source éditoriale"}
       </Badge>
       {item.verified && (
         <Badge variant="outline" className="rounded-full border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">
@@ -289,7 +289,7 @@ function NewsRail({ category, items }: { category: string; items: NewsItem[] }) 
   return (
     <section className="space-y-5" data-testid={`news-rail-${category}`}>
       <div
-        className="relative overflow-hidden rounded-[1.8rem] border border-[var(--theme-border-soft)] px-5 py-5 sm:px-6 theme-panel-surface"
+        className="relative overflow-hidden rounded-[1.8rem] border border-[var(--theme-border-soft)] px-4 py-5 sm:px-6 theme-panel-surface"
         style={{ background: `linear-gradient(135deg, ${theme.glow} 0%, rgba(255,255,255,0.03) 52%, rgba(255,255,255,0.01) 100%)` }}
       >
         <div className="absolute inset-y-0 right-0 w-56 opacity-45" style={{ background: `radial-gradient(circle at center, ${theme.glow} 0%, transparent 68%)` }} />
@@ -298,7 +298,7 @@ function NewsRail({ category, items }: { category: string; items: NewsItem[] }) 
             <p className="text-[11px] uppercase tracking-[0.32em] text-white/58">{theme.eyebrow}</p>
             <h2 className="mt-2 font-display text-2xl font-black text-white">{theme.label}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-white/68">
-              Rail premium alimenté automatiquement par les sources publiques les plus pertinentes de cette thématique.
+              Sélection éditoriale mise à jour automatiquement pour cette thématique.
             </p>
           </div>
           <Button asChild variant="glass" className="rounded-full border-white/20 text-white" data-testid={`news-rail-more-${category}`}>
@@ -307,16 +307,16 @@ function NewsRail({ category, items }: { category: string; items: NewsItem[] }) 
         </div>
       </div>
 
-      <Carousel opts={{ align: "start", loop: false }} className="w-full" data-testid={`news-rail-carousel-${category}`}>
+      <Carousel opts={{ align: "start", loop: false }} className="mobile-rail-peek w-full" data-testid={`news-rail-carousel-${category}`}>
         <CarouselContent className="-ml-4">
           {items.map((item) => (
-            <CarouselItem key={`${category}-${item.slug}`} className="pl-4 md:basis-1/2 xl:basis-1/3">
+            <CarouselItem key={`${category}-${item.slug}`} className="basis-[88%] pl-4 sm:basis-[70%] md:basis-1/2 xl:basis-1/3">
               <NewsCard item={item} testId={`news-rail-card-${category}-${item.slug}`} />
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="left-2 top-[42%] border-white/20 bg-[rgba(8,12,24,0.74)] text-white hover:bg-[rgba(8,12,24,0.94)]" />
-        <CarouselNext className="right-2 top-[42%] border-white/20 bg-[rgba(8,12,24,0.74)] text-white hover:bg-[rgba(8,12,24,0.94)]" />
+        <CarouselPrevious className="left-2 top-[42%] hidden border-white/20 bg-[rgba(8,12,24,0.74)] text-white hover:bg-[rgba(8,12,24,0.94)] sm:inline-flex" />
+        <CarouselNext className="right-2 top-[42%] hidden border-white/20 bg-[rgba(8,12,24,0.74)] text-white hover:bg-[rgba(8,12,24,0.94)] sm:inline-flex" />
       </Carousel>
     </section>
   );
@@ -482,8 +482,8 @@ export default function Actualites() {
       <PageShell>
         <Helmet>
           <title>{pageTitle}</title>
-          <meta name="description" content={pageDescription} />
-          <link rel="canonical" href={canonical} />
+          <meta name="description" key="actualites-description" content={pageDescription} />
+          <link rel="canonical" key="actualites-canonical" href={canonical} />
         </Helmet>
         <LoadingSkeleton />
       </PageShell>
@@ -496,9 +496,9 @@ export default function Actualites() {
       <PageShell>
         <Helmet>
           <title>{pageTitle}</title>
-          <meta name="description" content={pageDescription} />
+          <meta name="description" key="actualites-description" content={pageDescription} />
           <meta name="robots" content="index,follow,max-image-preview:large,max-video-preview:-1,max-snippet:-1" />
-          <link rel="canonical" href={canonical} />
+          <link rel="canonical" key="actualites-canonical" href={canonical} />
           <meta property="og:type" content="article" />
           <meta property="og:title" content={pageTitle} />
           <meta property="og:description" content={pageDescription} />
@@ -510,7 +510,7 @@ export default function Actualites() {
         <section className="container mx-auto space-y-8 px-4 py-10 lg:px-8" data-testid="actualites-detail-page">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Button asChild variant="glass" className="rounded-full text-white" data-testid="actualites-back-button">
-              <Link to="/actualites">Retour au magazine premium</Link>
+              <Link to="/actualites">Retour aux actualités</Link>
             </Button>
             <Button type="button" variant="outline" className="rounded-full text-white" onClick={handleSync} data-testid="actualites-detail-sync-button">
               <RefreshCcw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} /> Mettre à jour les flux
@@ -580,7 +580,7 @@ export default function Actualites() {
                   </a>
                 </Button>
                 <Button asChild variant="glass" className="rounded-full text-white" data-testid="actualites-detail-back-link">
-                  <Link to="/actualites">Retour aux flux premium</Link>
+                  <Link to="/actualites">Retour aux actualités</Link>
                 </Button>
               </div>
             </article>
@@ -623,7 +623,7 @@ export default function Actualites() {
             <section className="space-y-5" data-testid="actualites-detail-related-rail">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.32em] text-white/50">Lecture associée</p>
-                <h2 className="mt-2 font-display text-3xl font-black text-white">Autres flux premium à lire</h2>
+                <h2 className="mt-2 font-display text-3xl font-black text-white">À lire ensuite</h2>
               </div>
               <Carousel opts={{ align: "start" }} className="w-full">
                 <CarouselContent className="-ml-4">
@@ -648,13 +648,13 @@ export default function Actualites() {
       <PageShell>
         <Helmet>
           <title>{pageTitle}</title>
-          <meta name="description" content={pageDescription} />
-          <link rel="canonical" href={canonical} />
+          <meta name="description" key="actualites-description" content={pageDescription} />
+          <link rel="canonical" key="actualites-canonical" href={canonical} />
         </Helmet>
         <section className="container mx-auto px-4 py-12 lg:px-8" data-testid="actualites-error-state">
           <Card className="theme-panel-surface rounded-[2rem] border border-[var(--theme-border-soft)] bg-transparent text-white">
             <CardContent className="space-y-4 p-8">
-              <p className="text-[11px] uppercase tracking-[0.32em] text-white/52">Actualités premium</p>
+              <p className="text-[11px] uppercase tracking-[0.32em] text-white/52">Actualités</p>
               <h1 className="font-display text-3xl font-black">Flux indisponible temporairement</h1>
               <p className="max-w-2xl text-white/70">{error || "Le chargement des actualités réelles a échoué. Réessayez ou relancez une synchronisation des flux."}</p>
               <div className="flex flex-wrap gap-3">
@@ -673,10 +673,10 @@ export default function Actualites() {
     <PageShell>
       <Helmet>
         <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
+        <meta name="description" key="actualites-description" content={pageDescription} />
         <meta name="robots" content="index,follow,max-image-preview:large,max-video-preview:-1,max-snippet:-1" />
         <meta name="news_keywords" content="anime, manga, streaming, gaming, pop culture japonaise, actualités premium" />
-        <link rel="canonical" href={canonical} />
+        <link rel="canonical" key="actualites-canonical" href={canonical} />
         <link rel="alternate" type="application/rss+xml" href={`${PRIMARY_SITE}/rss.xml`} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={pageTitle} />
@@ -686,27 +686,18 @@ export default function Actualites() {
         {collectionLd && <script type="application/ld+json">{JSON.stringify(collectionLd)}</script>}
       </Helmet>
 
-      <section className="container mx-auto space-y-8 px-4 py-10 lg:px-8" data-testid="actualites-page">
+      <section className="container mx-auto space-y-6 px-4 py-8 sm:space-y-8 sm:py-10 lg:px-8" data-testid="actualites-page">
         <header className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-5 sm:p-7 lg:p-9" data-testid="actualites-premium-hero">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_18%,rgba(244,114,182,0.16),transparent_24%),radial-gradient(circle_at_82%_16%,rgba(56,189,248,0.16),transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.03),transparent_42%)]" />
-          <div className="relative grid gap-6 xl:grid-cols-[1.1fr_.9fr] xl:items-stretch">
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge className="rounded-full border border-white/15 bg-white/[0.08] px-4 py-1 text-[11px] uppercase tracking-[0.28em] text-white/88 backdrop-blur-xl">
-                  <Newspaper className="mr-2 h-3.5 w-3.5" /> Magazine premium
-                </Badge>
-                <Badge variant="outline" className="rounded-full border-[var(--theme-border-soft)] bg-[rgba(255,255,255,0.04)] px-4 py-1 text-white/72">
-                  Vraies sources · auto-refresh 5 min
-                </Badge>
-              </div>
-
+          <div className="relative grid gap-5 xl:grid-cols-[1.1fr_.9fr] xl:items-stretch">
+            <div className="space-y-4 sm:space-y-5">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.34em] text-white/46">Anime · Manga · Streaming · Gaming · Pop-culture JP</p>
-                <h1 className="mt-4 max-w-4xl font-display text-4xl font-black leading-[0.95] text-white md:text-5xl xl:text-6xl" data-testid="actualites-page-title">
-                  La nouvelle salle de rédaction premium Lovanet, alimentée par de vraies informations.
+                <p className="text-[11px] uppercase tracking-[0.28em] text-white/46">Anime · Manga · Streaming · Gaming · Pop-culture JP</p>
+                <h1 className="mt-3 max-w-4xl font-display text-3xl font-black leading-[1.02] text-white sm:text-4xl md:text-5xl xl:text-6xl" data-testid="actualites-page-title">
+                  Actualités anime, manga et streaming en direct.
                 </h1>
-                <p className="mt-5 max-w-3xl text-base leading-8 text-white/72" data-testid="actualites-page-description">
-                  Une expérience éditoriale premium, plus avancée que l’univers Lovanet actuel, avec flux réels, carrousels thématiques, bannières animées, widgets sophistiqués et publication automatique depuis des sources publiques fiables.
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-white/72 sm:text-base" data-testid="actualites-page-description">
+                  Sources publiques vérifiées, mises à jour régulières, tendances fortes et lecture rapide pensée pour mobile comme desktop.
                 </p>
               </div>
 
@@ -715,21 +706,21 @@ export default function Actualites() {
                   <CardContent className="p-4">
                     <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Sources actives</p>
                     <p className="mt-2 font-display text-3xl font-black">{sourceOptions.length}</p>
-                    <p className="mt-1 text-sm text-white/62">Éditorial + API + RSS publics</p>
+                    <p className="mt-1 text-sm text-white/62">Réseau éditorial en temps réel</p>
                   </CardContent>
                 </Card>
                 <Card className="theme-subpanel border-none bg-transparent text-white" data-testid="actualites-metric-featured">
                   <CardContent className="p-4">
                     <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">À la une</p>
                     <p className="mt-2 font-display text-3xl font-black">{home.featured.length}</p>
-                    <p className="mt-1 text-sm text-white/62">Sélection premium dynamique</p>
+                    <p className="mt-1 text-sm text-white/62">Une sélection dynamique</p>
                   </CardContent>
                 </Card>
                 <Card className="theme-subpanel border-none bg-transparent text-white" data-testid="actualites-metric-updated">
                   <CardContent className="p-4">
                     <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Dernière synchro</p>
                     <p className="mt-2 font-display text-xl font-black">{formatDate(home.updated_at)}</p>
-                    <p className="mt-1 text-sm text-white/62">Cycle automatique toutes les 5 minutes</p>
+                    <p className="mt-1 text-sm text-white/62">Rafraîchissement automatique</p>
                   </CardContent>
                 </Card>
               </div>
@@ -739,14 +730,14 @@ export default function Actualites() {
                   <RefreshCcw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} /> Actualiser les flux
                 </Button>
                 <Button asChild variant="glass" className="rounded-full text-white" data-testid="actualites-scroll-trending-button">
-                  <a href="#actualites-trending">Voir les tendances premium</a>
+                  <a href="#actualites-trending">Voir les tendances</a>
                 </Button>
               </div>
             </div>
 
             <div className="grid gap-4 xl:grid-rows-[1fr_1fr]">
               <NewsCard item={topHero} priority testId={`actualites-hero-card-${topHero.slug}`} />
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
                 {sideHero.map((item) => (
                   <NewsCard key={item.slug} item={item} testId={`actualites-side-hero-card-${item.slug}`} />
                 ))}
@@ -758,7 +749,7 @@ export default function Actualites() {
         <section className="theme-panel-surface overflow-hidden rounded-[1.7rem] border border-[var(--theme-border-soft)] bg-transparent px-4 py-4 sm:px-5" data-testid="actualites-live-ticker">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="inline-flex min-h-[42px] items-center rounded-full border border-white/15 bg-white/[0.06] px-4 text-sm font-semibold text-white/88 backdrop-blur-xl">
-              <TrendingUp className="mr-2 h-4 w-4 text-[var(--theme-link)]" /> Ticker premium live
+              <TrendingUp className="mr-2 h-4 w-4 text-[var(--theme-link)]" /> Fil en direct
             </div>
             <div className="marquee-viewport relative flex-1 overflow-hidden">
               <div className="marquee-track gap-3 [--marquee-duration:44s]">
@@ -781,7 +772,7 @@ export default function Actualites() {
         <section className="grid gap-6 xl:grid-cols-[1fr_.4fr]" id="actualites-trending">
           <div className="space-y-6">
             <Card className="theme-panel-surface rounded-[1.8rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="actualites-filter-panel">
-              <CardContent className="grid gap-4 p-5 md:grid-cols-[1.2fr_.7fr_.7fr_.7fr_auto] md:items-center">
+              <CardContent className="grid gap-4 p-4 sm:p-5 md:grid-cols-[1.2fr_.7fr_.7fr_.7fr_auto] md:items-center">
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/44" />
                   <Input
@@ -834,7 +825,7 @@ export default function Actualites() {
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.32em] text-white/50">Bento éditorial</p>
-                    <h2 className="mt-2 font-display text-3xl font-black text-white">Tendances & couvertures premium</h2>
+                    <h2 className="mt-2 font-display text-3xl font-black text-white">Tendances & couvertures</h2>
                   </div>
                   <Badge variant="outline" className="rounded-full border-[var(--theme-border-soft)] bg-[rgba(255,255,255,0.04)] px-4 py-2 text-white/72">
                     {listing.total} articles indexés
@@ -930,12 +921,12 @@ export default function Actualites() {
 
             <Card className="theme-panel-surface rounded-[1.8rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="actualites-insight-widget">
               <CardContent className="space-y-4 p-5 sm:p-6">
-                <p className="text-[11px] uppercase tracking-[0.32em] text-white/50">Insight premium</p>
-                <h2 className="font-display text-2xl font-black">Pourquoi cette page est différente</h2>
+                <p className="text-[11px] uppercase tracking-[0.32em] text-white/50">Repère éditorial</p>
+                <h2 className="font-display text-2xl font-black">Pourquoi cette page se démarque</h2>
                 <ul className="space-y-3 text-sm leading-7 text-white/70">
-                  <li>• Contenu provenant de flux publics réels et d’APIs publiques.</li>
-                  <li>• Déduplication, scoring de tendance et hiérarchisation par source.</li>
-                  <li>• Sections spécialisées pour l’anime, le manga, le streaming, le gaming et la culture pop japonaise.</li>
+                  <li>• Sources publiques suivies et centralisées.</li>
+                  <li>• Priorisation par fraîcheur, tendance et pertinence.</li>
+                  <li>• Parcours éditorial spécialisé anime, manga, streaming et culture pop japonaise.</li>
                 </ul>
               </CardContent>
             </Card>

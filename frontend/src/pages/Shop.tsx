@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { PageShell } from "@/components/PageShell";
 import { HubEmbedFrame } from "@/components/HubEmbedFrame";
 import { Button } from "@/components/ui/button";
@@ -155,67 +156,75 @@ const Shop = () => {
     saveHiddenIds(next);
   };
 
-  useEffect(() => {
+  const shopStructuredData = useMemo(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://lovanet.fr";
     const fallbackImage = `${origin}/lovanet-og.svg`;
-    const ld = {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      name: "Boutique AnimemomentsAnimeofficiel",
-      numberOfItems: uniqueProducts.length,
-      itemListElement: uniqueProducts.slice(0, 200).map((p, i) => {
-        const ratingValue = Number((p.rating ?? 4.7).toFixed(1));
-        const reviewCount = p.reviews ?? Math.max(12, Math.round((p.sold ?? 100) / 4));
-        const productImage = p.id.startsWith("am-") ? `${origin}/products/${p.id}.svg` : fallbackImage;
 
-        return {
-          "@type": "ListItem",
-          position: i + 1,
-          item: {
-            "@type": "Product",
-            "@id": `${origin}/shop#${p.id}`,
-            sku: p.id,
-            name: p.name,
-            description: p.description,
-            category: categoryLabel(p.category),
-            brand: { "@type": "Brand", name: p.brand ?? "AnimemomentsAnimeofficiel" },
-            image: productImage,
-            url: `${origin}/shop#${p.id}`,
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue,
-              reviewCount,
-              ratingCount: reviewCount,
-              bestRating: 5,
-            },
-            review: [
-              {
-                "@type": "Review",
-                name: `Avis client ${p.name}`,
-                reviewBody: p.description,
-                reviewRating: { "@type": "Rating", ratingValue, bestRating: 5 },
-                author: { "@type": "Organization", name: "Lovanet" },
-                publisher: { "@type": "Organization", name: "Lovanet" },
-              },
-            ],
-            offers: {
-              "@type": "Offer",
-              priceCurrency: "EUR",
-              price: p.price.toFixed(2),
-              availability: "https://schema.org/InStock",
-              url: `${origin}/shop#${p.id}`,
-            },
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          name: "Boutique AnimemomentsAnimeofficiel",
+          url: `${origin}/shop`,
+          description: "Boutique Lovanet avec produits anime, manga et culture pop japonaise.",
+          mainEntity: {
+            "@id": `${origin}/shop#item-list`,
           },
-        };
-      }),
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${origin}/shop#item-list`,
+          name: "Boutique AnimemomentsAnimeofficiel",
+          numberOfItems: uniqueProducts.length,
+          itemListElement: uniqueProducts.slice(0, 200).map((p, i) => {
+            const ratingValue = Number((p.rating ?? 4.7).toFixed(1));
+            const reviewCount = p.reviews ?? Math.max(12, Math.round((p.sold ?? 100) / 4));
+            const productImage = p.id.startsWith("am-") ? `${origin}/products/${p.id}.svg` : fallbackImage;
+
+            return {
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Product",
+                "@id": `${origin}/shop#${p.id}`,
+                sku: p.id,
+                name: p.name,
+                description: p.description,
+                category: categoryLabel(p.category),
+                brand: { "@type": "Brand", name: p.brand ?? "AnimemomentsAnimeofficiel" },
+                image: productImage,
+                url: `${origin}/shop#${p.id}`,
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: `${ratingValue}`,
+                  reviewCount: `${reviewCount}`,
+                  ratingCount: `${reviewCount}`,
+                  bestRating: "5",
+                },
+                review: [
+                  {
+                    "@type": "Review",
+                    name: `Avis client ${p.name}`,
+                    reviewBody: p.description,
+                    reviewRating: { "@type": "Rating", ratingValue: `${ratingValue}`, bestRating: "5" },
+                    author: { "@type": "Organization", name: "Lovanet" },
+                    publisher: { "@type": "Organization", name: "Lovanet" },
+                  },
+                ],
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "EUR",
+                  price: p.price.toFixed(2),
+                  availability: "https://schema.org/InStock",
+                  url: `${origin}/shop#${p.id}`,
+                },
+              },
+            };
+          }),
+        },
+      ],
     };
-    const tag = document.createElement("script");
-    tag.type = "application/ld+json"; tag.id = "shop-itemlist-jsonld"; tag.textContent = JSON.stringify(ld);
-    document.getElementById("shop-itemlist-jsonld")?.remove();
-    document.head.appendChild(tag);
-    const prev = document.title;
-    document.title = "Boutique — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel";
-    return () => { tag.remove(); document.title = prev; };
   }, [uniqueProducts]);
 
   const addToCart = (p: ShopProduct) => {
@@ -225,6 +234,10 @@ const Shop = () => {
 
   return (
     <PageShell>
+      <Helmet>
+        <title>Boutique — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel</title>
+        <script type="application/ld+json">{JSON.stringify(shopStructuredData)}</script>
+      </Helmet>
       <section className="container mx-auto px-3 sm:px-4 lg:px-8 pt-6 sm:pt-8 pb-5" data-testid="shop-train-station-hub-section">
         <HubEmbedFrame
           src="/hub/train-station"

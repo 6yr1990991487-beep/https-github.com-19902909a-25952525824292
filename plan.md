@@ -196,3 +196,43 @@
 - La landing `/` n’affiche plus la vidéo du bas.
 - Le frontend compile et passe les vérifications visuelles + testing agent.
 - Les régressions sur l’esthétique transparente RGB néon restent nulles ou minimales.
+
+
+### Phase 13 — Responsive mobile/tablette + ThemeBubble navigation + variations captures + nettoyage éditorial + reliquats SEO ⏳ IN PROGRESS
+
+#### Phase 13.1 — Responsive mobile/tablette global ⏳ TODO
+- Revoir Navbar, RootLandingPage et Actualites pour mobile/tablette.
+- Garantir touch targets 44px+, meilleure respiration, hauteurs médias maîtrisées et navigation plus fluide.
+- Préserver l’esthétique RGB néon transparente existante.
+
+#### Phase 13.2 — ThemeBubble + thème du menu de navigation ⏳ TODO
+- Décaler la bulle flottante hors du bord gauche selon la guideline (left-4 / sm:left-6, bottom-4).
+- Ajouter une section dédiée pour appliquer un thème dérivé à la navigation rapide et au menu.
+- Définir/consommer les variables CSS `--nav-theme-*` et previews associées.
+
+#### Phase 13.3 — Variations automatiques des zones de capture ⏳ TODO
+- Ajouter des variations automatiques douces sur RootLandingPage (accent RGB, overlays, ordre mini-cards).
+- Respecter `prefers-reduced-motion` et éviter tout jank.
+
+#### Phase 13.4 — Nettoyage éditorial Actualités ⏳ TODO
+- Supprimer les mentions marketing/dummy text (ex: « Magazine premium », « Vraies sources… », etc.).
+- Remplacer par une micro-copie éditoriale plus courte et plus crédible.
+
+#### Phase 13.5 — Correctifs SEO frontend finaux ⏳ TODO
+- Corriger définitivement le JSON-LD `/shop` avec `aggregateRating` et `review` lisibles par Google.
+- Supprimer le doublon de `meta description` sur `/actualites` / `LocalizedHead`.
+
+#### Phase 13.6 — Validation frontend complète ⏳ TODO
+- Lint frontend.
+- Vérifications visuelles desktop/mobile.
+- Testing agent frontend obligatoire puis correction de tous les retours avant clôture.
+
+---
+
+## 5) Current Execution Order (validé utilisateur)
+1) Mobile/tablette sur tout le site
+2) ThemeBubble + thème du menu de navigation
+3) Variations automatiques des zones de capture
+4) Nettoyage des mentions inutiles sur `/actualites`
+5) Correctifs SEO frontend restants
+6) Lint + tests + corrections

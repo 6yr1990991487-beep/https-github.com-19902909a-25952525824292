@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX, Sparkles, Layers3, Palette } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
@@ -69,6 +69,12 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
+const captureVariants = [
+  { key: "cyan-shift", accent: "var(--theme-neon-a)", accentSecondary: "var(--theme-neon-b)", glow: "rgba(56,189,248,0.18)" },
+  { key: "magenta-shift", accent: "var(--theme-neon-b)", accentSecondary: "var(--theme-neon-c)", glow: "rgba(244,114,182,0.18)" },
+  { key: "violet-shift", accent: "var(--theme-neon-c)", accentSecondary: "var(--theme-neon-a)", glow: "rgba(168,85,247,0.18)" },
+];
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
   rotatingPortalDestinations[(slotIndex + rotationIndex) % rotatingPortalDestinations.length];
@@ -76,13 +82,33 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [videoMuted, setVideoMuted] = useState(true);
+  const [captureVariantIndex, setCaptureVariantIndex] = useState(0);
+  const [captureLayoutSeed, setCaptureLayoutSeed] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const portalVideoRef = useRef(null);
 
   useEffect(() => {
-    const id = window.setInterval(() => {
+    const media = window.matchMedia(reducedMotionQuery);
+    const syncReduced = () => setReducedMotion(media.matches);
+    syncReduced();
+    media.addEventListener?.("change", syncReduced);
+
+    const rotationId = window.setInterval(() => {
       setRotationIndex((value) => (value + 1) % rotatingPortalDestinations.length);
     }, portalRotationIntervalMs);
-    return () => window.clearInterval(id);
+
+    const captureId = media.matches
+      ? null
+      : window.setInterval(() => {
+          setCaptureVariantIndex((value) => (value + 1) % captureVariants.length);
+          setCaptureLayoutSeed((value) => (value + 1) % 4);
+        }, 14500);
+
+    return () => {
+      window.clearInterval(rotationId);
+      if (captureId) window.clearInterval(captureId);
+      media.removeEventListener?.("change", syncReduced);
+    };
   }, []);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
@@ -92,6 +118,19 @@ export default function RootLandingPage() {
   const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
   const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
+  const captureVariant = useMemo(() => captureVariants[captureVariantIndex % captureVariants.length], [captureVariantIndex]);
+  const captureDeckItems = useMemo(() => {
+    const entries = [
+      { key: "primary", title: heroPrimary.label, subtitle: "Accès premium", icon: Sparkles, to: heroPrimary.to },
+      { key: "secondary", title: heroSecondary.label, subtitle: "Navigation rapide", icon: Layers3, to: heroSecondary.to },
+      { key: "news", title: heroNews.label, subtitle: "Focus éditorial", icon: Newspaper, to: heroNews.to },
+      { key: "video", title: featuredVideoAction.label, subtitle: "Vidéo immersive", icon: Play, to: featuredVideoAction.to },
+      { key: "color", title: newsAction.label, subtitle: "Pulse RGB", icon: Palette, to: newsAction.to },
+    ];
+    if (reducedMotion) return entries.slice(0, 4);
+    const shift = captureLayoutSeed % entries.length;
+    return entries.slice(shift).concat(entries.slice(0, shift)).slice(0, 4);
+  }, [heroPrimary, heroSecondary, heroNews, featuredVideoAction, newsAction, captureLayoutSeed, reducedMotion]);
 
   return (
     <PageShell>
@@ -102,13 +141,13 @@ export default function RootLandingPage() {
       <div className="relative overflow-hidden" data-testid="root-landing-page">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_20%)]" />
 
-        <section className="mx-auto w-full max-w-6xl px-4 pb-14 pt-10 sm:px-6 sm:pb-18 sm:pt-14 lg:px-8 lg:pb-24 lg:pt-20">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
+        <section className="mx-auto w-full max-w-6xl px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8 lg:pb-24 lg:pt-20">
+          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div className="relative grid items-center gap-8 lg:grid-cols-[1.02fr_0.98fr]">
-              <div className="space-y-6" data-testid="root-landing-hero-content">
+            <div className="relative grid items-center gap-6 lg:grid-cols-[1.02fr_0.98fr] xl:gap-8">
+              <div className="space-y-5 sm:space-y-6" data-testid="root-landing-hero-content">
                 <div className="space-y-4">
                   <div className="h-3 w-28 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" data-testid="home-hero-badge-placeholder" />
                   <div className="flex flex-col gap-3" data-testid="home-hero-title-placeholder">
@@ -153,49 +192,94 @@ export default function RootLandingPage() {
               </div>
 
               <div className="grid gap-4" data-testid="root-landing-hero-visual">
-                <div className="rgb-neon relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05]" data-testid="home-hero-zone-replacement-player">
-                  <div className="pointer-events-none absolute left-5 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
-                  <div className="pointer-events-none absolute left-5 top-10 z-10 h-12 w-56 max-w-[65%] rounded-[1.35rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
-                  <video
-                    ref={portalVideoRef}
-                    className="h-[520px] w-full object-cover object-[48%_50%] scale-[1.02]"
-                    src={rootCaptureZoneVideo}
-                    autoPlay
-                    muted={videoMuted}
-                    loop
-                    playsInline
-                    preload="auto"
-                    data-testid="home-hero-zone-replacement-video"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
-                  <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-                  <div className="pointer-events-none absolute inset-0 opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.18),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.16),transparent_24%)] animate-pulse-glow" />
-                  <div className="absolute left-5 top-[5.25rem] z-10 flex max-w-[92%] flex-wrap gap-3">
-                    <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-link-news">
-                      <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                    <Link to={heroNews.to} className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-link-shop">
-                      <span key={`hero-news-overlay-${heroNews.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                    <Link to="/prime-video" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-prime-link">
-                      Prime Vidéo <ArrowRight className="h-4 w-4" />
-                    </Link>
-                    <Link to="/tiktok" className="btn-neon-rainbow inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white" data-testid="home-hero-video-tiktok-link">
-                      TikTok <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                  <div className="absolute bottom-4 right-4 z-10 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setVideoMuted((value) => !value)}
-                      className="rgb-pill inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
-                      data-testid="home-hero-video-mute-button"
-                    >
-                      {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
-                      {videoMuted ? "Muet" : "Son"}
-                    </button>
+                <div
+                  className="capture-deck-shell rgb-neon relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05] p-3 sm:p-4"
+                  data-testid="capture-deck"
+                  style={{ "--capture-accent": captureVariant.accent, "--capture-accent-secondary": captureVariant.accentSecondary }}
+                >
+                  <div className="grid gap-4 md:grid-cols-12">
+                    <div className="md:col-span-7">
+                      <div className="relative overflow-hidden rounded-[1.7rem] border border-white/12 bg-white/[0.04]" data-testid="home-hero-zone-replacement-player">
+                        <div className="pointer-events-none absolute left-4 top-4 z-10 h-3 w-14 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" />
+                        <div className="pointer-events-none absolute left-4 top-10 z-10 h-12 w-48 max-w-[70%] rounded-[1.2rem] border border-white/10 bg-white/[0.04] backdrop-blur-xl" />
+                        <video
+                          ref={portalVideoRef}
+                          className="mobile-safe-video w-full object-cover object-[48%_50%] scale-[1.02]"
+                          src={rootCaptureZoneVideo}
+                          autoPlay
+                          muted={videoMuted}
+                          loop
+                          playsInline
+                          preload="metadata"
+                          data-testid="home-hero-zone-replacement-video"
+                        />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/46 via-transparent to-black/12" />
+                        <div className={reducedMotion ? "pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.12)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.08)_74%,transparent_88%)]" : "pointer-events-none absolute inset-0 opacity-25 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.22)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.18)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]"} />
+                        <div className="pointer-events-none absolute inset-0 opacity-18" style={{ background: `radial-gradient(circle at 18% 30%, ${captureVariant.glow}, transparent 26%), radial-gradient(circle at 82% 28%, color-mix(in srgb, ${captureVariant.accentSecondary} 18%, transparent), transparent 24%)` }} />
+                        <div className="absolute left-4 right-4 top-[5.2rem] z-10 flex max-w-[92%] flex-wrap gap-2 sm:gap-3">
+                          <Link to={heroSecondary.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-news">
+                            <span key={`hero-secondary-overlay-${heroSecondary.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroSecondary.label}</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                          <Link to={heroNews.to} className="btn-neon-rainbow inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-white" data-testid="home-hero-link-shop">
+                            <span key={`hero-news-overlay-${heroNews.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{heroNews.label}</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        </div>
+                        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex flex-wrap gap-2">
+                            <Link to="/prime-video" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-prime-link">
+                              Prime Vidéo <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <Link to="/tiktok" className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white" data-testid="home-hero-video-tiktok-link">
+                              TikTok <ArrowRight className="h-4 w-4" />
+                            </Link>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setVideoMuted((value) => !value)}
+                            className="rgb-pill inline-flex min-h-[44px] items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white backdrop-blur-xl"
+                            data-testid="home-hero-video-mute-button"
+                          >
+                            {videoMuted ? <VolumeX className="h-4 w-4 neon-rgb-icon" /> : <Volume2 className="h-4 w-4 neon-rgb-icon" />}
+                            {videoMuted ? "Muet" : "Son"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 md:col-span-5">
+                      <div className="capture-preview-chip relative overflow-hidden rounded-[1.5rem] p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-[11px] uppercase tracking-[0.24em] text-white/52">Capture deck</p>
+                            <h3 className="mt-2 font-display text-xl font-black text-white">Variations douces</h3>
+                          </div>
+                          <span className="rgb-pill inline-flex min-h-[36px] items-center rounded-full px-3 py-2 text-[11px] font-semibold text-white">{captureVariant.key.replace("-", " ")}</span>
+                        </div>
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-1">
+                          {captureDeckItems.map((item, index) => {
+                            const Icon = item.icon;
+                            return (
+                              <Link
+                                key={`${item.key}-${item.to}-${captureLayoutSeed}-${index}`}
+                                to={item.to}
+                                className="capture-preview-chip relative flex min-h-[88px] items-center gap-3 rounded-[1.2rem] px-4 py-3 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-white/25 hover:shadow-[0_18px_40px_-28px_rgba(0,0,0,0.68)]"
+                                data-testid={`capture-preview-card-${index + 1}`}
+                              >
+                                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+                                  <Icon className="h-4 w-4" />
+                                </span>
+                                <span className="min-w-0">
+                                  <span className="block text-[11px] uppercase tracking-[0.22em] text-white/48">{item.subtitle}</span>
+                                  <span className="mt-1 block text-sm font-semibold text-white">{item.title}</span>
+                                </span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -204,7 +288,7 @@ export default function RootLandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-quick-portal-section">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
+          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="relative">
@@ -238,7 +322,7 @@ export default function RootLandingPage() {
                               <ArrowRight className="h-4 w-4 neon-rgb-icon transition-transform duration-300 group-hover:translate-x-1" />
                             </span>
                           </CardContent>
-                          <div className="relative min-h-[250px] overflow-hidden">
+                          <div className="relative min-h-[220px] overflow-hidden sm:min-h-[250px]">
                             <img src={card.image} alt={card.action.label} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                             <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-black/72" />
                           </div>
@@ -253,11 +337,11 @@ export default function RootLandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-platforms-section">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
+          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="relative">
-              <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-48 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)]" data-testid="home-platforms-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-platforms-button">
                   <Link to={heroSecondary.to}>
@@ -268,7 +352,7 @@ export default function RootLandingPage() {
                   </Link>
                 </Button>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {platformEntries.map((card, index) => {
                   const Icon = card.action.icon;
                   return (
@@ -293,7 +377,7 @@ export default function RootLandingPage() {
                 <div className="pointer-events-none absolute inset-0 z-[1] opacity-22 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.2)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.16)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
                 <div className="pointer-events-none absolute inset-0 z-[1] opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.16),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.15),transparent_24%)] animate-pulse-glow" />
                 <video
-                  className="h-[520px] w-full object-cover"
+                  className="mobile-safe-video w-full object-cover"
                   src={portalButtonsZoneVideo}
                   autoPlay
                   muted
@@ -308,7 +392,7 @@ export default function RootLandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-featured-videos-section">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
+          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="relative">
@@ -334,11 +418,11 @@ export default function RootLandingPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-news-preview-section">
-          <div className={`${luxurySection} p-6 sm:p-8 lg:p-10`}>
+          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="relative">
-              <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-44 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(232,121,249,0.1)]" data-testid="home-news-preview-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-news-preview-button">
                   <Link to={newsAction.to}>
