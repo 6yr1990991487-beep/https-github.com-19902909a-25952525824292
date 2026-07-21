@@ -1,42 +1,34 @@
 [
   {
-    "content": "Auditer l’existant frontend/backend de la page Actualités et des flux",
-    "status": "completed"
-  },
-  {
-    "content": "Rechercher les sources publiques/RSS/API fiables pour actualités anime/manga/streaming/jeux/culture pop",
-    "status": "completed"
-  },
-  {
-    "content": "Obtenir des guidelines design premium dédiées à la nouvelle page Actualités",
-    "status": "completed"
-  },
-  {
-    "content": "Mettre à jour le plan de refonte Actualités premium + backend auto complet",
-    "status": "completed"
-  },
-  {
-    "content": "Implémenter le backend d’agrégation automatique des vraies sources",
-    "status": "completed"
-  },
-  {
-    "content": "Corriger les imports/backend lint bloquants pour le module news",
-    "status": "completed"
-  },
-  {
-    "content": "Tester les sources news réelles et ajuster la base de sources si nécessaire",
-    "status": "completed"
-  },
-  {
-    "content": "Refondre la page Actualités avec sections premium, carrousels, widgets et bannières animées",
-    "status": "completed"
-  },
-  {
-    "content": "Corriger la fiabilité visuelle des images externes via proxy sécurisé",
-    "status": "completed"
-  },
-  {
-    "content": "Tester la nouvelle page Actualités et corriger tous les retours",
+    "content": "Auditer les composants globaux à ajuster pour mobile/tablette sur tout le site",
     "status": "in_progress"
+  },
+  {
+    "content": "Obtenir des guidelines design responsive/navigation premium pour cette itération",
+    "status": "pending"
+  },
+  {
+    "content": "Mettre à jour le plan pour la phase mobile/tablette + ThemeBubble menu + variations auto + nettoyage",
+    "status": "pending"
+  },
+  {
+    "content": "Optimiser le menu mobile/tablette, les vidéos, cartes et carrousels pour petits écrans",
+    "status": "pending"
+  },
+  {
+    "content": "Étendre la ThemeBubble pour piloter aussi le thème du menu/navigation rapide",
+    "status": "pending"
+  },
+  {
+    "content": "Ajouter des variations automatiques aléatoires sur les zones de capture et certaines sections",
+    "status": "pending"
+  },
+  {
+    "content": "Retirer les mentions inutiles/redondantes sur les pages récentes refaites",
+    "status": "pending"
+  },
+  {
+    "content": "Tester responsive/perf/rendu puis corriger tous les retours",
+    "status": "pending"
   }
 ]
