@@ -122,15 +122,6 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
             <div className="relative grid items-center gap-6 lg:grid-cols-[1.02fr_0.98fr] xl:gap-8">
               <div className="space-y-5 sm:space-y-6" data-testid="root-landing-hero-content">
-                <div className="space-y-4">
-                  <div className="h-3 w-28 rounded-full border border-white/15 bg-white/[0.05] backdrop-blur-xl" data-testid="home-hero-badge-placeholder" />
-                  <div className="flex flex-col gap-3" data-testid="home-hero-title-placeholder">
-                    <div className="h-16 max-w-[22rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(232,121,249,0.12)] sm:h-20" />
-                    <div className="h-16 max-w-[18rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(34,211,238,0.12)] sm:h-20" />
-                    <div className="h-16 max-w-[20rem] rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_28px_rgba(232,121,249,0.12)] sm:h-20" />
-                  </div>
-                </div>
-
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                   <Button asChild size="lg" className="btn-neon-rainbow min-h-[50px] rounded-full px-8 text-sm font-semibold text-white" data-testid="home-hero-primary-cta-button">
                     <Link to={heroPrimary.to}>

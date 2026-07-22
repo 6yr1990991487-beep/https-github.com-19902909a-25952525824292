@@ -1,14 +1,14 @@
 [
   {
-    "content": "Réadapter le format de l’ancienne vidéo pour qu’elle ne soit plus verticale et maximiser l’espace des deux vidéos",
-    "status": "in_progress"
+    "content": "Supprimer les 4 champs sombres de la bannière dans le code preview",
+    "status": "completed"
   },
   {
-    "content": "Conserver le placement général validé et seulement optimiser dimensions/cadrage",
-    "status": "pending"
+    "content": "Vérifier visuellement le rendu corrigé sur preview",
+    "status": "completed"
   },
   {
-    "content": "Vérifier visuellement le nouveau rendu des deux vidéos",
-    "status": "pending"
+    "content": "Informer l’utilisateur qu’un redéploiement sera nécessaire pour appliquer le correctif en production",
+    "status": "completed"
   }
 ]
