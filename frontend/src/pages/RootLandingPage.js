@@ -362,7 +362,7 @@ export default function RootLandingPage() {
                           </CardContent>
                           <div className="relative min-h-[220px] overflow-hidden sm:min-h-[250px]" data-testid={`${card.testId}-preview-video-shell`}>
                             <video
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              className="portal-card-neutral-video h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                               src={card.video}
                               autoPlay
                               muted
@@ -371,7 +371,7 @@ export default function RootLandingPage() {
                               preload="metadata"
                               data-testid={`${card.testId}-preview-video`}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-black/72" />
+                            <div className="absolute inset-0 bg-gradient-to-l from-black/28 via-black/40 to-black/78" />
                           </div>
                         </div>
                       </Card>
@@ -385,7 +385,7 @@ export default function RootLandingPage() {
 
         <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-platforms-section">
           <div className={`${luxurySection} home-platforms-neutral-shell p-5 sm:p-7 lg:p-10`}>
-            <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[linear-gradient(180deg,rgba(6,14,26,0.72),rgba(6,14,26,0.78))]" />
+            <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-[linear-gradient(180deg,rgba(6,14,26,0.9),rgba(6,14,26,0.94))]" />
             <div className="relative">
               <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-48 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)]" data-testid="home-platforms-heading-placeholder" />

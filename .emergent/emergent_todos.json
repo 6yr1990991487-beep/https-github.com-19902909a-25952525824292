@@ -1,10 +1,14 @@
 [
   {
-    "content": "Retirer la dominante RGB/orangé/rose de la bannière ciblée sur preview",
-    "status": "completed"
+    "content": "Neutraliser uniquement les 2 cartes visibles de la capture (section portails rapides) sans toucher au reste",
+    "status": "in_progress"
   },
   {
-    "content": "Vérifier visuellement le rendu sans cette couleur",
-    "status": "completed"
+    "content": "Retirer toute couleur dans les previews vidéo de ces cartes tout en gardant la brillance",
+    "status": "pending"
+  },
+  {
+    "content": "Vérifier visuellement uniquement cette zone sur preview",
+    "status": "pending"
   }
 ]
