@@ -1,18 +1,22 @@
 [
   {
-    "content": "Implémenter 10 sélections aléatoires non répétitives dans la bannière basse avec cartes/miniatures premium",
+    "content": "Corriger la logique : la bannière basse doit être pilotée par le bouton principal rotatif, pas par les cartes secondaires",
     "status": "completed"
   },
   {
-    "content": "Rendre toutes les cartes/boutons de la bannière basse cliquables avec la bonne redirection",
+    "content": "Adapter l’affichage premium de la bannière basse en grille 2x5 / mobile responsive",
     "status": "completed"
   },
   {
-    "content": "Tester visuellement et fonctionnellement la bannière basse sur preview",
+    "content": "Retirer totalement la Boutique de ce module et privilégier catalogue + contenus pertinents",
     "status": "completed"
+  },
+  {
+    "content": "Tester visuellement et fonctionnellement la bannière basse corrigée",
+    "status": "in_progress"
   },
   {
     "content": "Informer qu’un redéploiement sera nécessaire pour la production",
-    "status": "completed"
+    "status": "pending"
   }
 ]

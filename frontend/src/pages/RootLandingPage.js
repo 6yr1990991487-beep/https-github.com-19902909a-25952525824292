@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
-import { products } from "@/data/videos";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
@@ -68,22 +67,31 @@ const shuffleArray = (list) => {
 };
 
 const premiumBannerContentPool = shuffleArray(
-  SEO_NEWS.filter((item) => ["video", "news", "catalog", "product"].includes(item.category)).map((item, index) => ({
+  SEO_NEWS.filter((item) => ["video", "news", "catalog"].includes(item.category)).map((item, index) => ({
     id: item.id || `seo-${index}`,
     title: item.title,
-    eyebrow: item.category === "video" ? "vidéo" : item.category === "product" ? "boutique" : item.category,
+    eyebrow: item.category === "video" ? "vidéo" : item.category === "catalog" ? "catalogue" : "actualité",
     image: item.image || "/lovanet-og.svg",
-    href: item.sourcePath || (item.category === "product" ? "/shop" : "/actualites"),
-  })).concat(
-    products.map((item, index) => ({
-      id: `product-${item.id}-${index}`,
-      title: item.name,
-      eyebrow: item.tag,
-      image: "/lovanet-og.svg",
-      href: "/shop",
-    })),
-  ),
+    href: item.sourcePath || (item.category === "catalog" ? "/anime-catalog" : "/actualites"),
+  })),
 );
+
+const getPremiumBannerItemsForRoute = (route) => {
+  const pool = premiumBannerContentPool.filter((item) => {
+    if (route === "/shop") return false;
+    if (route === "/actualites") return item.href === "/actualites";
+    if (route === "/anime-catalog") return item.href === "/anime-catalog";
+    if (route === "/chaine-youtube") return item.href === "/chaine-youtube" || item.eyebrow === "vidéo";
+    if (route === "/prime-video") return item.eyebrow === "vidéo";
+    if (route === "/tiktok") return item.eyebrow === "vidéo";
+    if (route === "/lecteurs-video") return item.href === "/chaine-youtube" || item.eyebrow === "vidéo";
+    if (route === "/anime-moments") return item.href === "/anime-catalog" || item.href === "/chaine-youtube";
+    if (route === "/decouvrir") return item.href === "/anime-catalog" || item.href === "/actualites";
+    if (route === "/anime-countdown") return item.href === "/anime-catalog";
+    return item.href !== "/shop";
+  });
+  return shuffleArray(pool).slice(0, 10);
+};
 
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   ...item,
@@ -127,7 +135,7 @@ export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [premiumBannerCards, setPremiumBannerCards] = useState(() => premiumBannerContentPool.slice(0, 10));
+  const [premiumBannerCards, setPremiumBannerCards] = useState(() => getPremiumBannerItemsForRoute("/actualites"));
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
 
@@ -219,18 +227,6 @@ export default function RootLandingPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (reducedMotion) return undefined;
-    const timer = window.setInterval(() => {
-      setPremiumBannerCards((previous) => {
-        const prevIds = new Set((previous || []).map((item) => item.id));
-        const rotated = shuffleArray(premiumBannerContentPool.filter((item) => !prevIds.has(item.id)));
-        return [...rotated, ...shuffleArray(premiumBannerContentPool)].slice(0, 10);
-      });
-    }, 8000);
-    return () => window.clearInterval(timer);
-  }, [reducedMotion]);
-
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
   const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
@@ -238,6 +234,28 @@ export default function RootLandingPage() {
   const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
   const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
+
+  useEffect(() => {
+    setPremiumBannerCards((previous) => {
+      const nextPool = getPremiumBannerItemsForRoute(heroSecondary.to);
+      const prevIds = new Set((previous || []).map((item) => item.id));
+      const filtered = nextPool.filter((item) => !prevIds.has(item.id));
+      return (filtered.length ? filtered : nextPool).slice(0, 10);
+    });
+  }, [heroSecondary.to]);
+
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+    const timer = window.setInterval(() => {
+      setPremiumBannerCards((previous) => {
+        const pool = getPremiumBannerItemsForRoute(heroSecondary.to);
+        const prevIds = new Set((previous || []).map((item) => item.id));
+        const rotated = shuffleArray(pool.filter((item) => !prevIds.has(item.id)));
+        return [...rotated, ...shuffleArray(pool)].slice(0, 10);
+      });
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion, heroSecondary.to]);
 
   return (
     <PageShell>
