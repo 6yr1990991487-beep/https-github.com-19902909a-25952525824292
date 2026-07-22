@@ -1,14 +1,10 @@
 [
   {
-    "content": "Supprimer uniquement le fond coloré derrière les 2 cartes de la bannière de capture sur preview",
+    "content": "Rendre la vidéo ciblée de la capture en noir et blanc plus brillante et plus lumineuse sur preview",
     "status": "completed"
   },
   {
-    "content": "Neutraliser le thème rgb-neon sur ces 2 cartes seulement",
-    "status": "completed"
-  },
-  {
-    "content": "Vérifier visuellement uniquement cette bannière",
+    "content": "Vérifier visuellement le rendu sur la zone concernée",
     "status": "completed"
   }
 ]

@@ -2244,7 +2244,7 @@
   .home-platforms-neutral-shell .btn-neon-rainbow {
 
   .portal-card-neutral-video {
-    filter: grayscale(1) saturate(0) brightness(1.02) contrast(1.04);
+    filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14));
   }
 
   .portal-card-neutral-shell {

@@ -371,7 +371,7 @@ export default function RootLandingPage() {
                               preload="metadata"
                               data-testid={`${card.testId}-preview-video`}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-l from-black/28 via-black/40 to-black/78" />
+                            <div className="absolute inset-0 bg-gradient-to-l from-black/18 via-black/24 to-black/54" />
                           </div>
                         </div>
                       </Card>
