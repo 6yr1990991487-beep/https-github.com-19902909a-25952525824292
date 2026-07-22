@@ -1,18 +1,14 @@
 [
   {
-    "content": "Corriger la lisibilité des mini-cartes de la bannière basse sur mobile sans casser le format vertical",
+    "content": "Corriger les grandes cartes Prime/TikTok/Catalogue de la bannière pour qu’elles soient côte à côte sur mobile",
     "status": "in_progress"
   },
   {
-    "content": "Agrandir les cartes sur desktop et garder un format plus petit mais lisible sur mobile",
+    "content": "Réduire leur taille et leur padding pour éviter l’empilement vertical",
     "status": "pending"
   },
   {
-    "content": "Réduire la casse verticale du texte (titre/description) dans les cartes",
-    "status": "pending"
-  },
-  {
-    "content": "Revérifier visuellement la bannière basse sur preview",
+    "content": "Revérifier la bannière complète de cette zone sur preview",
     "status": "pending"
   }
 ]

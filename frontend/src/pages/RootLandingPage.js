@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
+import { videos as SITE_VIDEOS, thumb as videoThumb } from "@/data/videos";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
@@ -103,23 +104,22 @@ const buildLowerBannerCandidates = (route, catalogItems) => {
     }, index, "actualité"),
   );
 
-  const normalizedVideos = SEO_NEWS.filter((item) => item.category === "video").map((item, index) =>
+  const normalizedVideos = SITE_VIDEOS.map((item, index) =>
     normalizeLowerBannerItem({
-      id: `video-${item.id || index}`,
+      id: `site-video-${item.id}`,
       title: item.title,
-      image: item.image,
-      description: item.description || item.excerpt,
-      previewVideo: portalZoneReplacement,
-      href: item.sourcePath || "/chaine-youtube",
+      image: videoThumb(item.id),
+      description: `${item.series || "AnimeOfficial"}${item.episode ? ` • ${item.episode}` : ""}`,
+      href: `/lecteurs-video?video=${item.id}&service=youtube`,
       eyebrow: "vidéo",
     }, index, "vidéo"),
   );
 
   if (route === "/actualites") return normalizedNews;
   if (route === "/anime-catalog") return normalizedCatalog;
-  if (route === "/chaine-youtube") return normalizedVideos.filter((item) => item.href === "/chaine-youtube");
-  if (route === "/prime-video") return normalizedVideos.filter((item) => item.href !== "/shop");
-  if (route === "/tiktok") return normalizedVideos.filter((item) => item.href !== "/shop");
+  if (route === "/chaine-youtube") return normalizedVideos;
+  if (route === "/prime-video") return normalizedVideos;
+  if (route === "/tiktok") return normalizedVideos;
   if (route === "/lecteurs-video") return normalizedVideos;
   if (route === "/anime-countdown") return normalizedCatalog;
   if (route === "/anime-moments") return [...normalizedCatalog, ...normalizedVideos];
@@ -463,17 +463,17 @@ export default function RootLandingPage() {
                   </Link>
                 </Button>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="home-platforms-pill-row">
                 {platformEntries.map((card, index) => {
                   const Icon = card.action.icon;
                   return (
-                    <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block" data-testid={card.testId}>
+                    <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block min-w-0" data-testid={card.testId}>
                       <Card className={`${luxuryCard} h-full`}>
-                        <CardContent className="space-y-4 p-6">
-                          <div className={luxuryIcon}>
-                            <Icon className="h-5 w-5 neon-rgb-icon" />
+                        <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+                          <div className={`${luxuryIcon} h-10 w-10 shrink-0 sm:h-11 sm:w-11`}>
+                            <Icon className="h-4 w-4 sm:h-5 sm:w-5 neon-rgb-icon" />
                           </div>
-                          <p className="text-xl font-semibold text-white neon-rgb-text-soft">
+                          <p className="text-sm sm:text-base font-semibold text-white neon-rgb-text-soft">
                             <span key={`platform-card-${index}-${card.action.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{card.action.label}</span>
                           </p>
                         </CardContent>
@@ -491,7 +491,7 @@ export default function RootLandingPage() {
                         <Link
                           key={`${item.id}-${rowIndex}-${index}`}
                           to={item.href}
-                          className="hero-premium-lower-card group flex w-[128px] min-w-[128px] max-w-[128px] flex-none flex-col sm:w-[144px] sm:min-w-[144px] sm:max-w-[144px] lg:w-[168px] lg:min-w-[168px] lg:max-w-[168px] xl:w-[184px] xl:min-w-[184px] xl:max-w-[184px]"
+                          className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[176px] lg:min-w-[176px] lg:max-w-[176px] xl:w-[196px] xl:min-w-[196px] xl:max-w-[196px]"
                           data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
                         >
                           <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full">
@@ -501,19 +501,6 @@ export default function RootLandingPage() {
                           </div>
                           <div className="hero-premium-lower-copy">
                             <p className="hero-premium-lower-title">{item.title}</p>
-                            {item.previewVideo ? (
-                              <div className="hero-premium-lower-preview-video-shell">
-                                <video
-                                  className="hero-premium-lower-preview-video"
-                                  src={item.previewVideo}
-                                  autoPlay
-                                  muted
-                                  loop
-                                  playsInline
-                                  preload="metadata"
-                                />
-                              </div>
-                            ) : null}
                             <p className="hero-premium-lower-description">{item.description}</p>
                           </div>
                         </Link>
