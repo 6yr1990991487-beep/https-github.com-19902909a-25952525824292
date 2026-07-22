@@ -1,18 +1,10 @@
 [
   {
-    "content": "Retirer uniquement les textes listés du header/panneau Catalogue sans casser la structure visuelle",
-    "status": "completed"
-  },
-  {
-    "content": "Retirer les calques sombres/flous des miniatures et renforcer l’effet blister clair/scintillant",
-    "status": "completed"
-  },
-  {
-    "content": "Ajouter une option/bulle flottante de traduction sur les cartes pour titre + description",
+    "content": "Retirer les textes `Sélection collector` et `Expérience premium` là où ils apparaissent",
     "status": "completed"
   },
   {
     "content": "Revalider visuellement le Catalogue puis relancer les tests frontend ciblés",
-    "status": "in_progress"
+    "status": "completed"
   }
 ]

@@ -32,7 +32,7 @@ const rotatingPortalDestinations = [
 const portalCards = [
   {
     title: "Boutique immersive",
-    subtitle: "Sélection collector",
+    subtitle: "",
     description: "Sélection produits, drops et pièces collector mises à jour en continu.",
     image: heroImage,
     video: portalButtonsZoneVideo,
@@ -41,7 +41,7 @@ const portalCards = [
   },
   {
     title: "Prime & vidéos",
-    subtitle: "Expérience premium",
+    subtitle: "",
     description: "Lecture premium, extraits et navigation multi-plateforme.",
     image: mangaBanner,
     video: portalZoneReplacement,
