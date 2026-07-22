@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 
-// Global YT IFrame API loader (singleton).
 let ytApiPromise: Promise<any> | null = null;
 function loadYouTubeAPI(): Promise<any> {
   if (typeof window === "undefined") return Promise.reject(new Error("SSR"));
@@ -24,29 +23,29 @@ function loadYouTubeAPI(): Promise<any> {
 }
 
 type Props = {
-  /** Trailer video ID. If omitted, the component runs a search query instead. */
   videoId?: string;
-  /** Fallback search string used when no id is provided or the id is unavailable. */
   searchQuery?: string;
-  /** Called when the primary videoId fails to play (error 2/5/100/101/150) OR times out. */
   onUnavailable?: () => void;
-  /** Called when even the search fallback yields nothing playable. Parent should hide the player. */
   onExhausted?: () => void;
+  onPlayerReady?: (player: any | null) => void;
+  onPlayerStateChange?: (state: number) => void;
   autoplay?: boolean;
+  muted?: boolean;
+  hideControls?: boolean;
   className?: string;
   title?: string;
 };
 
-/**
- * Wraps a YouTube iframe with the JS API so we can detect unavailable/blocked videos
- * and gracefully fall back to a search list or hide the player entirely.
- */
 export default function YouTubeEmbed({
   videoId,
   searchQuery,
   onUnavailable,
   onExhausted,
+  onPlayerReady,
+  onPlayerStateChange,
   autoplay = true,
+  muted = true,
+  hideControls = true,
   className,
   title,
 }: Props) {
@@ -54,6 +53,11 @@ export default function YouTubeEmbed({
   const playerRef = useRef<any>(null);
   const modeRef = useRef<"video" | "search">(videoId ? "video" : "search");
   const readyRef = useRef<boolean>(false);
+  const callbacksRef = useRef({ onUnavailable, onExhausted, onPlayerReady, onPlayerStateChange });
+
+  useEffect(() => {
+    callbacksRef.current = { onUnavailable, onExhausted, onPlayerReady, onPlayerStateChange };
+  }, [onExhausted, onPlayerReady, onPlayerStateChange, onUnavailable]);
 
   useEffect(() => {
     let disposed = false;
@@ -64,10 +68,9 @@ export default function YouTubeEmbed({
 
     loadYouTubeAPI().then((YT) => {
       if (disposed || !holderRef.current) return;
-      // Reset holder (StrictMode / re-mount safe).
       holderRef.current.innerHTML = "";
       const mount = document.createElement("div");
-      mount.className = "absolute inset-0 w-full h-full";
+      mount.className = "absolute inset-0 h-full w-full";
       holderRef.current.appendChild(mount);
 
       const commonVars: Record<string, any> = {
@@ -76,7 +79,12 @@ export default function YouTubeEmbed({
         modestbranding: 1,
         playsinline: 1,
         origin: window.location.origin,
-        hl: "en",
+        hl: "fr",
+        controls: hideControls ? 0 : 1,
+        fs: hideControls ? 0 : 1,
+        disablekb: hideControls ? 1 : 0,
+        iv_load_policy: 3,
+        cc_load_policy: 0,
       };
 
       const opts: any = {
@@ -88,25 +96,39 @@ export default function YouTubeEmbed({
           onReady: () => {
             readyRef.current = true;
             clearTimeout(watchdog);
+            try {
+              if (muted) playerRef.current?.mute?.();
+              else playerRef.current?.unMute?.();
+              if (autoplay) playerRef.current?.playVideo?.();
+            } catch {
+              // ignore autoplay sync errors
+            }
+            callbacksRef.current.onPlayerReady?.(playerRef.current);
           },
-          onError: (e: any) => {
-            // 2 = invalid id, 5 = HTML5 error, 100 = removed/private,
-            // 101 / 150 = embedding disabled or region-locked.
-            const code = e?.data;
+          onStateChange: (event: any) => {
+            callbacksRef.current.onPlayerStateChange?.(event?.data);
+          },
+          onError: (event: any) => {
+            const code = event?.data;
             if (!(code === 2 || code === 5 || code === 100 || code === 101 || code === 150)) return;
             if (modeRef.current === "video") {
               modeRef.current = "search";
-              onUnavailable?.();
+              callbacksRef.current.onUnavailable?.();
               if (searchQuery && playerRef.current?.cuePlaylist) {
                 try {
-                  playerRef.current.cuePlaylist({ listType: "search", list: searchQuery });
-                  if (autoplay) playerRef.current.playVideo?.();
+                  playerRef.current.cuePlaylist({ listType: "search", list: searchQuery, index: 0, startSeconds: 0 });
+                  if (muted) playerRef.current?.mute?.();
+                  else playerRef.current?.unMute?.();
+                  if (autoplay) playerRef.current?.playVideo?.();
+                  callbacksRef.current.onPlayerReady?.(playerRef.current);
                   return;
-                } catch { /* fall through */ }
+                } catch {
+                  // fall through
+                }
               }
-              onExhausted?.();
+              callbacksRef.current.onExhausted?.();
             } else {
-              onExhausted?.();
+              callbacksRef.current.onExhausted?.();
             }
           },
         },
@@ -120,41 +142,42 @@ export default function YouTubeEmbed({
 
       playerRef.current = new YT.Player(mount, opts);
 
-      // Watchdog: if the player never reports ready within 6s AND we're on a specific
-      // video id, assume it's unavailable (some regions block silently without an error event).
       if (videoId) {
         watchdog = setTimeout(() => {
           if (disposed || readyRef.current) return;
           if (modeRef.current === "video") {
             modeRef.current = "search";
-            onUnavailable?.();
+            callbacksRef.current.onUnavailable?.();
             if (searchQuery) {
               try {
-                playerRef.current?.cuePlaylist?.({ listType: "search", list: searchQuery });
+                playerRef.current?.cuePlaylist?.({ listType: "search", list: searchQuery, index: 0, startSeconds: 0 });
+                if (muted) playerRef.current?.mute?.();
+                else playerRef.current?.unMute?.();
                 if (autoplay) playerRef.current?.playVideo?.();
+                callbacksRef.current.onPlayerReady?.(playerRef.current);
                 return;
-              } catch { /* ignore */ }
+              } catch {
+                // ignore
+              }
             }
-            onExhausted?.();
+            callbacksRef.current.onExhausted?.();
           }
-        }, 6000);
+        }, 9000);
       }
     });
 
     return () => {
       disposed = true;
       clearTimeout(watchdog);
-      try { playerRef.current?.destroy?.(); } catch { /* ignore */ }
+      try {
+        playerRef.current?.destroy?.();
+      } catch {
+        // ignore
+      }
       playerRef.current = null;
+      callbacksRef.current.onPlayerReady?.(null);
     };
-    // We deliberately re-create the player on id/search change.
-  }, [videoId, searchQuery]);
+  }, [autoplay, hideControls, muted, searchQuery, title, videoId]);
 
-  return (
-    <div
-      ref={holderRef}
-      className={className ?? "absolute inset-0 w-full h-full"}
-      aria-label={title}
-    />
-  );
+  return <div ref={holderRef} className={className ?? "absolute inset-0 h-full w-full"} aria-label={title} />;
 }

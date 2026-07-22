@@ -1,14 +1,18 @@
 [
   {
-    "content": "Corriger les grandes cartes Prime/TikTok/Catalogue de la bannière pour qu’elles soient côte à côte sur mobile",
+    "content": "Corriger le lecteur Catalogue : lecture complète stable, autoplay muet, son au 1er clic, masquage maximal UI YouTube",
+    "status": "completed"
+  },
+  {
+    "content": "Refondre les cartes Catalogue : miniatures plus verticales, panneaux transparents, blister verre brillant, couleurs pilotées par la bulle",
+    "status": "completed"
+  },
+  {
+    "content": "Ajouter une sélection automatique des cartes avec vidéo + panneau de proposition favoris/lecture",
+    "status": "completed"
+  },
+  {
+    "content": "Revalider le SEO `/shop` et `/actualites`, puis lancer captures et tests frontend complets",
     "status": "in_progress"
-  },
-  {
-    "content": "Réduire leur taille et leur padding pour éviter l’empilement vertical",
-    "status": "pending"
-  },
-  {
-    "content": "Revérifier la bannière complète de cette zone sur preview",
-    "status": "pending"
   }
 ]

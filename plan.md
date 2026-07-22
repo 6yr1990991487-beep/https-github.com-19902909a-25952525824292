@@ -11,30 +11,11 @@
 - Mettre en place une synchronisation **autonome toutes les 5 minutes** (backend scheduler) avec **stockage MongoDB**.
 - Respecter contraintes Emergent : `REACT_APP_BACKEND_URL`, `MONGO_URL`, backend préfixé `/api`.
 
-### Objectif UI / Navigation (NOUVEAU)
-- Harmoniser la navigation selon la demande utilisateur (**preview + production**) :
-  - Le texte **« Lovanet »** dans le menu doit adopter le **style des boutons principaux**.
-  - Le bouton **« Boutique »** doit devenir une entrée de **sous-menu** (**desktop + mobile**).
-  - Le style demandé : **RGB + blanc transparent** comme les boutons principaux.
-
-### Objectif Identité visuelle (logo/favicons)
-- Le **logo menu** + **favicon** doivent passer à :
-  - une **nouvelle couleur**
-  - direction « **icône animation 3D** » (tout en restant performante)
-
-### Objectif Mentions légales (NOUVEAU)
-- Sur la page Mentions légales :
-  - retirer les blocs de texte :
-    - `Éditeur du site ... utilisez la page contact.`
-    - `Hébergement ... leurs plateformes respectives.`
-
-### Objectif Nouvelle Page d’arrivée (NOUVEAU — confirmé utilisateur)
-- Créer une **nouvelle page d’arrivée premium** sur `/` :
-  - **ne pas utiliser** le terme « Accueil »
-  - style **moderne / manga / futuriste**, long format, riche en sections
-  - dans l’esprit et l’originalité de la home actuelle, mais **plus “landing page”**
-- Déplacer l’actuelle page d’accueil vers :
-  - `/anime-moments`
+### Objectif UI/UX (dernières exigences — PRIORITÉ ACTUELLE)
+- Mettre à niveau l’expérience du site par des refontes UI/UX majeures :
+  - remplacement de bannières statiques par des carrousels dynamiques
+  - effets 3D / “drone camera” sur certaines vidéos hero
+  - **refonte complète de la page Catalogue** : remplacement du carrousel circulaire par un **lecteur vidéo géant lumineux** avec **PiP** et interactions via les cartes
 
 ### Objectif SEO / Référencement
 - Paramétrer le SEO : meta tags, OpenGraph/Twitter, canonical/hreflang/alternate.
@@ -51,213 +32,148 @@
 - Finaliser l’automatisation Search Console :
   - soumission/validation des sitemaps via **Google Search Console API**
   - **2 modes d’authentification** :
-    - **service account JSON** — utile si la propriété est partagée avec le compte de service + API activée
-    - **OAuth Web client** — permet d’utiliser le compte Google utilisateur pour soumettre les sitemaps
+    - **service account JSON**
+    - **OAuth Web client**
 
-> ⚠️ Sécurité
-> - ne jamais exposer le *client secret* OAuth
-> - stockage du **refresh token** côté backend (DB)
+### Objectif UI / Navigation (en attente / hors scope immédiat)
+- Harmoniser la navigation :
+  - Le texte **« Lovanet »** dans le menu doit adopter le **style des boutons principaux**.
+  - Le bouton **« Boutique »** doit devenir une entrée de **sous-menu** (**desktop + mobile**).
+  - Le style demandé : **RGB + blanc transparent**.
 
-### Objectif (TikTok)
-- **Rétablir l’expérience “comme avant”** sur la page TikTok du site :
-  - lecteur TikTok
-  - liste/carrousel
-  - flux visible (fallback officiel quand TikTok bloque l’énumération)
-- Source officielle : `https://www.tiktok.com/@anime.moments.officiel`
+### Objectif Identité visuelle (logo/favicons) (en attente)
+- Logo menu + favicon : nouvelle couleur + direction « icône animation 3D ».
 
-### Objectif (Hubs 3D)
-- Extraire depuis les archives fournies **uniquement** 2 hubs 3D à l’identique visuel :
-  - **Hub Ferry**
-  - **Hub Train Station**
-- Implantations demandées :
-  - **Hub Train Station** : page **Shop** (`/shop`) **au-dessus de la bannière**.
-  - **Hub Ferry** : page **Univers Lovanet** (`/decouvrir`) **en dessous** du CTA **« Explorer le catalogue »**.
-- Exigences UX supplémentaires (bug utilisateur, confirmé sur preview + production) :
-  - corriger l’erreur runtime `Cannot read properties of undefined (reading 'testid')` (Hub Ferry)
-  - **retirer tout le texte** ajouté autour des hubs
-  - **désactiver la rotation automatique caméra** et les **changements automatiques de scène** sur les 2 hubs
+### Objectif Mentions légales (en attente)
+- Retirer 2 blocs de texte spécifiques sur la page Mentions légales.
 
-### Objectif Personnalisation extrême (NOUVEAU — confirmé utilisateur)
-- Refaire totalement la **ThemeBubble** pour supporter **500+ thèmes générés dynamiquement**.
-- Appliquer le thème **globalement** (menus, footer, fonds, overlays, bordures, glow, surfaces glass, textes) **sans casser** l’esthétique RGB néon transparente existante.
-- Implémenter une **logique de contraste automatique** pour empêcher tout texte illisible.
-- Rendre la bulle **très lumineuse / brillante** et supprimer complètement l’état visible **OFF**.
-- Retirer la **vidéo du bas** sur la Root Landing Page (`/`).
+### Objectif (TikTok) (en attente)
+- Rétablir l’expérience TikTok (lecteur + liste/carrousel + fallback officiel).
 
-### Statut actuel (projet)
-- ✅ Phase 1 terminée (extraction/inventaire/mirror).
-- ✅ Phase 2 terminée (V1 full-stack + tests).
-- ✅ Phase 3 terminée (auto-sync externe + UI + tests).
-- ✅ Phase 4 terminée (import Lovable/GitHub/ZIP + adaptations).
-- ✅ Phase 5 terminée (SEO + Search Console + TikTok + Multi-domain) en preview.
-- ✅ Phase 6 terminée : OAuth Search Console implémenté + connecté + soumission partielle exécutée en preview.
-- ⏳ Phase 7 (Hubs 3D) : intégration faite mais bug runtime + UX à valider.
-- ⏳ Phase 8 (UI/Brand polish) : menu + sous-menu Boutique + logo/favicons + mentions légales.
-- ✅ Phase 9 (Nouvelle page d’arrivée) terminée.
-- ✅ Phase 10 (ThemeBubble 500+ + contraste global + retrait vidéo basse) : TERMINÉE.
-- ✅ Phase 11 (Remplacement ciblé des zones par vidéos utilisateur) : TERMINÉE.
-- ⏳ Phase 12 (Refonte Actualités premium + backend auto vraies sources) : EN COURS.
+### Objectif (Hubs 3D) (en attente)
+- Hubs Ferry + Train Station : corriger bug runtime, retirer texte autour, désactiver auto-rotation caméra / auto-scènes.
 
 ---
 
 ## 2) Implementation Steps
 
-### Phase 1 — POC Core (Isolation): extraction + inventaire + rendu minimal ✅ COMPLETED
-### Phase 2 — V1 App Development (MVP): pages + dynamiques internes ✅ COMPLETED
+### Phase 1 — POC Core (Isolation) ✅ COMPLETED
+### Phase 2 — V1 App Development (MVP) ✅ COMPLETED
 ### Phase 3 — External Auto-Sync Parity + Fidelity UI ✅ COMPLETED
-### Phase 4 — Import du projet source Lovable/GitHub/ZIP ✅ COMPLETED
+### Phase 4 — Import du projet source ✅ COMPLETED
 ### Phase 5 — SEO + Search Console + TikTok + Multi-domain ✅ COMPLETED (preview)
-### Phase 6 — Search Console OAuth (connexion + soumission) ✅ COMPLETED (preview)
+### Phase 6 — Search Console OAuth ✅ COMPLETED (preview)
 ### Phase 7 — Hubs 3D ⏳ IN PROGRESS
 ### Phase 8 — UI / Brand polish ⏳ IN PROGRESS
-### Phase 9 — Nouvelle page d’arrivée + Home en sous-page ✅ COMPLETED
+### Phase 9 — Nouvelle page d’arrivée ✅ COMPLETED
+### Phase 10 — ThemeBubble 500+ ✅ COMPLETED
+### Phase 11 — Remplacements vidéos utilisateur ✅ COMPLETED
+### Phase 12 — Refonte Actualités premium ⏳ IN PROGRESS
 
-### Phase 10 — ThemeBubble 500+ + contraste global + landing cleanup ✅ COMPLETED
-### Phase 11 — Remplacement ciblé des zones par vidéos utilisateur ✅ COMPLETED
-### Phase 12 — Refonte Actualités premium + backend auto vraies sources ⏳ IN PROGRESS
+### Phase 14 — Refonte Catalogue + SEO bloquant + validation (PRIORITÉ ACTIVE) ⏳ IN PROGRESS
 
-#### Phase 12.1 — Architecture éditoriale + sources ⏳ TODO
-- Remplacer le contenu statique/générique de `/actualites` par une architecture alimentée par de vraies sources.
-- Prioriser APIs publiques + RSS + sites éditoriaux disposant de flux publics.
-- Cœur éditorial: anime/manga + streaming + jeux + culture pop japonaise.
+#### Phase 14.1 — Base Catalogue (déjà implémentée en preview) ✅
+- Remplacement du carrousel circulaire par un **lecteur géant**.
+- Commandes : play/pause, mute/unmute, suivant/précédent.
+- PiP : via API navigateur (avec fallback mini-fenêtre).
+- Favoris persistants (localStorage) + bandeau “file personnelle”.
 
-#### Phase 12.2 — Backend d’agrégation automatique ⏳ TODO
-- Ajouter des collections Mongo dédiées aux news agrégées, sources, refresh status et déduplication.
-- Implémenter ingestion RSS/API publique (ANN, Crunchyroll, MAL, Gematsu, Siliconera, IGN, AniList enrichissement, autres flux publics sûrs).
-- Normaliser, catégoriser, dédupliquer, scorer les tendances et rafraîchir automatiquement via scheduler.
-- Exposer des endpoints premium pour listing, hero, tendances, widgets, sources, détail article.
+#### Phase 14.2 — Ajustements Catalogue (NOUVELLES EXIGENCES — à faire) ⏳ TODO
+**But :** corriger la lecture et aligner le style des cartes + masquage YouTube + sélection auto + panneau de proposition.
 
-#### Phase 12.3 — Refonte premium `/actualites` ⏳ TODO
-- Hero éditorial premium avec top story + stories secondaires.
-- Ticker live, bento grid, carrousels thématiques, widgets sticky, bannières animées, cartes sophistiquées.
-- Conserver et dépasser l’esthétique de `/decouvrir` avec lisibilité forte et crédibilité des sources.
+1) **Lecture automatique fiable (sans coupure)**
+- Corriger le comportement « la vidéo se stop après quelques secondes » :
+  - désactiver toute logique qui détruit/recrée le player de façon intempestive
+  - stabiliser les clés React et dépendances pour éviter un remount du player
+  - vérifier que les transitions d’état (`playerMode`, `activePlayerId`, favoris) ne relancent pas l’embed
+- Politique autoplay validée : **1B**
+  - **autoplay en muet** au chargement
+  - **activation du son au premier clic utilisateur** (unmute + play)
+  - si le navigateur bloque malgré tout : fallback (message discret + bouton)
 
-#### Phase 12.4 — Détail article premium ⏳ TODO
-- Refaire `/actualites/:slug` avec lecture premium, source, date, tags, contenus liés et CTA vers source originale.
+2) **Masquage UI/branding YouTube**
+- Choix validé : **2B**
+  - supprimer le logo/couvercle/mentions ajoutés par le site au-dessus des vidéos
+  - réduire l’UI YouTube au maximum via paramètres embed (`modestbranding`, `rel=0`, etc.)
+  - noter qu’un masquage total du branding YouTube n’est pas garanti (limites iframe)
 
-#### Phase 12.5 — Validation complète ⏳ TODO
-- Vérifier SEO/meta non cassés.
-- Tester backend + frontend + rendu visuel + absence de contenu inventé.
+3) **Sélection automatique + panneau de proposition (au chargement)**
+- Choix validé : **3C**
+  - sélectionner automatiquement une **liste** des cartes disposant d’une vidéo (trailer YouTube)
+  - afficher un **panneau** (non intrusif) proposant :
+    - « Ajouter cette sélection aux favoris »
+    - « Lire maintenant dans le grand lecteur »
+  - si l’utilisateur refuse/ferme : ne plus ré-afficher pendant la session (sessionStorage)
 
-#### Phase 11.1 — Intégration vidéo zone capture gauche ⏳ TODO
-- Injecter la vidéo utilisateur 1 dans la zone visuelle de capture sur `/`.
-- Garder les boutons en overlay au-dessus comme les itérations précédentes.
-- Ajuster le cadrage pour épouser parfaitement le découpage demandé.
+4) **Refonte style cartes (miniatures verticales, verre/brillance/transparence)**
+- Demande utilisateur : agrandir **uniquement les miniatures** en vertical.
+- Objectifs visuels :
+  - cartes **moins lumineuses / pas floues**, mais **brillantes**, **transparentes**, premium
+  - panneau miniature **très transparent**
+  - cadre « **blister de verre** » brillant autour de la miniature
+- Grille : conserver une densité raisonnable, mais **miniatures plus hautes** (ratio plus vertical).
 
-#### Phase 11.2 — Intégration vidéo zone LOVANET ⏳ TODO
-- Injecter la vidéo utilisateur 2 dans la zone de gauche du footer / bloc LOVANET.
-- Préserver le texte et le bouton au-dessus de la vidéo.
-- Appliquer la même logique de découpe et de transparence premium.
+5) **Bulle flottante (droite) = couleurs cartes**
+- Confirmer que la bulle **pilote bien les couleurs des cartes** via variables CSS `--catalog-card-*`.
+- Si les nouvelles cartes premium n’appliquent plus ces variables, ré-intégrer :
+  - `background: var(--catalog-card-bg, ...)`
+  - `border-color: var(--catalog-card-border, ...)`
+  - animations optionnelles via `--catalog-card-anim`.
 
-#### Phase 11.3 — Validation visuelle ⏳ TODO
-- Contrôle capture sur `/`.
-- Vérifier que les vidéos restent sous les boutons et ne cassent pas la lisibilité.
+#### Phase 14.3 — SEO bloquant (statut actuel) ✅ CONTRÔLÉ (manuel)
+- `/shop` : présence `aggregateRating` + `review` dans JSON-LD (OK lors contrôle manuel).
+- `/actualites` : une seule meta description (OK lors contrôle manuel).
 
-#### Phase 10.1 — Architecture de thème globale ✅ COMPLETED
-- Ajouter des tokens sémantiques globaux pilotés par ThemeBubble.
-- Conserver la signature visuelle RGB néon transparente déjà en place.
-- Prévoir `fg-on-bg`, `fg-on-card`, `fg-on-overlay` calculés automatiquement.
+> À re-confirmer après les derniers changements via audit final.
 
-#### Phase 10.2 — ThemeBubble 500+ ✅ COMPLETED
-- Générer dynamiquement un catalogue de 500+ thèmes à partir de familles, nuances et effets.
-- Ajouter recherche, onglets (tous / favoris / récents), random, reset.
-- Supprimer l’état OFF visible.
-- Rendre la bulle plus brillante et premium.
-
-#### Phase 10.3 — Application globale + contraste ✅ COMPLETED
-- Appliquer les thèmes sur navbar, footer, fonds, bordures, glow, overlays et surfaces.
-- Garantir la lisibilité automatique avec logique de contraste WCAG.
-- Préserver les animations RGB existantes, avec fallback reduced-motion.
-
-#### Phase 10.4 — Root landing cleanup ✅ COMPLETED
-- Retirer la section vidéo du bas de `/`.
-- Conserver uniquement la vidéo hero utile à l’expérience.
-
-#### Phase 10.5 — Validation frontend ✅ COMPLETED
-- Build frontend.
-- Contrôle visuel par capture.
-- Testing agent frontend obligatoire après implémentation.
+#### Phase 14.4 — Validation & preuves (obligatoire) ⏳ TODO
+- Vérifier (desktop + mobile) :
+  - autoplay muet au chargement + unmute au premier clic
+  - aucune coupure après quelques secondes
+  - play/pause/mute/précédent/suivant
+  - PiP / mini-fenêtre
+  - panneau de proposition au chargement (3C)
+  - cartes : miniatures verticales + blister verre + transparence
+  - bulle couleur à droite : impact visible sur toutes les cartes
+- Captures d’écran :
+  - `/anime-catalog` (lecteur + cartes + panneau)
+  - `/shop` (SEO JSON-LD)
+  - `/actualites` (meta description unique)
+- Exécuter le **testing agent frontend** et corriger tous les retours.
 
 ---
 
-## 3) Next Actions (ordre d’exécution)
-1) Implémenter le backend d’agrégation news à partir de vraies sources publiques (RSS + APIs).
-2) Exposer les endpoints dédiés à la nouvelle page Actualités premium.
-3) Refaire complètement `/actualites` et `/actualites/:slug` en expérience magazine premium.
-4) Tester puis préparer validation preview avant redéploiement production par l’utilisateur.
+## 3) Next Actions (ordre d’exécution — VALIDÉ UTILISATEUR)
+1) **Catalogue** (Phase 14.2) :
+   - corriger coupure vidéo
+   - autoplay muet + son au premier clic
+   - masquer YouTube (au max) + retirer overlays
+   - cartes : miniatures verticales + blister verre + panneaux transparents
+   - sélection auto des items avec vidéo + panneau (Ajouter aux favoris / Lire)
+   - bulle de couleur à droite : doit piloter les cartes
+2) **SEO** (re-check) : `/shop` JSON-LD + `/actualites` meta description.
+3) **Vérifs** : captures + testing agent frontend complet.
+
+> Rappel important : tout est implémenté en **preview** ; un **redéploiement** est nécessaire pour voir les changements en production.
 
 ---
 
 ## 4) Success Criteria
-- ThemeBubble affiche et gère **500+ thèmes** générés dynamiquement.
-- Aucun état visible « OFF ».
-- Le thème s’applique globalement (navbar, footer, fonds, overlays, bordures, glow).
-- Le texte reste lisible automatiquement sur tous les thèmes.
-- La landing `/` n’affiche plus la vidéo du bas.
-- Le frontend compile et passe les vérifications visuelles + testing agent.
-- Les régressions sur l’esthétique transparente RGB néon restent nulles ou minimales.
-
-
-### Phase 13 — Responsive mobile/tablette + ThemeBubble navigation + variations captures + nettoyage éditorial + reliquats SEO ⏳ IN PROGRESS
-
-#### Phase 13.1 — Responsive mobile/tablette global ⏳ TODO
-- Revoir Navbar, RootLandingPage et Actualites pour mobile/tablette.
-- Garantir touch targets 44px+, meilleure respiration, hauteurs médias maîtrisées et navigation plus fluide.
-- Préserver l’esthétique RGB néon transparente existante.
-
-#### Phase 13.2 — ThemeBubble + thème du menu de navigation ⏳ TODO
-- Décaler la bulle flottante hors du bord gauche selon la guideline (left-4 / sm:left-6, bottom-4).
-- Ajouter une section dédiée pour appliquer un thème dérivé à la navigation rapide et au menu.
-- Définir/consommer les variables CSS `--nav-theme-*` et previews associées.
-
-#### Phase 13.3 — Variations automatiques des zones de capture ⏳ TODO
-- Ajouter des variations automatiques douces sur RootLandingPage (accent RGB, overlays, ordre mini-cards).
-- Respecter `prefers-reduced-motion` et éviter tout jank.
-
-#### Phase 13.4 — Nettoyage éditorial Actualités ⏳ TODO
-- Supprimer les mentions marketing/dummy text (ex: « Magazine premium », « Vraies sources… », etc.).
-- Remplacer par une micro-copie éditoriale plus courte et plus crédible.
-
-#### Phase 13.5 — Correctifs SEO frontend finaux ⏳ TODO
-- Corriger définitivement le JSON-LD `/shop` avec `aggregateRating` et `review` lisibles par Google.
-- Supprimer le doublon de `meta description` sur `/actualites` / `LocalizedHead`.
-
-#### Phase 13.6 — Validation frontend complète ⏳ TODO
-- Lint frontend.
-- Vérifications visuelles desktop/mobile.
-- Testing agent frontend obligatoire puis correction de tous les retours avant clôture.
+- Catalogue :
+  - lecteur vidéo géant premium + PiP
+  - **autoplay muet** sans coupure + **son au 1er clic utilisateur**
+  - UI/branding YouTube masqué au maximum (et overlays du site supprimés)
+  - cartes : miniatures **verticales**, panneau transparent, **blister verre** brillant
+  - panneau au chargement : sélection auto des items avec vidéo + proposition favoris/lecture
+  - bulle droite : change bien les couleurs de toutes les cartes
+- SEO :
+  - `/shop` JSON-LD contient `aggregateRating` + `review`
+  - `/actualites` n’a qu’une seule meta description
+- Frontend stable : pas d’erreurs console bloquantes, tests frontend OK.
 
 ---
 
 ## 5) Current Execution Order (validé utilisateur)
-1) Mobile/tablette sur tout le site
-2) ThemeBubble + thème du menu de navigation
-3) Variations automatiques des zones de capture
-4) Nettoyage des mentions inutiles sur `/actualites`
-5) Correctifs SEO frontend restants
-6) Lint + tests + corrections
-
-
-### Ajustement demandé après validation visuelle — panneau capture droit (landing `/`) ⏳ IN PROGRESS
-- Cibler uniquement le panneau droit de la zone hero/capture deck.
-- Retirer le fond RGB arrière-plan visible dans ce panneau, les surcouches internes, les 3 petits champs en haut et les cartes/sections verticales du dessous.
-- Conserver intactes les vidéos voisines et leurs calques.
-- Intégrer la nouvelle vidéo utilisateur `/capture-deck-user-video.mp4` exactement dans la forme/zone rectangulaire montrée par la maquette, sous les boutons.
-- Prendre en compte le bug mineur du rapport de test: mega menu desktop non ouvert au clic sur le bouton sparkles.
-
-
-### Ajustement supplémentaire — bannière dynamique pilotée par boutons ⏳ IN PROGRESS
-- Corriger les boutons/clics de la bannière sur desktop et mobile.
-- Tous les boutons de la bannière pilotent leur propre contenu (mode B confirmé par l’utilisateur).
-- Afficher une sélection dynamique d’aperçus reliés à la catégorie active (jusqu’à 10, rotation aléatoire automatique, non répétitive localement).
-- Chaque aperçu de la bannière doit rediriger vers sa vraie page cible.
-- Utiliser les contenus existants disponibles et compléter par rotation locale non répétitive si nécessaire.
-- Problème signalé sur production : implémentation à faire en preview puis redéploiement requis.
-
-### Étape suivante validée — bannière basse premium dynamique ⏳ IN PROGRESS
-- Conserver la bannière du haut désormais stabilisée.
-- Modifier uniquement la bannière basse de la capture.
-- Afficher jusqu’à 10 sélections aléatoires non répétitives, avec une présentation premium/sophistiquée (cartes, miniatures, formats adaptés au contenu).
-- Rendre les cartes/boutons de cette bannière basse cliquables avec redirection réelle.
-- Utiliser les contenus existants et une rotation locale autonome.
-
+1) Catalogue (refonte + ajustements lecture/styling) ⏳ EN COURS
+2) SEO bloquant ✅ contrôlé manuellement (à revalider)
+3) Build/captures/tests ⏳ à exécuter
