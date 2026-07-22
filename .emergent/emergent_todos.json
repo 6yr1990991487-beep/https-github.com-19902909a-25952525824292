@@ -1,14 +1,10 @@
 [
   {
-    "content": "Réduire fortement la taille visuelle des 2 vidéos suivantes dans la bannière du haut (mode B)",
+    "content": "Réduire sur preview les 2 vidéos secondaires de la bannière de 35% sans zoom, en affichage complet",
     "status": "completed"
   },
   {
-    "content": "Vérifier le rendu sur preview",
-    "status": "completed"
-  },
-  {
-    "content": "Rappeler qu’un redéploiement sera nécessaire pour la production",
+    "content": "Vérifier visuellement la 2e et la 3e vidéo dans la séquence",
     "status": "completed"
   }
 ]
