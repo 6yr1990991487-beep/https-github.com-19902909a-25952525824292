@@ -1888,7 +1888,7 @@
 
   .hero-banner-video {
     filter: brightness(1.18) saturate(1.22) contrast(1.08);
-    transform: scale(1.12) translate3d(var(--banner-shift-x), var(--banner-shift-y), 0);
+    transform: scale(var(--banner-video-scale, 1.12)) translate3d(var(--banner-shift-x), var(--banner-shift-y), 0);
     transition: transform 450ms ease, filter 280ms ease;
     will-change: transform, filter;
   }

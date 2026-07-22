@@ -1,22 +1,10 @@
 [
   {
-    "content": "Corriger la logique : la bannière basse doit être pilotée par le bouton principal rotatif, pas par les cartes secondaires",
+    "content": "Si faisable, générer une meilleure version locale des 2 vidéos ; sinon réduire leur taille visuelle dans la bannière",
     "status": "completed"
   },
   {
-    "content": "Adapter l’affichage premium de la bannière basse en grille 2x5 / mobile responsive",
+    "content": "Tester le rendu de la bannière du haut sur preview et confirmer le besoin de redéploiement production",
     "status": "completed"
-  },
-  {
-    "content": "Retirer totalement la Boutique de ce module et privilégier catalogue + contenus pertinents",
-    "status": "completed"
-  },
-  {
-    "content": "Tester visuellement et fonctionnellement la bannière basse corrigée",
-    "status": "in_progress"
-  },
-  {
-    "content": "Informer qu’un redéploiement sera nécessaire pour la production",
-    "status": "pending"
   }
 ]
