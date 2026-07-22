@@ -71,6 +71,8 @@ const normalizeLowerBannerItem = (item, index, kind = "actualité") => ({
   title: item.title || item.name || `Contenu ${index + 1}`,
   eyebrow: item.eyebrow || kind,
   image: item.image || item.cover || item.banner || "/lovanet-og.svg",
+  description: item.description || item.excerpt || item.synopsis || item.summary || item.genres?.slice?.(0, 3)?.join(" • ") || `${kind} premium`,
+  previewVideo: item.previewVideo || null,
   href: item.href || item.url || item.sourcePath || (kind === "catalogue" ? "/anime-catalog" : "/actualites"),
 });
 
@@ -81,6 +83,7 @@ const buildLowerBannerCandidates = (route, catalogItems) => {
         id: `catalog-${item.id || index}`,
         title: item.title,
         image: item.cover || item.banner,
+        description: item.genres?.slice?.(0, 3)?.join(" • ") || item.type || "catalogue",
         href: "/anime-catalog",
         eyebrow: "catalogue",
       },
@@ -94,6 +97,7 @@ const buildLowerBannerCandidates = (route, catalogItems) => {
       id: `news-${item.id || index}`,
       title: item.title,
       image: item.image,
+      description: item.description || item.excerpt,
       href: "/actualites",
       eyebrow: "actualité",
     }, index, "actualité"),
@@ -104,6 +108,8 @@ const buildLowerBannerCandidates = (route, catalogItems) => {
       id: `video-${item.id || index}`,
       title: item.title,
       image: item.image,
+      description: item.description || item.excerpt,
+      previewVideo: portalZoneReplacement,
       href: item.sourcePath || "/chaine-youtube",
       eyebrow: "vidéo",
     }, index, "vidéo"),
@@ -485,7 +491,7 @@ export default function RootLandingPage() {
                         <Link
                           key={`${item.id}-${rowIndex}-${index}`}
                           to={item.href}
-                          className="hero-premium-lower-card group flex w-[86px] min-w-[86px] max-w-[86px] flex-none flex-col sm:w-[92px] sm:min-w-[92px] sm:max-w-[92px] xl:w-[102px] xl:min-w-[102px] xl:max-w-[102px]"
+                          className="hero-premium-lower-card group flex w-[128px] min-w-[128px] max-w-[128px] flex-none flex-col sm:w-[144px] sm:min-w-[144px] sm:max-w-[144px] lg:w-[168px] lg:min-w-[168px] lg:max-w-[168px] xl:w-[184px] xl:min-w-[184px] xl:max-w-[184px]"
                           data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
                         >
                           <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full">
@@ -495,6 +501,20 @@ export default function RootLandingPage() {
                           </div>
                           <div className="hero-premium-lower-copy">
                             <p className="hero-premium-lower-title">{item.title}</p>
+                            {item.previewVideo ? (
+                              <div className="hero-premium-lower-preview-video-shell">
+                                <video
+                                  className="hero-premium-lower-preview-video"
+                                  src={item.previewVideo}
+                                  autoPlay
+                                  muted
+                                  loop
+                                  playsInline
+                                  preload="metadata"
+                                />
+                              </div>
+                            ) : null}
+                            <p className="hero-premium-lower-description">{item.description}</p>
                           </div>
                         </Link>
                       ))}

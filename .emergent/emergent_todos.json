@@ -1,11 +1,15 @@
 [
   {
-    "content": "Corriger le format des cartes de la bannière basse : petites cartes verticales réellement compactes",
+    "content": "Corriger la lisibilité des mini-cartes de la bannière basse sur mobile sans casser le format vertical",
     "status": "in_progress"
   },
   {
-    "content": "Conserver le flux auto-défilant en 4 niveaux avec cartes serrées sur mobile",
-    "status": "in_progress"
+    "content": "Agrandir les cartes sur desktop et garder un format plus petit mais lisible sur mobile",
+    "status": "pending"
+  },
+  {
+    "content": "Réduire la casse verticale du texte (titre/description) dans les cartes",
+    "status": "pending"
   },
   {
     "content": "Revérifier visuellement la bannière basse sur preview",
