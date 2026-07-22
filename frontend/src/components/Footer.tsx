@@ -48,9 +48,6 @@ export const Footer = () => {
                   <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
                     <span className="font-display text-2xl font-black tracking-[0.16em] text-white neon-rgb-text-soft">LOVANET</span>
                   </Link>
-                  <p className="max-w-xl text-sm leading-7 text-white/78" data-testid="footer-description">
-                    Portail anime et manga, navigation premium, univers immersifs et accès directs vers les sections principales.
-                  </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">

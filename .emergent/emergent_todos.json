@@ -1,10 +1,10 @@
 [
   {
-    "content": "Réduire sur preview les 2 vidéos secondaires de la bannière de 35% sans zoom, en affichage complet",
+    "content": "Retirer les textes demandés de la section concernée sur preview",
     "status": "completed"
   },
   {
-    "content": "Vérifier visuellement la 2e et la 3e vidéo dans la séquence",
+    "content": "Vérifier visuellement la suppression",
     "status": "completed"
   }
 ]

@@ -335,12 +335,7 @@ export default function RootLandingPage() {
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="relative">
-              <div className="mb-8 space-y-2">
-                <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">Portails</p>
-                <h2 className="mt-2 font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft" data-testid="home-quick-portal-heading">Accès principaux</h2>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="relative">
                 {portalEntries.map((card, index) => {
                   const Icon = card.action.icon;
                   return (
@@ -444,10 +439,6 @@ export default function RootLandingPage() {
             <div className={luxuryGlowRight} />
             <div className="relative">
               <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.32em] text-white/60">À regarder</p>
-                  <h2 className="mt-2 font-display text-3xl font-black text-white sm:text-4xl lg:text-5xl neon-rgb-text-soft" data-testid="home-featured-videos-heading">Vidéos</h2>
-                </div>
                 <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="home-featured-videos-youtube-button">
                   <Link to={featuredVideoAction.to}>
                     <span key={`video-action-${featuredVideoAction.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
