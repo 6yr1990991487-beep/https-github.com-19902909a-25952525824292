@@ -1,10 +1,14 @@
 [
   {
-    "content": "Si faisable, générer une meilleure version locale des 2 vidéos ; sinon réduire leur taille visuelle dans la bannière",
+    "content": "Réduire fortement la taille visuelle des 2 vidéos suivantes dans la bannière du haut (mode B)",
     "status": "completed"
   },
   {
-    "content": "Tester le rendu de la bannière du haut sur preview et confirmer le besoin de redéploiement production",
+    "content": "Vérifier le rendu sur preview",
+    "status": "completed"
+  },
+  {
+    "content": "Rappeler qu’un redéploiement sera nécessaire pour la production",
     "status": "completed"
   }
 ]

@@ -280,7 +280,7 @@ export default function RootLandingPage() {
                 ref={bannerVideoRef}
                 key={bannerVideoSequence[activeBannerVideoIndex]}
                 className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
-                style={{ "--banner-video-scale": activeBannerVideoIndex === 0 ? 1.12 : 1.03 }}
+                style={{ "--banner-video-scale": activeBannerVideoIndex === 0 ? 1.12 : 0.72 }}
                 src={bannerVideoSequence[activeBannerVideoIndex]}
                 autoPlay
                 muted
