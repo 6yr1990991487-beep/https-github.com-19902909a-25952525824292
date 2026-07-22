@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { SEO_NEWS } from "@/data/seoNews";
 import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 import portalButtonsZoneVideo from "@/assets/portal-buttons-zone-video.mp4";
@@ -27,18 +27,33 @@ const rotatingPortalDestinations = [
   { to: "/contact", label: "Contact", icon: Newspaper },
 ];
 
+
 const portalCards = [
-  { title: "Portail A", subtitle: "Rotation", image: heroImage, testId: "home-portal-anime-moments-card" },
-  { title: "Portail B", subtitle: "Rotation", image: mangaBanner, testId: "home-portal-discover-card" },
-  { title: "Portail C", subtitle: "Rotation", image: heroImage, testId: "home-portal-news-card" },
-  { title: "Portail D", subtitle: "Rotation", image: mangaBanner, testId: "home-portal-shop-card" },
+  {
+    title: "Boutique immersive",
+    subtitle: "Sélection collector",
+    description: "Sélection produits, drops et pièces collector mises à jour en continu.",
+    image: heroImage,
+    video: portalButtonsZoneVideo,
+    testId: "home-portal-card-1",
+    to: "/shop",
+  },
+  {
+    title: "Prime & vidéos",
+    subtitle: "Expérience premium",
+    description: "Lecture premium, extraits et navigation multi-plateforme.",
+    image: mangaBanner,
+    video: portalZoneReplacement,
+    testId: "home-portal-card-2",
+    to: "/prime-video",
+  },
 ];
 
 const platformCards = [
-  { title: "Plateforme A", testId: "home-platform-youtube-card" },
-  { title: "Plateforme B", testId: "home-platform-tiktok-card" },
-  { title: "Plateforme C", testId: "home-platform-prime-card" },
-  { title: "Plateforme D", testId: "home-platform-catalog-card" },
+  { title: "YouTube", testId: "home-platform-card-youtube", to: "/chaine-youtube" },
+  { title: "Prime Vidéo", testId: "home-platform-card-prime", to: "/prime-video" },
+  { title: "TikTok", testId: "home-platform-card-tiktok", to: "/tiktok" },
+  { title: "Catalogue", testId: "home-platform-card-catalogue", to: "/anime-catalog" },
 ];
 
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
@@ -240,11 +255,11 @@ export default function RootLandingPage() {
                   {[heroPrimary, heroSecondary, heroNews].map((item, index) => (
                     <Card key={`hero-highlight-${index}-${item.to}`} className="rounded-[1.5rem] border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]" data-testid={`home-hero-highlight-${index + 1}`}>
                       <CardContent className="p-4">
-                        <div className="flex items-center justify-center h-9 rounded-xl border border-white/10 bg-white/[0.04] shadow-[0_0_18px_rgba(255,255,255,0.06)] text-sm font-semibold text-white neon-rgb-text-soft">
+                        <Link to={item.to} className="flex items-center justify-center h-9 rounded-xl border border-white/10 bg-white/[0.04] shadow-[0_0_18px_rgba(255,255,255,0.06)] text-sm font-semibold text-white neon-rgb-text-soft" data-testid={`home-hero-highlight-link-${index + 1}`}>
                           <span key={`hero-highlight-label-${index}-${item.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">
                             {item.label}
                           </span>
-                        </div>
+                        </Link>
                       </CardContent>
                     </Card>
                   ))}

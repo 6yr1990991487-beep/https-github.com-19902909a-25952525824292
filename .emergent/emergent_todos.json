@@ -1,18 +1,22 @@
 [
   {
-    "content": "Analyser la bannière actuelle et identifier les filtres/overlays qui assombrissent les vidéos",
+    "content": "Restaurer la bannière du haut à son état précédent sans logique de rotation dynamique",
     "status": "completed"
   },
   {
-    "content": "Augmenter la luminosité/couleurs des 3 vidéos de bannière et réduire les calques sombres",
+    "content": "Rendre les boutons/cartes de la bannière du haut cliquables avec la bonne redirection",
     "status": "completed"
   },
   {
-    "content": "Ajouter un effet 3D fort et sophistiqué à la bannière avec parallaxe souris + mouvement caméra type drone/street-view",
+    "content": "Tester visuellement et fonctionnellement la bannière du haut sur preview",
     "status": "completed"
   },
   {
-    "content": "Tester visuellement sur preview et confirmer qu’un redéploiement sera nécessaire pour la production",
-    "status": "completed"
+    "content": "Préparer ensuite la future modification de la bannière du bas seulement",
+    "status": "in_progress"
+  },
+  {
+    "content": "Informer qu’un redéploiement sera nécessaire pour la production",
+    "status": "pending"
   }
 ]

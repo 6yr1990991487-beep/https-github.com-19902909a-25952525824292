@@ -244,3 +244,12 @@
 - Conserver intactes les vidéos voisines et leurs calques.
 - Intégrer la nouvelle vidéo utilisateur `/capture-deck-user-video.mp4` exactement dans la forme/zone rectangulaire montrée par la maquette, sous les boutons.
 - Prendre en compte le bug mineur du rapport de test: mega menu desktop non ouvert au clic sur le bouton sparkles.
+
+
+### Ajustement supplémentaire — bannière dynamique pilotée par boutons ⏳ IN PROGRESS
+- Corriger les boutons/clics de la bannière sur desktop et mobile.
+- Tous les boutons de la bannière pilotent leur propre contenu (mode B confirmé par l’utilisateur).
+- Afficher une sélection dynamique d’aperçus reliés à la catégorie active (jusqu’à 10, rotation aléatoire automatique, non répétitive localement).
+- Chaque aperçu de la bannière doit rediriger vers sa vraie page cible.
+- Utiliser les contenus existants disponibles et compléter par rotation locale non répétitive si nécessaire.
+- Problème signalé sur production : implémentation à faire en preview puis redéploiement requis.
