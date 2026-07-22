@@ -1,10 +1,14 @@
 [
   {
-    "content": "Rendre la vidéo ciblée de la capture en noir et blanc plus brillante et plus lumineuse sur preview",
-    "status": "completed"
+    "content": "Corriger uniquement le filtre noir et blanc sur la vidéo de la carte visible dans la capture preview",
+    "status": "in_progress"
   },
   {
-    "content": "Vérifier visuellement le rendu sur la zone concernée",
-    "status": "completed"
+    "content": "Réparer le bloc CSS ciblé pour que le filtre s’applique réellement",
+    "status": "pending"
+  },
+  {
+    "content": "Vérifier visuellement la carte vidéo en noir et blanc sur preview",
+    "status": "pending"
   }
 ]

@@ -2242,9 +2242,12 @@
 
   .home-platforms-neutral-shell .rgb-neon,
   .home-platforms-neutral-shell .btn-neon-rainbow {
+    box-shadow: 0 16px 36px -28px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
 
   .portal-card-neutral-video {
-    filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14));
+    filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important;
+    -webkit-filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important;
   }
 
   .portal-card-neutral-shell {
@@ -2257,10 +2260,6 @@
 
   .portal-card-neutral-shell::before {
     display: none !important;
-  }
-
-
-    box-shadow: 0 16px 36px -28px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
   }
 
   .holo-action-crouch .holo-body { animation: holo-crouch 3s ease-in-out infinite; transform-origin: 50px 170px; transform-box: view-box; }
