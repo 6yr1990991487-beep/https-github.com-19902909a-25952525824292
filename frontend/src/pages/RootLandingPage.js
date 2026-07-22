@@ -340,8 +340,8 @@ export default function RootLandingPage() {
                   const Icon = card.action.icon;
                   return (
                     <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block" data-testid={card.testId}>
-                      <Card className={`${luxuryCard} rgb-neon`}>
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+                      <Card className={`${luxuryCard} portal-card-neutral-shell`}>
+                        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]" />
                         <div className="grid gap-0 sm:grid-cols-[1.02fr_0.98fr]">
                           <CardContent className="relative flex flex-col justify-between p-6">
                             <div className="space-y-4">

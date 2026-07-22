@@ -1,14 +1,14 @@
 [
   {
-    "content": "Neutraliser uniquement les 2 cartes visibles de la capture (section portails rapides) sans toucher au reste",
-    "status": "in_progress"
+    "content": "Supprimer uniquement le fond coloré derrière les 2 cartes de la bannière de capture sur preview",
+    "status": "completed"
   },
   {
-    "content": "Retirer toute couleur dans les previews vidéo de ces cartes tout en gardant la brillance",
-    "status": "pending"
+    "content": "Neutraliser le thème rgb-neon sur ces 2 cartes seulement",
+    "status": "completed"
   },
   {
-    "content": "Vérifier visuellement uniquement cette zone sur preview",
-    "status": "pending"
+    "content": "Vérifier visuellement uniquement cette bannière",
+    "status": "completed"
   }
 ]
