@@ -66,31 +66,59 @@ const shuffleArray = (list) => {
   return clone;
 };
 
-const premiumBannerContentPool = shuffleArray(
-  SEO_NEWS.filter((item) => ["video", "news", "catalog"].includes(item.category)).map((item, index) => ({
-    id: item.id || `seo-${index}`,
-    title: item.title,
-    eyebrow: item.category === "video" ? "vidéo" : item.category === "catalog" ? "catalogue" : "actualité",
-    image: item.image || "/lovanet-og.svg",
-    href: item.sourcePath || (item.category === "catalog" ? "/anime-catalog" : "/actualites"),
-  })),
-);
+const normalizeLowerBannerItem = (item, index, kind = "actualité") => ({
+  id: item.id || `${kind}-${index}`,
+  title: item.title || item.name || `Contenu ${index + 1}`,
+  eyebrow: item.eyebrow || kind,
+  image: item.image || item.cover || item.banner || "/lovanet-og.svg",
+  href: item.href || item.url || item.sourcePath || (kind === "catalogue" ? "/anime-catalog" : "/actualites"),
+});
 
-const getPremiumBannerItemsForRoute = (route) => {
-  const pool = premiumBannerContentPool.filter((item) => {
-    if (route === "/shop") return false;
-    if (route === "/actualites") return item.href === "/actualites";
-    if (route === "/anime-catalog") return item.href === "/anime-catalog";
-    if (route === "/chaine-youtube") return item.href === "/chaine-youtube" || item.eyebrow === "vidéo";
-    if (route === "/prime-video") return item.eyebrow === "vidéo";
-    if (route === "/tiktok") return item.eyebrow === "vidéo";
-    if (route === "/lecteurs-video") return item.href === "/chaine-youtube" || item.eyebrow === "vidéo";
-    if (route === "/anime-moments") return item.href === "/anime-catalog" || item.href === "/chaine-youtube";
-    if (route === "/decouvrir") return item.href === "/anime-catalog" || item.href === "/actualites";
-    if (route === "/anime-countdown") return item.href === "/anime-catalog";
-    return item.href !== "/shop";
-  });
-  return shuffleArray(pool).slice(0, 10);
+const buildLowerBannerCandidates = (route, catalogItems) => {
+  const normalizedCatalog = (catalogItems || []).map((item, index) =>
+    normalizeLowerBannerItem(
+      {
+        id: `catalog-${item.id || index}`,
+        title: item.title,
+        image: item.cover || item.banner,
+        href: "/anime-catalog",
+        eyebrow: "catalogue",
+      },
+      index,
+      "catalogue",
+    ),
+  );
+
+  const normalizedNews = SEO_NEWS.filter((item) => item.category === "news").map((item, index) =>
+    normalizeLowerBannerItem({
+      id: `news-${item.id || index}`,
+      title: item.title,
+      image: item.image,
+      href: "/actualites",
+      eyebrow: "actualité",
+    }, index, "actualité"),
+  );
+
+  const normalizedVideos = SEO_NEWS.filter((item) => item.category === "video").map((item, index) =>
+    normalizeLowerBannerItem({
+      id: `video-${item.id || index}`,
+      title: item.title,
+      image: item.image,
+      href: item.sourcePath || "/chaine-youtube",
+      eyebrow: "vidéo",
+    }, index, "vidéo"),
+  );
+
+  if (route === "/actualites") return normalizedNews;
+  if (route === "/anime-catalog") return normalizedCatalog;
+  if (route === "/chaine-youtube") return normalizedVideos.filter((item) => item.href === "/chaine-youtube");
+  if (route === "/prime-video") return normalizedVideos.filter((item) => item.href !== "/shop");
+  if (route === "/tiktok") return normalizedVideos.filter((item) => item.href !== "/shop");
+  if (route === "/lecteurs-video") return normalizedVideos;
+  if (route === "/anime-countdown") return normalizedCatalog;
+  if (route === "/anime-moments") return [...normalizedCatalog, ...normalizedVideos];
+  if (route === "/decouvrir") return [...normalizedCatalog, ...normalizedNews, ...normalizedVideos];
+  return [...normalizedCatalog, ...normalizedNews, ...normalizedVideos];
 };
 
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
@@ -135,7 +163,9 @@ export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [premiumBannerCards, setPremiumBannerCards] = useState(() => getPremiumBannerItemsForRoute("/actualites"));
+  const [catalogBannerItems, setCatalogBannerItems] = useState([]);
+  const [premiumBannerCards, setPremiumBannerCards] = useState([]);
+  const bannerQueuesRef = useRef({});
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
 
@@ -144,6 +174,23 @@ export default function RootLandingPage() {
       setRotationIndex((value) => (value + 1) % rotatingPortalDestinations.length);
     }, portalRotationIntervalMs);
     return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/catalog-seo.json")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) {
+          setCatalogBannerItems(data);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCatalogBannerItems([]);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -234,28 +281,40 @@ export default function RootLandingPage() {
   const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
   const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
+  const premiumBannerRows = useMemo(() => Array.from({ length: 4 }, (_, rowIndex) => premiumBannerCards.slice(rowIndex * 5, rowIndex * 5 + 5)), [premiumBannerCards]);
 
   useEffect(() => {
-    setPremiumBannerCards((previous) => {
-      const nextPool = getPremiumBannerItemsForRoute(heroSecondary.to);
-      const prevIds = new Set((previous || []).map((item) => item.id));
-      const filtered = nextPool.filter((item) => !prevIds.has(item.id));
-      return (filtered.length ? filtered : nextPool).slice(0, 10);
-    });
-  }, [heroSecondary.to]);
+    const key = heroSecondary.to;
+    const pool = buildLowerBannerCandidates(key, catalogBannerItems);
+    if (!pool.length) {
+      setPremiumBannerCards([]);
+      return undefined;
+    }
+
+    const existing = bannerQueuesRef.current[key];
+    const queue = existing?.length ? existing : shuffleArray(pool);
+    bannerQueuesRef.current[key] = queue;
+    setPremiumBannerCards(queue.slice(0, 20));
+    bannerQueuesRef.current[key] = queue.slice(20).length ? queue.slice(20) : shuffleArray(pool);
+    return undefined;
+  }, [heroSecondary.to, catalogBannerItems]);
 
   useEffect(() => {
     if (reducedMotion) return undefined;
     const timer = window.setInterval(() => {
-      setPremiumBannerCards((previous) => {
-        const pool = getPremiumBannerItemsForRoute(heroSecondary.to);
-        const prevIds = new Set((previous || []).map((item) => item.id));
-        const rotated = shuffleArray(pool.filter((item) => !prevIds.has(item.id)));
-        return [...rotated, ...shuffleArray(pool)].slice(0, 10);
-      });
-    }, 8000);
+      const key = heroSecondary.to;
+      const pool = buildLowerBannerCandidates(key, catalogBannerItems);
+      if (!pool.length) return;
+      let queue = bannerQueuesRef.current[key];
+      if (!queue || !queue.length) queue = shuffleArray(pool);
+      const nextBatch = queue.slice(0, 20);
+      let rest = queue.slice(20);
+      if (!rest.length) rest = shuffleArray(pool);
+      bannerQueuesRef.current[key] = rest;
+      setPremiumBannerCards(nextBatch);
+    }, 20000);
     return () => window.clearInterval(timer);
-  }, [reducedMotion, heroSecondary.to]);
+  }, [reducedMotion, heroSecondary.to, catalogBannerItems]);
 
   return (
     <PageShell>
@@ -418,23 +477,29 @@ export default function RootLandingPage() {
                 })}
               </div>
 
-              <div className="hero-premium-lower-grid mt-6" data-testid="home-platforms-dynamic-banner-grid">
-                {premiumBannerCards.map((item, index) => (
-                  <Link
-                    key={`${item.id}-${index}`}
-                    to={item.href}
-                    className="hero-premium-lower-card group"
-                    data-testid={`home-platforms-dynamic-card-${index + 1}`}
-                  >
-                    <div className="hero-premium-lower-thumb-shell">
-                      <img src={item.image} alt={item.title} className="hero-premium-lower-thumb" loading="lazy" />
-                      <div className="hero-premium-lower-thumb-overlay" />
-                      <div className="hero-premium-lower-badge">{item.eyebrow}</div>
+              <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
+                {premiumBannerRows.map((row, rowIndex) => (
+                  <div key={`premium-row-${rowIndex}`} className="hero-premium-lower-row">
+                    <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
+                      {[...row, ...row].map((item, index) => (
+                        <Link
+                          key={`${item.id}-${rowIndex}-${index}`}
+                          to={item.href}
+                          className="hero-premium-lower-card group flex w-[86px] min-w-[86px] max-w-[86px] flex-none flex-col sm:w-[92px] sm:min-w-[92px] sm:max-w-[92px] xl:w-[102px] xl:min-w-[102px] xl:max-w-[102px]"
+                          data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
+                        >
+                          <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full">
+                            <img src={item.image} alt={item.title} className="hero-premium-lower-thumb" loading="lazy" />
+                            <div className="hero-premium-lower-thumb-overlay" />
+                            <div className="hero-premium-lower-badge">{item.eyebrow}</div>
+                          </div>
+                          <div className="hero-premium-lower-copy">
+                            <p className="hero-premium-lower-title">{item.title}</p>
+                          </div>
+                        </Link>
+                      ))}
                     </div>
-                    <div className="hero-premium-lower-copy">
-                      <p className="hero-premium-lower-title">{item.title}</p>
-                    </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

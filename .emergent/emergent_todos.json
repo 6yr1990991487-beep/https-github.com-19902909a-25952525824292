@@ -1,14 +1,14 @@
 [
   {
-    "content": "Corriger uniquement le filtre noir et blanc sur la vidéo de la carte visible dans la capture preview",
+    "content": "Corriger le format des cartes de la bannière basse : petites cartes verticales réellement compactes",
     "status": "in_progress"
   },
   {
-    "content": "Réparer le bloc CSS ciblé pour que le filtre s’applique réellement",
-    "status": "pending"
+    "content": "Conserver le flux auto-défilant en 4 niveaux avec cartes serrées sur mobile",
+    "status": "in_progress"
   },
   {
-    "content": "Vérifier visuellement la carte vidéo en noir et blanc sur preview",
+    "content": "Revérifier visuellement la bannière basse sur preview",
     "status": "pending"
   }
 ]
