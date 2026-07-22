@@ -1,10 +1,14 @@
 [
   {
-    "content": "Retirer les textes demandés de la section concernée sur preview",
+    "content": "Modifier les cartes de la bannière ciblée pour remplacer les images fixes par des vidéos de prévisualisation",
     "status": "completed"
   },
   {
-    "content": "Vérifier visuellement la suppression",
+    "content": "Conserver un rendu premium proche de la maquette sur desktop et mobile",
+    "status": "completed"
+  },
+  {
+    "content": "Tester visuellement la bannière sur preview puis rappeler le redéploiement nécessaire pour la production",
     "status": "completed"
   }
 ]

@@ -360,8 +360,17 @@ export default function RootLandingPage() {
                               <ArrowRight className="h-4 w-4 neon-rgb-icon transition-transform duration-300 group-hover:translate-x-1" />
                             </span>
                           </CardContent>
-                          <div className="relative min-h-[220px] overflow-hidden sm:min-h-[250px]">
-                            <img src={card.image} alt={card.action.label} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <div className="relative min-h-[220px] overflow-hidden sm:min-h-[250px]" data-testid={`${card.testId}-preview-video-shell`}>
+                            <video
+                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              src={card.video}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                              data-testid={`${card.testId}-preview-video`}
+                            />
                             <div className="absolute inset-0 bg-gradient-to-l from-black/20 to-black/72" />
                           </div>
                         </div>
