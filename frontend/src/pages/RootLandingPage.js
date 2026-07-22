@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
@@ -69,6 +69,11 @@ const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
 const embeddedHeroCaptureVideo = "/root-capture-video-latest.mp4";
+const bannerVideoSequence = [
+  embeddedHeroCaptureVideo,
+  "/banner-seq-2.mp4",
+  "/banner-seq-3.mp4",
+];
 
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
@@ -76,6 +81,8 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
+  const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
+  const bannerVideoRef = useRef(null);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -83,6 +90,28 @@ export default function RootLandingPage() {
     }, portalRotationIntervalMs);
     return () => window.clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const video = bannerVideoRef.current;
+    if (!video) return;
+
+    const handleEnded = () => {
+      setActiveBannerVideoIndex((current) => (current + 1) % bannerVideoSequence.length);
+    };
+
+    video.addEventListener("ended", handleEnded);
+    return () => video.removeEventListener("ended", handleEnded);
+  }, [activeBannerVideoIndex]);
+
+  useEffect(() => {
+    const video = bannerVideoRef.current;
+    if (!video) return;
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {});
+    }
+  }, [activeBannerVideoIndex]);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
@@ -108,11 +137,12 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
             <div className="relative overflow-hidden rounded-[2rem] min-h-[460px]" data-testid="root-landing-hero-banner-shell">
               <video
+                ref={bannerVideoRef}
+                key={bannerVideoSequence[activeBannerVideoIndex]}
                 className="absolute inset-0 h-full w-full object-cover object-center"
-                src={embeddedHeroCaptureVideo}
+                src={bannerVideoSequence[activeBannerVideoIndex]}
                 autoPlay
                 muted
-                loop
                 playsInline
                 preload="metadata"
                 data-testid="hero-banner-background-video"

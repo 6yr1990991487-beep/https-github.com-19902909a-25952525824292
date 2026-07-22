@@ -1,14 +1,14 @@
 [
   {
-    "content": "Transformer la vidéo du milieu en arrière-plan 16:9 de toute la bannière",
+    "content": "Mettre à jour la bannière preview pour enchaîner automatiquement 3 vidéos dans le fond",
     "status": "completed"
   },
   {
-    "content": "Replacer les boutons en bas comme avant, au-dessus de la vidéo de fond",
+    "content": "Télécharger/brancher les 2 nouvelles vidéos utilisateur dans les assets publics",
     "status": "completed"
   },
   {
-    "content": "Vérifier visuellement sur preview puis informer qu’un redéploiement sera nécessaire pour la production",
+    "content": "Lancer lint + vérification visuelle de la bannière puis informer qu’un redéploiement production sera nécessaire",
     "status": "completed"
   }
 ]
