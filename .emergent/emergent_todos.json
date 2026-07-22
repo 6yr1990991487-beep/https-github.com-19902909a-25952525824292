@@ -1,14 +1,14 @@
 [
   {
-    "content": "Supprimer les 4 champs sombres de la bannière dans le code preview",
+    "content": "Transformer la vidéo du milieu en arrière-plan 16:9 de toute la bannière",
     "status": "completed"
   },
   {
-    "content": "Vérifier visuellement le rendu corrigé sur preview",
+    "content": "Replacer les boutons en bas comme avant, au-dessus de la vidéo de fond",
     "status": "completed"
   },
   {
-    "content": "Informer l’utilisateur qu’un redéploiement sera nécessaire pour appliquer le correctif en production",
+    "content": "Vérifier visuellement sur preview puis informer qu’un redéploiement sera nécessaire pour la production",
     "status": "completed"
   }
 ]

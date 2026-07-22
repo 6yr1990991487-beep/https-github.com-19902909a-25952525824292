@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube, Volume2, VolumeX, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import heroImage from "@/assets/anime-moments-hero.jpg";
 import mangaBanner from "@/assets/manga-banner.jpg";
 import portalButtonsZoneVideo from "@/assets/portal-buttons-zone-video.mp4";
 import portalZoneReplacement from "@/assets/portal-zone-replacement.mp4";
-import rootCaptureZoneVideo from "@/assets/root-capture-zone-video.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -69,7 +68,6 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
-const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 const embeddedHeroCaptureVideo = "/root-capture-video-latest.mp4";
 
 
@@ -78,24 +76,12 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
-  const [videoMuted, setVideoMuted] = useState(true);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const portalVideoRef = useRef(null);
 
   useEffect(() => {
-    const media = window.matchMedia(reducedMotionQuery);
-    const syncReduced = () => setReducedMotion(media.matches);
-    syncReduced();
-    media.addEventListener?.("change", syncReduced);
-
-    const rotationId = window.setInterval(() => {
+    const id = window.setInterval(() => {
       setRotationIndex((value) => (value + 1) % rotatingPortalDestinations.length);
     }, portalRotationIntervalMs);
-
-    return () => {
-      window.clearInterval(rotationId);
-      media.removeEventListener?.("change", syncReduced);
-    };
+    return () => window.clearInterval(id);
   }, []);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
@@ -120,9 +106,22 @@ export default function RootLandingPage() {
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div className="relative grid items-center gap-6 lg:grid-cols-[1.02fr_0.98fr] xl:gap-8">
-              <div className="space-y-5 sm:space-y-6" data-testid="root-landing-hero-content">
-                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="relative overflow-hidden rounded-[2rem] min-h-[460px]" data-testid="root-landing-hero-banner-shell">
+              <video
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                src={embeddedHeroCaptureVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                data-testid="hero-banner-background-video"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,20,0.28),rgba(5,10,20,0.36))]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_82%_24%,rgba(255,255,255,0.05),transparent_18%)]" />
+
+              <div className="relative flex min-h-[460px] flex-col justify-end p-4 sm:p-6 lg:p-8">
+                <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap" data-testid="hero-banner-bottom-primary-buttons">
                   <Button asChild size="lg" className="btn-neon-rainbow min-h-[50px] rounded-full px-8 text-sm font-semibold text-white" data-testid="home-hero-primary-cta-button">
                     <Link to={heroPrimary.to}>
                       <span key={`hero-primary-${heroPrimary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
@@ -141,7 +140,7 @@ export default function RootLandingPage() {
                   </Button>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3" data-testid="home-hero-highlights-grid">
+                <div className="mt-3 grid gap-3 sm:grid-cols-3" data-testid="home-hero-highlights-grid">
                   {[heroPrimary, heroSecondary, heroNews].map((item, index) => (
                     <Card key={`hero-highlight-${index}-${item.to}`} className="rounded-[1.5rem] border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]" data-testid={`home-hero-highlight-${index + 1}`}>
                       <CardContent className="p-4">
@@ -153,35 +152,6 @@ export default function RootLandingPage() {
                       </CardContent>
                     </Card>
                   ))}
-                </div>
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-[1.18fr_0.82fr] lg:items-stretch" data-testid="root-landing-hero-visual">
-                <div className="relative overflow-hidden rounded-[2rem]" data-testid="capture-panel-embedded-video-shell">
-                  <video
-                    className="h-[clamp(400px,52vw,560px)] w-full object-cover object-center"
-                    src={embeddedHeroCaptureVideo}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    data-testid="capture-panel-embedded-video"
-                  />
-                </div>
-
-                <div className="relative overflow-hidden rounded-[2rem] justify-self-end" data-testid="home-hero-zone-replacement-player">
-                  <video
-                    ref={portalVideoRef}
-                    className="h-[clamp(400px,52vw,560px)] w-full object-contain object-center"
-                    src={rootCaptureZoneVideo}
-                    autoPlay
-                    muted={videoMuted}
-                    loop
-                    playsInline
-                    preload="metadata"
-                    data-testid="home-hero-zone-replacement-video"
-                  />
                 </div>
               </div>
             </div>
