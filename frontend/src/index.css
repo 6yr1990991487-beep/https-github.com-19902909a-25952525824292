@@ -2233,6 +2233,18 @@
     0%, 100% { transform: translateY(0) scaleY(1); }
     50%      { transform: translateY(40px) scaleY(0.7); }
   }
+
+  .home-platforms-neutral-shell .neon-rgb-icon,
+  .home-platforms-neutral-shell .neon-rgb-text-soft {
+    text-shadow: none !important;
+    filter: none !important;
+  }
+
+  .home-platforms-neutral-shell .rgb-neon,
+  .home-platforms-neutral-shell .btn-neon-rainbow {
+    box-shadow: 0 16px 36px -28px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  }
+
   .holo-action-crouch .holo-body { animation: holo-crouch 3s ease-in-out infinite; transform-origin: 50px 170px; transform-box: view-box; }
 
   @media (prefers-reduced-motion: reduce) {

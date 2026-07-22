@@ -1,14 +1,10 @@
 [
   {
-    "content": "Modifier les cartes de la bannière ciblée pour remplacer les images fixes par des vidéos de prévisualisation",
+    "content": "Retirer la dominante RGB/orangé/rose de la bannière ciblée sur preview",
     "status": "completed"
   },
   {
-    "content": "Conserver un rendu premium proche de la maquette sur desktop et mobile",
-    "status": "completed"
-  },
-  {
-    "content": "Tester visuellement la bannière sur preview puis rappeler le redéploiement nécessaire pour la production",
+    "content": "Vérifier visuellement le rendu sans cette couleur",
     "status": "completed"
   }
 ]
