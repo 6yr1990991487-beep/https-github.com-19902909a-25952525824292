@@ -1861,6 +1861,79 @@
   }
 }
 
+@layer components {
+  .hero-banner-3d {
+    perspective: 1800px;
+    transform-style: preserve-3d;
+    --banner-rotate-x: 0deg;
+    --banner-rotate-y: 0deg;
+    --banner-shift-x: 0px;
+    --banner-shift-y: 0px;
+    --banner-glow-x: 50%;
+    --banner-glow-y: 42%;
+    box-shadow: 0 28px 90px -36px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  }
+
+  .hero-banner-3d::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent 28%, transparent 72%, rgba(255,255,255,0.08));
+    opacity: 0.68;
+    mix-blend-mode: screen;
+    transform: translateZ(26px);
+  }
+
+  .hero-banner-video {
+    filter: brightness(1.18) saturate(1.22) contrast(1.08);
+    transform: scale(1.12) translate3d(var(--banner-shift-x), var(--banner-shift-y), 0);
+    transition: transform 450ms ease, filter 280ms ease;
+    will-change: transform, filter;
+  }
+
+  .hero-banner-darken {
+    background: linear-gradient(180deg, rgba(5,10,20,0.08), rgba(5,10,20,0.16));
+  }
+
+  .hero-banner-specular {
+    background:
+      radial-gradient(circle at var(--banner-glow-x) var(--banner-glow-y), rgba(255,255,255,0.22), transparent 20%),
+      linear-gradient(118deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.02) 18%, transparent 34%, transparent 66%, rgba(255,255,255,0.1) 100%);
+    mix-blend-mode: screen;
+    opacity: 0.8;
+  }
+
+  .hero-banner-color-bloom {
+    background:
+      radial-gradient(circle at 16% 18%, rgba(56,189,248,0.18), transparent 24%),
+      radial-gradient(circle at 82% 22%, rgba(236,72,153,0.16), transparent 20%),
+      radial-gradient(circle at 48% 82%, rgba(168,85,247,0.14), transparent 24%);
+    opacity: 0.92;
+  }
+
+  .hero-banner-content {
+    transform: rotateX(var(--banner-rotate-x)) rotateY(var(--banner-rotate-y)) translateZ(36px);
+    transform-style: preserve-3d;
+    transition: transform 220ms ease;
+  }
+
+  .hero-banner-content > * {
+    transform: translateZ(22px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-banner-video,
+    .hero-banner-content,
+    .hero-banner-3d::before {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+
 
   .theme-toast-desc {
     color: var(--theme-muted) !important;

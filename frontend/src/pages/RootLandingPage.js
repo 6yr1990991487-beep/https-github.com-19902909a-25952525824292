@@ -82,7 +82,9 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const bannerVideoRef = useRef(null);
+  const bannerShellRef = useRef(null);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -113,6 +115,65 @@ export default function RootLandingPage() {
     }
   }, [activeBannerVideoIndex]);
 
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncReduced = () => setReducedMotion(media.matches);
+    syncReduced();
+    media.addEventListener?.("change", syncReduced);
+
+    const shell = bannerShellRef.current;
+    if (!shell || media.matches) {
+      return () => media.removeEventListener?.("change", syncReduced);
+    }
+
+    let pointerX = 0;
+    let pointerY = 0;
+    let frame = 0;
+    let drift = 0;
+    let running = true;
+
+    const update = () => {
+      if (!running) return;
+      drift += 0.018;
+      const droneX = Math.sin(drift) * 10;
+      const droneY = Math.cos(drift * 0.75) * 8;
+      const tiltX = (-pointerY * 7) + Math.cos(drift * 0.6) * 2.5;
+      const tiltY = (pointerX * 10) + Math.sin(drift * 0.9) * 3;
+      shell.style.setProperty("--banner-rotate-x", `${tiltX.toFixed(2)}deg`);
+      shell.style.setProperty("--banner-rotate-y", `${tiltY.toFixed(2)}deg`);
+      shell.style.setProperty("--banner-shift-x", `${droneX.toFixed(2)}px`);
+      shell.style.setProperty("--banner-shift-y", `${droneY.toFixed(2)}px`);
+      shell.style.setProperty("--banner-glow-x", `${50 + pointerX * 18}%`);
+      shell.style.setProperty("--banner-glow-y", `${42 + pointerY * 16}%`);
+      frame = window.requestAnimationFrame(update);
+    };
+
+    const onPointerMove = (event) => {
+      const rect = shell.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      pointerX = (x - 0.5) * 2;
+      pointerY = (y - 0.5) * 2;
+    };
+
+    const onPointerLeave = () => {
+      pointerX = 0;
+      pointerY = 0;
+    };
+
+    shell.addEventListener("pointermove", onPointerMove);
+    shell.addEventListener("pointerleave", onPointerLeave);
+    frame = window.requestAnimationFrame(update);
+
+    return () => {
+      running = false;
+      shell.removeEventListener("pointermove", onPointerMove);
+      shell.removeEventListener("pointerleave", onPointerLeave);
+      window.cancelAnimationFrame(frame);
+      media.removeEventListener?.("change", syncReduced);
+    };
+  }, []);
+
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
   const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
@@ -135,11 +196,15 @@ export default function RootLandingPage() {
             <div className={luxuryGlowLeft} />
             <div className={luxuryGlowRight} />
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div className="relative overflow-hidden rounded-[2rem] min-h-[460px]" data-testid="root-landing-hero-banner-shell">
+            <div
+              ref={bannerShellRef}
+              className="hero-banner-3d relative overflow-hidden rounded-[2rem] min-h-[460px]"
+              data-testid="root-landing-hero-banner-shell"
+            >
               <video
                 ref={bannerVideoRef}
                 key={bannerVideoSequence[activeBannerVideoIndex]}
-                className="absolute inset-0 h-full w-full object-cover object-center"
+                className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
                 src={bannerVideoSequence[activeBannerVideoIndex]}
                 autoPlay
                 muted
@@ -147,10 +212,11 @@ export default function RootLandingPage() {
                 preload="metadata"
                 data-testid="hero-banner-background-video"
               />
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,20,0.28),rgba(5,10,20,0.36))]" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_82%_24%,rgba(255,255,255,0.05),transparent_18%)]" />
+              <div className="hero-banner-darken pointer-events-none absolute inset-0" />
+              <div className="hero-banner-specular pointer-events-none absolute inset-0" />
+              <div className="hero-banner-color-bloom pointer-events-none absolute inset-0" />
 
-              <div className="relative flex min-h-[460px] flex-col justify-end p-4 sm:p-6 lg:p-8">
+              <div className="hero-banner-content relative flex min-h-[460px] flex-col justify-end p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap" data-testid="hero-banner-bottom-primary-buttons">
                   <Button asChild size="lg" className="btn-neon-rainbow min-h-[50px] rounded-full px-8 text-sm font-semibold text-white" data-testid="home-hero-primary-cta-button">
                     <Link to={heroPrimary.to}>

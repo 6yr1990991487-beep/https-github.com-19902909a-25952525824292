@@ -1,14 +1,18 @@
 [
   {
-    "content": "Mettre à jour la bannière preview pour enchaîner automatiquement 3 vidéos dans le fond",
+    "content": "Analyser la bannière actuelle et identifier les filtres/overlays qui assombrissent les vidéos",
     "status": "completed"
   },
   {
-    "content": "Télécharger/brancher les 2 nouvelles vidéos utilisateur dans les assets publics",
+    "content": "Augmenter la luminosité/couleurs des 3 vidéos de bannière et réduire les calques sombres",
     "status": "completed"
   },
   {
-    "content": "Lancer lint + vérification visuelle de la bannière puis informer qu’un redéploiement production sera nécessaire",
+    "content": "Ajouter un effet 3D fort et sophistiqué à la bannière avec parallaxe souris + mouvement caméra type drone/street-view",
+    "status": "completed"
+  },
+  {
+    "content": "Tester visuellement sur preview et confirmer qu’un redéploiement sera nécessaire pour la production",
     "status": "completed"
   }
 ]
