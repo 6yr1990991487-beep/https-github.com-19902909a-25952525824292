@@ -253,3 +253,11 @@
 - Chaque aperçu de la bannière doit rediriger vers sa vraie page cible.
 - Utiliser les contenus existants disponibles et compléter par rotation locale non répétitive si nécessaire.
 - Problème signalé sur production : implémentation à faire en preview puis redéploiement requis.
+
+### Étape suivante validée — bannière basse premium dynamique ⏳ IN PROGRESS
+- Conserver la bannière du haut désormais stabilisée.
+- Modifier uniquement la bannière basse de la capture.
+- Afficher jusqu’à 10 sélections aléatoires non répétitives, avec une présentation premium/sophistiquée (cartes, miniatures, formats adaptés au contenu).
+- Rendre les cartes/boutons de cette bannière basse cliquables avec redirection réelle.
+- Utiliser les contenus existants et une rotation locale autonome.
+

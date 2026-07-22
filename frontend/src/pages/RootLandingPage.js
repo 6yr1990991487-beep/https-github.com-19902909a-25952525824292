@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
+import { products } from "@/data/videos";
 import { PageShell } from "@/components/PageShell";
 import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,34 @@ const platformCards = [
   { title: "Catalogue", testId: "home-platform-card-catalogue", to: "/anime-catalog" },
 ];
 
+
+const shuffleArray = (list) => {
+  const clone = [...list];
+  for (let i = clone.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [clone[i], clone[j]] = [clone[j], clone[i]];
+  }
+  return clone;
+};
+
+const premiumBannerContentPool = shuffleArray(
+  SEO_NEWS.filter((item) => ["video", "news", "catalog", "product"].includes(item.category)).map((item, index) => ({
+    id: item.id || `seo-${index}`,
+    title: item.title,
+    eyebrow: item.category === "video" ? "vidéo" : item.category === "product" ? "boutique" : item.category,
+    image: item.image || "/lovanet-og.svg",
+    href: item.sourcePath || (item.category === "product" ? "/shop" : "/actualites"),
+  })).concat(
+    products.map((item, index) => ({
+      id: `product-${item.id}-${index}`,
+      title: item.name,
+      eyebrow: item.tag,
+      image: "/lovanet-og.svg",
+      href: "/shop",
+    })),
+  ),
+);
+
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   ...item,
   href: item.category === "product" ? "/shop" : item.sourcePath || "/actualites",
@@ -98,6 +127,7 @@ export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [premiumBannerCards, setPremiumBannerCards] = useState(() => premiumBannerContentPool.slice(0, 10));
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
 
@@ -188,6 +218,18 @@ export default function RootLandingPage() {
       media.removeEventListener?.("change", syncReduced);
     };
   }, []);
+
+  useEffect(() => {
+    if (reducedMotion) return undefined;
+    const timer = window.setInterval(() => {
+      setPremiumBannerCards((previous) => {
+        const prevIds = new Set((previous || []).map((item) => item.id));
+        const rotated = shuffleArray(premiumBannerContentPool.filter((item) => !prevIds.has(item.id)));
+        return [...rotated, ...shuffleArray(premiumBannerContentPool)].slice(0, 10);
+      });
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion]);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
@@ -354,20 +396,24 @@ export default function RootLandingPage() {
                 })}
               </div>
 
-              <div className="rgb-neon relative mt-6 overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.05]" data-testid="home-platforms-zone-video-player">
-                <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/44 via-transparent to-black/8" />
-                <div className="pointer-events-none absolute inset-0 z-[1] opacity-22 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.2)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.16)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-                <div className="pointer-events-none absolute inset-0 z-[1] opacity-18 bg-[radial-gradient(circle_at_18%_30%,rgba(255,120,220,0.16),transparent_26%),radial-gradient(circle_at_82%_28%,rgba(34,211,238,0.15),transparent_24%)] animate-pulse-glow" />
-                <video
-                  className="mobile-safe-video w-full object-cover"
-                  src={portalButtonsZoneVideo}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  data-testid="home-platforms-zone-video"
-                />
+              <div className="hero-premium-lower-grid mt-6" data-testid="home-platforms-dynamic-banner-grid">
+                {premiumBannerCards.map((item, index) => (
+                  <Link
+                    key={`${item.id}-${index}`}
+                    to={item.href}
+                    className="hero-premium-lower-card group"
+                    data-testid={`home-platforms-dynamic-card-${index + 1}`}
+                  >
+                    <div className="hero-premium-lower-thumb-shell">
+                      <img src={item.image} alt={item.title} className="hero-premium-lower-thumb" loading="lazy" />
+                      <div className="hero-premium-lower-thumb-overlay" />
+                      <div className="hero-premium-lower-badge">{item.eyebrow}</div>
+                    </div>
+                    <div className="hero-premium-lower-copy">
+                      <p className="hero-premium-lower-title">{item.title}</p>
+                    </div>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

@@ -1,22 +1,18 @@
 [
   {
-    "content": "Restaurer la bannière du haut à son état précédent sans logique de rotation dynamique",
+    "content": "Implémenter 10 sélections aléatoires non répétitives dans la bannière basse avec cartes/miniatures premium",
     "status": "completed"
   },
   {
-    "content": "Rendre les boutons/cartes de la bannière du haut cliquables avec la bonne redirection",
+    "content": "Rendre toutes les cartes/boutons de la bannière basse cliquables avec la bonne redirection",
     "status": "completed"
   },
   {
-    "content": "Tester visuellement et fonctionnellement la bannière du haut sur preview",
+    "content": "Tester visuellement et fonctionnellement la bannière basse sur preview",
     "status": "completed"
-  },
-  {
-    "content": "Préparer ensuite la future modification de la bannière du bas seulement",
-    "status": "in_progress"
   },
   {
     "content": "Informer qu’un redéploiement sera nécessaire pour la production",
-    "status": "pending"
+    "status": "completed"
   }
 ]
