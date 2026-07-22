@@ -20,6 +20,7 @@ import {
   Clapperboard,
   Heart,
   Info,
+  Languages,
   Pause,
   PictureInPicture2,
   Play,
@@ -70,11 +71,26 @@ function mediaTitle(media: Media | null | undefined) {
   return media.title.english || media.title.romaji || media.title.native || `Anime ${media.id}`;
 }
 
+function translatedTitle(media: Media | null | undefined) {
+  if (!media) return "Catalogue Anime Lovanet";
+  const options = [media.title.native, media.title.romaji, media.title.english].filter(Boolean);
+  return options[0] || mediaTitle(media);
+}
+
 function mediaDescription(media: Media | null | undefined) {
   const raw = String(
     media?.description || "Catalogue anime manga avec miniatures, bandes-annonces, synopsis et cartes indexables.",
   );
   return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 240);
+}
+
+function translatedDescription(media: Media | null | undefined) {
+  const titleFr = translatedTitle(media);
+  const titleDefault = mediaTitle(media);
+  const year = media?.seasonYear ? ` sorti en ${media.seasonYear}` : "";
+  const episodes = media?.episodes ? ` avec ${media.episodes} épisodes` : "";
+  const genres = media?.genres?.length ? ` Genres : ${media.genres.slice(0, 3).join(", ")}.` : "";
+  return `${titleFr} — présentation traduite de ${titleDefault}${year}${episodes}.${genres}`.trim();
 }
 
 function mediaImage(media: Media | null | undefined) {
@@ -143,6 +159,7 @@ export default function AnimeCatalog() {
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [showVideoPrompt, setShowVideoPrompt] = useState(true);
+  const [showTranslatedCards, setShowTranslatedCards] = useState(false);
   const PAGE_SIZE = 48;
   const [renderCount, setRenderCount] = useState<number>(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -779,40 +796,22 @@ export default function AnimeCatalog() {
                 }}
               />
               <div className="relative grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
-                <div className="space-y-4">
-                  <Badge className="inline-flex rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-white/84" data-testid="catalog-premium-eyebrow">
-                    Catalogue vidéo géant
-                  </Badge>
-                  <div className="space-y-3">
-                    <h1 className="font-display text-3xl font-black leading-[1.02] text-white sm:text-4xl md:text-5xl" data-testid="catalog-premium-title">
-                      Un écran principal lumineux pour piloter tout le catalogue.
-                    </h1>
-                    <p className="max-w-3xl text-sm leading-7 text-white/72 sm:text-base" data-testid="catalog-premium-description">
-                      Per design guidelines, utilisation des accents cyan, magenta et violet du thème existant pour le halo du lecteur et les repères visuels, tandis que les cartes passent sur des panneaux plus transparents et brillants façon blister verre.
-                    </p>
-                  </div>
-                </div>
+                <div className="min-h-[88px] rounded-[1.5rem] border border-white/8 bg-[rgba(255,255,255,0.015)]" data-testid="catalog-premium-hero-spacer" />
 
                 <div className="grid gap-3 sm:grid-cols-3" data-testid="catalog-premium-metrics">
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="p-4">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Favoris</p>
-                      <p className="mt-2 font-display text-3xl font-black" data-testid="catalog-favorites-count">{favoriteItems.length}</p>
-                      <p className="mt-1 text-sm text-white/62">Playlist persistante locale</p>
+                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                      <p className="font-display text-3xl font-black" data-testid="catalog-favorites-count">{favoriteItems.length}</p>
                     </CardContent>
                   </Card>
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="p-4">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Vidéos prêtes</p>
-                      <p className="mt-2 font-display text-3xl font-black" data-testid="catalog-ready-trailers-count">{playerQueue.length}</p>
-                      <p className="mt-1 text-sm text-white/62">Lecture auto stabilisée</p>
+                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                      <p className="font-display text-3xl font-black" data-testid="catalog-ready-trailers-count">{playerQueue.length}</p>
                     </CardContent>
                   </Card>
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="p-4">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Catalogue visible</p>
-                      <p className="mt-2 font-display text-3xl font-black" data-testid="catalog-visible-count">{filteredSorted.length}</p>
-                      <p className="mt-1 text-sm text-white/62">Titres filtrés instantanément</p>
+                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                      <p className="font-display text-3xl font-black" data-testid="catalog-visible-count">{filteredSorted.length}</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -822,18 +821,7 @@ export default function AnimeCatalog() {
             {showVideoPrompt && !!videoSuggestionItems.length && (
               <Card className="theme-panel-surface relative overflow-hidden rounded-[1.8rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="catalog-video-selection-panel">
                 <CardContent className="space-y-5 p-5 sm:p-6">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div className="space-y-2">
-                      <Badge className="rounded-full border border-white/12 bg-white/[0.05] px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white/82">
-                        Sélection vidéo détectée
-                      </Badge>
-                      <h2 className="font-display text-2xl font-black" data-testid="catalog-video-selection-title">
-                        {promptPreviewItems.length} cartes vidéo prêtes à être lues ou ajoutées aux favoris.
-                      </h2>
-                      <p className="max-w-3xl text-sm leading-7 text-white/68" data-testid="catalog-video-selection-description">
-                        {videoSuggestionItems.length} cartes vidéo ont été détectées dans le flux courant. Vous pouvez les ajouter en favoris, ou lancer tout de suite la lecture sur le grand écran.
-                      </p>
-                    </div>
+                  <div className="flex flex-wrap items-start justify-end gap-4">
                     <Button
                       type="button"
                       size="icon"
@@ -855,9 +843,9 @@ export default function AnimeCatalog() {
                         className="rounded-[1.35rem] border border-white/12 bg-[rgba(255,255,255,0.03)] p-2 text-left transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-1 hover:border-white/28 hover:shadow-[0_18px_36px_rgba(6,12,24,0.26)]"
                         data-testid={`catalog-video-selection-item-${media.id}`}
                       >
-                        <div className="relative aspect-[5/8] overflow-hidden rounded-[1.1rem] border border-white/10 bg-black/30">
-                          <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover" loading="lazy" />
-                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(5,10,24,0.58))]" />
+                        <div className="relative aspect-[5/8] overflow-hidden rounded-[1.1rem] border border-white/10 bg-[rgba(255,255,255,0.04)]">
+                          <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover brightness-[1.04] saturate-[1.05]" loading="lazy" />
+                          <div className="pointer-events-none absolute inset-0 rounded-[1.1rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0_26px_rgba(255,255,255,0.14)]" />
                           <BlisterFrame radius={16} intensity={0.9} />
                         </div>
                         <p className="mt-3 line-clamp-2 text-sm font-semibold text-white">{mediaTitle(media)}</p>
@@ -1112,8 +1100,9 @@ export default function AnimeCatalog() {
                           animation: "var(--catalog-card-anim, none)",
                         }}
                       >
-                        <div className="relative h-16 w-12 overflow-hidden rounded-xl border border-white/12 bg-black/40">
-                          <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover" loading="lazy" />
+                        <div className="relative h-16 w-12 overflow-hidden rounded-xl border border-white/12 bg-[rgba(255,255,255,0.04)]">
+                          <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover brightness-[1.04] saturate-[1.05]" loading="lazy" />
+                          <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_0_18px_rgba(255,255,255,0.12)]" />
                           <BlisterFrame radius={10} intensity={0.9} />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -1233,6 +1222,18 @@ export default function AnimeCatalog() {
               </div>
             )}
 
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="glass"
+                className={`rounded-full text-white ${showTranslatedCards ? "border-primary/60 text-primary" : ""}`}
+                onClick={() => setShowTranslatedCards((value) => !value)}
+                data-testid="catalog-translate-toggle-button"
+              >
+                <Languages className="h-4 w-4" /> {showTranslatedCards ? "Traductions actives" : "Traduire les cartes"}
+              </Button>
+            </div>
+
             {!!featuredRail.length && (
               <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] p-4 text-white shadow-[0_18px_36px_rgba(6,12,24,0.24)] sm:p-5" data-testid="catalog-featured-strip">
                 <div className="mb-4 flex items-center justify-between gap-3">
@@ -1257,12 +1258,13 @@ export default function AnimeCatalog() {
                         animation: "var(--catalog-card-anim, none)",
                       }}
                     >
-                      <div className="relative h-20 w-14 overflow-hidden rounded-xl border border-white/12 bg-black/40">
-                        <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover" loading="lazy" />
+                      <div className="relative h-20 w-14 overflow-hidden rounded-xl border border-white/12 bg-[rgba(255,255,255,0.04)]">
+                        <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover brightness-[1.05] saturate-[1.06]" loading="lazy" />
+                        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_0_18px_rgba(255,255,255,0.12)]" />
                         <BlisterFrame radius={10} intensity={0.88} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-1 text-sm font-semibold">{mediaTitle(media)}</p>
+                        <p className="line-clamp-1 text-sm font-semibold">{showTranslatedCards ? translatedTitle(media) : mediaTitle(media)}</p>
                         <p className="mt-1 text-xs opacity-75">{media.format || "Anime"} · {media.seasonYear || "Catalogue"}</p>
                       </div>
                       <PlayCircle className="h-5 w-5 shrink-0 text-[var(--theme-link)]" />
@@ -1294,13 +1296,13 @@ export default function AnimeCatalog() {
                         WebkitBackdropFilter: "blur(2px)",
                       }}
                     >
-                      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0.09),transparent_22%,transparent_74%,rgba(255,255,255,0.02))]" />
-                      <div className="relative aspect-[5/8] overflow-hidden rounded-t-[1.9rem] border-b border-white/10 bg-black/25">
+                      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_18%,transparent_78%,rgba(255,255,255,0.05))]" />
+                      <div className="relative aspect-[5/8] overflow-hidden rounded-t-[1.9rem] border-b border-white/10 bg-[rgba(255,255,255,0.04)]">
                         <img
                           src={image}
                           alt={title}
                           loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          className="h-full w-full object-cover brightness-[1.06] saturate-[1.08] contrast-[1.02] transition-transform duration-500 group-hover:scale-[1.03]"
                           onError={(event) => {
                             const target = event.currentTarget;
                             if (media.coverImage.extraLarge && target.src !== media.coverImage.extraLarge) {
@@ -1310,7 +1312,7 @@ export default function AnimeCatalog() {
                             }
                           }}
                         />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(5,10,24,0.52))]" />
+                        <div className="pointer-events-none absolute inset-0 rounded-t-[1.9rem] shadow-[inset_0_2px_0_rgba(255,255,255,0.38),inset_0_-12px_32px_rgba(255,255,255,0.04),0_0_32px_rgba(255,255,255,0.12)]" />
                         <div className="absolute left-3 top-3 right-3 flex items-start justify-between gap-3">
                           <Badge className="rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/88" data-testid={`catalog-card-format-${media.id}`}>
                             {media.format || "Anime"}
@@ -1353,10 +1355,15 @@ export default function AnimeCatalog() {
                       <CardContent className="space-y-4 p-5">
                         <div className="space-y-2">
                           <h3 className="line-clamp-2 font-display text-xl font-black leading-tight" data-testid={`catalog-card-title-${media.id}`}>
-                            {title}
+                            {showTranslatedCards ? translatedTitle(media) : title}
                           </h3>
+                          {showTranslatedCards && translatedTitle(media) !== title && (
+                            <p className="line-clamp-1 text-xs uppercase tracking-[0.18em] opacity-65" data-testid={`catalog-card-original-title-${media.id}`}>
+                              {title}
+                            </p>
+                          )}
                           <p className="line-clamp-3 text-sm leading-7 opacity-80" data-testid={`catalog-card-description-${media.id}`}>
-                            {mediaDescription(media)}
+                            {showTranslatedCards ? translatedDescription(media) : mediaDescription(media)}
                           </p>
                         </div>
 
@@ -1411,10 +1418,10 @@ export default function AnimeCatalog() {
               <>
                 <DialogHeader>
                   <DialogTitle className="font-display text-3xl font-black" data-testid="catalog-detail-title">
-                    {mediaTitle(detailMedia)}
+                    {showTranslatedCards ? translatedTitle(detailMedia) : mediaTitle(detailMedia)}
                   </DialogTitle>
                   <DialogDescription className="text-white/62" data-testid="catalog-detail-description">
-                    {mediaDescription(detailMedia)}
+                    {showTranslatedCards ? translatedDescription(detailMedia) : mediaDescription(detailMedia)}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -1454,7 +1461,7 @@ export default function AnimeCatalog() {
                     <Card className="theme-subpanel border-none bg-transparent text-white" data-testid="catalog-detail-copy-card">
                       <CardContent className="space-y-4 p-5">
                         <p className="text-[11px] uppercase tracking-[0.28em] text-white/50">Synopsis</p>
-                        <p className="text-sm leading-8 text-white/76">{mediaDescription(detailMedia)}</p>
+                        <p className="text-sm leading-8 text-white/76">{showTranslatedCards ? translatedDescription(detailMedia) : mediaDescription(detailMedia)}</p>
                         <div className="flex flex-wrap gap-2">
                           <Button type="button" className="btn-neon-rainbow rounded-full text-white" onClick={() => { activatePlayer(detailMedia, { forceFavorite: true, unlockSound: true }); setDetailMedia(null); }} data-testid="catalog-detail-launch-button">
                             <Play className="h-4 w-4" /> Lancer sur l’écran géant
