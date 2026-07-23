@@ -30,9 +30,13 @@
 - Appliquer des améliorations premium demandées sur **Prime Video / YouTube / Lecteurs vidéo** + extensions possibles sur d’autres pages.
 - Décision utilisateur : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
 
-### Objectif (NOUVEAU) — Nettoyage bannière “capture” Anime Moments (P0 prod)
-- Problème vu en **production** sur la page **Anime Moments** : une bannière/capture contient des **cartes vidéos animées/défilantes**.
-- Demande : **retirer uniquement l’animation et les cartes** de cette bannière, et **remplacer** par la **vidéo fournie par l’utilisateur** en **lecture automatique sans son**, correctement **adaptée** à la zone existante.
+### Objectif (MIS À JOUR) — Nettoyage bannière “capture” Anime Moments (P0 prod)
+- Problème vu en **production** sur la page **Anime Moments** (route `/anime-moments`).
+- Constat : la bannière capture comportait des **cartes vidéos animées/défilantes** (HeroCarousel).
+- Demande mise à jour :
+  1) **Revenir au principe visuel précédent** (le “cadre”/layout du haut doit rester comme avant)
+  2) **Retirer uniquement** les **cartes vidéos animées/défilantes** (donc plus d’animation ni de cartes)
+  3) **Ajouter la vidéo fournie** en **superposition au centre**, **taille réduite**, **semi‑transparente**, **autoplay muet**, sans **masquer** les composants derrière ni sur les côtés.
 
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
@@ -105,7 +109,7 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 - ✅ **Tri émotionnel simple** (mood filter basé sur genres).
 - ✅ **Bloc “similaire à ce titre”** (heuristique genres/score).
 - ✅ **Fallback visuel propre** si YouTube indisponible (évite UI cassée).
-- ✅ **Lecteur principal Prime** stabilisé : passage sur `YouTubeEmbed` + fallback.
+- ✅ **Lecteur principal Prime** stabilisé (YouTubeEmbed + fallback).
 
 > Note : disponibilité YouTube variable. Le fallback est considéré “comportement attendu” et testé.
 
@@ -129,35 +133,40 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 
 ---
 
-### Phase 16 — Nettoyage bannière “capture” Anime Moments (P0 prod) ⏳ À FAIRE
+### Phase 16 — Ajustement bannière “capture” Anime Moments (P0 prod) ⏳ IN PROGRESS
 **Contexte** : retour utilisateur vu en production sur la page **Anime Moments**.
 
-Objectif : retirer la zone de **cartes vidéos animées/défilantes** dans la bannière/capture, et la remplacer par une **vidéo unique** (fournie par l’utilisateur) en **autoplay** **sans son**, adaptée aux dimensions.
+#### État actuel (preview)
+- La bannière du haut a été remplacée par une **vidéo plein cadre**, ce qui **masque** les éléments/effets de la bannière et ne correspond pas au rendu souhaité.
 
-Checklist :
-1) Identifier la page et le composant exacts :
-   - Page Anime Moments (probable `AnimeMomentsPage.tsx` ou composant de bannière réutilisé)
-   - Localiser le bloc “capture” contenant les cartes défilantes.
-2) Supprimer/désactiver :
-   - la logique d’animation/rotation des cartes
-   - l’affichage des cartes (conserver la structure de la bannière)
-3) Ajouter la vidéo fournie :
-   - intégration via `<video>` (mp4) en `autoPlay`, `muted`, `loop`, `playsInline`
-   - `preload="metadata"` ou `auto` selon perf
-   - `object-fit: cover` (ou `contain` si besoin) + responsive
-4) Ajuster le style :
-   - conserver le cadre/habillage existants
-   - adaptation mobile/desktop
-   - pas de son
+#### Objectif correct (à livrer)
+- Revenir au rendu du haut « comme avant » (cadre/ambiance identique).
+- Retirer **uniquement** les **cartes vidéos animées/défilantes**.
+- Ajouter la vidéo utilisateur :
+  - **centrée**, **plus petite**, **semi-transparente**
+  - **autoplay muet**, `playsInline`, `loop`
+  - sans recouvrir/masquer les composants derrière ni sur les côtés.
+
+#### Checklist
+1) **Restaurer le container/structure** d’avant (sans le flux de cartes).
+2) **Supprimer** l’injection des cartes + la logique d’animation (HeroCarousel).
+3) **Ajouter une surcouche vidéo** au centre :
+   - wrapper `position: absolute` centré
+   - `max-width` contrôlée (ex : 52–62% desktop, 78–86% mobile)
+   - `opacity` ~0.45–0.7 + `mix-blend-mode: screen/overlay` si nécessaire
+   - `pointer-events: none` (pour ne pas gêner les composants)
+4) Ajuster responsivité :
+   - mobile : garder lisible, ne pas recouvrir navbar/CTA
+   - desktop : laisser visibles les côtés/effets
 5) Validation preview :
-   - capture desktop/mobile
-   - vérifier absence de cartes et d’animation
+   - captures `/anime-moments` desktop + mobile
+   - vérifier : plus de cartes défilantes, vidéo centrée non intrusive
 6) Redéploiement côté utilisateur pour production.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
-1) **Phase 16** : nettoyage bannière capture Anime Moments (P0 prod) → implémentation preview + captures.
+1) **Phase 16** : corriger la bannière Anime Moments selon le rendu demandé (retour au layout + vidéo centrée transparente) → implémentation preview + captures.
 2) **Phase 14.6 Validation** : captures + tests frontend + corrections (Catalogue/Shop/Actualités).
 3) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
 4) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
@@ -165,7 +174,7 @@ Checklist :
    - Merchant listings `/shop`
    - Catalogue compact + netteté
    - Prime Video (Lot 1)
-   - Anime Moments (bannière capture)
+   - Anime Moments (bannière capture corrigée)
    - puis YouTube/Lecteurs vidéo quand prêts
 6) Post‑déploiement : validation Search Console / Rich Results sur la production.
 
@@ -186,9 +195,9 @@ Checklist :
   - YouTube : hero + cartes unifiées + playlist locale
   - Lecteurs vidéo : expérience unifiée + PiP renforcé
 - Anime Moments (Phase 16) :
-  - suppression des cartes défilantes dans la bannière capture
-  - vidéo unique fournie en autoplay muet intégrée, responsive
-  - rendu stable en mobile/desktop
+  - bannière top : plus de cartes défilantes
+  - vidéo utilisateur centrée, réduite, semi-transparente, autoplay muet
+  - les éléments arrière-plan/côtés restent visibles (pas d’écrasement)
 
 ---
 
