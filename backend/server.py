@@ -180,6 +180,103 @@ def request_text(url: str, timeout: int = 20, headers: Optional[Dict[str, str]] 
         return resp.status, resp.read().decode("utf-8", "replace")
 
 
+TRANSLATION_CACHE_COLLECTION = "translation_cache"
+SUPPORTED_TRANSLATION_TARGETS = {"fr", "en", "es", "de", "it", "pt", "ja", "zh-CN", "zh", "nl", "ru", "ko", "ar", "tr", "hi"}
+
+
+def normalize_translation_text(value: str) -> str:
+    return re.sub(r"\s+", " ", (value or "").strip())
+
+
+def translation_cache_id(text: str, target_lang: str, source_lang: str = "auto") -> str:
+    payload = f"{source_lang}:{target_lang}:{normalize_translation_text(text)}"
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, payload))
+
+
+def looks_french(text: str) -> bool:
+    value = f" {normalize_translation_text(text).lower()} "
+    if not value.strip():
+        return True
+    french_markers = [
+        " le ", " la ", " les ", " des ", " une ", " un ", " et ", " avec ", " pour ", " dans ", " sur ", " est ", " sont ",
+        " épisode ", " saison ", " film ", " animé ", " manga ", " vidéo ", " bande-annonce ", " synopsis ", " sortie ", " plus ",
+    ]
+    if any(marker in value for marker in french_markers):
+        return True
+    return bool(re.search(r"[àâçéèêëîïôûùüÿœæ]", value))
+
+
+def free_translate_text(text: str, target_lang: str = "fr", source_lang: str = "auto") -> Dict[str, Any]:
+    normalized = normalize_translation_text(text)
+    if not normalized:
+        return {"translated_text": "", "detected_source_lang": source_lang}
+    if target_lang == "fr" and looks_french(normalized):
+        return {"translated_text": normalized, "detected_source_lang": "fr"}
+    params = {
+        "client": "gtx",
+        "sl": source_lang or "auto",
+        "tl": target_lang,
+        "dt": "t",
+        "q": normalized,
+    }
+    url = f"https://translate.googleapis.com/translate_a/single?{urllib.parse.urlencode(params)}"
+    payload = request_json(url, timeout=25, headers={"Accept": "application/json, text/plain, */*"})
+    if not isinstance(payload, list) or not payload:
+        raise RuntimeError("Réponse de traduction invalide")
+    translated_chunks = payload[0] if len(payload) > 0 else []
+    detected_source = payload[2] if len(payload) > 2 and isinstance(payload[2], str) else source_lang
+    translated_text = " ".join(
+        str(chunk[0]).strip()
+        for chunk in translated_chunks
+        if isinstance(chunk, list) and chunk and str(chunk[0]).strip()
+    ).strip()
+    if not translated_text:
+        translated_text = normalized
+    return {"translated_text": translated_text, "detected_source_lang": detected_source or source_lang}
+
+
+async def translate_with_cache(text: str, target_lang: str = "fr", source_lang: str = "auto") -> Dict[str, Any]:
+    normalized = normalize_translation_text(text)
+    if not normalized:
+        return {
+            "original_text": "",
+            "translated_text": "",
+            "from_cache": True,
+            "detected_source_lang": source_lang,
+        }
+    cache_id = translation_cache_id(normalized, target_lang, source_lang)
+    existing = await db[TRANSLATION_CACHE_COLLECTION].find_one({"_id": cache_id}, {"_id": 0})
+    if existing and existing.get("translated_text"):
+        return {
+            "original_text": normalized,
+            "translated_text": existing.get("translated_text"),
+            "from_cache": True,
+            "detected_source_lang": existing.get("detected_source_lang", source_lang),
+        }
+    translated = await asyncio.to_thread(free_translate_text, normalized, target_lang, source_lang)
+    now = datetime.now(timezone.utc)
+    doc = {
+        "_id": cache_id,
+        "original_text": normalized,
+        "translated_text": translated.get("translated_text") or normalized,
+        "target_lang": target_lang,
+        "source_lang": source_lang,
+        "detected_source_lang": translated.get("detected_source_lang", source_lang),
+        "updated_at": now,
+    }
+    await db[TRANSLATION_CACHE_COLLECTION].update_one(
+        {"_id": cache_id},
+        {"$set": doc, "$setOnInsert": {"created_at": now}},
+        upsert=True,
+    )
+    return {
+        "original_text": normalized,
+        "translated_text": doc["translated_text"],
+        "from_cache": False,
+        "detected_source_lang": doc["detected_source_lang"],
+    }
+
+
 def load_manifest() -> Dict[str, Any]:
     if MANIFEST_PATH.exists():
         try:
@@ -1751,6 +1848,12 @@ class SyncRunRequest(BaseModel):
     target: str = Field(default="all")
 
 
+class TranslationBatchRequest(BaseModel):
+    texts: List[str] = Field(default_factory=list)
+    target_lang: str = Field(default="fr", min_length=2, max_length=12)
+    source_lang: str = Field(default="auto", min_length=2, max_length=12)
+
+
 @api_router.get("/")
 async def root():
     return {"message": "Lovanet replica API", "status": "ok"}
@@ -1863,6 +1966,119 @@ async def get_catalog(q: Optional[str] = None, genre: Optional[str] = None, limi
     else:
         genres = sorted({g for anime in load_catalog_file()[:500] for g in anime.get("genres", [])})
     return {"items": docs, "total": total, "genres": genres, "source": source}
+
+
+@api_router.get("/prime/catalog")
+async def get_prime_catalog(limit: int = Query(240, ge=24, le=400)):
+    query = """
+    query ($page: Int, $perPage: Int, $sort: [MediaSort]) {
+      Page(page: $page, perPage: $perPage) {
+        media(type: ANIME, sort: $sort, isAdult: false) {
+          id
+          title { romaji english native }
+          coverImage { extraLarge large color }
+          bannerImage
+          averageScore
+          seasonYear
+          format
+          episodes
+          genres
+          description(asHtml: false)
+          trailer { id site }
+          externalLinks { site url }
+        }
+      }
+    }
+    """
+
+    def work() -> List[Dict[str, Any]]:
+        dedup: Dict[int, Dict[str, Any]] = {}
+        sorts = [["POPULARITY_DESC"], ["TRENDING_DESC"], ["SCORE_DESC"], ["START_DATE_DESC"]]
+        for sort in sorts:
+            for page in range(1, 6):
+                try:
+                    data = request_json(
+                        "https://graphql.anilist.co",
+                        method="POST",
+                        body={"query": query, "variables": {"page": page, "perPage": 50, "sort": sort}},
+                    )
+                except Exception:
+                    break
+                media_list = ((data or {}).get("data") or {}).get("Page", {}).get("media", [])
+                if not media_list:
+                    break
+                for media in media_list:
+                    media_id = int(media.get("id") or 0)
+                    if not media_id or media_id in dedup:
+                        continue
+                    links = media.get("externalLinks") or []
+                    prime_link = next(
+                        (
+                            link for link in links
+                            if "prime" in str(link.get("site") or "").lower()
+                            or "primevideo.com" in str(link.get("url") or "").lower()
+                            or ("amazon." in str(link.get("url") or "").lower() and "prime" in str(link.get("url") or "").lower())
+                        ),
+                        None,
+                    )
+                    if not prime_link:
+                        continue
+                    title_obj = media.get("title") or {}
+                    dedup[media_id] = {
+                        "id": media_id,
+                        "title": title_obj.get("english") or title_obj.get("romaji") or title_obj.get("native") or "—",
+                        "cover": ((media.get("coverImage") or {}).get("extraLarge") or (media.get("coverImage") or {}).get("large")),
+                        "banner": media.get("bannerImage"),
+                        "color": (media.get("coverImage") or {}).get("color"),
+                        "score": media.get("averageScore"),
+                        "year": media.get("seasonYear"),
+                        "format": media.get("format"),
+                        "episodes": media.get("episodes"),
+                        "genres": media.get("genres") or [],
+                        "description": strip_tags(media.get("description") or "")[:520],
+                        "primeUrl": prime_link.get("url"),
+                        "trailerId": (media.get("trailer") or {}).get("id") if (media.get("trailer") or {}).get("site") == "youtube" else None,
+                    }
+                    if len(dedup) >= limit:
+                        return list(dedup.values())[:limit]
+        return list(dedup.values())[:limit]
+
+    try:
+        items = await asyncio.to_thread(work)
+        return {"items": items, "count": len(items), "source": "anilist-server-proxy"}
+    except Exception as exc:
+        logger.exception("Prime catalog fetch failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"Catalogue Prime indisponible : {exc}")
+
+
+@api_router.post("/translate")
+async def translate_batch(payload: TranslationBatchRequest):
+    target_lang = (payload.target_lang or "fr").strip()
+    source_lang = (payload.source_lang or "auto").strip()
+    if target_lang not in SUPPORTED_TRANSLATION_TARGETS:
+        raise HTTPException(status_code=400, detail="Langue cible non supportée.")
+    normalized_texts = []
+    seen = set()
+    for text in payload.texts:
+        normalized = normalize_translation_text(text)
+        if not normalized or normalized in seen:
+            continue
+        normalized_texts.append(normalized)
+        seen.add(normalized)
+    if not normalized_texts:
+        raise HTTPException(status_code=400, detail="Aucun texte à traduire.")
+    if len(normalized_texts) > 80:
+        raise HTTPException(status_code=400, detail="Trop de textes à traduire en une seule requête.")
+    try:
+        translations = [await translate_with_cache(text, target_lang=target_lang, source_lang=source_lang) for text in normalized_texts]
+        return {
+            "status": "ok",
+            "target_lang": target_lang,
+            "translations": translations,
+        }
+    except Exception as exc:
+        logger.exception("Translation batch failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"Traduction indisponible : {exc}")
 
 
 @api_router.get("/admin/sync/status")
@@ -1993,6 +2209,8 @@ async def startup_event():
     await db.news_articles.create_index([("published_at", -1), ("trending_score", -1)])
     await db.news_sources.create_index("id", unique=True)
     await db.sync_state.create_index("key", unique=True)
+    await db[TRANSLATION_CACHE_COLLECTION].create_index([("target_lang", 1), ("updated_at", -1)])
+    await db[TRANSLATION_CACHE_COLLECTION].create_index("original_text")
     await seed_news_sources()
     if scheduler_task is None or scheduler_task.done():
         scheduler_task = asyncio.create_task(sync_scheduler_loop())

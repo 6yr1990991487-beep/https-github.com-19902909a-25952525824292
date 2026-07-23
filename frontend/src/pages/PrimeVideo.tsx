@@ -8,10 +8,12 @@ import { AdminRemoveVideo } from "@/components/AdminRemoveVideo";
 import { MangaUniverseBanner } from "@/components/MangaUniverseBanner";
 import { ManualSyncButton } from "@/components/ManualSyncButton";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
+import { TranslationToggleButton } from "@/components/TranslationToggleButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useFrenchTranslation } from "@/hooks/useFrenchTranslation";
 
 type Item = {
   id: string;
@@ -36,26 +38,6 @@ type PrimeAnime = {
   primeUrl?: string;
   trailerId?: string;
 };
-
-const PRIME_QUERY = `
-query ($page: Int, $perPage: Int, $sort: [MediaSort]) {
-  Page(page: $page, perPage: $perPage) {
-    media(type: ANIME, sort: $sort, isAdult: false) {
-      id
-      title { romaji english native }
-      coverImage { extraLarge large color }
-      bannerImage
-      averageScore
-      seasonYear
-      format
-      episodes
-      genres
-      description(asHtml: false)
-      trailer { id site }
-      externalLinks { site url }
-    }
-  }
-}`;
 
 const PRIME_CACHE = "lovanet.cache.prime.anime.v2";
 const PRIME_WATCH_KEY = "lovanet.prime.watch-tonight.v1";
@@ -220,62 +202,23 @@ const PrimeVideo = () => {
     }
 
     const fetchPrime = async () => {
-      const dedup = new Map<number, PrimeAnime>();
-      const sorts: string[][] = [["POPULARITY_DESC"], ["TRENDING_DESC"], ["SCORE_DESC"], ["START_DATE_DESC"]];
       try {
-        for (const sort of sorts) {
-          for (let page = 1; page <= 25; page++) {
-            const response = await fetch("https://graphql.anilist.co", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Accept: "application/json" },
-              body: JSON.stringify({ query: PRIME_QUERY, variables: { page, perPage: 50, sort } }),
-            }).catch(() => null);
-            if (!response || !response.ok) break;
-            const json = await response.json().catch(() => null);
-            const list = json?.data?.Page?.media ?? [];
-            if (!list.length) break;
-
-            for (const media of list) {
-              if (dedup.has(media.id)) continue;
-              const links: any[] = media.externalLinks ?? [];
-              const prime = links.find((link) =>
-                (link?.site || "").toLowerCase().includes("amazon prime") ||
-                (link?.site || "").toLowerCase() === "prime video" ||
-                (((link?.url || "").toLowerCase().includes("primevideo.com") || (link?.url || "").toLowerCase().includes("amazon.")) &&
-                  (link?.url || "").toLowerCase().includes("prime")),
-              );
-              if (!prime) continue;
-
-              dedup.set(media.id, {
-                id: media.id,
-                title: media.title?.english || media.title?.romaji || media.title?.native || "—",
-                cover: media.coverImage?.extraLarge || media.coverImage?.large,
-                banner: media.bannerImage,
-                color: media.coverImage?.color,
-                score: media.averageScore ?? undefined,
-                year: media.seasonYear ?? undefined,
-                format: media.format ?? undefined,
-                episodes: media.episodes ?? undefined,
-                genres: media.genres ?? [],
-                description: shortDescription(media.description ?? ""),
-                primeUrl: prime.url,
-                trailerId: media.trailer?.site === "youtube" ? media.trailer.id : undefined,
-              });
-            }
-
-            const snapshot = Array.from(dedup.values());
-            setPrimeAnime(snapshot);
-            setPrimeLoading(false);
-            try {
-              localStorage.setItem(PRIME_CACHE, JSON.stringify(snapshot.slice(0, 2000)));
-            } catch {
-              // ignore cache persistence failures
-            }
-            await new Promise((resolve) => setTimeout(resolve, 120));
+        const response = await fetch(`${API}/prime/catalog?limit=240`).catch(() => null);
+        if (!response || !response.ok) {
+          throw new Error(`prime-catalog-http-${response?.status || "offline"}`);
+        }
+        const json = await response.json().catch(() => null);
+        const snapshot = Array.isArray(json?.items) ? json.items : [];
+        if (snapshot.length) {
+          setPrimeAnime(snapshot);
+          try {
+            localStorage.setItem(PRIME_CACHE, JSON.stringify(snapshot.slice(0, 2000)));
+          } catch {
+            // ignore cache persistence failures
           }
         }
       } catch (error) {
-        console.error("Prime AniList sync error", error);
+        console.error("Prime catalog sync error", error);
       } finally {
         setPrimeLoading(false);
       }
@@ -319,7 +262,6 @@ const PrimeVideo = () => {
   }, [filteredPrime, selectedPrimeId]);
 
   const selectedPrime = filteredPrime.find((anime) => anime.id === selectedPrimeId) || primeAnime.find((anime) => anime.id === selectedPrimeId) || filteredPrime[0] || primeAnime[0] || null;
-
   const mapPrimeById = useMemo(() => new Map(primeAnime.map((anime) => [anime.id, anime])), [primeAnime]);
   const watchTonight = useMemo(() => watchTonightIds.map((id) => mapPrimeById.get(id)).filter(Boolean) as PrimeAnime[], [mapPrimeById, watchTonightIds]);
   const resumeLater = useMemo(() => recentPrimeIds.map((id) => mapPrimeById.get(id)).filter(Boolean) as PrimeAnime[], [mapPrimeById, recentPrimeIds]);
@@ -338,6 +280,31 @@ const PrimeVideo = () => {
       .slice(0, 5)
       .map((entry) => entry.anime);
   }, [primeAnime, selectedPrime]);
+
+  const primeTranslationTexts = useMemo(() => {
+    const base = [
+      selectedPrime,
+      ...filteredPrime.slice(0, 12),
+      ...watchTonight.slice(0, 6),
+      ...resumeLater.slice(0, 6),
+      ...similarPrime.slice(0, 4),
+    ].filter(Boolean) as PrimeAnime[];
+    return [...base.flatMap((anime) => [anime.title, shortDescription(anime.description)]), ...items.slice(0, 8).map((entry) => entry.title)];
+  }, [filteredPrime, items, resumeLater, selectedPrime, similarPrime, watchTonight]);
+
+  const {
+    enabled: showFrenchCopy,
+    setEnabled: setShowFrenchCopy,
+    loading: translationLoading,
+    getText: getTranslatedPrimeText,
+    translateNow: translatePrimeNow,
+  } = useFrenchTranslation(primeTranslationTexts, {
+    auto: true,
+    storageKey: "lovanet.prime.translation.auto.v1",
+  });
+
+  const mapPrimeTitle = (anime?: PrimeAnime | null) => getTranslatedPrimeText(anime?.title || "");
+  const mapPrimeDescription = (anime?: PrimeAnime | null) => getTranslatedPrimeText(shortDescription(anime?.description || ""));
 
   const selectPrimeAnime = (anime: PrimeAnime) => {
     setSelectedPrimeId(anime.id);
@@ -381,6 +348,13 @@ const PrimeVideo = () => {
           </div>
 
           <div className="flex items-center gap-2">
+            <TranslationToggleButton
+              active={showFrenchCopy}
+              loading={translationLoading}
+              onTranslate={translatePrimeNow}
+              onToggle={() => setShowFrenchCopy((value) => !value)}
+              dataTestId="prime-translate-toggle-button"
+            />
             <Button type="button" variant="glass" className="rounded-full text-xs" onClick={() => setMuted((value) => !value)} data-testid="prime-mute-toggle-button">
               {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               {muted ? "Activer son" : "Muet"}
@@ -419,7 +393,7 @@ const PrimeVideo = () => {
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(5,10,24,0.06),rgba(5,10,24,0.84))]" />
                 <div className="relative z-10 space-y-3 p-4 sm:p-6">
                   <Badge className="rounded-full border border-white/10 bg-[rgba(8,12,24,0.5)] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/84">Lecture de secours</Badge>
-                  <h2 className="max-w-2xl font-display text-2xl font-black text-white">{v.title}</h2>
+                  <h2 className="max-w-2xl font-display text-2xl font-black text-white">{showFrenchCopy ? getTranslatedPrimeText(v.title) : v.title}</h2>
                   <p className="max-w-2xl text-sm leading-7 text-white/72">Le trailer YouTube n’est pas disponible pour cette vidéo. Vous pouvez passer à la suivante ou ouvrir un autre contenu Prime.</p>
                 </div>
               </div>
@@ -438,8 +412,8 @@ const PrimeVideo = () => {
         </div>
 
         <div className="mt-6 text-center">
-          {v.series && <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{v.series}</p>}
-          <h2 className="font-display text-2xl font-bold mt-1" data-testid="prime-main-player-title">{v.title}</h2>
+          {v.series && <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{showFrenchCopy ? getTranslatedPrimeText(v.series) : v.series}</p>}
+          <h2 className="font-display text-2xl font-bold mt-1" data-testid="prime-main-player-title">{showFrenchCopy ? getTranslatedPrimeText(v.title) : v.title}</h2>
           <div className="mt-3 flex justify-center">
             <AdminRemoveVideo
               rowId={v.id}
@@ -489,8 +463,8 @@ const PrimeVideo = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-display text-2xl font-black sm:text-3xl" data-testid="prime-hero-anime-title">{selectedPrime.title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-white/72" data-testid="prime-hero-anime-description">{shortDescription(selectedPrime.description)}</p>
+                  <h3 className="font-display text-2xl font-black sm:text-3xl" data-testid="prime-hero-anime-title">{showFrenchCopy ? mapPrimeTitle(selectedPrime) : selectedPrime.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/72" data-testid="prime-hero-anime-description">{showFrenchCopy ? mapPrimeDescription(selectedPrime) : shortDescription(selectedPrime.description)}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2" data-testid="prime-smart-badges-row">
@@ -532,7 +506,7 @@ const PrimeVideo = () => {
                           className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-xs text-white/82 transition-colors hover:border-sky-400/40 hover:text-sky-200"
                           data-testid={`prime-similar-chip-${anime.id}`}
                         >
-                          {anime.title}
+                          {showFrenchCopy ? mapPrimeTitle(anime) : anime.title}
                         </button>
                       ))}
                     </div>
@@ -563,7 +537,7 @@ const PrimeVideo = () => {
                   {anime.cover ? <img src={anime.cover} alt={anime.title} className="h-full w-full object-cover" loading="lazy" /> : null}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-sm font-semibold text-white">{anime.title}</p>
+                  <p className="line-clamp-1 text-sm font-semibold text-white">{showFrenchCopy ? mapPrimeTitle(anime) : anime.title}</p>
                   <p className="mt-1 text-xs text-white/60">{anime.format || "Anime"} · {anime.year || "—"}</p>
                 </div>
               </button>
@@ -587,7 +561,7 @@ const PrimeVideo = () => {
                 className="rounded-full border border-white/10 bg-card/60 px-3 py-2 text-xs text-white/82 transition-colors hover:border-sky-400/40"
                 data-testid={`prime-resume-chip-${anime.id}`}
               >
-                {anime.title}
+                {showFrenchCopy ? mapPrimeTitle(anime) : anime.title}
               </button>
             ))}
           </div>
@@ -660,7 +634,7 @@ const PrimeVideo = () => {
                           alt={anime.title}
                           loading={index < 8 ? "eager" : "lazy"}
                           decoding="async"
-                          fetchpriority={index < 4 ? "high" : "auto"}
+                          fetchPriority={index < 4 ? "high" : "auto"}
                           className="h-full w-full object-cover object-center saturate-[1.12] contrast-[1.03]"
                         />
                       ) : null}
@@ -673,7 +647,7 @@ const PrimeVideo = () => {
 
                 <div className="space-y-2 p-2.5">
                   <h4 className="line-clamp-2 text-[12px] font-semibold leading-tight text-white group-hover:text-sky-300 transition-colors" data-testid={`prime-card-title-${anime.id}`}>
-                    {anime.title}
+                    {showFrenchCopy ? mapPrimeTitle(anime) : anime.title}
                   </h4>
                   <div className="text-[9px] text-muted-foreground">
                     {anime.format ?? "—"} · {anime.year ?? "—"}{anime.episodes ? ` · ${anime.episodes} ép.` : ""}
@@ -733,7 +707,7 @@ const PrimeVideo = () => {
                   <span className="absolute top-2 right-2 z-10 px-1.5 py-0.5 rounded-md text-[8px] font-bold bg-gradient-to-r from-sky-500 to-blue-600 text-white">PRIME</span>
                 </HoverPreview>
                 <div className="p-2.5">
-                  <div className="line-clamp-2 text-[12px] font-semibold text-white group-hover:text-sky-300 transition-colors">{entry.title}</div>
+                  <div className="line-clamp-2 text-[12px] font-semibold text-white group-hover:text-sky-300 transition-colors">{showFrenchCopy ? getTranslatedPrimeText(entry.title) : entry.title}</div>
                 </div>
               </button>
             ))}

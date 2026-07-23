@@ -30,11 +30,23 @@
 - Appliquer des améliorations premium demandées sur **Prime Video / YouTube / Lecteurs vidéo** + extensions possibles sur d’autres pages.
 - Décision utilisateur : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
 
-### Objectif (MIS À JOUR) — Bannière “capture” Anime Moments (P0 prod)
+### Objectif — Bannière “capture” Anime Moments (P0 prod)
 - Problème vu en **production** sur la page **Anime Moments** (route `/anime-moments`).
 - But : **conserver la bannière identique à avant** (overlays/spots/effets), **supprimer uniquement** le carrousel/roulette de **cartes vidéo défilantes**, et **ajouter la vidéo utilisateur** en overlay centré.
-- **NOUVEL AJUSTEMENT (dernière demande)** : annuler le boost lumineux « très blanc / très brillant » ajouté en dernier.
-  - Interprétation retenue : **conserver la vidéo centrée** + les overlays/spots restaurés, mais revenir à un rendu **plus sobre** (blancs non “cramés”, moins de gloss/halo agressif).
+- Ajustement validé : garder un rendu **sobre** (annuler le boost lumineux extrême testé).
+
+### Objectif (NOUVEAU) — Traduction automatique fiable (P0 UX)
+- Besoin confirmé : traduction automatique pour **tout le contenu non traduit** :
+  - cartes (Catalogue/Prime/YouTube)
+  - trailers
+  - articles
+  - produits
+  - vidéos externes (sources externes)
+- Choix utilisateur : **1C (tout)**, **2C (bouton rapide + IA quand dispo)**, **4C (auto + bouton manuel)**.
+- Contrainte coût : **si l’IA est payante, ne pas la sélectionner**. Sinon choisir automatiquement le moteur le plus fiable.
+- Direction retenue :
+  1) **Prioriser une solution gratuite/intégrée** (mécanisme existant type widget/GoogleTranslate) + auto/bouton.
+  2) **N’évaluer une IA** (backend) qu’en second recours si aucune option gratuite fiable n’existe.
 
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
@@ -70,7 +82,7 @@
 - Cartes : blister verre, plus transparentes, suppression calques assombrissants.
 - Bulle couleur pilotant les variables CSS des cartes.
 - Nettoyage textes UI demandés.
-- Toggle « Traduire les cartes » (fallback title/description).
+- Toggle « Traduire les cartes » (fallback title/description) ✅ (NB : ceci est **un fallback**, pas une vraie traduction).
 - Landing : suppression de textes marketing (`Sélection collector`, `Expérience premium`).
 
 #### Phase 14.3 — SEO bloquant ✅
@@ -139,28 +151,45 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 - ✅ Carrousel/roulette de **cartes vidéo** neutralisé (plus de rendu animé/carte).
 - ✅ Vidéo utilisateur ajoutée en overlay centré, autoplay muet.
 - ✅ Correction ordre des calques (z-index) pour que la vidéo ne soit pas masquée par les effets.
-- ✅ Un boost lumineux fort a été testé, puis **l’utilisateur a demandé de revenir en arrière**.
+- ✅ Rollback du boost lumineux extrême (rendu plus sobre).
 
-#### Objectif correct (à livrer maintenant)
-- Conserver **tous** les overlays/spots/effets comme avant.
-- Conserver la vidéo centrée (sans son, autoplay, loop, playsInline).
-- Ne pas réintroduire les cartes vidéo.
-- **Revenir à un rendu vidéo plus sobre** (annuler le “blanc trop net/brillant/scintillant” ajouté en dernier).
+#### Objectif
+- Conforme à la production demandée : bannière identique + vidéo centrée + sans carrousel cartes.
 
-#### Checklist (implémentation)
-1) **Rollback visuel du bloc vidéo**
-   - revenir aux styles précédents : opacité/filtre/contraste plus modérés
-   - retirer ou réduire fortement les overlays “gloss/shimmer” trop agressifs
-2) **Validation preview**
-   - captures `/anime-moments` desktop + mobile
-   - vérifier : (a) effets d’origine présents, (b) vidéo visible centrée, (c) pas de carrousel de cartes, (d) rendu non surexposé.
-3) **Redéploiement**
-   - rappel : redéployer pour que la production reflète le changement.
+---
+
+### Phase 17 — Traduction automatique fiable (P0 UX) ⏳ EN COURS
+Objectif : ajouter une traduction automatique pour les contenus non traduits **sur toutes les pages concernées**, avec **auto + option manuelle**, et **sans IA payante**.
+
+#### Phase 17.1 — Audit des points de traduction (frontend) ✅
+- Cartes/sections à couvrir :
+  - Catalogue (`AnimeCatalog.tsx`) : cartes + description + bloc lecteur/trailer.
+  - Prime Video (`PrimeVideo.tsx`) : cartes + hero + descriptions.
+  - YouTube (`ChaineYoutubeManga.tsx` / autres routes vidéo) : titres + descriptions.
+  - Actualités : titre + résumé (si nécessaire).
+  - Boutique : titres + descriptions.
+- Décision utilisateur confirmée : **option C = auto + bouton manuel**.
+
+#### Phase 17.2 — Solution gratuite/intégrée (prioritaire) ⏳ EN COURS
+- Implémentation retenue après validation :
+  - **endpoint backend `/api/translate` gratuit** avec cache Mongo et fallback web gratuit sans clé payante ;
+  - **traduction auto activée par défaut** sur les pages externes ciblées ;
+  - **bouton manuel de bascule/réactivation** sur Catalogue et Prime Video ;
+  - persistance locale pour éviter de redemander inutilement la même traduction.
+- Objectif : traduction UI/DOM “fiable” sans coût, cohérente sur toutes les pages.
+
+#### Phase 17.3 — Option IA (uniquement si gratuite) ❌ ÉCARTÉE
+- Contrainte utilisateur : **aucune IA payante**.
+- Approche retenue : traduction gratuite + cache + contrôle manuel.
+
+#### Phase 17.4 — Validation ⏳
+- Tests UI : bascule traduction auto/manuelle, persistance, pas de casse SEO.
+- Vérifier que la traduction n’introduit pas de doublons meta/JSON-LD.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
-1) **Phase 16** : rollback du boost lumineux extrême sur la vidéo overlay Anime Moments (rendu plus sobre), tout en gardant overlays/spots + vidéo centrée et sans réintroduire les cartes → implémentation preview + captures.
+1) **Phase 17** : Traduction automatique fiable (audit + solution gratuite intégrée auto+bouton) → implémentation preview + captures.
 2) **Phase 14.6 Validation** : captures + tests frontend + corrections (Catalogue/Shop/Actualités).
 3) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
 4) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
@@ -168,7 +197,8 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
    - Merchant listings `/shop`
    - Catalogue compact + netteté
    - Prime Video (Lot 1)
-   - Anime Moments (bannière capture corrigée + rollback du boost)
+   - Anime Moments (bannière capture corrigée + rollback)
+   - Traduction auto (Phase 17)
    - puis YouTube/Lecteurs vidéo quand prêts
 6) Post‑déploiement : validation Search Console / Rich Results sur la production.
 
@@ -179,7 +209,7 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - lecteur géant + PiP
   - autoplay muet + son au 1er clic
   - cartes compactes (~-30%), grilles denses, miniatures nettes
-  - toggle traduction fonctionnel
+  - toggle traduction existant (fallback) + **traduction fiable** (Phase 17)
 - SEO :
   - `/shop` : Product JSON‑LD conforme Merchant listings (champs requis) + pas de microdata concurrentes
   - `/actualites` : une seule meta description
@@ -192,13 +222,17 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - bannière top = overlays/spots/effets identiques à avant
   - suppression uniquement du carrousel/roulette de cartes vidéo défilantes
   - vidéo utilisateur centrée, réduite, semi‑transparente, autoplay muet
-  - **rendu vidéo sobre (pas de boost blanc/brillance extrême)**
-  - les éléments arrière-plan/côtés restent visibles (pas d’écrasement)
+  - rendu vidéo sobre (pas de boost blanc/brillance extrême)
+- Traduction automatique (Phase 17) :
+  - auto + bouton manuel
+  - couvre cartes/trailers/articles/produits/vidéos externes
+  - solution gratuite prioritaire ; IA seulement si gratuite
+  - pas de régression SEO
 
 ---
 
 ## 5) Current Execution Order (mis à jour)
-1) Phase 16 Anime Moments (bannière capture + rollback boost vidéo overlay) ⏳
+1) Phase 17 Traduction automatique fiable ⏳
 2) Validation Phase 14.6 (captures/tests) ⏳
 3) Phase 15 Lot 2 YouTube ⏳
 4) Phase 15 Lot 3 Lecteurs vidéo ⏳

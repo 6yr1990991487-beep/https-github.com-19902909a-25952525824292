@@ -78,6 +78,7 @@ export function LocalizedHead() {
   const isShopPage = location.pathname.includes("/shop");
   const isVideoPage = location.pathname.includes("/lecteurs-video");
   const isCatalogPage = location.pathname.includes("/anime-catalog");
+  const isActualitesPage = location.pathname.includes("/actualites");
   const deepSeoParam = isShopPage
     ? seoParams.get("product")
     : isVideoPage
@@ -148,7 +149,7 @@ export function LocalizedHead() {
     ],
   };
 
-  const pageOwnsCoreSeo = route === "/actualites" || (isCatalogPage && !!deepSeoParam);
+  const pageOwnsCoreSeo = isActualitesPage || route === "/actualites" || (isCatalogPage && !!deepSeoParam);
 
   return (
     <Helmet>

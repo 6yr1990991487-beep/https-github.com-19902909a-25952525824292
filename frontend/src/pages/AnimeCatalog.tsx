@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import CatalogCardColorBubble from "@/components/CatalogCardColorBubble";
 import BlisterFrame from "@/components/BlisterFrame";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
+import { TranslationToggleButton } from "@/components/TranslationToggleButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,6 @@ import {
   Clapperboard,
   Heart,
   Info,
-  Languages,
   Pause,
   PictureInPicture2,
   Play,
@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { idbGet, idbSet, normalizeTitle } from "@/lib/animeCache";
 import { warmVideoAvailability, getVideoStatusSync, setVideoStatus } from "@/lib/videoAvailability";
+import { useFrenchTranslation } from "@/hooks/useFrenchTranslation";
 
 type Media = {
   id: number;
@@ -71,26 +72,11 @@ function mediaTitle(media: Media | null | undefined) {
   return media.title.english || media.title.romaji || media.title.native || `Anime ${media.id}`;
 }
 
-function translatedTitle(media: Media | null | undefined) {
-  if (!media) return "Catalogue Anime Lovanet";
-  const options = [media.title.native, media.title.romaji, media.title.english].filter(Boolean);
-  return options[0] || mediaTitle(media);
-}
-
 function mediaDescription(media: Media | null | undefined) {
   const raw = String(
     media?.description || "Catalogue anime manga avec miniatures, bandes-annonces, synopsis et cartes indexables.",
   );
   return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 240);
-}
-
-function translatedDescription(media: Media | null | undefined) {
-  const titleFr = translatedTitle(media);
-  const titleDefault = mediaTitle(media);
-  const year = media?.seasonYear ? ` sorti en ${media.seasonYear}` : "";
-  const episodes = media?.episodes ? ` avec ${media.episodes} épisodes` : "";
-  const genres = media?.genres?.length ? ` Genres : ${media.genres.slice(0, 3).join(", ")}.` : "";
-  return `${titleFr} — présentation traduite de ${titleDefault}${year}${episodes}.${genres}`.trim();
 }
 
 function mediaImage(media: Media | null | undefined) {
@@ -159,7 +145,6 @@ export default function AnimeCatalog() {
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [showVideoPrompt, setShowVideoPrompt] = useState(true);
-  const [showTranslatedCards, setShowTranslatedCards] = useState(false);
   const PAGE_SIZE = 48;
   const [renderCount, setRenderCount] = useState<number>(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -418,6 +403,8 @@ export default function AnimeCatalog() {
     return Array.from(set).sort();
   }, [gridItems]);
 
+  const featuredRail = useMemo(() => items.filter((media) => hasPlayableVideo(media)).slice(0, 8), [items]);
+
   const filteredSorted = useMemo(() => {
     const q = normalizeTitle(debouncedSearch);
     let list = gridItems.filter((media) => {
@@ -452,7 +439,6 @@ export default function AnimeCatalog() {
     const source = videoSuggestionItems.length ? videoSuggestionItems : allMedia.filter((media) => hasPlayableVideo(media));
     return source.slice(0, 10);
   }, [allMedia, videoSuggestionItems]);
-  const featuredRail = useMemo(() => items.filter((media) => hasPlayableVideo(media)).slice(0, 8), [items]);
   const seoAnimeId = searchParams.get("anime");
 
   const selectedSeoMedia = useMemo(() => {
@@ -474,6 +460,33 @@ export default function AnimeCatalog() {
   }, [activePlayerId, allMedia]);
 
   const pagedItems = useMemo(() => filteredSorted.slice(0, renderCount), [filteredSorted, renderCount]);
+
+  const translationTexts = useMemo(() => {
+    const source = [
+      ...pagedItems.slice(0, 24),
+      ...featuredRail.slice(0, 6),
+      ...favoriteItems.slice(0, 8),
+      ...promptPreviewItems.slice(0, 6),
+      ...(activePlayer ? [activePlayer] : []),
+      ...(detailMedia ? [detailMedia] : []),
+      ...(selectedSeoMedia ? [selectedSeoMedia] : []),
+    ];
+    return source.flatMap((media) => [mediaTitle(media), mediaDescription(media)]);
+  }, [activePlayer, detailMedia, favoriteItems, featuredRail, pagedItems, promptPreviewItems, selectedSeoMedia]);
+
+  const {
+    enabled: showTranslatedCards,
+    setEnabled: setShowTranslatedCards,
+    loading: translationsLoading,
+    getText: getTranslatedText,
+    translateNow: translateCatalogNow,
+  } = useFrenchTranslation(translationTexts, {
+    auto: true,
+    storageKey: "lovanet.catalog.translation.auto.v1",
+  });
+
+  const translatedMediaTitle = (media: Media | null | undefined) => getTranslatedText(mediaTitle(media));
+  const translatedMediaDescription = (media: Media | null | undefined) => getTranslatedText(mediaDescription(media));
 
   const syncSearchParam = (media: Media | null) => {
     const next = new URLSearchParams(searchParams);
@@ -848,7 +861,7 @@ export default function AnimeCatalog() {
                           <div className="pointer-events-none absolute inset-0 rounded-[1.1rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_0_26px_rgba(255,255,255,0.14)]" />
                           <BlisterFrame radius={16} intensity={0.9} />
                         </div>
-                        <p className="mt-3 line-clamp-2 text-sm font-semibold text-white">{mediaTitle(media)}</p>
+                        <p className="mt-3 line-clamp-2 text-sm font-semibold text-white">{showTranslatedCards ? translatedMediaTitle(media) : mediaTitle(media)}</p>
                       </button>
                     ))}
                   </div>
@@ -957,10 +970,10 @@ export default function AnimeCatalog() {
                               {playerMode === "hidden" ? "Vidéo indisponible" : "Prévisualisation catalogue"}
                             </Badge>
                             <h2 className="max-w-2xl font-display text-2xl font-black text-white sm:text-3xl" data-testid="catalog-player-fallback-title">
-                              {mediaTitle(activePlayer)}
+                              {showTranslatedCards ? translatedMediaTitle(activePlayer) : mediaTitle(activePlayer)}
                             </h2>
                             <p className="max-w-2xl text-sm leading-7 text-white/72" data-testid="catalog-player-fallback-description">
-                              {mediaDescription(activePlayer)}
+                              {showTranslatedCards ? translatedMediaDescription(activePlayer) : mediaDescription(activePlayer)}
                             </p>
                           </div>
                         </div>
@@ -991,10 +1004,10 @@ export default function AnimeCatalog() {
 
                         <div className="space-y-3">
                           <h2 className="font-display text-2xl font-black leading-tight text-white sm:text-3xl" data-testid="catalog-player-title">
-                            {mediaTitle(activePlayer)}
+                            {showTranslatedCards ? translatedMediaTitle(activePlayer) : mediaTitle(activePlayer)}
                           </h2>
                           <p className="max-w-4xl text-sm leading-7 text-white/72 sm:text-base" data-testid="catalog-player-description">
-                            {mediaDescription(activePlayer)}
+                            {showTranslatedCards ? translatedMediaDescription(activePlayer) : mediaDescription(activePlayer)}
                           </p>
                         </div>
 
@@ -1106,7 +1119,7 @@ export default function AnimeCatalog() {
                           <BlisterFrame radius={10} intensity={0.9} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="line-clamp-1 text-sm font-semibold">{mediaTitle(media)}</p>
+                          <p className="line-clamp-1 text-sm font-semibold">{showTranslatedCards ? translatedMediaTitle(media) : mediaTitle(media)}</p>
                           <p className="mt-1 text-xs opacity-75">{media.format || "Anime"} · {media.seasonYear || "Catalogue"}</p>
                         </div>
                       </button>
@@ -1223,15 +1236,13 @@ export default function AnimeCatalog() {
             )}
 
             <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="glass"
-                className={`rounded-full text-white ${showTranslatedCards ? "border-primary/60 text-primary" : ""}`}
-                onClick={() => setShowTranslatedCards((value) => !value)}
-                data-testid="catalog-translate-toggle-button"
-              >
-                <Languages className="h-4 w-4" /> {showTranslatedCards ? "Traductions actives" : "Traduire les cartes"}
-              </Button>
+              <TranslationToggleButton
+                active={showTranslatedCards}
+                loading={translationsLoading}
+                onTranslate={translateCatalogNow}
+                onToggle={() => setShowTranslatedCards((value) => !value)}
+                dataTestId="catalog-translate-toggle-button"
+              />
             </div>
 
             {!!featuredRail.length && (
@@ -1264,7 +1275,7 @@ export default function AnimeCatalog() {
                         <BlisterFrame radius={10} intensity={0.88} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="line-clamp-1 text-sm font-semibold">{showTranslatedCards ? translatedTitle(media) : mediaTitle(media)}</p>
+                        <p className="line-clamp-1 text-sm font-semibold">{showTranslatedCards ? translatedMediaTitle(media) : mediaTitle(media)}</p>
                         <p className="mt-1 text-xs opacity-75">{media.format || "Anime"} · {media.seasonYear || "Catalogue"}</p>
                       </div>
                       <PlayCircle className="h-5 w-5 shrink-0 text-[var(--theme-link)]" />
@@ -1359,15 +1370,15 @@ export default function AnimeCatalog() {
                       <CardContent className="space-y-2 p-2.5">
                         <div className="space-y-1">
                           <h3 className="line-clamp-2 font-display text-[12px] font-black leading-tight" data-testid={`catalog-card-title-${media.id}`}>
-                            {showTranslatedCards ? translatedTitle(media) : title}
+                            {showTranslatedCards ? translatedMediaTitle(media) : title}
                           </h3>
-                          {showTranslatedCards && translatedTitle(media) !== title && (
+                          {showTranslatedCards && translatedMediaTitle(media) !== title && (
                             <p className="line-clamp-1 text-[8px] uppercase tracking-[0.14em] opacity-65" data-testid={`catalog-card-original-title-${media.id}`}>
                               {title}
                             </p>
                           )}
                           <p className="line-clamp-2 text-[10px] leading-4 opacity-80" data-testid={`catalog-card-description-${media.id}`}>
-                            {showTranslatedCards ? translatedDescription(media) : mediaDescription(media)}
+                            {showTranslatedCards ? translatedMediaDescription(media) : mediaDescription(media)}
                           </p>
                         </div>
 
@@ -1422,10 +1433,10 @@ export default function AnimeCatalog() {
               <>
                 <DialogHeader>
                   <DialogTitle className="font-display text-3xl font-black" data-testid="catalog-detail-title">
-                    {showTranslatedCards ? translatedTitle(detailMedia) : mediaTitle(detailMedia)}
+                    {showTranslatedCards ? translatedMediaTitle(detailMedia) : mediaTitle(detailMedia)}
                   </DialogTitle>
                   <DialogDescription className="text-white/62" data-testid="catalog-detail-description">
-                    {showTranslatedCards ? translatedDescription(detailMedia) : mediaDescription(detailMedia)}
+                    {showTranslatedCards ? translatedMediaDescription(detailMedia) : mediaDescription(detailMedia)}
                   </DialogDescription>
                 </DialogHeader>
 
@@ -1465,7 +1476,7 @@ export default function AnimeCatalog() {
                     <Card className="theme-subpanel border-none bg-transparent text-white" data-testid="catalog-detail-copy-card">
                       <CardContent className="space-y-4 p-5">
                         <p className="text-[11px] uppercase tracking-[0.28em] text-white/50">Synopsis</p>
-                        <p className="text-sm leading-8 text-white/76">{showTranslatedCards ? translatedDescription(detailMedia) : mediaDescription(detailMedia)}</p>
+                        <p className="text-sm leading-8 text-white/76">{showTranslatedCards ? translatedMediaDescription(detailMedia) : mediaDescription(detailMedia)}</p>
                         <div className="flex flex-wrap gap-2">
                           <Button type="button" className="btn-neon-rainbow rounded-full text-white" onClick={() => { activatePlayer(detailMedia, { forceFavorite: true, unlockSound: true }); setDetailMedia(null); }} data-testid="catalog-detail-launch-button">
                             <Play className="h-4 w-4" /> Lancer sur l’écran géant
