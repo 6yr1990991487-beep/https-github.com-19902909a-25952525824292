@@ -28,7 +28,7 @@
 
 ### Objectif (NOUVEAU) — Refonte Premium multi‑pages (Phase 15)
 - Appliquer des améliorations premium demandées sur **Prime Video / YouTube / Lecteurs vidéo** + extensions possibles sur d’autres pages.
-- **Décision utilisateur implicite** : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
+- Décision utilisateur : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
 
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
@@ -76,7 +76,7 @@
 
 #### Phase 14.5 — Catalogue compact + netteté (P0 prod) ✅ IMPLÉMENTÉ EN PREVIEW
 - Réduction forte des cartes (~30%) + densification.
-- Grille densifiée et réduction paddings/typos/boutons.
+- Grille densifiée (4 colonnes demandées) + réduction paddings/typos/boutons.
 - Priorité aux images `extraLarge`, `decoding="async"`, `fetchPriority` au-dessus de la ligne de flottaison, scaling réduit.
 
 #### Phase 14.6 — Validation & preuves ⏳ TODO
@@ -86,35 +86,39 @@
 
 ---
 
-### Phase 15 — Refonte Premium multi‑pages (Prime Video / YouTube / Lecteurs vidéo / autres pages) ⏳ À DÉMARRER
+### Phase 15 — Refonte Premium multi‑pages (Prime Video / YouTube / Lecteurs vidéo / autres pages) ⏳ IN PROGRESS
 
 **Principe** : livrer par **lots rapides** et **stables**, sans refonte risquée globale.
 
-#### Lot 1 (NOW, le plus rapide, sans casser) — Prime Video (priorité)
+#### Lot 1 — Prime Video ✅ TERMINÉ + TESTÉ (iteration_18.json)
 Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l’architecture existante.
-1) **Cartes compactes HD** (mêmes principes que Catalogue)
-   - grilles denses, cartes réduites, miniatures nettes (sources HD priorisées), couleurs rehaussées.
-2) **Grand lecteur héro en haut de page**
-   - clic sur carte → projection dans le lecteur héro (si trailer/preview dispo, sinon fallback image + CTA).
-3) **Badges intelligents (version simple)**
-   - format (Film/Série), VF/VOSTFR (si données dispos), nouveauté/populaire (heuristiques), durée/épisodes (si dispos).
-4) **Mode “cinéma obscur” (léger)**
-   - fond assombri autour du lecteur actif (CSS only, incrément sûr).
+- ✅ **Cartes compactes HD** (grilles denses, cartes réduites, miniatures nettes, couleurs rehaussées).
+- ✅ **Grand bloc héro Prime** en haut : clic carte → projection dans le héro.
+- ✅ **Prévisualisation “bande‑annonce auto”** (Hover desktop / tap mobile) via `HoverPreview`.
+- ✅ **Panneau flottant “À regarder ce soir”** (favoris locaux persistants).
+- ✅ **Barre “reprendre plus tard”** (historique local persistants).
+- ✅ **Badges intelligents** (heuristiques : nouveauté/populaire/long format/film + ambiance).
+- ✅ **Tri émotionnel simple** (mood filter basé sur genres).
+- ✅ **Bloc “similaire à ce titre”** (heuristique genres/score).
+- ✅ **Fallback visuel propre** si YouTube indisponible (évite UI cassée).
+- ✅ **Lecteur principal Prime** stabilisé : passage sur `YouTubeEmbed` + fallback.
 
-> Features plus lourdes explicitement demandées mais repoussées pour ne pas casser : comparateur, “reprendre plus tard”, tri émotionnel avancé, “similaire à ce titre” complet.
+> Note : disponibilité YouTube variable. Le fallback est considéré “comportement attendu” et testé.
 
-#### Lot 2 — YouTube (réplique du pattern)
-1) Hero vidéo géant.
-2) Miniatures unifiées.
-3) Filtres (shorts/longs si possible via data).
-4) Playlist auto (en s’appuyant sur la liste existante, sans API additionnelle risquée).
+#### Lot 2 — YouTube (réplique du pattern) ⏳ À DÉMARRER
+1) Hero vidéo géant type chaîne premium.
+2) Miniatures unifiées style premium (cartes compactes HD, 4 colonnes denses, previews hover/tap).
+3) Playlist auto (locale) + lecture continue (sans dépendre de nouveaux credentials).
+4) Panneaux : “À ne pas manquer”, “les plus regardées” (heuristiques ou stats si dispo via backend).
+5) Filtres : “shorts / longs formats” (si déductible via durée/ratio, sinon heuristique).
 
-#### Lot 3 — Lecteurs vidéo (unification)
+#### Lot 3 — Lecteurs vidéo (unification) ⏳ À DÉMARRER
 1) Lecteur géant « universel » (YouTube/Prime/TikTok/vidéos internes) avec UI cohérente.
-2) PiP premium renforcé.
+2) PiP premium renforcé (titre + suivant + fermer).
 3) Mode théâtre/portrait.
+4) Overlay minimaliste (boutons discrets).
 
-#### Lot 4+ (optionnel, selon stabilité) — Extensions
+#### Lot 4+ (optionnel, selon stabilité) — Extensions ⏳ FUTUR
 - Catalogue : switch « ultra-compact / premium ».
 - Actualités : mur plus compact + priorités.
 - Boutique : cartes compactes + passerelles catalogue ↔ shop.
@@ -123,14 +127,14 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
 1) **Phase 14.6 Validation** : captures + tests frontend + corrections.
-2) **Phase 15 Lot 1** : Prime Video (cartes compactes HD + lecteur héro + badges base + mode cinéma léger).
-3) **Phase 15 Lot 2** : YouTube.
-4) **Phase 15 Lot 3** : Lecteurs vidéo.
-5) **Redéploiement** par l’utilisateur pour pousser en production :
+2) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
+3) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
+4) **Redéploiement** par l’utilisateur pour pousser en production :
    - Merchant listings `/shop`
    - Catalogue compact + netteté
-   - (ensuite) Prime Video/YouTube/Lecteurs vidéo
-6) Post‑déploiement : validation Search Console / Rich Results sur la production.
+   - Prime Video (Lot 1)
+   - puis YouTube/Lecteurs vidéo quand prêts
+5) Post‑déploiement : validation Search Console / Rich Results sur la production.
 
 ---
 
@@ -145,15 +149,14 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - `/actualites` : une seule meta description
 - Prime Video / YouTube / Lecteurs vidéo (Phase 15) :
   - livraison incrémentale stable (pas de régression)
-  - Prime Video : cartes compactes HD + lecteur héro opérationnel
-  - YouTube : hero + cartes unifiées
+  - Prime Video : ✅ cartes compactes HD + héro + previews + favoris/history + fallback propre (testé)
+  - YouTube : hero + cartes unifiées + playlist locale
   - Lecteurs vidéo : expérience unifiée + PiP renforcé
 
 ---
 
 ## 5) Current Execution Order (mis à jour)
-1) Validation (captures/tests) ⏳
-2) Phase 15 Lot 1 Prime Video (rapide, stable) ⏳
-3) Phase 15 Lot 2 YouTube ⏳
-4) Phase 15 Lot 3 Lecteurs vidéo ⏳
-5) Déploiement côté utilisateur → production (obligatoire)
+1) Validation Phase 14.6 (captures/tests) ⏳
+2) Phase 15 Lot 2 YouTube ⏳
+3) Phase 15 Lot 3 Lecteurs vidéo ⏳
+4) Déploiement côté utilisateur → production (obligatoire)

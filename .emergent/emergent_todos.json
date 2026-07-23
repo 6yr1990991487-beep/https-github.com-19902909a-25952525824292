@@ -1,10 +1,10 @@
 [
   {
-    "content": "Stabiliser le lecteur principal Prime Video avec un fallback visuel propre si YouTube est indisponible",
+    "content": "Revalider visuellement Prime Video desktop/mobile puis lancer un test frontend ciblé",
     "status": "completed"
   },
   {
-    "content": "Revalider visuellement Prime Video desktop/mobile puis lancer un test frontend ciblé",
-    "status": "in_progress"
+    "content": "Préparer la réplication du pattern premium sur la page YouTube dans le prochain lot",
+    "status": "pending"
   }
 ]
