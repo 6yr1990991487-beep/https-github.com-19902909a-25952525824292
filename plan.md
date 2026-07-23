@@ -30,6 +30,10 @@
 - Appliquer des améliorations premium demandées sur **Prime Video / YouTube / Lecteurs vidéo** + extensions possibles sur d’autres pages.
 - Décision utilisateur : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
 
+### Objectif (NOUVEAU) — Nettoyage bannière “capture” Anime Moments (P0 prod)
+- Problème vu en **production** sur la page **Anime Moments** : une bannière/capture contient des **cartes vidéos animées/défilantes**.
+- Demande : **retirer uniquement l’animation et les cartes** de cette bannière, et **remplacer** par la **vidéo fournie par l’utilisateur** en **lecture automatique sans son**, correctement **adaptée** à la zone existante.
+
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
 ---
@@ -96,7 +100,7 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 - ✅ **Grand bloc héro Prime** en haut : clic carte → projection dans le héro.
 - ✅ **Prévisualisation “bande‑annonce auto”** (Hover desktop / tap mobile) via `HoverPreview`.
 - ✅ **Panneau flottant “À regarder ce soir”** (favoris locaux persistants).
-- ✅ **Barre “reprendre plus tard”** (historique local persistants).
+- ✅ **Barre “reprendre plus tard”** (historique local persistant).
 - ✅ **Badges intelligents** (heuristiques : nouveauté/populaire/long format/film + ambiance).
 - ✅ **Tri émotionnel simple** (mood filter basé sur genres).
 - ✅ **Bloc “similaire à ce titre”** (heuristique genres/score).
@@ -125,16 +129,45 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 
 ---
 
+### Phase 16 — Nettoyage bannière “capture” Anime Moments (P0 prod) ⏳ À FAIRE
+**Contexte** : retour utilisateur vu en production sur la page **Anime Moments**.
+
+Objectif : retirer la zone de **cartes vidéos animées/défilantes** dans la bannière/capture, et la remplacer par une **vidéo unique** (fournie par l’utilisateur) en **autoplay** **sans son**, adaptée aux dimensions.
+
+Checklist :
+1) Identifier la page et le composant exacts :
+   - Page Anime Moments (probable `AnimeMomentsPage.tsx` ou composant de bannière réutilisé)
+   - Localiser le bloc “capture” contenant les cartes défilantes.
+2) Supprimer/désactiver :
+   - la logique d’animation/rotation des cartes
+   - l’affichage des cartes (conserver la structure de la bannière)
+3) Ajouter la vidéo fournie :
+   - intégration via `<video>` (mp4) en `autoPlay`, `muted`, `loop`, `playsInline`
+   - `preload="metadata"` ou `auto` selon perf
+   - `object-fit: cover` (ou `contain` si besoin) + responsive
+4) Ajuster le style :
+   - conserver le cadre/habillage existants
+   - adaptation mobile/desktop
+   - pas de son
+5) Validation preview :
+   - capture desktop/mobile
+   - vérifier absence de cartes et d’animation
+6) Redéploiement côté utilisateur pour production.
+
+---
+
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
-1) **Phase 14.6 Validation** : captures + tests frontend + corrections.
-2) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
-3) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
-4) **Redéploiement** par l’utilisateur pour pousser en production :
+1) **Phase 16** : nettoyage bannière capture Anime Moments (P0 prod) → implémentation preview + captures.
+2) **Phase 14.6 Validation** : captures + tests frontend + corrections (Catalogue/Shop/Actualités).
+3) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
+4) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
+5) **Redéploiement** par l’utilisateur pour pousser en production :
    - Merchant listings `/shop`
    - Catalogue compact + netteté
    - Prime Video (Lot 1)
+   - Anime Moments (bannière capture)
    - puis YouTube/Lecteurs vidéo quand prêts
-5) Post‑déploiement : validation Search Console / Rich Results sur la production.
+6) Post‑déploiement : validation Search Console / Rich Results sur la production.
 
 ---
 
@@ -152,11 +185,16 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - Prime Video : ✅ cartes compactes HD + héro + previews + favoris/history + fallback propre (testé)
   - YouTube : hero + cartes unifiées + playlist locale
   - Lecteurs vidéo : expérience unifiée + PiP renforcé
+- Anime Moments (Phase 16) :
+  - suppression des cartes défilantes dans la bannière capture
+  - vidéo unique fournie en autoplay muet intégrée, responsive
+  - rendu stable en mobile/desktop
 
 ---
 
 ## 5) Current Execution Order (mis à jour)
-1) Validation Phase 14.6 (captures/tests) ⏳
-2) Phase 15 Lot 2 YouTube ⏳
-3) Phase 15 Lot 3 Lecteurs vidéo ⏳
-4) Déploiement côté utilisateur → production (obligatoire)
+1) Phase 16 Anime Moments (bannière capture) ⏳
+2) Validation Phase 14.6 (captures/tests) ⏳
+3) Phase 15 Lot 2 YouTube ⏳
+4) Phase 15 Lot 3 Lecteurs vidéo ⏳
+5) Déploiement côté utilisateur → production (obligatoire)

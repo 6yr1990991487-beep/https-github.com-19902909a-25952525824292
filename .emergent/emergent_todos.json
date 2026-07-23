@@ -1,10 +1,10 @@
 [
   {
-    "content": "Revalider visuellement Prime Video desktop/mobile puis lancer un test frontend ciblé",
+    "content": "Remplacer cette zone par la vidéo fournie en autoplay muet, sans casser le cadre visuel",
     "status": "completed"
   },
   {
-    "content": "Préparer la réplication du pattern premium sur la page YouTube dans le prochain lot",
-    "status": "pending"
+    "content": "Vérifier visuellement Anime Moments en desktop/mobile puis corriger si nécessaire",
+    "status": "in_progress"
   }
 ]
