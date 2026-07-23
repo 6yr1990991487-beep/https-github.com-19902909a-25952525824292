@@ -512,7 +512,7 @@ export const HeroCarousel = () => {
         className="absolute inset-0 z-[150] flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
         data-testid="anime-moments-capture-banner"
       >
-        <div className="relative w-[82%] sm:w-[72%] lg:w-[58%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
+        <div className="relative w-[82%] sm:w-[72%] lg:w-[58%] overflow-hidden rounded-[1.35rem] border border-white/22 bg-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.24),0_0_38px_rgba(255,255,255,0.24),0_0_90px_rgba(56,189,248,0.18),0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[3px]">
           <div className="aspect-video">
             <video
               src={CAPTURE_OVERLAY_VIDEO}
@@ -521,11 +521,14 @@ export const HeroCarousel = () => {
               loop
               playsInline
               preload="metadata"
-              className="h-full w-full object-cover opacity-[0.82]"
+              className="h-full w-full object-cover opacity-[0.9] brightness-[1.3] contrast-[1.18] saturate-[1.2]"
               data-testid="anime-moments-capture-video"
             />
           </div>
-          <div className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18),transparent_22%,transparent_72%,rgba(255,255,255,0.1))] mix-blend-screen" />
+          <div className="pointer-events-none absolute inset-y-0 -left-[12%] w-[42%] rotate-[10deg] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.34),rgba(255,255,255,0))] opacity-80 blur-[6px]" />
+          <div className="pointer-events-none absolute inset-x-[8%] top-0 h-[22%] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.45),transparent_72%)] mix-blend-screen opacity-90" />
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-white/24" />
         </div>
       </div>
 

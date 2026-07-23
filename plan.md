@@ -33,6 +33,7 @@
 ### Objectif (MIS À JOUR) — Bannière “capture” Anime Moments (P0 prod)
 - Problème vu en **production** sur la page **Anime Moments** (route `/anime-moments`).
 - But : **conserver la bannière identique à avant** (overlays/spots/effets), **supprimer uniquement** le carrousel/roulette de **cartes vidéo défilantes**, et **ajouter la vidéo utilisateur** en overlay centré sans masquer le reste.
+- **NOUVEL AJUSTEMENT (validé, intensité FORTE)** : la vidéo centrale + son cadre doivent être **nettement plus lumineux, brillants et scintillants**, avec des **blancs plus nets** (rehausse de la luminance et du contraste sur les hautes lumières), tout en **gardant la vidéo muette** et **sans réintroduire le carrousel de cartes**.
 
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
@@ -130,46 +131,45 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 ---
 
 ### Phase 16 — Bannière “capture” Anime Moments (P0 prod) ⏳ IN PROGRESS
-**Contexte** : retour utilisateur vu en production sur la page **Anime Moments**.
+**Contexte** : retours utilisateur vus en production sur la page **Anime Moments**.
 
 #### État actuel (preview)
-- Une version **simplifiée** a été mise en place (fond + vidéo centrée), mais l’utilisateur confirme que les **overlays/spots/effets d’origine** sont absents.
+- ✅ Bannière d’origine restaurée via `HeroCarousel` (effets, spots, overlays).
+- ✅ Carrousel/roulette de **cartes vidéo** neutralisé (plus de rendu animé/carte).
+- ✅ Vidéo utilisateur ajoutée en overlay centré, autoplay muet.
+- ✅ Correction ordre des calques (z-index) pour que la vidéo ne soit pas masquée par les effets.
+- ⏳ Ajustement demandé restant : **rendre la vidéo + le cadre plus lumineux/brillant/scintillant (intensité FORTE)** et **blancs plus nets**.
 
 #### Objectif correct (à livrer maintenant)
-- **Restaurer à l’identique** les overlays / spots de lumière / effets visuels qui existaient avant (bannière d’origine).
-- **Supprimer uniquement** la partie « carrousel/roulette de cartes vidéo défilantes » (et son animation).
-- **Conserver** l’overlay vidéo utilisateur :
-  - centrée, plus petite, semi‑transparente
-  - autoplay muet, `playsInline`, `loop`
-  - ne doit pas masquer les composants derrière / sur les côtés
-  - les overlays/effets doivent être visuellement “après” (au-dessus) ou correctement composités, selon l’effet original.
+- Conserver **tous** les overlays/spots/effets comme avant.
+- Conserver la vidéo centrée (sans son, autoplay, loop, playsInline).
+- Ne pas réintroduire les cartes vidéo.
+- Ajouter un rendu **fortement premium** sur la vidéo (plus lumineux, brillant, scintillant) :
+  - blancs plus nets
+  - saturation/couleur rehaussées
+  - reflets/gloss visibles autour du cadre
 
 #### Checklist (implémentation)
-1) **Récupérer la bannière d’origine** (ex-HeroCarousel) :
-   - restaurer les wrappers, overlays, spots et effets CSS.
-2) **Neutraliser** le rendu des cartes du carrousel :
-   - retirer le composant/mapper qui génère les cartes
-   - supprimer timers/intervals/animations liées aux cartes
-   - conserver uniquement la structure et les couches d’effets.
-3) **Réinsérer** la vidéo utilisateur comme élément central :
-   - wrapper `absolute` centré
-   - largeur : ~58–62% desktop, ~78–86% mobile
-   - opacité ajustable (0.65–0.85)
-   - `pointer-events: none`
-4) **Ordre des calques** :
-   - fond / effets bas
-   - composants existants autour
-   - vidéo centrée
-   - overlays/spots haut (si c’était le cas initialement)
-5) Validation preview :
-   - captures `/anime-moments` desktop + mobile
-   - vérifier : overlays/spots présents, pas de cartes vidéo défilantes, vidéo centrée non intrusive.
-6) Redéploiement côté utilisateur pour production.
+1) **Traitement visuel vidéo (CSS, intensité FORTE)**
+   - appliquer `filter: brightness(...) contrast(...) saturate(...)` sur l’élément `<video>`.
+   - optionnel : `drop-shadow(...)` + halo doux.
+2) **Cadre scintillant (overlay)**
+   - ajouter un overlay “gloss” :
+     - `linear-gradient` + `mix-blend-mode: screen`
+     - animation lente type shimmer.
+   - renforcer le ring/edge (verre) et l’éclat.
+3) **Garder la lisibilité des éléments de fond**
+   - contrôler l’opacité et éviter d’écraser les spots.
+4) **Validation preview**
+   - captures `/anime-moments` desktop + mobile.
+   - vérifier : (a) vidéo visible, (b) très lumineuse, (c) blancs nets, (d) effets d’origine présents, (e) aucune carte vidéo.
+5) **Redéploiement**
+   - rappel : redéployer pour que la production reflète le changement.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
-1) **Phase 16** : restaurer la bannière Anime Moments identique à avant (overlays/spots) + supprimer uniquement le carrousel de cartes + conserver la vidéo centrée → implémentation preview + captures.
+1) **Phase 16** : booster la luminosité/brillance/scintillement de la vidéo overlay Anime Moments (intensité FORTE) + blancs plus nets, sans réintroduire les cartes → implémentation preview + captures.
 2) **Phase 14.6 Validation** : captures + tests frontend + corrections (Catalogue/Shop/Actualités).
 3) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
 4) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
@@ -177,7 +177,7 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
    - Merchant listings `/shop`
    - Catalogue compact + netteté
    - Prime Video (Lot 1)
-   - Anime Moments (bannière capture corrigée)
+   - Anime Moments (bannière capture corrigée + vidéo boostée)
    - puis YouTube/Lecteurs vidéo quand prêts
 6) Post‑déploiement : validation Search Console / Rich Results sur la production.
 
@@ -201,12 +201,13 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - bannière top = overlays/spots/effets identiques à avant
   - suppression uniquement du carrousel/roulette de cartes vidéo défilantes
   - vidéo utilisateur centrée, réduite, semi‑transparente, autoplay muet
+  - **vidéo fortement lumineuse/brillante/scintillante (intensité FORTE) + blancs plus nets**
   - les éléments arrière-plan/côtés restent visibles (pas d’écrasement)
 
 ---
 
 ## 5) Current Execution Order (mis à jour)
-1) Phase 16 Anime Moments (bannière capture) ⏳
+1) Phase 16 Anime Moments (bannière capture + boost vidéo overlay) ⏳
 2) Validation Phase 14.6 (captures/tests) ⏳
 3) Phase 15 Lot 2 YouTube ⏳
 4) Phase 15 Lot 3 Lecteurs vidéo ⏳
