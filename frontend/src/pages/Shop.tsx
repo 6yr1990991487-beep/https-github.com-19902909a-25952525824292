@@ -19,6 +19,7 @@ import { videos as VIDEO_LIST } from "@/data/videos";
 import { WidgetDock, wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
 const PAGE_SIZE = 40;
+const DEFAULT_SHOP_ORIGIN = "https://lovanet.fr";
 const SOURCE_LABEL: Record<ShopProduct["source"], string> = {
   youtube: "YouTube drop",
   tiktok: "TikTok drop",
@@ -157,8 +158,23 @@ const Shop = () => {
   };
 
   const shopStructuredData = useMemo(() => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://lovanet.fr";
+    const origin = typeof window !== "undefined" ? window.location.origin : DEFAULT_SHOP_ORIGIN;
     const fallbackImage = `${origin}/lovanet-og.svg`;
+    const shopImage = fallbackImage;
+    const shippingDestination = {
+      "@type": "DefinedRegion",
+      addressCountry: "FR",
+    };
+    const merchantReturnPolicy = {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "FR",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn",
+      refundType: "https://schema.org/FullRefund",
+      inStoreReturnsOffered: false,
+    };
 
     return {
       "@context": "https://schema.org",
@@ -167,6 +183,7 @@ const Shop = () => {
           "@type": "CollectionPage",
           name: "Boutique AnimemomentsAnimeofficiel",
           url: `${origin}/shop`,
+          image: shopImage,
           description: "Boutique Lovanet avec produits anime, manga et culture pop japonaise.",
           mainEntity: {
             "@id": `${origin}/shop#item-list`,
@@ -181,43 +198,89 @@ const Shop = () => {
             const ratingValue = Number((p.rating ?? 4.7).toFixed(1));
             const reviewCount = p.reviews ?? Math.max(12, Math.round((p.sold ?? 100) / 4));
             const productImage = p.id.startsWith("am-") ? `${origin}/products/${p.id}.svg` : fallbackImage;
+            const productUrl = `${origin}/shop#${p.id}`;
+            const brandName = p.brand ?? "AnimemomentsAnimeofficiel";
+            const mpn = `${p.id.toUpperCase()}-${String(p.category).toUpperCase()}`;
+            const stockCount = p.stock ?? 25;
+            const availability = stockCount > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+            const shippingRate = p.type === "digital" ? "0.00" : p.price >= 79 ? "0.00" : "4.90";
+            const handlingMin = p.type === "digital" ? 0 : 1;
+            const handlingMax = p.type === "digital" ? 0 : 2;
+            const transitMin = p.type === "digital" ? 0 : 2;
+            const transitMax = p.type === "digital" ? 0 : 7;
 
             return {
               "@type": "ListItem",
               position: i + 1,
               item: {
                 "@type": "Product",
-                "@id": `${origin}/shop#${p.id}`,
+                "@id": productUrl,
                 sku: p.id,
+                mpn,
+                productID: p.id,
                 name: p.name,
                 description: p.description,
                 category: categoryLabel(p.category),
-                brand: { "@type": "Brand", name: p.brand ?? "AnimemomentsAnimeofficiel" },
-                image: productImage,
-                url: `${origin}/shop#${p.id}`,
+                brand: { "@type": "Brand", name: brandName },
+                image: [productImage, fallbackImage],
+                url: productUrl,
+                itemCondition: "https://schema.org/NewCondition",
                 aggregateRating: {
                   "@type": "AggregateRating",
                   ratingValue: `${ratingValue}`,
                   reviewCount: `${reviewCount}`,
                   ratingCount: `${reviewCount}`,
                   bestRating: "5",
+                  worstRating: "1",
                 },
                 review: [
                   {
                     "@type": "Review",
                     name: `Avis client ${p.name}`,
                     reviewBody: p.description,
-                    reviewRating: { "@type": "Rating", ratingValue: `${ratingValue}`, bestRating: "5" },
+                    reviewRating: { "@type": "Rating", ratingValue: `${ratingValue}`, bestRating: "5", worstRating: "1" },
                     author: { "@type": "Organization", name: "Lovanet" },
                     publisher: { "@type": "Organization", name: "Lovanet" },
+                    positiveNotes: p.bullets?.slice(0, 3) ?? [],
                   },
                 ],
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "EUR",
                   price: p.price.toFixed(2),
-                  availability: "https://schema.org/InStock",
-                  url: `${origin}/shop#${p.id}`,
+                  availability,
+                  inventoryLevel: {
+                    "@type": "QuantitativeValue",
+                    value: stockCount,
+                  },
+                  url: productUrl,
+                  seller: { "@type": "Organization", name: "Lovanet" },
+                  itemCondition: "https://schema.org/NewCondition",
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingDestination,
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: handlingMin,
+                        maxValue: handlingMax,
+                        unitCode: "DAY",
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: transitMin,
+                        maxValue: transitMax,
+                        unitCode: "DAY",
+                      },
+                    },
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: shippingRate,
+                      currency: "EUR",
+                    },
+                  },
+                  hasMerchantReturnPolicy: merchantReturnPolicy,
                 },
               },
             };
@@ -334,7 +397,7 @@ const Shop = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-4">
           {pageItems.map((p) => (
-            <article key={p.id} id={p.id} itemScope itemType="https://schema.org/Product"
+            <article key={p.id} id={p.id}
               className="rgb-card group overflow-hidden bg-card rounded-2xl">
               <button onClick={() => openProduct(p)} className="block w-full text-left">
                 <figure className="rgb-frame relative aspect-square overflow-hidden m-0">
@@ -355,24 +418,19 @@ const Shop = () => {
                 </figure>
                 <div className="p-3">
                   <p className="text-[11px] uppercase tracking-wider text-primary">{p.tag}</p>
-                  <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 min-h-[2.6rem]" itemProp="name">{p.name}</h3>
+                  <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 min-h-[2.6rem]">{p.name}</h3>
                   <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span>{p.rating ?? 4.7} · {(p.sold ?? 100).toLocaleString()} vendus</span>
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <p className="font-display font-extrabold gradient-text text-lg">
-                      <span itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                        <span itemProp="price" content={p.price.toFixed(2)}>{p.price}</span>{" "}
-                        <span itemProp="priceCurrency" content="EUR">€</span>
-                      </span>
+                        {p.price} €
                     </p>
                     {p.compareAt && p.compareAt > p.price && (
                       <span className="text-xs text-muted-foreground line-through">{p.compareAt} €</span>
                     )}
                   </div>
-                  <meta itemProp="sku" content={p.id} />
-                  <meta itemProp="description" content={p.description} />
                 </div>
               </button>
               <div className="px-3 pb-3 flex gap-2">

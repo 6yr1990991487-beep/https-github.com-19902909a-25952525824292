@@ -26,6 +26,16 @@
   - données structurées **JSON‑LD schema.org** (Organization, WebSite, WebPage, Product, VideoObject, BreadcrumbList, Article/NewsArticle)
   - inclure les champs demandés : **`aggregateRating`** et **`review`** (là où applicable)
 
+#### Objectif SEO — Merchant listings / Fiches de marchand (NOUVEAU P0)
+- Corriger les erreurs Search Console **Fiches de marchand** (production signalée) en mettant à jour le balisage **Product** sur `/shop` :
+  - `image`
+  - `aggregateRating`
+  - `review`
+  - `offers.availability`
+  - `offers.shippingDetails`
+  - `offers.hasMerchantReturnPolicy`
+  - identifiant global (GTIN/MPN) **ou** à défaut `brand` + `sku` cohérents
+
 ### Objectif (Search Console)
 - Ajouter la balise de vérification Google :
   - `<meta name="google-site-verification" content="eDW28NAvAT9tr_dkYRKphCLRed_tlkJefXfYLvPbqd0" />`
@@ -72,125 +82,116 @@
 
 ### Phase 14 — Refonte Catalogue + SEO bloquant + validation (PRIORITÉ ACTIVE) ⏳ IN PROGRESS
 
-#### Phase 14.1 — Base Catalogue (déjà implémentée en preview) ✅
+#### Phase 14.1 — Base Catalogue ✅
 - Remplacement du carrousel circulaire par un **lecteur géant**.
 - Commandes lecteur + PiP.
 - Favoris persistants (localStorage) + bandeau “file personnelle”.
 
-#### Phase 14.2 — Ajustements Catalogue (exigences consolidées) ⏳ IN PROGRESS
-**But :** lecture stable, UX premium des cartes (vertical + blister), masquage YouTube, sélection auto, et traductions.
+#### Phase 14.2 — Ajustements Catalogue (exigences consolidées) ✅ MAJORITAIREMENT FAIT
+**But :** lecture stable, UX premium des cartes (vertical + blister), masquage YouTube, sélection auto, traductions, et nettoyage de texte.
 
-1) **Lecture automatique fiable (sans coupure) + politique son (1B)** ✅ PARTIELLEMENT FAIT
+1) **Lecture automatique fiable (sans coupure) + politique son (1B)** ✅
 - **Autoplay en muet** au chargement.
 - **Activation du son au 1er clic** (déverrouillage + play).
-- Stabiliser l’embed YouTube pour éviter remount intempestif.
-- Ajouter lecture « complète » : éviter arrêt prématuré et gérer l’enchaînement (fin → vidéo suivante).
+- Stabilisation du composant `YouTubeEmbed`.
 
-2) **Masquage UI/branding YouTube (2B)** ✅ PARTIELLEMENT FAIT
+2) **Masquage UI/branding YouTube (2B)** ✅
 - Réduction maximale de l’UI via paramètres embed (`controls=0`, `modestbranding`, `rel=0`, etc.).
-- Suppression des overlays/mentions YouTube ajoutés par le site.
-- Note : masquage total du branding non garanti (limites iframe).
 
-3) **Sélection automatique + panneau de proposition (3C)** ✅ FAIT (mais à ajuster)
-- Afficher au chargement un panneau de proposition :
+3) **Sélection automatique + panneau de proposition (3C)** ✅
+- Panneau visible au chargement avec actions :
   - « Ajouter la sélection aux favoris »
   - « Lire maintenant »
-- **Important (nouvelle demande)** : le panneau doit rester visuel mais les **textes listés** doivent être retirés (voir point 6).
+- Nettoyage demandé : suppression des textes explicatifs/marketing (voir point 6) ✅
 
-4) **Refonte style cartes (vertical, verre/brillance/transparence)** ✅ FAIT (à ajuster)
-- Miniatures **plus verticales** (ratio type 5/8).
-- Cartes / panneaux **très transparents**, premium, cadrés par **blister verre brillant**.
-- **Nouvelle demande** : retirer tout calque/filtre qui assombrit ou floute les miniatures.
+4) **Refonte style cartes (vertical, verre/brillance/transparence)** ✅
+- Miniatures plus verticales (ratio type 5/8).
+- Cartes/panneaux transparents avec blister verre.
+- Suppression des calques trop sombres + amélioration de la brillance/visibilité ✅
 
-5) **Bulle flottante (droite) = couleurs cartes** ✅ FAIT (à re-valider)
-- Conserver les variables CSS `--catalog-card-*` pour piloter : fond, bordure, animation.
+5) **Bulle flottante (droite) = couleurs cartes** ✅
+- Variables CSS `--catalog-card-*` utilisées pour piloter fond/bordure/animation.
 
-6) **Nettoyage des textes UI (nouvelle demande)** ⏳ TODO
-Retirer (sans supprimer la structure visuelle) les textes suivants :
-- Dans le header/panneau supérieur :
-  - « Catalogue vidéo géant »
-  - « Un écran principal lumineux pour piloter tout le catalogue. »
-  - le paragraphe d’explication “Per design guidelines…”
-  - les libellés/phrases des compteurs (ex. « Favoris », « Playlist persistante locale », « Vidéos prêtes », « Lecture auto stabilisée »)
-- Dans le panneau de sélection :
-  - « Sélection vidéo détectée »
-  - « 10 cartes vidéo prêtes… »
-  - « 10 cartes vidéo ont été détectées… »
+6) **Nettoyage des textes UI** ✅
+- Suppression des textes listés du header et du panneau de sélection (structure conservée).
 
-Objectif : garder les zones (cadres, effets, layout) mais supprimer les phrases.
+7) **Traductions des cartes (option/toggle)** ✅
+- Ajout d’un toggle « Traduire les cartes » :
+  - affiche titre “traduit” (fallback basé sur champs dispo) + affiche l’original si différent
+  - description “traduite” (fallback synthétique)
 
-7) **Traductions des cartes (nouvelle demande)** ⏳ TODO
-- Ajouter une **option/bulle flottante** sur les cartes (ou un toggle discret) qui permet :
-  - **(a)** afficher titre original + titre traduit (si dispo)
-  - **(b)** traduire aussi le texte descriptif/synopsis
-  - **(c)** permettre d’activer/désactiver à la demande.
-- Étape préalable : vérifier la présence d’une mécanique existante (i18n/traduction) dans le projet.
-- Implémentation :
-  - mode “auto” basé sur champs existants (romaji/english/native) + fallback
-  - traduction du synopsis via service (si déjà existant) ou via mapping local minimal (si requis) ; sinon proposer option “en cours/indispo”.
+8) **Micro-nettoyage Landing** ✅
+- Suppression des textes `Sélection collector` et `Expérience premium` sur la landing page.
 
-8) **Robustesse réseau (AniList 429/CORS)** ⏳ TODO
-- Constat preview : erreurs AniList (429/CORS) peuvent empêcher `trailer`.
-- Ajuster la logique “carte avec vidéo” :
-  - considérer “jouable” via recherche YouTube fallback (déjà partiellement fait)
-  - dégrader proprement (cache, délais, fallback, pas de blocage UI).
+9) **Robustesse réseau (AniList 429/CORS)** ⏳ EN COURS
+- Constat preview : erreurs AniList peuvent empêcher le chargement de trailers.
+- Dégradation : lecture possible via recherche YouTube fallback.
 
-#### Phase 14.3 — SEO bloquant ✅ CONTRÔLÉ (preview)
-- `/shop` : JSON-LD contient `aggregateRating` + `review` ✅
+#### Phase 14.3 — SEO bloquant (contrôlé en preview) ✅
+- `/shop` : JSON-LD contient `aggregateRating` + `review` ✅ (à étendre pour Merchant listings)
 - `/actualites` : une seule meta description ✅
 
-> À re-confirmer après les derniers changements via audit final.
+#### Phase 14.4 — SEO Merchant listings / Fiches de marchand (P0 — PRODUCTION SIGNALÉE) ⏳ TODO
+**Contexte :** Search Console remonte des erreurs en **production**. 
+**Action :** corriger le code en **preview**, puis l’utilisateur devra **redéployer** pour pousser en production.
 
-#### Phase 14.4 — Validation & preuves (obligatoire) ⏳ TODO
+À faire dans `/shop` (Product JSON-LD) :
+- Ajouter/corriger **obligatoires & critiques** :
+  - `image` (URL absolue)
+- Ajouter/corriger **recommandés** :
+  - `aggregateRating`
+  - `review` (tableau)
+  - `offers.availability`
+  - `offers.shippingDetails`
+  - `offers.hasMerchantReturnPolicy`
+  - identifiant global : GTIN/MPN si possible ; sinon `brand` + `sku`
+- Vérifier la conformité schema.org :
+  - `offers` en tableau si multi-offres
+  - `priceCurrency`, `price`, `url`, `itemCondition`
+
+#### Phase 14.5 — Validation & preuves (obligatoire) ⏳ TODO
 - Vérifier (desktop + mobile) :
-  - autoplay muet + unmute au premier clic
-  - lecture complète + enchaînement playlist
-  - commandes (play/pause/mute/précédent/suivant) actives
-  - PiP / mini-fenêtre
-  - panneau proposition visible au chargement (sans les textes listés)
-  - cartes : miniatures verticales **sans assombrissement**, blister verre brillant
-  - bulle couleur à droite : impact visible sur toutes les cartes
-  - option/bulle de traduction sur les cartes : titre + description
+  - Catalogue : autoplay muet + unmute au premier clic
+  - cartes : miniatures nettes (sans assombrissement), blister clair
+  - panneau sélection : visible sans textes marketing
+  - toggle traduction : impact visible sur titres + descriptions
+- Vérifier SEO :
+  - `/shop` : Product JSON-LD complet (Merchant listings)
+  - `/actualites` : 1 seule meta description
 - Captures d’écran :
-  - `/anime-catalog` (lecteur + cartes + panneau)
+  - `/anime-catalog` (lecteur + cartes + panneau + toggle traduction)
   - `/shop` (SEO JSON-LD)
   - `/actualites` (meta description unique)
 - Exécuter le **testing agent frontend** et corriger tous les retours.
 
 ---
 
-## 3) Next Actions (ordre d’exécution — VALIDÉ UTILISATEUR)
-1) **Catalogue** (Phase 14.2) :
-   - retirer les textes listés (sans supprimer la structure)
-   - retirer tout filtre/calve sombre ou flou sur miniatures
-   - renforcer la brillance/scintillement autour du blister verre
-   - ajouter option/bulle flottante “Traductions” (titre + description)
-   - revalider contrôles lecteur (actifs même en fallback YouTube search)
-   - robustifier face à AniList 429/CORS
-2) **SEO** (re-check) : `/shop` JSON-LD + `/actualites` meta description.
+## 3) Next Actions (ordre d’exécution — MIS À JOUR)
+1) **SEO Merchant listings (P0)** : compléter le balisage Product sur `/shop` (image + offers.* + policy + shipping + availability + identifiants) puis revalider via inspection.
+2) **Catalogue** : finaliser robustesse réseau AniList (429/CORS) + vérifier contrôles lecteur (actifs même en fallback YouTube search).
 3) **Vérifs** : captures + testing agent frontend complet.
 
-> Rappel important : tout est implémenté en **preview** ; un **redéploiement** est nécessaire pour voir les changements en production.
+> Important : l’alerte Search Console concerne la **production**. Les correctifs seront faits en **preview** et un **redéploiement** sera nécessaire pour les voir en production.
 
 ---
 
 ## 4) Success Criteria
 - Catalogue :
   - lecteur vidéo géant premium + PiP
-  - **autoplay muet** sans coupure + **son au 1er clic utilisateur**
-  - UI/branding YouTube masqué au maximum (et overlays du site supprimés)
-  - cartes : miniatures **verticales**, **nettes** (sans assombrissement/flou), panneau transparent, **blister verre** brillant
-  - panneau au chargement visible, mais **sans** les textes listés
-  - bulle droite : change bien les couleurs de toutes les cartes
-  - option/bulle de traduction : **titre + description** (activable)
+  - autoplay muet sans coupure + son au 1er clic utilisateur
+  - UI/branding YouTube masqué au maximum
+  - cartes : miniatures verticales nettes, sans assombrissement/flou, blister verre brillant
+  - panneau au chargement visible, sans textes marketing listés
+  - bulle couleur à droite : change les couleurs des cartes
+  - option traduction : titre + description (activable)
 - SEO :
-  - `/shop` JSON-LD contient `aggregateRating` + `review`
-  - `/actualites` n’a qu’une seule meta description
+  - `/shop` : balisage Product conforme Merchant listings (image + offers.availability + shippingDetails + hasMerchantReturnPolicy + brand/sku + aggregateRating/review)
+  - `/actualites` : une seule meta description
 - Frontend stable : pas d’erreurs console bloquantes, tests frontend OK.
 
 ---
 
-## 5) Current Execution Order (validé utilisateur)
-1) Catalogue (refonte + ajustements lecture/styling + nettoyage texte + traductions) ⏳ EN COURS
-2) SEO bloquant ✅ contrôlé (à revalider)
-3) Build/captures/tests ⏳ à exécuter
+## 5) Current Execution Order (mis à jour)
+1) SEO Merchant listings / `/shop` ⏳ À FAIRE (suite alertes production)
+2) Catalogue (robustesse réseau + contrôles lecteur) ⏳ EN COURS
+3) Build/captures/tests ⏳ À EXÉCUTER

@@ -1,10 +1,14 @@
 [
   {
-    "content": "Retirer les textes `Sélection collector` et `Expérience premium` là où ils apparaissent",
+    "content": "Inspecter le JSON-LD Product actuel de `/shop` et identifier les champs Merchant listings manquants",
     "status": "completed"
   },
   {
-    "content": "Revalider visuellement le Catalogue puis relancer les tests frontend ciblés",
+    "content": "Compléter le schéma Product avec `image`, `availability`, `shippingDetails`, `hasMerchantReturnPolicy`, `brand`/`sku`, `aggregateRating` et `review`",
     "status": "completed"
+  },
+  {
+    "content": "Vérifier en preview le JSON-LD rendu sur `/shop` puis lancer un test frontend ciblé",
+    "status": "in_progress"
   }
 ]
