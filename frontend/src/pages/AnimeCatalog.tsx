@@ -1275,16 +1275,16 @@ export default function AnimeCatalog() {
             )}
 
             {pagedItems.length ? (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 2xl:grid-cols-3" data-testid="catalog-grid">
-                {pagedItems.map((media) => {
+              <div className="grid grid-cols-4 gap-2 sm:gap-3 xl:gap-4" data-testid="catalog-grid">
+                {pagedItems.map((media, index) => {
                   const title = mediaTitle(media);
-                  const image = media.coverImage.large || media.coverImage.extraLarge || mediaImage(media);
+                  const image = media.coverImage.extraLarge || media.coverImage.large || mediaImage(media);
                   const isFavorite = favoriteIds.includes(media.id);
                   const isActive = activePlayerId === media.id;
                   return (
                     <article
                       key={`catalog-card-${media.id}`}
-                      className={`group relative overflow-hidden rounded-[1.9rem] border text-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 ${isActive ? "shadow-[0_22px_42px_rgba(6,12,24,0.32)]" : "shadow-[0_14px_30px_rgba(6,12,24,0.2)]"}`}
+                      className={`group relative overflow-hidden rounded-[1.2rem] border text-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 ${isActive ? "shadow-[0_14px_28px_rgba(6,12,24,0.24)]" : "shadow-[0_8px_18px_rgba(6,12,24,0.16)]"}`}
                       data-testid={`catalog-card-${media.id}`}
                       style={{
                         background: "var(--catalog-card-bg, linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)))",
@@ -1292,29 +1292,33 @@ export default function AnimeCatalog() {
                         borderColor: isActive ? "var(--catalog-card-border, rgba(255,255,255,0.26))" : "var(--catalog-card-border, rgba(255,255,255,0.12))",
                         backgroundSize: "var(--catalog-card-size, auto)",
                         animation: "var(--catalog-card-anim, none)",
-                        backdropFilter: "blur(2px)",
-                        WebkitBackdropFilter: "blur(2px)",
+                        backdropFilter: "blur(1px)",
+                        WebkitBackdropFilter: "blur(1px)",
                       }}
                     >
-                      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0.12),transparent_18%,transparent_78%,rgba(255,255,255,0.05))]" />
-                      <div className="relative aspect-[5/8] overflow-hidden rounded-t-[1.9rem] border-b border-white/10 bg-[rgba(255,255,255,0.04)]">
+                      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0.1),transparent_18%,transparent_82%,rgba(255,255,255,0.04))]" />
+                      <div className="relative aspect-[3/4] overflow-hidden rounded-t-[1.2rem] border-b border-white/10 bg-[rgba(255,255,255,0.04)]">
                         <img
                           src={image}
                           alt={title}
-                          loading="lazy"
-                          className="h-full w-full object-cover brightness-[1.06] saturate-[1.08] contrast-[1.02] transition-transform duration-500 group-hover:scale-[1.03]"
+                          loading={index < 8 ? "eager" : "lazy"}
+                          decoding="async"
+                          fetchPriority={index < 4 ? "high" : "auto"}
+                          className="h-full w-full object-cover object-center contrast-[1.03] saturate-[1.14] transition-transform duration-300 group-hover:scale-[1.015]"
                           onError={(event) => {
                             const target = event.currentTarget;
-                            if (media.coverImage.extraLarge && target.src !== media.coverImage.extraLarge) {
+                            if (media.coverImage.large && target.src !== media.coverImage.large) {
+                              target.src = media.coverImage.large;
+                            } else if (media.coverImage.extraLarge && target.src !== media.coverImage.extraLarge) {
                               target.src = media.coverImage.extraLarge;
                             } else {
                               target.style.display = "none";
                             }
                           }}
                         />
-                        <div className="pointer-events-none absolute inset-0 rounded-t-[1.9rem] shadow-[inset_0_2px_0_rgba(255,255,255,0.38),inset_0_-12px_32px_rgba(255,255,255,0.04),0_0_32px_rgba(255,255,255,0.12)]" />
-                        <div className="absolute left-3 top-3 right-3 flex items-start justify-between gap-3">
-                          <Badge className="rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/88" data-testid={`catalog-card-format-${media.id}`}>
+                        <div className="pointer-events-none absolute inset-0 rounded-t-[1.2rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),0_0_20px_rgba(255,255,255,0.08)]" />
+                        <div className="absolute left-2 top-2 right-2 flex items-start justify-between gap-2">
+                          <Badge className="rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-white/88" data-testid={`catalog-card-format-${media.id}`}>
                             {media.format || "Anime"}
                           </Badge>
                           <div className="flex items-center gap-2 opacity-100 transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
@@ -1322,7 +1326,7 @@ export default function AnimeCatalog() {
                               type="button"
                               size="icon"
                               variant="glass"
-                              className={`h-11 w-11 rounded-full text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`}
+                              className={`h-8 w-8 rounded-full text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`}
                               onClick={() => {
                                 if (!isFavorite) {
                                   setFavoriteIds((current) => (current.includes(media.id) ? current : [media.id, ...current]));
@@ -1339,46 +1343,46 @@ export default function AnimeCatalog() {
                             </Button>
                           </div>
                         </div>
-                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3">
-                          <span className="inline-flex min-h-[38px] items-center rounded-full border border-white/12 bg-[rgba(255,255,255,0.08)] px-3 text-xs text-white/84" data-testid={`catalog-card-score-${media.id}`}>
+                        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2">
+                          <span className="inline-flex min-h-[28px] items-center rounded-full border border-white/12 bg-[rgba(255,255,255,0.08)] px-2 text-[9px] text-white/84" data-testid={`catalog-card-score-${media.id}`}>
                             {typeof media.averageScore === "number" ? `${media.averageScore} / 100` : "Score en cours"}
                           </span>
                           {hasPlayableVideo(media) && (
-                            <span className="inline-flex min-h-[38px] items-center rounded-full border border-white/12 bg-[rgba(255,255,255,0.08)] px-3 text-xs text-white/88" data-testid={`catalog-card-trailer-${media.id}`}>
-                              <PlayCircle className="mr-1.5 h-4 w-4 text-[var(--theme-link)]" /> Vidéo
+                            <span className="inline-flex min-h-[28px] items-center rounded-full border border-white/12 bg-[rgba(255,255,255,0.08)] px-2 text-[9px] text-white/88" data-testid={`catalog-card-trailer-${media.id}`}>
+                              <PlayCircle className="mr-1 h-3 w-3 text-[var(--theme-link)]" /> Vidéo
                             </span>
                           )}
                         </div>
-                        <BlisterFrame radius={18} intensity={0.96} />
+                        <BlisterFrame radius={12} intensity={0.78} />
                       </div>
 
-                      <CardContent className="space-y-4 p-5">
-                        <div className="space-y-2">
-                          <h3 className="line-clamp-2 font-display text-xl font-black leading-tight" data-testid={`catalog-card-title-${media.id}`}>
+                      <CardContent className="space-y-2 p-2.5">
+                        <div className="space-y-1">
+                          <h3 className="line-clamp-2 font-display text-[12px] font-black leading-tight" data-testid={`catalog-card-title-${media.id}`}>
                             {showTranslatedCards ? translatedTitle(media) : title}
                           </h3>
                           {showTranslatedCards && translatedTitle(media) !== title && (
-                            <p className="line-clamp-1 text-xs uppercase tracking-[0.18em] opacity-65" data-testid={`catalog-card-original-title-${media.id}`}>
+                            <p className="line-clamp-1 text-[8px] uppercase tracking-[0.14em] opacity-65" data-testid={`catalog-card-original-title-${media.id}`}>
                               {title}
                             </p>
                           )}
-                          <p className="line-clamp-3 text-sm leading-7 opacity-80" data-testid={`catalog-card-description-${media.id}`}>
+                          <p className="line-clamp-2 text-[10px] leading-4 opacity-80" data-testid={`catalog-card-description-${media.id}`}>
                             {showTranslatedCards ? translatedDescription(media) : mediaDescription(media)}
                           </p>
                         </div>
 
-                        <div className="flex flex-wrap gap-2" data-testid={`catalog-card-tags-${media.id}`}>
-                          <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-3 py-2 text-xs opacity-90">{media.seasonYear || "Catalogue"}</span>
-                          <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-3 py-2 text-xs opacity-90">{media.episodes ? `${media.episodes} épisodes` : "Épisodes à confirmer"}</span>
-                          {media.status && <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-3 py-2 text-xs opacity-90">{media.status}</span>}
+                        <div className="flex flex-wrap gap-1" data-testid={`catalog-card-tags-${media.id}`}>
+                          <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-1.5 py-1 text-[8px] opacity-90">{media.seasonYear || "Catalogue"}</span>
+                          <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-1.5 py-1 text-[8px] opacity-90">{media.episodes ? `${media.episodes} ép.` : "À confirmer"}</span>
+                          {media.status && <span className="rounded-full border border-white/10 bg-[rgba(255,255,255,0.06)] px-1.5 py-1 text-[8px] opacity-90">{media.status}</span>}
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
-                          <Button type="button" className="btn-neon-rainbow min-h-[44px] flex-1 rounded-2xl text-white" onClick={() => activatePlayer(media, { forceFavorite: true, unlockSound: true })} data-testid={`catalog-card-primary-action-${media.id}`}>
-                            <Play className="h-4 w-4" /> Envoyer au lecteur géant
+                        <div className="flex flex-col gap-1">
+                          <Button type="button" className="btn-neon-rainbow min-h-[28px] rounded-lg px-1.5 text-[9px] text-white" onClick={() => activatePlayer(media, { forceFavorite: true, unlockSound: true })} data-testid={`catalog-card-primary-action-${media.id}`}>
+                            <Play className="h-3 w-3" /> Envoyer
                           </Button>
-                          <Button type="button" variant="glass" className={`min-h-[44px] rounded-2xl text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`} onClick={() => toggleFavorite(media)} data-testid={`catalog-card-favorite-toggle-${media.id}`}>
-                            <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+                          <Button type="button" variant="glass" className={`min-h-[26px] rounded-lg px-1.5 text-[9px] text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`} onClick={() => toggleFavorite(media)} data-testid={`catalog-card-favorite-toggle-${media.id}`}>
+                            <Heart className={`h-3 w-3 ${isFavorite ? "fill-current" : ""}`} />
                             {isFavorite ? "Retirer" : "Favori"}
                           </Button>
                         </div>

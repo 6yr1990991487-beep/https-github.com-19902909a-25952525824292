@@ -1,14 +1,14 @@
 [
   {
-    "content": "Inspecter le JSON-LD Product actuel de `/shop` et identifier les champs Merchant listings manquants",
+    "content": "Réduire d’environ 30% les cartes du catalogue et densifier la grille à 4 colonnes",
     "status": "completed"
   },
   {
-    "content": "Compléter le schéma Product avec `image`, `availability`, `shippingDetails`, `hasMerchantReturnPolicy`, `brand`/`sku`, `aggregateRating` et `review`",
+    "content": "Améliorer la netteté HD des miniatures du catalogue et réduire la sensation de pixelisation",
     "status": "completed"
   },
   {
-    "content": "Vérifier en preview le JSON-LD rendu sur `/shop` puis lancer un test frontend ciblé",
+    "content": "Vérifier visuellement le rendu mobile/desktop du catalogue puis corriger si nécessaire",
     "status": "in_progress"
   }
 ]
