@@ -6,6 +6,7 @@ type Props = {
   title: string;
   thumbnail: string;
   vertical?: boolean;
+  aspectClass?: string;
   /** start muted (default true). When false, audio plays on hover. */
   muted?: boolean;
   /** delay before iframe loads on hover, in ms */
@@ -29,6 +30,7 @@ export const HoverPreview = ({
   title,
   thumbnail,
   vertical,
+  aspectClass,
   muted = true,
   delay = 0,
   autoPlay = false,
@@ -56,11 +58,8 @@ export const HoverPreview = ({
     setActive(false);
   };
 
-  const ratio = vertical ? "aspect-[9/16]" : "aspect-video";
-  // Vertical preview = crop the 16:9 player to portrait to mimic Shorts/TikTok
-  const iframeWrap = vertical
-    ? "absolute inset-0 overflow-hidden pointer-events-none"
-    : "absolute inset-0 pointer-events-none";
+  const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
+  const iframeWrap = vertical ? "absolute inset-0 overflow-hidden pointer-events-none" : "absolute inset-0 pointer-events-none";
 
   return (
     <div
@@ -69,23 +68,21 @@ export const HoverPreview = ({
       onMouseLeave={stop}
       onFocus={start}
       onBlur={stop}
-      onTouchStart={() => setActive((a) => !a)}
+      onTouchStart={() => setActive((value) => !value)}
     >
       <img
         src={thumbnail}
         alt={title}
         loading="lazy"
+        decoding="async"
         onLoad={onImgLoad}
         onError={onImgError}
-        className={`w-full h-full object-cover transition-transform duration-500 ${
-          active ? "scale-105 opacity-0" : "opacity-100 group-hover:scale-105"
-        }`}
+        className={`w-full h-full object-cover transition-transform duration-500 ${active ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
       />
 
       {active && (
         <div className={iframeWrap}>
           {vertical ? (
-            // Crop a 16:9 iframe to a 9:16 viewport: scale up and center
             <iframe
               src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? 1 : 0}&controls=0&rel=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1`}
               title={title}
@@ -103,7 +100,6 @@ export const HoverPreview = ({
         </div>
       )}
 
-      {/* Play affordance when not previewing */}
       {!active && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.6)]">
@@ -112,7 +108,6 @@ export const HoverPreview = ({
         </div>
       )}
 
-      {/* Live preview indicator */}
       {active && (
         <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider pointer-events-none">
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Preview

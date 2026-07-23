@@ -1,14 +1,10 @@
 [
   {
-    "content": "Réduire d’environ 30% les cartes du catalogue et densifier la grille à 4 colonnes",
+    "content": "Stabiliser le lecteur principal Prime Video avec un fallback visuel propre si YouTube est indisponible",
     "status": "completed"
   },
   {
-    "content": "Améliorer la netteté HD des miniatures du catalogue et réduire la sensation de pixelisation",
-    "status": "completed"
-  },
-  {
-    "content": "Vérifier visuellement le rendu mobile/desktop du catalogue puis corriger si nécessaire",
+    "content": "Revalider visuellement Prime Video desktop/mobile puis lancer un test frontend ciblé",
     "status": "in_progress"
   }
 ]
