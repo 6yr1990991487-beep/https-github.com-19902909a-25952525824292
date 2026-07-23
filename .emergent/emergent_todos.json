@@ -1,6 +1,10 @@
 [
   {
-    "content": "Vérifier visuellement Anime Moments desktop/mobile puis corriger si nécessaire",
+    "content": "Ajuster l’ordre des calques de la bannière Anime Moments pour que la vidéo reste visible au-dessus des effets restaurés",
+    "status": "completed"
+  },
+  {
+    "content": "Revalider visuellement Anime Moments desktop/mobile après ajustement des calques",
     "status": "completed"
   }
 ]

@@ -26,17 +26,13 @@
 ### Objectif Search Console
 - Conserver la meta de vérification + automatisation future.
 
-### Objectif (NOUVEAU) — Refonte Premium multi‑pages (Phase 15)
+### Objectif — Refonte Premium multi‑pages (Phase 15)
 - Appliquer des améliorations premium demandées sur **Prime Video / YouTube / Lecteurs vidéo** + extensions possibles sur d’autres pages.
 - Décision utilisateur : *aller au plus rapide, sans casser le site, puis dérouler le reste progressivement*.
 
-### Objectif (MIS À JOUR) — Nettoyage bannière “capture” Anime Moments (P0 prod)
+### Objectif (MIS À JOUR) — Bannière “capture” Anime Moments (P0 prod)
 - Problème vu en **production** sur la page **Anime Moments** (route `/anime-moments`).
-- Constat : la bannière capture comportait des **cartes vidéos animées/défilantes** (HeroCarousel).
-- Demande mise à jour :
-  1) **Revenir au principe visuel précédent** (le “cadre”/layout du haut doit rester comme avant)
-  2) **Retirer uniquement** les **cartes vidéos animées/défilantes** (donc plus d’animation ni de cartes)
-  3) **Ajouter la vidéo fournie** en **superposition au centre**, **taille réduite**, **semi‑transparente**, **autoplay muet**, sans **masquer** les composants derrière ni sur les côtés.
+- But : **conserver la bannière identique à avant** (overlays/spots/effets), **supprimer uniquement** le carrousel/roulette de **cartes vidéo défilantes**, et **ajouter la vidéo utilisateur** en overlay centré sans masquer le reste.
 
 > Note environnement : beaucoup de retours sont vus en **production** ; les correctifs sont réalisés en **preview**, puis un **redéploiement** est nécessaire côté utilisateur.
 
@@ -103,7 +99,7 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 - ✅ **Cartes compactes HD** (grilles denses, cartes réduites, miniatures nettes, couleurs rehaussées).
 - ✅ **Grand bloc héro Prime** en haut : clic carte → projection dans le héro.
 - ✅ **Prévisualisation “bande‑annonce auto”** (Hover desktop / tap mobile) via `HoverPreview`.
-- ✅ **Panneau flottant “À regarder ce soir”** (favoris locaux persistants).
+- ✅ **Panneau “À regarder ce soir”** (favoris locaux persistants).
 - ✅ **Barre “reprendre plus tard”** (historique local persistant).
 - ✅ **Badges intelligents** (heuristiques : nouveauté/populaire/long format/film + ambiance).
 - ✅ **Tri émotionnel simple** (mood filter basé sur genres).
@@ -116,9 +112,9 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 #### Lot 2 — YouTube (réplique du pattern) ⏳ À DÉMARRER
 1) Hero vidéo géant type chaîne premium.
 2) Miniatures unifiées style premium (cartes compactes HD, 4 colonnes denses, previews hover/tap).
-3) Playlist auto (locale) + lecture continue (sans dépendre de nouveaux credentials).
-4) Panneaux : “À ne pas manquer”, “les plus regardées” (heuristiques ou stats si dispo via backend).
-5) Filtres : “shorts / longs formats” (si déductible via durée/ratio, sinon heuristique).
+3) Playlist auto (locale) + lecture continue.
+4) Panneaux : “À ne pas manquer”, “les plus regardées”.
+5) Filtres : “shorts / longs formats”.
 
 #### Lot 3 — Lecteurs vidéo (unification) ⏳ À DÉMARRER
 1) Lecteur géant « universel » (YouTube/Prime/TikTok/vidéos internes) avec UI cohérente.
@@ -133,40 +129,47 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
 
 ---
 
-### Phase 16 — Ajustement bannière “capture” Anime Moments (P0 prod) ⏳ IN PROGRESS
+### Phase 16 — Bannière “capture” Anime Moments (P0 prod) ⏳ IN PROGRESS
 **Contexte** : retour utilisateur vu en production sur la page **Anime Moments**.
 
 #### État actuel (preview)
-- La bannière du haut a été remplacée par une **vidéo plein cadre**, ce qui **masque** les éléments/effets de la bannière et ne correspond pas au rendu souhaité.
+- Une version **simplifiée** a été mise en place (fond + vidéo centrée), mais l’utilisateur confirme que les **overlays/spots/effets d’origine** sont absents.
 
-#### Objectif correct (à livrer)
-- Revenir au rendu du haut « comme avant » (cadre/ambiance identique).
-- Retirer **uniquement** les **cartes vidéos animées/défilantes**.
-- Ajouter la vidéo utilisateur :
-  - **centrée**, **plus petite**, **semi-transparente**
-  - **autoplay muet**, `playsInline`, `loop`
-  - sans recouvrir/masquer les composants derrière ni sur les côtés.
+#### Objectif correct (à livrer maintenant)
+- **Restaurer à l’identique** les overlays / spots de lumière / effets visuels qui existaient avant (bannière d’origine).
+- **Supprimer uniquement** la partie « carrousel/roulette de cartes vidéo défilantes » (et son animation).
+- **Conserver** l’overlay vidéo utilisateur :
+  - centrée, plus petite, semi‑transparente
+  - autoplay muet, `playsInline`, `loop`
+  - ne doit pas masquer les composants derrière / sur les côtés
+  - les overlays/effets doivent être visuellement “après” (au-dessus) ou correctement composités, selon l’effet original.
 
-#### Checklist
-1) **Restaurer le container/structure** d’avant (sans le flux de cartes).
-2) **Supprimer** l’injection des cartes + la logique d’animation (HeroCarousel).
-3) **Ajouter une surcouche vidéo** au centre :
-   - wrapper `position: absolute` centré
-   - `max-width` contrôlée (ex : 52–62% desktop, 78–86% mobile)
-   - `opacity` ~0.45–0.7 + `mix-blend-mode: screen/overlay` si nécessaire
-   - `pointer-events: none` (pour ne pas gêner les composants)
-4) Ajuster responsivité :
-   - mobile : garder lisible, ne pas recouvrir navbar/CTA
-   - desktop : laisser visibles les côtés/effets
+#### Checklist (implémentation)
+1) **Récupérer la bannière d’origine** (ex-HeroCarousel) :
+   - restaurer les wrappers, overlays, spots et effets CSS.
+2) **Neutraliser** le rendu des cartes du carrousel :
+   - retirer le composant/mapper qui génère les cartes
+   - supprimer timers/intervals/animations liées aux cartes
+   - conserver uniquement la structure et les couches d’effets.
+3) **Réinsérer** la vidéo utilisateur comme élément central :
+   - wrapper `absolute` centré
+   - largeur : ~58–62% desktop, ~78–86% mobile
+   - opacité ajustable (0.65–0.85)
+   - `pointer-events: none`
+4) **Ordre des calques** :
+   - fond / effets bas
+   - composants existants autour
+   - vidéo centrée
+   - overlays/spots haut (si c’était le cas initialement)
 5) Validation preview :
    - captures `/anime-moments` desktop + mobile
-   - vérifier : plus de cartes défilantes, vidéo centrée non intrusive
+   - vérifier : overlays/spots présents, pas de cartes vidéo défilantes, vidéo centrée non intrusive.
 6) Redéploiement côté utilisateur pour production.
 
 ---
 
 ## 3) Next Actions (ordre d’exécution — MIS À JOUR)
-1) **Phase 16** : corriger la bannière Anime Moments selon le rendu demandé (retour au layout + vidéo centrée transparente) → implémentation preview + captures.
+1) **Phase 16** : restaurer la bannière Anime Moments identique à avant (overlays/spots) + supprimer uniquement le carrousel de cartes + conserver la vidéo centrée → implémentation preview + captures.
 2) **Phase 14.6 Validation** : captures + tests frontend + corrections (Catalogue/Shop/Actualités).
 3) **Phase 15 Lot 2** : YouTube (réplique pattern Prime/Catalogue).
 4) **Phase 15 Lot 3** : Lecteurs vidéo (unification + PiP premium).
@@ -195,8 +198,9 @@ Objectif : appliquer le **pattern Catalogue** sur Prime Video, en conservant l�
   - YouTube : hero + cartes unifiées + playlist locale
   - Lecteurs vidéo : expérience unifiée + PiP renforcé
 - Anime Moments (Phase 16) :
-  - bannière top : plus de cartes défilantes
-  - vidéo utilisateur centrée, réduite, semi-transparente, autoplay muet
+  - bannière top = overlays/spots/effets identiques à avant
+  - suppression uniquement du carrousel/roulette de cartes vidéo défilantes
+  - vidéo utilisateur centrée, réduite, semi‑transparente, autoplay muet
   - les éléments arrière-plan/côtés restent visibles (pas d’écrasement)
 
 ---

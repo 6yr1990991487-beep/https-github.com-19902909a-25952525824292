@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Play, ShoppingBag, Youtube, Music2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageShell } from "@/components/PageShell";
+import { HeroCarousel } from "@/components/HeroCarousel";
 import MiniCatalogOrb from "@/components/MiniCatalogOrb";
 import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
@@ -266,38 +267,26 @@ const Index = () => {
         </div>
 
         <div className="relative w-full pt-6 lg:pt-8">
-          <div
-            className="relative w-full overflow-hidden rounded-[1.8rem] border border-white/10 bg-[rgba(4,10,20,0.72)] shadow-[0_28px_80px_-28px_rgba(0,0,0,0.7)]"
-            data-testid="anime-moments-capture-banner"
-          >
-            <div className="relative aspect-[21/9] w-full overflow-hidden">
-              <img
-                src={crystalCity.url}
-                alt="Fond Anime Moments"
-                className="absolute inset-0 h-full w-full object-cover opacity-45"
-              />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.14),transparent_40%),linear-gradient(180deg,rgba(5,10,24,0.18),rgba(5,10,24,0.28))]" />
-              <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-8 lg:px-12">
-                <div className="relative w-[82%] sm:w-[70%] lg:w-[58%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
-                  <div className="aspect-video">
-                    <video
-                      src={ANIME_MOMENTS_CAPTURE_VIDEO}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      className="h-full w-full object-cover opacity-[0.82]"
-                      data-testid="anime-moments-capture-video"
-                    />
-                  </div>
-                  <div className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />
-                </div>
-              </div>
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-[14%] bg-[linear-gradient(90deg,rgba(5,10,24,0.34),transparent)]" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-[14%] bg-[linear-gradient(270deg,rgba(5,10,24,0.34),transparent)]" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(180deg,transparent,rgba(5,10,24,0.42))]" />
-            </div>
+          <div className="relative w-full">
+            <HeroCarousel />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                border: "1px solid hsl(0 0% 100% / 0.28)",
+                boxShadow:
+                  "inset 0 1px 0 hsl(0 0% 100% / 0.45), inset 0 -1px 0 hsl(0 0% 0% / 0.45), 0 18px 50px -20px hsl(240 20% 5% / 0.55)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-[2px]"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.75) 50%, transparent 100%)",
+                mixBlendMode: "screen",
+              }}
+            />
           </div>
           <TabletTrailerPlayer />
           <div className="container mx-auto px-4 lg:px-8 mt-3">
