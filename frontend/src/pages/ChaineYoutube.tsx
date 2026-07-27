@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
 import { AdminRemoveVideo } from "@/components/AdminRemoveVideo";
 import { MangaUniverseBanner } from "@/components/MangaUniverseBanner";
 import { ManualSyncButton } from "@/components/ManualSyncButton";
+import { ResilientVideoFrame } from "@/components/ResilientVideoFrame";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
+import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 
 type ImportedVideo = {
   id: string;
@@ -55,7 +58,14 @@ const ChaineYoutube = () => {
           published_at: r.published_at ?? null,
           episode: r.episode ?? null,
         }));
-        setItems(rows);
+        const availability = await hydrateYouTubeAvailability(rows.map((row) => row.external_id)).catch((error) => {
+          console.warn("YouTube availability hydration failed", error);
+          return [];
+        });
+        const unavailable = new Set(
+          availability.filter((item) => !item.available).map((item) => item.video_id),
+        );
+        setItems(rows.filter((row) => !row.external_id || !unavailable.has(row.external_id)));
       } catch {
         if (active) setItems([]);
       } finally {
@@ -195,13 +205,19 @@ const ChaineYoutube = () => {
               orientation === "horizontal" ? "aspect-video w-full" : "aspect-[9/16] max-w-md"
             )}
           >
-            <iframe
-              key={`${activeYtId}-${muted}`}
-              src={`https://www.youtube.com/embed/${activeYtId}?autoplay=1&rel=0&mute=${muted ? 1 : 0}`}
+            <ResilientVideoFrame
+              videoId={activeYtId}
               title={activeVideo?.title || "YouTube"}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+              seed={`youtube-main-${activeYtId || "fallback"}`}
+              searchQuery={`${activeVideo?.title || "anime officiel"} anime officiel`}
+              poster={siteFallbackImage(activeYtId || activeVideo?.id || "yt-main", activeVideo?.thumbnail_url)}
+              autoplay
+              muted={muted}
+              hideControls={false}
+              className="relative h-full w-full"
+              fallbackBadge="Vidéo de secours du site"
+              fallbackDescription="Cette vidéo YouTube est privée ou indisponible. Une vidéo de remplacement du site est utilisée." 
+              dataTestId="youtube-main-resilient-frame"
             />
           </div>
         </section>
@@ -226,8 +242,9 @@ const ChaineYoutube = () => {
               <HoverPreview
                 videoId={previewId}
                 title={v.title}
-                thumbnail={cover}
+                thumbnail={cover || siteFallbackImage(v.id, null)}
                 vertical={orientation === "vertical"}
+                onImgError={createImageFallbackHandler(v.id, null)}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                 <span className="absolute top-3 left-3 z-20">

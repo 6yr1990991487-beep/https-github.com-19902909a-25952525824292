@@ -6,15 +6,12 @@
 // them when rendering data coming from the sync-videos / youtube-anime-sync
 // edge functions.
 
+import { siteFallbackImage } from "@/lib/mediaFallback";
 const BRAND_TAGS = ["anime", "animemoments", "animer officiel", "manga"];
 const BRAND_SUFFIX = " · Anime · AnimeMoments · Animer officiel · Manga";
 
 // Fallback poster art shipped in /public/products used when a remote thumbnail
 // is missing or blocked. Cycles through the branded catalog covers.
-const FALLBACK_THUMBS = Array.from(
-  { length: 12 },
-  (_, i) => `/products/am-${String(i + 1).padStart(3, "0")}.svg`,
-);
 
 function hasAllBrandTags(text: string): boolean {
   const lower = text.toLowerCase();
@@ -58,8 +55,7 @@ export function normalizeThumbnail(
   const url = (raw ?? "").trim();
   const ok = /^https?:\/\//i.test(url);
   if (ok) return url;
-  const idx = hashString(seed || url || "seed") % FALLBACK_THUMBS.length;
-  return FALLBACK_THUMBS[idx];
+  return siteFallbackImage(seed, url);
 }
 
 export type NormalizableVideo = {

@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, Calendar, Youtube, Music2, Tv, Sparkles } fr
 import { supabase } from "@/integrations/supabase/client";
 import { videos as fallbackVideos } from "@/data/videos";
 import { HoverPreview } from "./HoverPreview";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
+import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 
 // Both are true 16:9 — no black bars, no cropping in an aspect-video card
 const ytThumb = (id: string) => `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
@@ -60,7 +62,18 @@ export const RecentEpisodesCarousel = () => {
         .order("published_at", { ascending: false, nullsFirst: false })
         .limit(30);
       if (!active) return;
-      setItems((data as ImportedVideo[] | null) ?? []);
+      const nextItems = ((data as ImportedVideo[] | null) ?? []).filter(
+        (item) => item.source !== "youtube" || item.external_id,
+      );
+      const youtubeIds = nextItems
+        .filter((item) => item.source === "youtube")
+        .map((item) => item.external_id)
+        .filter((value): value is string => Boolean(value));
+      const availability = await hydrateYouTubeAvailability(youtubeIds).catch(() => []);
+      const unavailable = new Set(availability.filter((item) => !item.available).map((item) => item.video_id));
+      setItems(
+        nextItems.filter((item) => item.source !== "youtube" || !item.external_id || !unavailable.has(item.external_id)),
+      );
       setLoaded(true);
     })();
     return () => {
@@ -186,7 +199,7 @@ export const RecentEpisodesCarousel = () => {
           const { label, Icon } = sourceMeta[v.source];
           const cover =
             v.thumbnail_url ||
-            (v.external_id ? ytThumb(v.external_id) : placeholderThumb(v.id, v.title));
+            (v.external_id ? ytThumb(v.external_id) : siteFallbackImage(v.id, null));
           const fresh = isNew(v.published_at);
           const cardClass =
             "rgb-card group snap-start shrink-0 w-[340px] sm:w-[400px] rounded-2xl overflow-hidden bg-card border border-border transition-all";
@@ -208,7 +221,7 @@ export const RecentEpisodesCarousel = () => {
                     img.src = ytThumbFallback(v.external_id);
                   } else {
                     img.dataset.fallback = "3";
-                    img.src = placeholderThumb(v.external_id || v.id, v.title);
+                    img.src = siteFallbackImage(v.external_id || v.id, null);
                   }
                 }
               }}
@@ -223,7 +236,7 @@ export const RecentEpisodesCarousel = () => {
                   img.src = ytThumbFallback(v.external_id);
                 } else {
                   img.dataset.fallback = "3";
-                  img.src = placeholderThumb(v.external_id || v.id, v.title);
+                  createImageFallbackHandler(v.external_id || v.id, null)(e);
                 }
               }}
             >

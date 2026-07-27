@@ -1,22 +1,22 @@
 [
   {
-    "content": "Implémenter le service backend de traduction gratuite avec cache Mongo et endpoint /api/translate",
+    "content": "Finaliser la traduction automatique et la stabilité PrimeVideo en preview",
     "status": "completed"
   },
   {
-    "content": "Corriger le chargement PrimeVideo bloqué par les appels AniList côté navigateur (CORS)",
+    "content": "Corriger définitivement le doublon meta description sur /actualites",
+    "status": "completed"
+  },
+  {
+    "content": "Vérifier le JSON-LD /shop puis lancer tests frontend complets",
     "status": "in_progress"
   },
   {
-    "content": "Intégrer auto + bouton manuel de traduction sur AnimeCatalog et PrimeVideo",
-    "status": "pending"
+    "content": "Ajouter la détection auto des vidéos YouTube privées ou indisponibles",
+    "status": "completed"
   },
   {
-    "content": "Corriger définitivement le doublon meta description sur /actualites si encore présent",
-    "status": "pending"
-  },
-  {
-    "content": "Vérifier le JSON-LD /shop puis lancer lint frontend/backend et tests frontend complets",
-    "status": "pending"
+    "content": "Appliquer un fallback global image/vidéo du site pour les miniatures/cartes cassées sur tout le site",
+    "status": "in_progress"
   }
 ]

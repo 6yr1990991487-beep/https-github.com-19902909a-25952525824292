@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Play } from "lucide-react";
+import { Ban, Play } from "lucide-react";
+import { getVideoStatusSync } from "@/lib/videoAvailability";
+import { siteFallbackImage } from "@/lib/mediaFallback";
 
 type Props = {
   videoId: string;
@@ -40,13 +42,19 @@ export const HoverPreview = ({
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
+  const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
+    if (knownUnavailable && knownUnavailable !== "ok") {
+      setActive(false);
+      return;
+    }
     if (autoPlay) setActive(true);
-  }, [autoPlay, videoId]);
+  }, [autoPlay, videoId, knownUnavailable]);
 
   const start = () => {
+    if (knownUnavailable && knownUnavailable !== "ok") return;
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setActive(true), delay);
   };
@@ -68,10 +76,13 @@ export const HoverPreview = ({
       onMouseLeave={stop}
       onFocus={start}
       onBlur={stop}
-      onTouchStart={() => setActive((value) => !value)}
+      onTouchStart={() => {
+        if (knownUnavailable && knownUnavailable !== "ok") return;
+        setActive((value) => !value);
+      }}
     >
       <img
-        src={thumbnail}
+        src={knownUnavailable && knownUnavailable !== "ok" ? siteFallbackImage(videoId, thumbnail) : thumbnail}
         alt={title}
         loading="lazy"
         decoding="async"
@@ -104,6 +115,14 @@ export const HoverPreview = ({
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.6)]">
             <Play className="w-6 h-6 text-primary-foreground fill-current" />
+          </div>
+        </div>
+      )}
+
+      {knownUnavailable && knownUnavailable !== "ok" && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[rgba(5,10,24,0.55)] backdrop-blur-sm pointer-events-none">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(8,12,24,0.68)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/88">
+            <Ban className="h-3.5 w-3.5" /> Vidéo privée
           </div>
         </div>
       )}

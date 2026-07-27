@@ -185,6 +185,23 @@ Objectif : ajouter une traduction automatique pour les contenus non traduits **s
 #### Phase 17.4 — Validation ⏳
 - Tests UI : bascule traduction auto/manuelle, persistance, pas de casse SEO.
 - Vérifier que la traduction n’introduit pas de doublons meta/JSON-LD.
+### Phase 18 — Fallback vidéos YouTube privées / indisponibles (P0 production) ⏳ EN COURS
+Objectif : empêcher l’affichage de miniatures cassées, previews mortes et lecteurs YouTube privés en les remplaçant par des médias de secours du site.
+
+#### Phase 18.1 — Détection backend ✅
+- Nouveau endpoint `/api/youtube/availability` pour sonder rapidement la disponibilité d’IDs YouTube.
+- Le sync YouTube backend marque les vidéos privées/supprimées en `availability_status = private_or_unavailable`.
+- L’API `/api/videos` exclut désormais ces vidéos côté frontend.
+
+#### Phase 18.2 — Fallback frontend partagé ✅/⏳
+- Nouveau composant `ResilientVideoFrame` : si la vidéo tombe en erreur, le site bascule sur une vidéo locale de secours.
+- Nouveau helper `mediaFallback.ts` : image locale de secours + vidéo locale de secours.
+- `HoverPreview` tient compte du cache de disponibilité et n’essaie plus de lire les vidéos déjà connues comme privées.
+
+#### Phase 18.3 — Application sur pages clés ⏳ EN COURS
+- Cible immédiate : `ChaineYoutube.tsx`, `ChaineYoutubeManga.tsx`, `LecteursVideo.tsx`, `MangaUniverseBanner.tsx`, `RecentEpisodesCarousel.tsx`, `ShopHeroBanner.tsx`.
+- Étape suivante : validation visuelle + tests automatisés frontend.
+
 
 ---
 

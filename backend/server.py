@@ -277,6 +277,37 @@ async def translate_with_cache(text: str, target_lang: str = "fr", source_lang: 
     }
 
 
+def youtube_thumbnail_candidates(video_id: str) -> List[str]:
+    value = str(video_id or "").strip()
+    if not value:
+        return []
+    return [
+        f"https://i.ytimg.com/vi/{value}/maxresdefault.jpg",
+        f"https://i.ytimg.com/vi/{value}/sddefault.jpg",
+        f"https://i.ytimg.com/vi/{value}/hqdefault.jpg",
+        f"https://i.ytimg.com/vi/{value}/mqdefault.jpg",
+    ]
+
+
+def probe_youtube_video_status(video_id: str) -> Dict[str, Any]:
+    value = str(video_id or "").strip()
+    if not value:
+        return {"video_id": value, "available": False, "status": "missing"}
+    last_code = None
+    for candidate in youtube_thumbnail_candidates(value):
+        try:
+            status, _ = request_text(candidate, timeout=10, headers={"Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8"})
+            last_code = status
+            if status == 200:
+                return {"video_id": value, "available": True, "status": "public", "thumbnail": candidate}
+        except Exception as exc:
+            text = str(exc)
+            if "HTTP Error" in text:
+                last_code = text
+            continue
+    return {"video_id": value, "available": False, "status": "private_or_unavailable", "last_code": last_code}
+
+
 def load_manifest() -> Dict[str, Any]:
     if MANIFEST_PATH.exists():
         try:
@@ -833,30 +864,65 @@ async def sync_youtube_videos(limit: int = 24) -> Dict[str, Any]:
         uploads = item["contentDetails"]["relatedPlaylists"]["uploads"]
         playlist = request_json(f"{base}/playlistItems?part=snippet,contentDetails&playlistId={uploads}&maxResults={min(limit, 50)}&key={YOUTUBE_API_KEY}")
         docs = []
+        unavailable_video_ids = []
         for entry in playlist.get("items", []):
             sn = entry.get("snippet", {})
             thumbs = sn.get("thumbnails", {})
             video_id = sn.get("resourceId", {}).get("videoId") or entry.get("contentDetails", {}).get("videoId")
             if not video_id:
                 continue
+            title = sn.get("title") or "Anime.Moments.officiel"
+            if title in {"Private video", "Deleted video"}:
+                unavailable_video_ids.append(video_id)
+                continue
             docs.append({
                 "platform": "youtube",
                 "external_id": video_id,
-                "title": sn.get("title") or "Anime.Moments.officiel",
+                "title": title,
                 "description": (sn.get("description") or "")[:900],
                 "thumbnail_url": (thumbs.get("maxres") or thumbs.get("high") or thumbs.get("medium") or thumbs.get("default") or {}).get("url"),
                 "published_at": sn.get("publishedAt"),
                 "channel_title": sn.get("channelTitle") or item.get("snippet", {}).get("title"),
                 "video_url": f"https://www.youtube.com/watch?v={video_id}",
                 "sync_source": "youtube-data-api-v3",
+                "availability_status": "public",
                 "raw": {"playlistItemId": entry.get("id"), "channelId": item.get("id")},
             })
-        return {"channel": {"id": item.get("id"), "title": item.get("snippet", {}).get("title")}, "docs": docs}
+        return {
+            "channel": {"id": item.get("id"), "title": item.get("snippet", {}).get("title")},
+            "docs": docs,
+            "unavailable_video_ids": unavailable_video_ids,
+        }
     try:
         result = await asyncio.to_thread(work)
         counts = await upsert_many("videos", result["docs"], ["platform", "external_id"])
-        state = await update_sync_state("youtube", "ok", **counts, meta={"channel": result["channel"], "count": len(result["docs"])})
-        return {"status": "ok", **counts, "count": len(result["docs"]), "state": state}
+        if result.get("unavailable_video_ids"):
+            await db.videos.update_many(
+                {"platform": "youtube", "external_id": {"$in": result["unavailable_video_ids"]}},
+                {
+                    "$set": {
+                        "availability_status": "private_or_unavailable",
+                        "updated_at": datetime.now(timezone.utc),
+                    }
+                },
+            )
+        state = await update_sync_state(
+            "youtube",
+            "ok",
+            **counts,
+            meta={
+                "channel": result["channel"],
+                "count": len(result["docs"]),
+                "unavailable_count": len(result.get("unavailable_video_ids", [])),
+            },
+        )
+        return {
+            "status": "ok",
+            **counts,
+            "count": len(result["docs"]),
+            "unavailable_count": len(result.get("unavailable_video_ids", [])),
+            "state": state,
+        }
     except Exception as exc:
         state = await update_sync_state("youtube", "error", error=str(exc)[:500])
         return {"status": "error", "error": str(exc), "state": state}
@@ -1854,6 +1920,10 @@ class TranslationBatchRequest(BaseModel):
     source_lang: str = Field(default="auto", min_length=2, max_length=12)
 
 
+class YouTubeAvailabilityBatchRequest(BaseModel):
+    video_ids: List[str] = Field(default_factory=list)
+
+
 @api_router.get("/")
 async def root():
     return {"message": "Lovanet replica API", "status": "ok"}
@@ -1909,7 +1979,7 @@ async def get_videos(
     channel_title: Optional[str] = None,
     strict: bool = False,
 ):
-    query: Dict[str, Any] = {}
+    query: Dict[str, Any] = {"availability_status": {"$ne": "private_or_unavailable"}}
     if platform and platform != "all":
         query["platform"] = platform
     if channel_title:
@@ -2079,6 +2149,28 @@ async def translate_batch(payload: TranslationBatchRequest):
     except Exception as exc:
         logger.exception("Translation batch failed: %s", exc)
         raise HTTPException(status_code=502, detail=f"Traduction indisponible : {exc}")
+
+
+@api_router.post("/youtube/availability")
+async def youtube_availability_batch(payload: YouTubeAvailabilityBatchRequest):
+    video_ids = []
+    seen = set()
+    for value in payload.video_ids:
+        video_id = str(value or "").strip()
+        if not video_id or video_id in seen:
+            continue
+        video_ids.append(video_id)
+        seen.add(video_id)
+    if not video_ids:
+        raise HTTPException(status_code=400, detail="Aucun identifiant vidéo fourni.")
+    if len(video_ids) > 80:
+        raise HTTPException(status_code=400, detail="Trop de vidéos à vérifier en une seule requête.")
+    try:
+        items = await asyncio.gather(*[asyncio.to_thread(probe_youtube_video_status, video_id) for video_id in video_ids])
+        return {"status": "ok", "items": items}
+    except Exception as exc:
+        logger.exception("YouTube availability batch failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"Vérification YouTube indisponible : {exc}")
 
 
 @api_router.get("/admin/sync/status")

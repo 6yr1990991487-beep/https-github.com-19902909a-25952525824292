@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { HoverPreview } from "@/components/HoverPreview";
 import { MangaUniverseBanner } from "@/components/MangaUniverseBanner";
 import { supabase } from "@/integrations/supabase/client";
+import { ResilientVideoFrame } from "@/components/ResilientVideoFrame";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
+import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 
 type Service = "youtube" | "prime" | "tiktok";
 
@@ -70,18 +73,24 @@ const LecteursVideo = () => {
       ]);
       if (!alive) return;
       if (yt?.length) {
-        setYoutubeList(
-          yt
-            .filter((r: any) => r.external_id)
-            .map((r: any): Item => ({
-              id: r.external_id,
-              title: r.title ?? "YouTube",
-              episode: r.episode ?? undefined,
-              thumbnail: r.thumbnail_url || thumb(r.external_id),
-              source: "youtube",
-              videoUrl: r.video_url || `https://www.youtube.com/watch?v=${r.external_id}`,
-            })),
+        const mapped = yt
+          .filter((r: any) => r.external_id)
+          .map((r: any): Item => ({
+            id: r.external_id,
+            title: r.title ?? "YouTube",
+            episode: r.episode ?? undefined,
+            thumbnail: r.thumbnail_url || thumb(r.external_id),
+            source: "youtube",
+            videoUrl: r.video_url || `https://www.youtube.com/watch?v=${r.external_id}`,
+          }));
+        const availability = await hydrateYouTubeAvailability(mapped.map((item) => item.id)).catch((error) => {
+          console.warn("YouTube availability hydration failed", error);
+          return [];
+        });
+        const unavailable = new Set(
+          availability.filter((item) => !item.available).map((item) => item.video_id),
         );
+        setYoutubeList(mapped.filter((item) => !unavailable.has(item.id)));
       }
       if (tt?.length) {
         setTiktokList(
@@ -230,13 +239,19 @@ const LecteursVideo = () => {
               allowFullScreen
             />
           ) : (
-            <iframe
-              key={`${activeVideo.id}-${muted}`}
-              src={`https://www.youtube.com/embed/${activeVideo.id}?autoplay=1&rel=0&mute=${muted ? 1 : 0}`}
+            <ResilientVideoFrame
+              videoId={activeVideo.id}
               title={activeVideo.title}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+              seed={`lecteur-youtube-${activeVideo.id}`}
+              searchQuery={`${activeVideo.title} anime officiel`}
+              poster={siteFallbackImage(activeVideo.id, activeVideo.thumbnail)}
+              autoplay
+              muted={muted}
+              hideControls={false}
+              className="relative h-full w-full"
+              fallbackBadge="Vidéo de secours du site"
+              fallbackDescription="La vidéo YouTube originale est privée ou indisponible. Le site affiche un média de remplacement."
+              dataTestId="lecteurs-youtube-resilient-frame"
             />
           )}
         </div>
@@ -290,8 +305,9 @@ const LecteursVideo = () => {
                   <HoverPreview
                     videoId={v.id}
                     title={v.title}
-                    thumbnail={v.thumbnail || thumb(v.id)}
+                    thumbnail={v.thumbnail || siteFallbackImage(v.id, null)}
                     vertical={isVertical}
+                    onImgError={createImageFallbackHandler(v.id, null)}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent pointer-events-none" />
                     <span className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/70 text-white">
