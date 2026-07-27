@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Youtube } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
-import { videos as SITE_VIDEOS, thumb as videoThumb } from "@/data/videos";
 import { PageShell } from "@/components/PageShell";
-import { RecentEpisodesCarousel } from "@/components/RecentEpisodesCarousel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,7 +17,6 @@ const rotatingPortalDestinations = [
   { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
   { to: "/actualites", label: "Actualités", icon: Newspaper },
   { to: "/shop", label: "Boutique", icon: ShoppingBag },
-  { to: "/chaine-youtube", label: "YouTube", icon: Youtube },
   { to: "/prime-video", label: "Prime Vidéo", icon: Play },
   { to: "/tiktok", label: "TikTok", icon: Play },
   { to: "/anime-catalog", label: "Catalogue", icon: Star },
@@ -51,81 +48,14 @@ const portalCards = [
 ];
 
 const platformCards = [
-  { title: "YouTube", testId: "home-platform-card-youtube", to: "/chaine-youtube" },
   { title: "Prime Vidéo", testId: "home-platform-card-prime", to: "/prime-video" },
   { title: "TikTok", testId: "home-platform-card-tiktok", to: "/tiktok" },
   { title: "Catalogue", testId: "home-platform-card-catalogue", to: "/anime-catalog" },
+  { title: "À venir", testId: "home-platform-card-upcoming", to: "/anime-countdown" },
 ];
 
 
-const shuffleArray = (list) => {
-  const clone = [...list];
-  for (let i = clone.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [clone[i], clone[j]] = [clone[j], clone[i]];
-  }
-  return clone;
-};
 
-const normalizeLowerBannerItem = (item, index, kind = "actualité") => ({
-  id: item.id || `${kind}-${index}`,
-  title: item.title || item.name || `Contenu ${index + 1}`,
-  eyebrow: item.eyebrow || kind,
-  image: item.image || item.cover || item.banner || "/lovanet-og.svg",
-  description: item.description || item.excerpt || item.synopsis || item.summary || item.genres?.slice?.(0, 3)?.join(" • ") || `${kind} premium`,
-  previewVideo: item.previewVideo || null,
-  href: item.href || item.url || item.sourcePath || (kind === "catalogue" ? "/anime-catalog" : "/actualites"),
-});
-
-const buildLowerBannerCandidates = (route, catalogItems) => {
-  const normalizedCatalog = (catalogItems || []).map((item, index) =>
-    normalizeLowerBannerItem(
-      {
-        id: `catalog-${item.id || index}`,
-        title: item.title,
-        image: item.cover || item.banner,
-        description: item.genres?.slice?.(0, 3)?.join(" • ") || item.type || "catalogue",
-        href: "/anime-catalog",
-        eyebrow: "catalogue",
-      },
-      index,
-      "catalogue",
-    ),
-  );
-
-  const normalizedNews = SEO_NEWS.filter((item) => item.category === "news").map((item, index) =>
-    normalizeLowerBannerItem({
-      id: `news-${item.id || index}`,
-      title: item.title,
-      image: item.image,
-      description: item.description || item.excerpt,
-      href: "/actualites",
-      eyebrow: "actualité",
-    }, index, "actualité"),
-  );
-
-  const normalizedVideos = SITE_VIDEOS.map((item, index) =>
-    normalizeLowerBannerItem({
-      id: `site-video-${item.id}`,
-      title: item.title,
-      image: videoThumb(item.id),
-      description: `${item.series || "AnimeOfficial"}${item.episode ? ` • ${item.episode}` : ""}`,
-      href: `/lecteurs-video?video=${item.id}&service=youtube`,
-      eyebrow: "vidéo",
-    }, index, "vidéo"),
-  );
-
-  if (route === "/actualites") return normalizedNews;
-  if (route === "/anime-catalog") return normalizedCatalog;
-  if (route === "/chaine-youtube") return normalizedVideos;
-  if (route === "/prime-video") return normalizedVideos;
-  if (route === "/tiktok") return normalizedVideos;
-  if (route === "/lecteurs-video") return normalizedVideos;
-  if (route === "/anime-countdown") return normalizedCatalog;
-  if (route === "/anime-moments") return [...normalizedCatalog, ...normalizedVideos];
-  if (route === "/decouvrir") return [...normalizedCatalog, ...normalizedNews, ...normalizedVideos];
-  return [...normalizedCatalog, ...normalizedNews, ...normalizedVideos];
-};
 
 const featuredNews = SEO_NEWS.slice(0, 3).map((item, index) => ({
   ...item,
@@ -169,9 +99,6 @@ export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [activeBannerVideoIndex, setActiveBannerVideoIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [catalogBannerItems, setCatalogBannerItems] = useState([]);
-  const [premiumBannerCards, setPremiumBannerCards] = useState([]);
-  const bannerQueuesRef = useRef({});
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
 
@@ -182,22 +109,6 @@ export default function RootLandingPage() {
     return () => window.clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/catalog-seo.json")
-      .then((response) => response.json())
-      .then((data) => {
-        if (!cancelled && Array.isArray(data)) {
-          setCatalogBannerItems(data);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setCatalogBannerItems([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     const video = bannerVideoRef.current;
@@ -284,43 +195,16 @@ export default function RootLandingPage() {
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
   const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
   const portalEntries = useMemo(() => portalCards.map((card, index) => ({ ...card, action: getPortalDestination(index, rotationIndex) })), [rotationIndex]);
-  const platformEntries = useMemo(() => platformCards.map((card, index) => ({ ...card, action: getPortalDestination(index + 4, rotationIndex) })), [rotationIndex]);
-  const featuredVideoAction = useMemo(() => getPortalDestination(5, rotationIndex), [rotationIndex]);
+  const platformEntries = useMemo(
+    () =>
+      platformCards.map((card) => ({
+        ...card,
+        action: rotatingPortalDestinations.find((entry) => entry.to === card.to) || { to: card.to, label: card.title, icon: Play },
+      })),
+    [],
+  );
   const newsAction = useMemo(() => getPortalDestination(6, rotationIndex), [rotationIndex]);
-  const premiumBannerRows = useMemo(() => Array.from({ length: 4 }, (_, rowIndex) => premiumBannerCards.slice(rowIndex * 5, rowIndex * 5 + 5)), [premiumBannerCards]);
 
-  useEffect(() => {
-    const key = heroSecondary.to;
-    const pool = buildLowerBannerCandidates(key, catalogBannerItems);
-    if (!pool.length) {
-      setPremiumBannerCards([]);
-      return undefined;
-    }
-
-    const existing = bannerQueuesRef.current[key];
-    const queue = existing?.length ? existing : shuffleArray(pool);
-    bannerQueuesRef.current[key] = queue;
-    setPremiumBannerCards(queue.slice(0, 20));
-    bannerQueuesRef.current[key] = queue.slice(20).length ? queue.slice(20) : shuffleArray(pool);
-    return undefined;
-  }, [heroSecondary.to, catalogBannerItems]);
-
-  useEffect(() => {
-    if (reducedMotion) return undefined;
-    const timer = window.setInterval(() => {
-      const key = heroSecondary.to;
-      const pool = buildLowerBannerCandidates(key, catalogBannerItems);
-      if (!pool.length) return;
-      let queue = bannerQueuesRef.current[key];
-      if (!queue || !queue.length) queue = shuffleArray(pool);
-      const nextBatch = queue.slice(0, 20);
-      let rest = queue.slice(20);
-      if (!rest.length) rest = shuffleArray(pool);
-      bannerQueuesRef.current[key] = rest;
-      setPremiumBannerCards(nextBatch);
-    }, 20000);
-    return () => window.clearInterval(timer);
-  }, [reducedMotion, heroSecondary.to, catalogBannerItems]);
 
   return (
     <PageShell>
@@ -455,9 +339,9 @@ export default function RootLandingPage() {
               <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-12 w-48 rounded-[1.25rem] border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)]" data-testid="home-platforms-heading-placeholder" />
                 <Button asChild variant="glass" className={secondaryButton} data-testid="home-platforms-button">
-                  <Link to={heroSecondary.to}>
-                    <span key={`platform-cta-${heroSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
-                      {heroSecondary.label}
+                  <Link to="/prime-video">
+                    <span className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                      Prime Vidéo
                       <ArrowRight className="h-4 w-4 neon-rgb-icon" />
                     </span>
                   </Link>
@@ -467,69 +351,18 @@ export default function RootLandingPage() {
                 {platformEntries.map((card, index) => {
                   const Icon = card.action.icon;
                   return (
-                    <Link key={`${card.testId}-${card.action.to}-${rotationIndex}`} to={card.action.to} className="group block min-w-0" data-testid={card.testId}>
+                    <Link key={`${card.testId}-${card.to}-${index}`} to={card.to} className="group block min-w-0" data-testid={card.testId}>
                       <Card className={`${luxuryCard} h-full`}>
                         <CardContent className="flex items-center gap-3 p-3 sm:p-4">
                           <div className={`${luxuryIcon} h-10 w-10 shrink-0 sm:h-11 sm:w-11`}>
                             <Icon className="h-4 w-4 sm:h-5 sm:w-5 neon-rgb-icon" />
                           </div>
-                          <p className="text-sm sm:text-base font-semibold text-white neon-rgb-text-soft">
-                            <span key={`platform-card-${index}-${card.action.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">{card.action.label}</span>
-                          </p>
+                          <p className="text-sm sm:text-base font-semibold text-white neon-rgb-text-soft">{card.title}</p>
                         </CardContent>
                       </Card>
                     </Link>
                   );
                 })}
-              </div>
-
-              <div className="hero-premium-lower-marquee mt-6" data-testid="home-platforms-dynamic-banner-grid">
-                {premiumBannerRows.map((row, rowIndex) => (
-                  <div key={`premium-row-${rowIndex}`} className="hero-premium-lower-row">
-                    <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
-                      {[...row, ...row].map((item, index) => (
-                        <Link
-                          key={`${item.id}-${rowIndex}-${index}`}
-                          to={item.href}
-                          className="hero-premium-lower-card group flex w-[132px] min-w-[132px] max-w-[132px] flex-none flex-col sm:w-[148px] sm:min-w-[148px] sm:max-w-[148px] lg:w-[176px] lg:min-w-[176px] lg:max-w-[176px] xl:w-[196px] xl:min-w-[196px] xl:max-w-[196px]"
-                          data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
-                        >
-                          <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full">
-                            <img src={item.image} alt={item.title} className="hero-premium-lower-thumb" loading="lazy" />
-                            <div className="hero-premium-lower-thumb-overlay" />
-                            <div className="hero-premium-lower-badge">{item.eyebrow}</div>
-                          </div>
-                          <div className="hero-premium-lower-copy">
-                            <p className="hero-premium-lower-title">{item.title}</p>
-                            <p className="hero-premium-lower-description">{item.description}</p>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24" data-testid="home-featured-videos-section">
-          <div className={`${luxurySection} p-5 sm:p-7 lg:p-10`}>
-            <div className={luxuryGlowLeft} />
-            <div className={luxuryGlowRight} />
-            <div className="relative">
-              <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="home-featured-videos-youtube-button">
-                  <Link to={featuredVideoAction.to}>
-                    <span key={`video-action-${featuredVideoAction.to}-${rotationIndex}`} className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
-                      {featuredVideoAction.label}
-                      <Youtube className="h-4 w-4" />
-                    </span>
-                  </Link>
-                </Button>
-              </div>
-              <div className="rgb-neon rounded-[1.9rem] border border-white/15 bg-white/[0.05] p-4 sm:p-5" data-testid="home-featured-videos-carousel">
-                <RecentEpisodesCarousel />
               </div>
             </div>
           </div>
