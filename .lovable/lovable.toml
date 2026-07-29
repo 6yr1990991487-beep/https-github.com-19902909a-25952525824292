@@ -1,0 +1,7 @@
+[run]
+build:dev = "cd imports/zip/lovanet-fr-main && bun run build:dev"
+build = "cd imports/zip/lovanet-fr-main && bun run build"
+dev = "cd imports/zip/lovanet-fr-main && bun run dev"
+preview = "cd imports/zip/lovanet-fr-main && bun run preview"
+lint = "cd imports/zip/lovanet-fr-main && bun run lint"
+test = "cd imports/zip/lovanet-fr-main && bun run test"
