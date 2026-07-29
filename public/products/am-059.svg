@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Manga Tome 1 Anime Moments — AnimemomentsAnimeofficiel">
+  <title>Manga Tome 1 Anime Moments — AnimemomentsAnimeofficiel</title>
+  <defs>
+    <linearGradient id="g1uc4r88" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="55%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g1uc4r88)"/>
+  <g transform="rotate(-32 200 200)" opacity="0.55">
+    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+  <circle cx="370.0" cy="200.0" r="4" fill="#fff" opacity="0.45"/><circle cx="132.9" cy="261.5" r="11" fill="#fff" opacity="0.45"/><circle cx="210.6" cy="78.5" r="8" fill="#fff" opacity="0.45"/><circle cx="293.1" cy="321.4" r="5" fill="#fff" opacity="0.45"/><circle cx="18.8" cy="168.0" r="12" fill="#fff" opacity="0.45"/><circle cx="288.6" cy="143.6" r="9" fill="#fff" opacity="0.45"/><circle cx="164.8" cy="331.4" r="6" fill="#fff" opacity="0.45"/><circle cx="122.9" cy="51.9" r="13" fill="#fff" opacity="0.45"/><circle cx="282.7" cy="230.1" r="10" fill="#fff" opacity="0.45"/><circle cx="90.1" cy="245.5" r="7" fill="#fff" opacity="0.45"/><circle cx="263.4" cy="64.1" r="4" fill="#fff" opacity="0.45"/><circle cx="254.4" cy="372.6" r="11" fill="#fff" opacity="0.45"/><circle cx="111.7" cy="149.0" r="8" fill="#fff" opacity="0.45"/><circle cx="329.8" cy="171.2" r="5" fill="#fff" opacity="0.45"/><circle cx="105.9" cy="334.3" r="12" fill="#fff" opacity="0.45"/><circle cx="188.9" cy="115.7" r="9" fill="#fff" opacity="0.45"/><circle cx="288.9" cy="274.6" r="6" fill="#fff" opacity="0.45"/><circle cx="53.1" cy="206.4" r="13" fill="#fff" opacity="0.45"/>
+  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
+  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#f43f5e">M</text>
+  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">MANGA</text>
+  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Manga Tome 1 Anime Moments</text>
+  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-059</text>
+</svg>

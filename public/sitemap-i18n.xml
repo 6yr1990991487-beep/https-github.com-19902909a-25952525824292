@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- One <url> per canonical page, with xhtml:link alternates for every
+       supported language. Google uses these to pick the right localized
+       snippet in each user's SERP. x-default points to the French canonical. -->
+
+  <!-- Every non-default locale is served as a distinct URL prefix
+       (/en, /es, /de, /it, /pt, /ja, /zh) so Google indexes real per-language
+       pages instead of a single URL with a ?hl query string. -->
+  <url>
+    <loc>https://lovanet.fr/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/decouvrir</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/decouvrir" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/decouvrir" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/shop</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/shop" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/shop" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/shop" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/shop" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/shop" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/shop" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/shop" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/shop" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/shop" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/anime-catalog</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-catalog" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-catalog" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/anime-countdown</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-countdown" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-countdown" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/chaine-youtube</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/chaine-youtube" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/chaine-youtube" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/prime-video</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/prime-video" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/prime-video" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/prime-video" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/prime-video" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/prime-video" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/prime-video" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/prime-video" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/prime-video" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/prime-video" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/tiktok</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/tiktok" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/tiktok" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/tiktok" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/tiktok" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/tiktok" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/tiktok" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/tiktok" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/tiktok" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/tiktok" />
+  </url>
+</urlset>
