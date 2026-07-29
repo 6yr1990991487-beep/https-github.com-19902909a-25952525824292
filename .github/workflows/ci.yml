@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Validate JSON-LD sitelinks
+        run: node scripts/validate-jsonld.mjs
+      - name: Run sitelinks E2E tests
+        run: bunx vitest run src/test/sitelinks.e2e.test.tsx
+      - name: Run full test suite
+        run: bun run test

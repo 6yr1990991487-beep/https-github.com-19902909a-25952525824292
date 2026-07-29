@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Casque Audio Néon NLNQ — AnimemomentsAnimeofficiel">
+  <title>Casque Audio Néon NLNQ — AnimemomentsAnimeofficiel</title>
+  <defs>
+    <linearGradient id="g1t86cgc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff2e93"/>
+      <stop offset="55%" stop-color="#7b2dff"/>
+      <stop offset="100%" stop-color="#00e0ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g1t86cgc)"/>
+  <g transform="rotate(-42 200 200)" opacity="0.55">
+    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+  <circle cx="344.0" cy="200.0" r="8" fill="#fff" opacity="0.45"/><circle cx="71.0" cy="318.2" r="5" fill="#fff" opacity="0.45"/><circle cx="208.4" cy="104.4" r="12" fill="#fff" opacity="0.45"/><circle cx="277.3" cy="300.8" r="9" fill="#fff" opacity="0.45"/><circle cx="44.4" cy="172.6" r="6" fill="#fff" opacity="0.45"/><circle cx="359.4" cy="98.5" r="13" fill="#fff" opacity="0.45"/><circle cx="171.5" cy="306.3" r="10" fill="#fff" opacity="0.45"/><circle cx="134.9" cy="74.9" r="7" fill="#fff" opacity="0.45"/><circle cx="361.6" cy="258.8" r="4" fill="#fff" opacity="0.45"/><circle cx="114.1" cy="235.6" r="11" fill="#fff" opacity="0.45"/><circle cx="252.4" cy="87.6" r="8" fill="#fff" opacity="0.45"/><circle cx="246.6" cy="347.8" r="5" fill="#fff" opacity="0.45"/><circle cx="38.9" cy="107.0" r="12" fill="#fff" opacity="0.45"/><circle cx="304.5" cy="176.8" r="9" fill="#fff" opacity="0.45"/><circle cx="120.8" cy="313.0" r="6" fill="#fff" opacity="0.45"/><circle cx="177.9" cy="32.4" r="13" fill="#fff" opacity="0.45"/><circle cx="268.9" cy="257.9" r="10" fill="#fff" opacity="0.45"/><circle cx="79.1" cy="205.3" r="7" fill="#fff" opacity="0.45"/>
+  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
+  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#ff2e93">M</text>
+  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">MUSIC</text>
+  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Casque Audio Néon NLNQ</text>
+  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-055</text>
+</svg>

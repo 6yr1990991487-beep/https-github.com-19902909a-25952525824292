@@ -1,0 +1,7 @@
+[run]
+build:dev = "bun run build:dev"
+build = "bun run build"
+dev = "bun run dev"
+preview = "bun run preview"
+lint = "bun run lint"
+test = "bun run test"
