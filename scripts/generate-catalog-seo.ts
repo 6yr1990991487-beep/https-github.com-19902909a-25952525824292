@@ -3,7 +3,7 @@
 // engines can index the catalogue's cards, trailers and thumbnails.
 // Runs before dev and build; failures are non-fatal and preserve existing files.
 
-import { writeFileSync, existsSync } from "node:fs";
+import { writeFileSync, existsSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 
 const BASE_URL = "https://lovanet.fr";
@@ -106,32 +106,6 @@ async function main() {
   // non indexée". We no longer emit sitemap-catalog.xml; the catalog data is
   // still exposed to crawlers through catalog-seo.json + on-page JSON-LD.
   if (existsSync(OUT_XML)) rmSync(OUT_XML);
-
-  const urls: string[] = [];
-  void urls;
-  const legacy = slim.map((it) => {
-    const desc = it.summary || `${it.title} — fiche & trailer sur Lovanet.`;
-    const imgs: string[] = [];
-    if (it.cover) imgs.push(it.cover);
-    if (it.banner && it.banner !== it.cover) imgs.push(it.banner);
-    if (it.trailerId) imgs.push(`https://i.ytimg.com/vi/${it.trailerId}/hqdefault.jpg`);
-    return [
-      `  <url>`,
-      `    <loc>${xmlEscape(it.url)}</loc>`,
-      `    <changefreq>monthly</changefreq>`,
-      `    <priority>0.5</priority>`,
-      ...imgs.map((src) => [
-        `    <image:image>`,
-        `      <image:loc>${xmlEscape(src)}</image:loc>`,
-        `      <image:title>${xmlEscape(it.title)}</image:title>`,
-        `      <image:caption>${xmlEscape(desc)}</image:caption>`,
-        `    </image:image>`,
-      ].join("\n")),
-      `  </url>`,
-    ].join("\n");
-  });
-
-  void legacy;
 
   console.log(`[catalog-seo] wrote ${slim.length} items to ${OUT_JSON}`);
 
