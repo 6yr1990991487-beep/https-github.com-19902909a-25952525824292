@@ -101,7 +101,6 @@ const App = () => (
         <ThemeBubble />
         <CartDrawer />
         <GoogleTranslate />
-        <HologramOverlay />
         </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
