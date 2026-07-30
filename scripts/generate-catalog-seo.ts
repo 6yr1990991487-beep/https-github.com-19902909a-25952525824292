@@ -100,7 +100,16 @@ async function main() {
 
   writeFileSync(OUT_JSON, JSON.stringify(slim));
 
-  const urls = slim.map((it) => {
+  // NOTE: the catalog entries are anchors on /anime-catalog (e.g.
+  // /anime-catalog#anime-123). Google strips fragments, so listing them in a
+  // sitemap produced ~1500 duplicate URLs reported as "Explorée, actuellement
+  // non indexée". We no longer emit sitemap-catalog.xml; the catalog data is
+  // still exposed to crawlers through catalog-seo.json + on-page JSON-LD.
+  if (existsSync(OUT_XML)) rmSync(OUT_XML);
+
+  const urls: string[] = [];
+  void urls;
+  const legacy = slim.map((it) => {
     const desc = it.summary || `${it.title} — fiche & trailer sur Lovanet.`;
     const imgs: string[] = [];
     if (it.cover) imgs.push(it.cover);
@@ -122,23 +131,16 @@ async function main() {
     ].join("\n");
   });
 
-  const xml = [
-    `<?xml version="1.0" encoding="UTF-8"?>`,
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"`,
-    `        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`,
-    ...urls,
-    `</urlset>`,
-  ].join("\n");
-  writeFileSync(OUT_XML, xml);
+  void legacy;
 
-  console.log(`[catalog-seo] wrote ${slim.length} items to ${OUT_JSON} & ${OUT_XML}`);
+  console.log(`[catalog-seo] wrote ${slim.length} items to ${OUT_JSON}`);
 
   if (!existsSync(resolve("public/sitemap-index.xml"))) {
     const idx = [
       `<?xml version="1.0" encoding="UTF-8"?>`,
       `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
       `  <sitemap><loc>${BASE_URL}/sitemap.xml</loc></sitemap>`,
-      `  <sitemap><loc>${BASE_URL}/sitemap-catalog.xml</loc></sitemap>`,
+      `  <sitemap><loc>${BASE_URL}/sitemap-i18n.xml</loc></sitemap>`,
       `</sitemapindex>`,
     ].join("\n");
     writeFileSync(resolve("public/sitemap-index.xml"), idx);
