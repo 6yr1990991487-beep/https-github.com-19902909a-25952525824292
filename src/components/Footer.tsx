@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import footerLovanetZoneVideo from "@/assets/footer-lovanet-zone-video.mp4";
+import footerLovanetZoneAsset from "@/assets/footer-lovanet-zone-video.mp4.asset.json";
+
+const footerLovanetZoneVideo = footerLovanetZoneAsset.url;
 
 const footerLinks = [
   { to: "/", label: "Portail" },
