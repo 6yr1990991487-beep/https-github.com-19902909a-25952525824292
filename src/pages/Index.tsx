@@ -8,6 +8,8 @@ import MiniCatalogOrb from "@/components/MiniCatalogOrb";
 import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
 
+const ANIME_MOMENTS_CAPTURE_VIDEO = "https://customer-assets-39nsmqrw.emergentagent.net/job_16dccaa9-172a-47f9-83d4-c61db40f190a/artifacts/vajscga7_562-07d7-49-86fd-d037713525344-2560x1440.mp4";
+
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
 import TabletTrailerPlayer from "@/components/TabletTrailerPlayer";
@@ -16,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
 import { ProductArtwork } from "@/components/ProductArtwork";
 import { MiniPreviewPlayer } from "@/components/MiniPreviewPlayer";
-import { HologramOverlay } from "@/components/HologramOverlay";
 import { supabase } from "@/integrations/supabase/client";
 
 const SHOP_REEL_MP4 =
@@ -43,7 +44,6 @@ const AnimePreview = ({
   accent: "magenta" | "cyan";
 }) => {
   const [idx, setIdx] = useState(0);
-  // Maintain a shuffled queue + cursor so we never repeat the same video back-to-back
   const [queue, setQueue] = useState<string[]>(() => shuffle(trailerIds));
   const [tIdx, setTIdx] = useState(0);
   useEffect(() => {
@@ -55,7 +55,6 @@ const AnimePreview = ({
     const id = setInterval(() => setIdx((i) => (i + 1) % posters.length), 1800);
     return () => clearInterval(id);
   }, [trailerIds.length, posters.length]);
-  // Rotate through the shuffled queue; when we reach the end, reshuffle (avoid same head).
   useEffect(() => {
     if (queue.length < 2) return;
     const id = setInterval(() => {
@@ -134,11 +133,12 @@ const Index = () => {
 
   useEffect(() => {
     let cancelled = false;
-    // Hydrate cached YT ids first so the UI keeps working if Supabase is unreachable.
     try {
       const cached = localStorage.getItem("lovanet.cache.ytIds");
       if (cached) setYtIds(JSON.parse(cached));
-    } catch {}
+    } catch {
+      // ignore cache read failure
+    }
     (async () => {
       const { data } = await supabase
         .from("imported_videos")
@@ -150,21 +150,23 @@ const Index = () => {
       if (cancelled || !data) return;
       const ids = data.map((r: any) => r.external_id).filter(Boolean);
       setYtIds(ids);
-      try { localStorage.setItem("lovanet.cache.ytIds", JSON.stringify(ids)); } catch {}
+      try { localStorage.setItem("lovanet.cache.ytIds", JSON.stringify(ids)); } catch {
+        // ignore cache write failure
+      }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  // Fetch AniList trailers + posters to feed live video preview on the two anime cards
   useEffect(() => {
     let cancelled = false;
-    // Hydrate from local backup so cards stay populated even if AniList is down/removes content.
     try {
       const t = localStorage.getItem("lovanet.cache.animeTrailers");
       const p = localStorage.getItem("lovanet.cache.animePosters");
       if (t) setAnimeTrailers(JSON.parse(t));
       if (p) setAnimePosters(JSON.parse(p));
-    } catch {}
+    } catch {
+      // ignore cache read failure
+    }
     (async () => {
       try {
         const q = `query {
@@ -211,7 +213,9 @@ const Index = () => {
         try {
           localStorage.setItem("lovanet.cache.animeTrailers", JSON.stringify(nextTrailers));
           localStorage.setItem("lovanet.cache.animePosters", JSON.stringify(nextPosters));
-        } catch {}
+        } catch {
+          // ignore cache write failure
+        }
       } catch (e) {
         console.error("AniList trailer fetch", e);
       }
@@ -235,9 +239,7 @@ const Index = () => {
 
   return (
     <PageShell>
-      {/* Hero */}
       <section className="relative overflow-hidden">
-        {/* Transparent dark glass background — same family as the menu */}
         <div
           className="absolute inset-0 -z-10"
           style={{
@@ -246,12 +248,10 @@ const Index = () => {
             WebkitBackdropFilter: "blur(20px) saturate(1.1)",
           }}
         />
-        {/* Animated gradient blobs */}
         <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
           <div className="absolute bottom-0 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-[0.05] animate-blob animation-delay-4000"
             style={{ background: "radial-gradient(circle, hsl(var(--neon-cyan)), transparent 70%)" }} />
         </div>
-        {/* Floating sparkles */}
         <div className="absolute inset-0 -z-10 pointer-events-none">
           {[...Array(6)].map((_, i) => (
             <span
@@ -259,18 +259,16 @@ const Index = () => {
               className="sparkle absolute w-1 h-1 rounded-full bg-white/40"
               style={{
                 left: `${10 + i * 15}%`,
-                bottom: '10%',
+                bottom: "10%",
                 animationDelay: `${i * 0.9}s`,
               }}
             />
           ))}
         </div>
 
-        {/* Full-width carousel bar — spans edge to edge with integrated title & orb overlay */}
         <div className="relative w-full pt-6 lg:pt-8">
           <div className="relative w-full">
             <HeroCarousel />
-            {/* Cadre verre 3D — contour uniquement */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0"
@@ -280,7 +278,6 @@ const Index = () => {
                   "inset 0 1px 0 hsl(0 0% 100% / 0.45), inset 0 -1px 0 hsl(0 0% 0% / 0.45), 0 18px 50px -20px hsl(240 20% 5% / 0.55)",
               }}
             />
-            {/* Liseré brillant supérieur */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-0 h-[2px]"
@@ -290,24 +287,18 @@ const Index = () => {
                 mixBlendMode: "screen",
               }}
             />
-
           </div>
-          {/* Barre RGB fluo sous le carrousel */}
-          {/* Tablette lecteur — 1500 bandes-annonces catalogue + site, lecture aléatoire non-répétée */}
           <TabletTrailerPlayer />
           <div className="container mx-auto px-4 lg:px-8 mt-3">
             <MangaNeonBar height={26} className="rounded-full overflow-hidden" />
           </div>
         </div>
-
       </section>
 
-      {/* Anime Moments — quick access to countdown & catalog */}
       <section className="container mx-auto px-4 lg:px-8 pt-4 pb-2">
         <AnimeMomentsPresentation />
       </section>
 
-      {/* Crystal city visual — 21:9 showcase */}
       <div className="container mx-auto px-4 lg:px-8 py-6">
         <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
           <div className="aspect-[21/9] w-full">
@@ -322,7 +313,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Shop preview */}
       <section className="container mx-auto px-4 lg:px-8 py-16">
         <div className="flex items-center justify-end mb-4">
           <Link to="/shop" className="text-sm text-primary hover:underline whitespace-nowrap">Boutique →</Link>

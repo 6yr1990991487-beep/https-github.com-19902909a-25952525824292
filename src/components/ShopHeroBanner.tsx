@@ -4,6 +4,7 @@ import { ProductArtwork } from "@/components/ProductArtwork";
 import type { ShopProduct } from "@/data/shopProducts";
 import { thumb } from "@/data/videos";
 import { ShoppingCart, Play, Sparkles, Truck, ShieldCheck, Star } from "lucide-react";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
 
 type Slide =
   | { kind: "product"; product: ShopProduct }
@@ -76,7 +77,17 @@ export const ShopHeroBanner = ({
               <>
                 <img
                   src={`https://i.ytimg.com/vi/${s.videoId}/maxresdefault.jpg`}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = thumb(s.videoId); }}
+                  onError={(e) => {
+                    const img = e.currentTarget as HTMLImageElement;
+                    const step = img.dataset.fallback || "0";
+                    if (step === "0") {
+                      img.dataset.fallback = "1";
+                      img.src = thumb(s.videoId);
+                    } else {
+                      img.dataset.fallback = "2";
+                      createImageFallbackHandler(`shop-hero-${s.videoId}`, null)(e as any);
+                    }
+                  }}
                   alt={s.title}
                   className="absolute inset-0 w-full h-full object-cover"
                   loading="eager"

@@ -131,6 +131,7 @@ const flowTransform = (
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const CAPTURE_OVERLAY_VIDEO = "https://customer-assets-39nsmqrw.emergentagent.net/job_16dccaa9-172a-47f9-83d4-c61db40f190a/artifacts/vajscga7_562-07d7-49-86fd-d037713525344-2560x1440.mp4";
 
 const placeholderThumb = (id: string, title: string) => {
   let h = 0;
@@ -507,104 +508,45 @@ export const HeroCarousel = () => {
         }}
       />
 
-      {cards.map((c) => {
-        const internalHref =
-          c.v.source === "tiktok"
-            ? `/tiktok?video=${encodeURIComponent(c.v.id)}`
-            : c.v.source === "prime"
-              ? `/prime-video?video=${encodeURIComponent(c.v.id)}`
-              : `/lecteurs-video?video=${encodeURIComponent(c.v.id)}&service=youtube`;
-        const isCenter = Math.abs(c.offset) < 0.5;
-        const isActive = activeSlot === c.slotIdx;
-        return (
-          <Link
-            key={`${c.v.id}-${c.slotIdx}`}
-            to={internalHref}
-            aria-label={`Ouvrir la vidéo : ${c.v.title}`}
-            aria-current={isCenter ? "true" : undefined}
-            className={`card-3d group absolute rounded-xl ring-1 ring-white/10 hover:z-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-transform duration-150 ${isActive ? "scale-[0.97]" : ""}`}
-            style={{
-              ...styleFor(c.offset),
-              transition: isConstrained ? "opacity 0.12s linear" : "opacity 0.12s linear, filter 0.25s ease",
-              willChange: "transform, opacity",
-              backfaceVisibility: "visible",
-              textDecoration: "none",
-              cursor: "pointer",
-              contain: "layout paint style",
-            }}
-            onPointerEnter={() => { if (!isConstrained) setPaused(true); }}
-            onPointerLeave={() => { if (!isConstrained) setPaused(false); }}
-            onPointerDownCapture={() => setActiveSlot(c.slotIdx)}
-            onPointerUpCapture={() => setActiveSlot(null)}
-            onPointerCancel={() => setActiveSlot(null)}
-            onClick={(e) => {
-              const d = dragRef.current;
-              if (d?.moved) {
-                e.preventDefault();
-                e.stopPropagation();
-                return;
-              }
-              e.stopPropagation();
-            }}
-          >
+      <div
+        className="absolute inset-0 z-[150] flex items-center justify-center px-4 sm:px-8 lg:px-12 pointer-events-none"
+        data-testid="anime-moments-capture-banner"
+      >
+        <div className="relative w-[82%] sm:w-[72%] lg:w-[58%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
+          <div className="aspect-video">
+            <video
+              src={CAPTURE_OVERLAY_VIDEO}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="h-full w-full object-cover opacity-[0.82]"
+              data-testid="anime-moments-capture-video"
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />
+        </div>
+      </div>
+
+      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-0">
+        {cards.map((c) => {
+          const isCenter = Math.abs(c.offset) < 0.5;
+          const isActive = activeSlot === c.slotIdx;
+          return (
             <div
-              className="card-3d-front rgb-frame relative w-full aspect-video overflow-hidden rounded-xl bg-card"
+              key={`${c.v.id}-${c.slotIdx}`}
+              className={`absolute rounded-xl ${isActive ? "scale-[0.97]" : ""}`}
               style={{
-                transform: "translateZ(2px)",
-                boxShadow: "0 0 0 1px hsl(0 0% 100% / 0.18), 0 18px 36px -18px hsl(240 30% 5% / 0.55)",
+                ...styleFor(c.offset),
+                opacity: 0,
+                pointerEvents: "none",
               }}
-            >
-              {c.v.source === "tiktok" && (
-                <img
-                  src={c.v.thumb || placeholderThumb(c.v.id, c.v.title)}
-                  alt=""
-                  aria-hidden
-                  loading="lazy"
-                  decoding="async"
-                  referrerPolicy="no-referrer"
-                  className="absolute inset-0 z-[0] w-full h-full object-cover"
-                  style={{ filter: "blur(24px) saturate(1.3)", transform: "scale(1.15)" }}
-                />
-              )}
-              <img
-                src={c.v.thumb || placeholderThumb(c.v.id, c.v.title)}
-                alt={c.v.title}
-                loading={Math.abs(c.offset) <= 1 ? "eager" : "lazy"}
-                decoding="async"
-                referrerPolicy="no-referrer"
-                className={`relative z-[1] w-full h-full opacity-100 ${
-                  c.v.source === "tiktok" ? "object-contain" : "object-cover"
-                }`}
-                style={{ backgroundColor: c.v.source === "tiktok" ? "transparent" : "hsl(var(--card))" }}
-                onError={(e) => {
-                  const img = e.currentTarget;
-                  const step = img.dataset.fb || "0";
-                  if (c.v.source === "youtube" && step === "0") {
-                    img.dataset.fb = "1";
-                    img.src = ytThumbFallback(c.v.id);
-                  } else {
-                    img.src = placeholderThumb(c.v.id, c.v.title);
-                  }
-                }}
-              />
-              <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
-              <div className="card-3d-gloss absolute inset-0 z-[3] pointer-events-none rounded-xl" />
-              <div className="card-3d-edge absolute inset-0 z-[4] pointer-events-none rounded-xl" aria-hidden />
-              <div className="absolute bottom-2 left-3 right-3 z-[4]">
-                <div className="text-[11px] text-fuchsia-200/90 font-medium">
-                  {c.v.source === "tiktok" ? "TikTok" : c.v.source === "prime" ? "Prime Video" : "YouTube"}
-                </div>
-                <div className="text-xs sm:text-sm font-bold text-white leading-tight line-clamp-2">
-                  {c.v.title}
-                </div>
-              </div>
-            </div>
-            {!isConstrained && (
-              <div className="card-3d-thickness rounded-xl" aria-hidden />
-            )}
-          </Link>
-        );
-      })}
+              aria-current={isCenter ? "true" : undefined}
+            />
+          );
+        })}
+      </div>
 
       {/* Interactive spotlights — click to toggle on/off */}
       {[
