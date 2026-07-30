@@ -17,7 +17,22 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /.lovable/
 
+# Alias URLs that only 301 to a canonical route - keeps them out of the
+# "Page avec redirection" report in Search Console.
+Disallow: /youtube$
+Disallow: /anime-moments-youtube$
+Disallow: /animemoments$
+Disallow: /animemomentsanimeofficiel$
+Disallow: /discover$
+Disallow: /prime$
+Disallow: /amazon-prime$
+Disallow: /tik-tok$
+Disallow: /boutique$
+Disallow: /catalogue$
+Disallow: /anime$
+Disallow: /a-venir$
+Disallow: /countdown$
+
 Sitemap: https://lovanet.fr/sitemap-index.xml
 Sitemap: https://lovanet.fr/sitemap.xml
-Sitemap: https://lovanet.fr/sitemap-catalog.xml
 Sitemap: https://lovanet.fr/sitemap-i18n.xml
