@@ -1,10 +1,25 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+const TRANSLATION_CACHE_STORAGE_KEY = "lovanet.translation.cache.v1";
+
+type TranslationCacheStore = Record<string, string>;
+
+type TranslationApiItem = {
+  original_text: string;
+  translated_text: string;
+  from_cache?: boolean;
+  detected_source_lang?: string;
+};
+
+type TranslationApiResponse = {
+  target_lang?: string;
+  translations?: TranslationApiItem[];
+};
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
 
 export function normalizeTranslationText(value: string | null | undefined) {
   return String(value || "").replace(/\s+/g, " ").trim();
