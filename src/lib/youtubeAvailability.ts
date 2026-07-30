@@ -12,7 +12,7 @@ export async function hydrateYouTubeAvailability(videoIds: Array<string | null |
   const missing = unique.filter((videoId) => !getVideoStatusSync(videoId)).slice(0, 40);
   if (!missing.length) return [] as YouTubeAvailabilityApiItem[];
 
-  const endpoint = `${process.env.REACT_APP_BACKEND_URL}/api/youtube/availability`;
+  const endpoint = `${(import.meta.env.VITE_BACKEND_URL as string | undefined) ?? ""}/api/youtube/availability`;
   const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
