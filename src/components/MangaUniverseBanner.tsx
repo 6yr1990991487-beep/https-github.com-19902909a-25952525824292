@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Film, BookOpen, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import mangaBanner from "@/assets/manga-banner.jpg";
+import { ResilientVideoFrame } from "@/components/ResilientVideoFrame";
 
 type BgMode = "image" | "color" | "media" | "video";
 
@@ -45,13 +46,16 @@ export const MangaUniverseBanner = ({ videoIds }: { videoIds?: string[] } = {}) 
       >
         {bgMode === "video" && hasVideos && (
           <div className="relative w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden bg-black">
-            <iframe
-              key={videoIds![videoIdx]}
-              src={`https://www.youtube-nocookie.com/embed/${videoIds![videoIdx]}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoIds![videoIdx]}&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3`}
+            <ResilientVideoFrame
+              videoId={videoIds![videoIdx]}
               title="Univers Manga & Anime — bannière animée"
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              style={{ transform: "scale(1.35)" }}
-              allow="autoplay; encrypted-media; picture-in-picture"
+              seed={`manga-banner-${videoIds![videoIdx]}`}
+              searchQuery="anime moments officiel manga trailer"
+              poster={mangaBanner}
+              className="absolute inset-0 h-full w-full"
+              fallbackBadge="Bannière de secours"
+              fallbackDescription="Une vidéo de remplacement du site est utilisée pour garder la bannière active."
+              dataTestId="manga-banner-resilient-frame"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/60" />
           </div>

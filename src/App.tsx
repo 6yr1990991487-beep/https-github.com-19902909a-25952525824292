@@ -16,13 +16,13 @@ import NotFound from "./pages/NotFound";
 import AnimeCountdown from "./pages/AnimeCountdown";
 import AnimeCatalog from "./pages/AnimeCatalog";
 import Discover from "./pages/Discover";
+import Actualites from "./pages/Actualites";
 import OAuthConsent from "./pages/OAuthConsent";
 import SyncDashboard from "./pages/SyncDashboard";
 import { ThemeBubble } from "./components/ThemeBubble";
 import { CartProvider } from "./context/CartContext";
 import { CartDrawer } from "./components/CartDrawer";
 import GoogleTranslate from "./components/GoogleTranslate";
-import { HologramOverlay } from "./components/HologramOverlay";
 import { LocalizedHead } from "./components/LocalizedHead";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
 
@@ -46,6 +46,7 @@ const APP_ROUTES: Array<{ path: string; element: JSX.Element }> = [
   { path: "/anime-countdown", element: <AnimeCountdown /> },
   { path: "/anime-catalog", element: <AnimeCatalog /> },
   { path: "/decouvrir", element: <Discover /> },
+  { path: "/actualites", element: <Actualites /> },
 ];
 
 // Legacy / friendly aliases -> canonical branded routes. Keeps old inbound
@@ -100,7 +101,6 @@ const App = () => (
         <ThemeBubble />
         <CartDrawer />
         <GoogleTranslate />
-        <HologramOverlay />
         </CartProvider>
       </BrowserRouter>
     </TooltipProvider>

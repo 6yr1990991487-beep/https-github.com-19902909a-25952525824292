@@ -52,12 +52,12 @@ export const ProductArtwork = ({ seed, category, label, className }: Props) => {
     const h = hash(seed);
     const palette = PALETTES[h % PALETTES.length];
     const glyphSet = GLYPHS[category] ?? GLYPHS.poster;
-    const glyph = glyphSet[(h >> 4) % glyphSet.length];
-    const rotate = ((h >> 8) % 60) - 30;
-    const shapeKind = (h >> 12) % 6;
-    const dotCount = 8 + ((h >> 16) % 14);
-    const ringR = 30 + ((h >> 20) % 60);
-    const stripeAngle = (h >> 6) % 180;
+    const glyph = glyphSet[(h >>> 4) % glyphSet.length];
+    const rotate = ((h >>> 8) % 60) - 30;
+    const shapeKind = (h >>> 12) % 6;
+    const dotCount = 8 + ((h >>> 16) % 14);
+    const ringR = 30 + ((h >>> 20) % 60);
+    const stripeAngle = (h >>> 6) % 180;
     return { palette, glyph, rotate, shapeKind, dotCount, ringR, stripeAngle, h };
   }, [seed, category]);
 
@@ -116,7 +116,7 @@ export const ProductArtwork = ({ seed, category, label, className }: Props) => {
           const x = 200 + Math.cos(a) * r;
           const y = 200 + Math.sin(a) * r;
           const sz = 4 + ((art.h + i * 7) % 10);
-          return <circle key={i} cx={x} cy={y} r={sz} fill="#fff" opacity={0.35 + ((i * 17) % 30) / 100} />;
+          return <circle key={i} cx={x} cy={y} r={Math.max(1, sz)} fill="#fff" opacity={0.35 + ((i * 17) % 30) / 100} />;
         })}
       </g>
 
