@@ -47,7 +47,7 @@ type Meta = { title: string; description: string };
 
 // Route-level snippets used by search engines for each service page.
 const ROUTE_DESCRIPTIONS: Record<RouteKey, string> = {
-  "/": "Anime.Moments.officiel : Lovanet plateforme officielle avec boutique manga, vidéos YouTube, TikTok, Prime Video, catalogue anime et accès compte client.",
+  "/": "Lovanet  Portail anime, manga, gaming, pop culture japonaise.",
   "/anime-moments": "Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet.",
   "/decouvrir": "Découvrir Lovanet : entrée rapide vers les vidéos, la boutique, le catalogue, les actualités et les services du compte.",
   "/shop": "Boutique Lovanet : posters, collectors, vêtements et produits manga, avec accès panier et parcours client.",
