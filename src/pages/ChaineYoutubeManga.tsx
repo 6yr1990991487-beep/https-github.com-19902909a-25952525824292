@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { EyeOff, Eye, Play, RefreshCw, ArrowLeft, X, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeVideo } from "@/lib/normalizeVideo";
+import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
+import { ResilientVideoFrame } from "@/components/ResilientVideoFrame";
+import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 
 type Video = {
   id: string;
@@ -98,19 +101,27 @@ export default function ChaineYoutubeManga() {
         // Normalise titles, descriptions and thumbnails so every card carries
         // the brand keywords (anime · AnimeMoments · Animer officiel · manga).
         const normalized = list.map((v) => normalizeVideo(v));
+        const availability = await hydrateYouTubeAvailability(normalized.map((video) => video.id)).catch((error) => {
+          console.warn("YouTube availability hydration failed", error);
+          return [];
+        });
+        const unavailable = new Set(
+          availability.filter((item) => !item.available).map((item) => item.video_id),
+        );
+        const filteredNormalized = normalized.filter((video) => !unavailable.has(video.id));
         // Merge with local cache — the catalogue must only grow, never shrink,
         // even if the backend returns a smaller list on a given run.
         setVideos((prev) => {
           const byId = new Map<string, Video>();
           for (const v of prev) byId.set(v.id, v);
-          for (const v of normalized) byId.set(v.id, v); // fresh data wins on overlap
+          for (const v of filteredNormalized) byId.set(v.id, v); // fresh data wins on overlap
           const merged = Array.from(byId.values()).sort((a, b) =>
             a.publishedAt < b.publishedAt ? -1 : 1,
           );
           try { localStorage.setItem(CACHE_KEY, JSON.stringify(merged)); } catch {}
           return merged;
         });
-        setActive((a) => a || normalized[0]?.id || "");
+        setActive((a) => a || filteredNormalized[0]?.id || "");
       }
     } catch (e) {
       console.error("YouTube anime sync failed", e);
@@ -202,13 +213,16 @@ export default function ChaineYoutubeManga() {
           <div className="relative rounded-3xl overflow-hidden border border-red-500/30 shadow-[0_40px_120px_-40px_hsl(0_85%_55%/0.5)] aspect-[21/9] bg-black">
             {activeVideo ? (
               <>
-                <iframe
-                  key={activeVideo.id}
-                  src={`https://www.youtube-nocookie.com/embed/${activeVideo.id}?autoplay=1&mute=1&rel=0&modestbranding=1&playsinline=1&loop=1&playlist=${activeVideo.id}`}
+                <ResilientVideoFrame
+                  videoId={activeVideo.id}
                   title={activeVideo.title}
-                  className="absolute inset-0 w-full h-full"
-                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                  allowFullScreen
+                  seed={`yt-manga-banner-${activeVideo.id}`}
+                  searchQuery={`${activeVideo.title} anime officiel`}
+                  poster={siteFallbackImage(activeVideo.id, activeVideo.thumbnail)}
+                  className="absolute inset-0 h-full w-full"
+                  fallbackBadge="Vidéo de secours du site"
+                  fallbackDescription="La vidéo YouTube d’origine n’est plus accessible. Une vidéo de rechange du site prend le relais."
+                  dataTestId="youtube-manga-banner-resilient-frame"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-5 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none">
                   <p className="text-[10px] uppercase tracking-[0.25em] text-red-300 mb-1">
@@ -235,13 +249,16 @@ export default function ChaineYoutubeManga() {
       {bannerHidden && activeVideo && (
         <section className="container mx-auto px-4 lg:px-8 pb-6">
           <div className="rounded-3xl overflow-hidden aspect-video bg-black border border-red-500/30">
-            <iframe
-              key={`p-${activeVideo.id}`}
-              src={`https://www.youtube-nocookie.com/embed/${activeVideo.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+            <ResilientVideoFrame
+              videoId={activeVideo.id}
               title={activeVideo.title}
-              className="w-full h-full"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
+              seed={`yt-manga-player-${activeVideo.id}`}
+              searchQuery={`${activeVideo.title} anime officiel`}
+              poster={siteFallbackImage(activeVideo.id, activeVideo.thumbnail)}
+              className="relative h-full w-full"
+              fallbackBadge="Lecture de secours"
+              fallbackDescription="La vidéo YouTube n’est plus publique. Le site affiche un média de remplacement."
+              dataTestId="youtube-manga-player-resilient-frame"
             />
           </div>
           <h2 className="font-display text-xl font-bold mt-3">{activeVideo.title}</h2>
@@ -291,9 +308,10 @@ export default function ChaineYoutubeManga() {
               >
                 <div className="relative aspect-video overflow-hidden bg-black">
                 <img
-                  src={v.thumbnail}
+                  src={v.thumbnail || siteFallbackImage(v.id, null)}
                   alt={v.title}
                   loading="lazy"
+                  onError={createImageFallbackHandler(v.id, null)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
                 <span className="absolute bottom-1.5 right-1.5 text-[10px] px-1.5 py-0.5 rounded bg-black/80 text-white font-mono">

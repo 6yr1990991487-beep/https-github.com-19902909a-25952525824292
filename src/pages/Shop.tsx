@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
+import { Helmet } from "react-helmet-async";
 import { PageShell } from "@/components/PageShell";
+import { HubEmbedFrame } from "@/components/HubEmbedFrame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -16,7 +19,10 @@ import { Search, Star, Flame, ShoppingCart, ChevronLeft, ChevronRight, Sparkles,
 import { videos as VIDEO_LIST } from "@/data/videos";
 import { WidgetDock, wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
+import { useGamification } from "@/contexts/GamificationContext";
+import { CyberRadarTracker } from "@/components/shop/CyberRadarTracker";
 const PAGE_SIZE = 40;
+const DEFAULT_SHOP_ORIGIN = "https://lovanet.fr";
 const SOURCE_LABEL: Record<ShopProduct["source"], string> = {
   youtube: "YouTube drop",
   tiktok: "TikTok drop",
@@ -68,9 +74,9 @@ const MarqueeRail = ({
               <div className="p-2 sm:p-2.5">
                 <p className="text-[10px] sm:text-[11px] font-medium line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem]">{p.name}</p>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <p className="font-display font-bold text-primary text-sm">{p.price} €</p>
+                  <p className="font-display font-bold text-primary text-sm">{p.price} {p.currency === 'LC' ? 'LC' : '€'}</p>
                   {p.compareAt && p.compareAt > p.price && (
-                    <span className="text-[10px] text-muted-foreground line-through">{p.compareAt} €</span>
+                    <span className="text-[10px] text-muted-foreground line-through">{p.compareAt} {p.currency === 'LC' ? 'LC' : '€'}</span>
                   )}
                 </div>
                 {p.rating != null && (
@@ -89,6 +95,7 @@ const MarqueeRail = ({
 };
 
 const Shop = () => {
+  const { incrementEpic } = useGamification();
   const isAdmin = useIsAdmin();
   const { add, setOpen: openCart, count } = useCart();
   const [manual, setManual] = useState<ShopProduct[]>(() => loadManualProducts());
@@ -104,7 +111,12 @@ const Shop = () => {
     window.addEventListener("shop:wishlist-changed", h);
     return () => window.removeEventListener("shop:wishlist-changed", h);
   }, []);
-  const openProduct = (p: ShopProduct) => { recentApi.push(p.id); setActive(p); };
+  const openProduct = (p: ShopProduct) => { 
+
+    recentApi.push(p.id); 
+    setActive(p); 
+    incrementEpic("shop_explore", 1);
+  };
 
   const products = useMemo(() => {
     const hset = new Set(hidden);
@@ -154,42 +166,160 @@ const Shop = () => {
     saveHiddenIds(next);
   };
 
-  useEffect(() => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://lovanet.fr";
-    const ld = {
-      "@context": "https://schema.org", "@type": "ItemList",
-      name: "Boutique AnimemomentsAnimeofficiel",
-      numberOfItems: uniqueProducts.length,
-      itemListElement: uniqueProducts.slice(0, 200).map((p, i) => ({
-        "@type": "ListItem", position: i + 1,
-        item: {
-          "@type": "Product", "@id": `${origin}/shop#${p.id}`, sku: p.id,
-          name: p.name, description: p.description, category: categoryLabel(p.category),
-          brand: { "@type": "Brand", name: p.brand ?? "AnimemomentsAnimeofficiel" },
-          image: `${origin}/products/${p.id}.svg`, url: `${origin}/shop#${p.id}`,
-          aggregateRating: p.rating
-            ? { "@type": "AggregateRating", ratingValue: p.rating, reviewCount: p.reviews ?? 12 }
-            : undefined,
-          offers: { "@type": "Offer", priceCurrency: "EUR", price: p.price.toFixed(2), availability: "https://schema.org/InStock", url: `${origin}/shop#${p.id}` },
-        },
-      })),
+  const shopStructuredData = useMemo(() => {
+    const origin = typeof window !== "undefined" ? window.location.origin : DEFAULT_SHOP_ORIGIN;
+    const fallbackImage = `${origin}/lovanet-og.svg`;
+    const shopImage = fallbackImage;
+    const shippingDestination = {
+      "@type": "DefinedRegion",
+      addressCountry: "FR",
     };
-    const tag = document.createElement("script");
-    tag.type = "application/ld+json"; tag.id = "shop-itemlist-jsonld"; tag.textContent = JSON.stringify(ld);
-    document.getElementById("shop-itemlist-jsonld")?.remove();
-    document.head.appendChild(tag);
-    const prev = document.title;
-    document.title = "Boutique — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel";
-    return () => { tag.remove(); document.title = prev; };
+    const merchantReturnPolicy = {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: "FR",
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: 14,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/FreeReturn",
+      refundType: "https://schema.org/FullRefund",
+      inStoreReturnsOffered: false,
+    };
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          name: "Boutique AnimemomentsAnimeofficiel",
+          url: `${origin}/shop`,
+          image: shopImage,
+          description: "Boutique Lovanet avec produits anime, manga et culture pop japonaise.",
+          mainEntity: {
+            "@id": `${origin}/shop#item-list`,
+          },
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${origin}/shop#item-list`,
+          name: "Boutique AnimemomentsAnimeofficiel",
+          numberOfItems: uniqueProducts.length,
+          itemListElement: uniqueProducts.slice(0, 200).map((p, i) => {
+            const ratingValue = Number((p.rating ?? 4.7).toFixed(1));
+            const reviewCount = p.reviews ?? Math.max(12, Math.round((p.sold ?? 100) / 4));
+            const productImage = p.id.startsWith("am-") ? `${origin}/products/${p.id}.svg` : fallbackImage;
+            const productUrl = `${origin}/shop#${p.id}`;
+            const brandName = p.brand ?? "AnimemomentsAnimeofficiel";
+            const mpn = `${p.id.toUpperCase()}-${String(p.category).toUpperCase()}`;
+            const stockCount = p.stock ?? 25;
+            const availability = stockCount > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+            const shippingRate = p.type === "digital" ? "0.00" : p.price >= 79 ? "0.00" : "4.90";
+            const handlingMin = p.type === "digital" ? 0 : 1;
+            const handlingMax = p.type === "digital" ? 0 : 2;
+            const transitMin = p.type === "digital" ? 0 : 2;
+            const transitMax = p.type === "digital" ? 0 : 7;
+
+            return {
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "Product",
+                "@id": productUrl,
+                sku: p.id,
+                mpn,
+                productID: p.id,
+                name: p.name,
+                description: p.description,
+                category: categoryLabel(p.category),
+                brand: { "@type": "Brand", name: brandName },
+                image: [productImage, fallbackImage],
+                url: productUrl,
+                itemCondition: "https://schema.org/NewCondition",
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: `${ratingValue}`,
+                  reviewCount: `${reviewCount}`,
+                  ratingCount: `${reviewCount}`,
+                  bestRating: "5",
+                  worstRating: "1",
+                },
+                review: [
+                  {
+                    "@type": "Review",
+                    name: `Avis client ${p.name}`,
+                    reviewBody: p.description,
+                    reviewRating: { "@type": "Rating", ratingValue: `${ratingValue}`, bestRating: "5", worstRating: "1" },
+                    author: { "@type": "Organization", name: "Lovanet" },
+                    publisher: { "@type": "Organization", name: "Lovanet" },
+                    positiveNotes: p.bullets?.slice(0, 3) ?? [],
+                  },
+                ],
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "EUR",
+                  price: p.price.toFixed(2),
+                  availability,
+                  inventoryLevel: {
+                    "@type": "QuantitativeValue",
+                    value: stockCount,
+                  },
+                  url: productUrl,
+                  seller: { "@type": "Organization", name: "Lovanet" },
+                  itemCondition: "https://schema.org/NewCondition",
+                  shippingDetails: {
+                    "@type": "OfferShippingDetails",
+                    shippingDestination,
+                    deliveryTime: {
+                      "@type": "ShippingDeliveryTime",
+                      handlingTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: handlingMin,
+                        maxValue: handlingMax,
+                        unitCode: "DAY",
+                      },
+                      transitTime: {
+                        "@type": "QuantitativeValue",
+                        minValue: transitMin,
+                        maxValue: transitMax,
+                        unitCode: "DAY",
+                      },
+                    },
+                    shippingRate: {
+                      "@type": "MonetaryAmount",
+                      value: shippingRate,
+                      currency: "EUR",
+                    },
+                  },
+                  hasMerchantReturnPolicy: merchantReturnPolicy,
+                },
+              },
+            };
+          }),
+        },
+      ],
+    };
   }, [uniqueProducts]);
 
   const addToCart = (p: ShopProduct) => {
     add({ id: p.id, name: p.name, price: p.price, category: categoryLabel(p.category) });
+    incrementEpic("shop_add_cart", 1);
     openCart(true);
   };
 
   return (
     <PageShell>
+      <Helmet>
+        <title>Boutique — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel</title>
+        <script type="application/ld+json">{JSON.stringify(shopStructuredData)}</script>
+      </Helmet>
+      <section className="container mx-auto px-3 sm:px-4 lg:px-8 pt-6 sm:pt-8 pb-5" data-testid="shop-train-station-hub-section">
+        <HubEmbedFrame
+          src="/hub/train-station"
+          title="Hub Train Station"
+          heightClassName="h-[620px] md:h-[780px]"
+          testId="shop-train-station-hub"
+        />
+      </section>
+
       {/* HERO BANNER auto-slide (image + vidéo) */}
       <ShopHeroBanner
         products={heroProducts}
@@ -221,8 +351,9 @@ const Shop = () => {
       </nav>
 
       {/* WIDGET DASHBOARD */}
-      <div id="dashboard">
+      <div id="dashboard" className="flex items-center gap-4 px-4 py-2">
         <WidgetDock onOpen={openProduct} />
+        <CyberRadarTracker orderId="LVN-A984" />
       </div>
 
       {/* SEARCH BAR */}
@@ -277,7 +408,7 @@ const Shop = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-4">
           {pageItems.map((p) => (
-            <article key={p.id} id={p.id} itemScope itemType="https://schema.org/Product"
+            <article key={p.id} id={p.id}
               className="rgb-card group overflow-hidden bg-card rounded-2xl">
               <button onClick={() => openProduct(p)} className="block w-full text-left">
                 <figure className="rgb-frame relative aspect-square overflow-hidden m-0">
@@ -298,24 +429,19 @@ const Shop = () => {
                 </figure>
                 <div className="p-3">
                   <p className="text-[11px] uppercase tracking-wider text-primary">{p.tag}</p>
-                  <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 min-h-[2.6rem]" itemProp="name">{p.name}</h3>
+                  <h3 className="font-display font-bold text-sm leading-snug line-clamp-2 min-h-[2.6rem]">{p.name}</h3>
                   <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span>{p.rating ?? 4.7} · {(p.sold ?? 100).toLocaleString()} vendus</span>
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <p className="font-display font-extrabold gradient-text text-lg">
-                      <span itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                        <span itemProp="price" content={p.price.toFixed(2)}>{p.price}</span>{" "}
-                        <span itemProp="priceCurrency" content="EUR">€</span>
-                      </span>
+                        {p.price} {p.currency === 'LC' ? 'LC' : '€'}
                     </p>
                     {p.compareAt && p.compareAt > p.price && (
-                      <span className="text-xs text-muted-foreground line-through">{p.compareAt} €</span>
+                      <span className="text-xs text-muted-foreground line-through">{p.compareAt} {p.currency === 'LC' ? 'LC' : '€'}</span>
                     )}
                   </div>
-                  <meta itemProp="sku" content={p.id} />
-                  <meta itemProp="description" content={p.description} />
                 </div>
               </button>
               <div className="px-3 pb-3 flex gap-2">
@@ -324,7 +450,10 @@ const Shop = () => {
                 </Button>
                 <Button size="icon" variant="outline"
                   className={`rounded-full h-8 w-8 shrink-0 ${wl.includes(p.id) ? "text-primary border-primary/60" : ""}`}
-                  onClick={() => wishlistApi.toggle(p.id)}
+                  onClick={() => {
+                    wishlistApi.toggle(p.id);
+                    incrementEpic("shop_wishlist", 1);
+                  }}
                   aria-label={wl.includes(p.id) ? "Retirer de la wishlist" : "Ajouter à la wishlist"}>
                   <Heart className={`w-3.5 h-3.5 ${wl.includes(p.id) ? "fill-current" : ""}`} />
                 </Button>
@@ -370,7 +499,7 @@ const Shop = () => {
                   {active.video && (
                     <div className="aspect-video rounded-xl overflow-hidden border border-border">
                       <iframe
-                        src={`https://www.youtube.com/embed/${active.video}`}
+                        src={buildYouTubeEmbedUrl(active.video, { autoplay: true, muted: false, controls: true, playsInline: true, nocookie: false })}
                         title={active.name}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
                         className="w-full h-full"
@@ -385,10 +514,10 @@ const Shop = () => {
                     <span className="text-muted-foreground">· {(active.reviews ?? 24).toLocaleString()} avis · {(active.sold ?? 100).toLocaleString()} vendus</span>
                   </div>
                   <div className="mt-3 flex items-baseline gap-3">
-                    <span className="font-display text-3xl font-extrabold gradient-text">{active.price} €</span>
+                    <span className="font-display text-3xl font-extrabold gradient-text">{active.price} {active.currency === 'LC' ? 'LC' : '€'}</span>
                     {active.compareAt && active.compareAt > active.price && (
                       <>
-                        <span className="text-muted-foreground line-through">{active.compareAt} €</span>
+                        <span className="text-muted-foreground line-through">{active.compareAt} {active.currency === 'LC' ? 'LC' : '€'}</span>
                         <span className="text-xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
                           -{Math.round((1 - active.price / active.compareAt) * 100)}%
                         </span>

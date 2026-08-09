@@ -7,7 +7,7 @@ import searchShopProductsTool from "./tools/search-shop-products";
 // The OAuth issuer MUST be the direct Supabase host (never the .lovable.cloud
 // proxy), built from the project ref that Vite inlines at build time. See
 // app-mcp-server-authoring knowledge for the rationale.
-const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
+const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID || "project-ref-unset";
 
 export default defineMcp({
   name: "lovanet-mcp",

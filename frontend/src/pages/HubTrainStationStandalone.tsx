@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const TrainStation = require("@/components/TrainStation").default;
 
 const LuxuryStationColumn = ({ side, color }: { side: "left" | "right"; color: string }) => {

@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Poster Cyberpunk TikTok Edit — AnimemomentsAnimeofficiel">
-  <title>Poster Cyberpunk TikTok Edit — AnimemomentsAnimeofficiel</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
   <defs>
-    <linearGradient id="gz9s350" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ff2e93"/>
-      <stop offset="55%" stop-color="#7b2dff"/>
-      <stop offset="100%" stop-color="#00e0ff"/>
+    <linearGradient id="g11" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#c084fc"/>
     </linearGradient>
+    <radialGradient id="r11" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="400" fill="url(#gz9s350)"/>
-  <g transform="rotate(-3 200 200)" opacity="0.55">
-    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
-    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
-    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
-  </g>
-  <circle cx="280.0" cy="200.0" r="4" fill="#fff" opacity="0.45"/><circle cx="118.2" cy="275.0" r="11" fill="#fff" opacity="0.45"/><circle cx="212.4" cy="58.5" r="8" fill="#fff" opacity="0.45"/><circle cx="305.3" cy="337.3" r="5" fill="#fff" opacity="0.45"/><circle cx="107.4" cy="183.7" r="12" fill="#fff" opacity="0.45"/><circle cx="305.4" cy="132.8" r="9" fill="#fff" opacity="0.45"/><circle cx="159.6" cy="350.7" r="6" fill="#fff" opacity="0.45"/><circle cx="113.7" cy="34.1" r="13" fill="#fff" opacity="0.45"/><circle cx="301.5" cy="236.9" r="10" fill="#fff" opacity="0.45"/><circle cx="71.6" cy="253.2" r="7" fill="#fff" opacity="0.45"/><circle cx="271.8" cy="45.9" r="4" fill="#fff" opacity="0.45"/><circle cx="227.4" cy="286.8" r="11" fill="#fff" opacity="0.45"/><circle cx="94.3" cy="139.0" r="8" fill="#fff" opacity="0.45"/><circle cx="349.4" cy="166.9" r="5" fill="#fff" opacity="0.45"/><circle cx="94.5" cy="350.7" r="12" fill="#fff" opacity="0.45"/><circle cx="186.3" cy="95.9" r="9" fill="#fff" opacity="0.45"/><circle cx="304.2" cy="287.4" r="6" fill="#fff" opacity="0.45"/><circle cx="33.2" cy="207.3" r="13" fill="#fff" opacity="0.45"/>
-  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
-  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#ff2e93">P</text>
-  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">POSTER</text>
-  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Poster Cyberpunk TikTok Edit</text>
-  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-011</text>
+  <rect width="600" height="800" fill="url(#g11)"/>
+  <rect width="600" height="800" fill="url(#r11)"/>
+  <circle cx="300" cy="320" r="140" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="300" cy="320" r="140" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4"/>
+  <polygon points="270,260 270,380 380,320" fill="white"/>
+  <text x="50%" y="580" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="middle" letter-spacing="6">ST</text>
+  <text x="50%" y="640" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="rgba(255,255,255,0.75)" text-anchor="middle" letter-spacing="4">LOVANET</text>
+  <text x="50%" y="700" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="400" fill="rgba(255,255,255,0.65)" text-anchor="middle" letter-spacing="6">ANIME · MOMENTS</text>
 </svg>

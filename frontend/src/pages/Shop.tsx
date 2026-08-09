@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { Helmet } from "react-helmet-async";
 import { PageShell } from "@/components/PageShell";
 import { HubEmbedFrame } from "@/components/HubEmbedFrame";
@@ -18,6 +19,8 @@ import { Search, Star, Flame, ShoppingCart, ChevronLeft, ChevronRight, Sparkles,
 import { videos as VIDEO_LIST } from "@/data/videos";
 import { WidgetDock, wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
+import { useGamification } from "@/contexts/GamificationContext";
+import { CyberRadarTracker } from "@/components/shop/CyberRadarTracker";
 const PAGE_SIZE = 40;
 const DEFAULT_SHOP_ORIGIN = "https://lovanet.fr";
 const SOURCE_LABEL: Record<ShopProduct["source"], string> = {
@@ -71,9 +74,9 @@ const MarqueeRail = ({
               <div className="p-2 sm:p-2.5">
                 <p className="text-[10px] sm:text-[11px] font-medium line-clamp-2 min-h-[2rem] sm:min-h-[2.2rem]">{p.name}</p>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <p className="font-display font-bold text-primary text-sm">{p.price} €</p>
+                  <p className="font-display font-bold text-primary text-sm">{p.price} {p.currency === 'LC' ? 'LC' : '€'}</p>
                   {p.compareAt && p.compareAt > p.price && (
-                    <span className="text-[10px] text-muted-foreground line-through">{p.compareAt} €</span>
+                    <span className="text-[10px] text-muted-foreground line-through">{p.compareAt} {p.currency === 'LC' ? 'LC' : '€'}</span>
                   )}
                 </div>
                 {p.rating != null && (
@@ -92,6 +95,7 @@ const MarqueeRail = ({
 };
 
 const Shop = () => {
+  const { incrementEpic } = useGamification();
   const isAdmin = useIsAdmin();
   const { add, setOpen: openCart, count } = useCart();
   const [manual, setManual] = useState<ShopProduct[]>(() => loadManualProducts());
@@ -107,7 +111,12 @@ const Shop = () => {
     window.addEventListener("shop:wishlist-changed", h);
     return () => window.removeEventListener("shop:wishlist-changed", h);
   }, []);
-  const openProduct = (p: ShopProduct) => { recentApi.push(p.id); setActive(p); };
+  const openProduct = (p: ShopProduct) => { 
+
+    recentApi.push(p.id); 
+    setActive(p); 
+    incrementEpic("shop_explore", 1);
+  };
 
   const products = useMemo(() => {
     const hset = new Set(hidden);
@@ -292,6 +301,7 @@ const Shop = () => {
 
   const addToCart = (p: ShopProduct) => {
     add({ id: p.id, name: p.name, price: p.price, category: categoryLabel(p.category) });
+    incrementEpic("shop_add_cart", 1);
     openCart(true);
   };
 
@@ -341,8 +351,9 @@ const Shop = () => {
       </nav>
 
       {/* WIDGET DASHBOARD */}
-      <div id="dashboard">
+      <div id="dashboard" className="flex items-center gap-4 px-4 py-2">
         <WidgetDock onOpen={openProduct} />
+        <CyberRadarTracker orderId="LVN-A984" />
       </div>
 
       {/* SEARCH BAR */}
@@ -425,10 +436,10 @@ const Shop = () => {
                   </div>
                   <div className="mt-2 flex items-baseline gap-2">
                     <p className="font-display font-extrabold gradient-text text-lg">
-                        {p.price} €
+                        {p.price} {p.currency === 'LC' ? 'LC' : '€'}
                     </p>
                     {p.compareAt && p.compareAt > p.price && (
-                      <span className="text-xs text-muted-foreground line-through">{p.compareAt} €</span>
+                      <span className="text-xs text-muted-foreground line-through">{p.compareAt} {p.currency === 'LC' ? 'LC' : '€'}</span>
                     )}
                   </div>
                 </div>
@@ -439,7 +450,10 @@ const Shop = () => {
                 </Button>
                 <Button size="icon" variant="outline"
                   className={`rounded-full h-8 w-8 shrink-0 ${wl.includes(p.id) ? "text-primary border-primary/60" : ""}`}
-                  onClick={() => wishlistApi.toggle(p.id)}
+                  onClick={() => {
+                    wishlistApi.toggle(p.id);
+                    incrementEpic("shop_wishlist", 1);
+                  }}
                   aria-label={wl.includes(p.id) ? "Retirer de la wishlist" : "Ajouter à la wishlist"}>
                   <Heart className={`w-3.5 h-3.5 ${wl.includes(p.id) ? "fill-current" : ""}`} />
                 </Button>
@@ -485,7 +499,7 @@ const Shop = () => {
                   {active.video && (
                     <div className="aspect-video rounded-xl overflow-hidden border border-border">
                       <iframe
-                        src={`https://www.youtube.com/embed/${active.video}`}
+                        src={buildYouTubeEmbedUrl(active.video, { autoplay: true, muted: false, controls: true, playsInline: true, nocookie: false })}
                         title={active.name}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
                         className="w-full h-full"
@@ -500,10 +514,10 @@ const Shop = () => {
                     <span className="text-muted-foreground">· {(active.reviews ?? 24).toLocaleString()} avis · {(active.sold ?? 100).toLocaleString()} vendus</span>
                   </div>
                   <div className="mt-3 flex items-baseline gap-3">
-                    <span className="font-display text-3xl font-extrabold gradient-text">{active.price} €</span>
+                    <span className="font-display text-3xl font-extrabold gradient-text">{active.price} {active.currency === 'LC' ? 'LC' : '€'}</span>
                     {active.compareAt && active.compareAt > active.price && (
                       <>
-                        <span className="text-muted-foreground line-through">{active.compareAt} €</span>
+                        <span className="text-muted-foreground line-through">{active.compareAt} {active.currency === 'LC' ? 'LC' : '€'}</span>
                         <span className="text-xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40">
                           -{Math.round((1 - active.price / active.compareAt) * 100)}%
                         </span>

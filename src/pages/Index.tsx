@@ -6,9 +6,10 @@ import { PageShell } from "@/components/PageShell";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import MiniCatalogOrb from "@/components/MiniCatalogOrb";
 import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
 
-const ANIME_MOMENTS_CAPTURE_VIDEO = "https://customer-assets-39nsmqrw.emergentagent.net/job_16dccaa9-172a-47f9-83d4-c61db40f190a/artifacts/vajscga7_562-07d7-49-86fd-d037713525344-2560x1440.mp4";
+const ANIME_MOMENTS_CAPTURE_VIDEO = "/catalogue-banner.mp4";
 
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
@@ -18,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
 import { ProductArtwork } from "@/components/ProductArtwork";
 import { MiniPreviewPlayer } from "@/components/MiniPreviewPlayer";
-import { supabase } from "@/integrations/supabase/client";
+import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 
 const SHOP_REEL_MP4 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
@@ -87,7 +88,7 @@ const AnimePreview = ({
         <iframe
           key={trailerId}
           className="absolute inset-0 w-full h-full pointer-events-none"
-          src={`https://www.youtube-nocookie.com/embed/${trailerId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${trailerId}&modestbranding=1&playsinline=1&rel=0`}
+          src={buildYouTubeEmbedUrl(trailerId, { autoplay: true, muted: true, controls: false, loop: true, playlist: trailerId, playsInline: true })}
           title="Aperçu animé"
           loading="lazy"
           tabIndex={-1}
@@ -140,13 +141,7 @@ const Index = () => {
       // ignore cache read failure
     }
     (async () => {
-      const { data } = await supabase
-        .from("imported_videos")
-        .select("external_id, title, published_at")
-        .eq("source", "youtube")
-        .not("title", "ilike", "%ruri%")
-        .order("published_at", { ascending: false })
-        .limit(24);
+      const data = IMPORTED_VIDEOS.filter((v) => v.source === "youtube" && !v.title.toLowerCase().includes("ruri")).sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()).slice(0, 24);
       if (cancelled || !data) return;
       const ids = data.map((r: any) => r.external_id).filter(Boolean);
       setYtIds(ids);
@@ -229,7 +224,7 @@ const Index = () => {
   const platforms = [
     { to: "/chaine-youtube", title: "YouTube", desc: "Vidéos anime et shorts officiels", icon: Youtube,
       preview: { kind: "youtube" as const, sources: ytForYoutube } },
-    { to: "/prime-video", title: "Prime Vidéo", desc: "Lecture multi-plateforme immersive", icon: Play,
+    { to: "/prime-video", title: "Prime Vidéo", desc: "Lecture multi-plateforme premium", icon: Play,
       preview: { kind: "youtube" as const, sources: ytForPrime } },
     { to: "/tiktok", title: "TikTok", desc: "Posts courts et réactions rapides", icon: Music2,
       preview: { kind: "tiktok" as const, sources: [], loadTiktokFromDB: true } },
@@ -268,7 +263,7 @@ const Index = () => {
 
         <div className="relative w-full pt-6 lg:pt-8">
           <div className="relative w-full">
-            <HeroCarousel />
+            <HeroCarousel captureVideo={ANIME_MOMENTS_CAPTURE_VIDEO} />
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0"
@@ -295,9 +290,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 lg:px-8 pt-4 pb-2">
-        <AnimeMomentsPresentation />
-      </section>
+      {/* The static visual horizontal catalog block (AnimeMomentsPresentation) has been removed based on instructions. */}
 
       <div className="container mx-auto px-4 lg:px-8 py-6">
         <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
@@ -340,6 +333,7 @@ const Index = () => {
           ))}
         </div>
       </section>
+
     </PageShell>
   );
 };

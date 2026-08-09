@@ -39,31 +39,10 @@ const Legals = () => {
 
         <section className="space-y-10 text-sm md:text-base leading-relaxed text-foreground/90">
           <div>
-            <h2 className="text-xl font-semibold mb-2 text-primary">Éditeur du site</h2>
-            <p>
-              Le site <strong>Lovanet</strong> (https://lovanet.fr) est édité par
-              l'équipe <strong>AnimemomentsAnimeofficiel</strong>, créateur indépendant de
-              contenus audiovisuels anime. Pour toute question, utilisez la page{" "}
-              <Link to="/contact" className="text-primary underline underline-offset-2 hover:opacity-80">
-                contact
-              </Link>.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-2 text-primary">Hébergement</h2>
-            <p>
-              Le site est hébergé par <strong>Lovable</strong> — lovable.dev. Les
-              contenus multimédia tiers (YouTube, TikTok, Prime Video) sont diffusés
-              depuis leurs plateformes respectives.
-            </p>
-          </div>
-
-          <div>
             <h2 className="text-xl font-semibold mb-2 text-primary">Propriété intellectuelle</h2>
             <p>
-              L'ensemble des éléments du site (textes, visuels, sons, logos, marque
-              Lovanet) est protégé par le droit d'auteur. Toute
+              L’ensemble des éléments du site (textes, visuels, sons, logos, marque
+              Lovanet) est protégé par le droit d’auteur. Toute
               reproduction, représentation ou diffusion sans autorisation écrite
               préalable est interdite. Les contenus tiers restent la propriété de
               leurs ayants droit respectifs.
@@ -75,8 +54,8 @@ const Legals = () => {
             <p>
               Lovanet collecte uniquement les données strictement nécessaires au
               fonctionnement du service (compte client, commandes via la boutique,
-              formulaire de contact). Conformément au RGPD, vous disposez d'un droit
-              d'accès, de rectification et de suppression de vos données en nous
+              formulaire de contact). Conformément au RGPD, vous disposez d’un droit
+              d’accès, de rectification et de suppression de vos données en nous
               contactant. Des cookies techniques peuvent être déposés pour la session
               et la lecture des médias intégrés.
             </p>
@@ -85,7 +64,7 @@ const Legals = () => {
           <div>
             <h2 className="text-xl font-semibold mb-2 text-primary">Responsabilité</h2>
             <p>
-              L'éditeur s'efforce d'assurer l'exactitude des informations publiées
+              L’éditeur s’efforce d’assurer l’exactitude des informations publiées
               mais ne peut être tenu responsable des erreurs, omissions ou
               indisponibilités du service. Les liens vers des sites tiers ne
               sauraient engager la responsabilité de Lovanet.

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calendar, Youtube, Music2, Tv, Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 import { videos as fallbackVideos } from "@/data/videos";
 import { HoverPreview } from "./HoverPreview";
 import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallback";
@@ -56,24 +56,12 @@ export const RecentEpisodesCarousel = () => {
   useEffect(() => {
     let active = true;
     (async () => {
-      const { data } = await supabase
-        .from("imported_videos")
-        .select("id, source, external_id, title, thumbnail_url, video_url, published_at, episode")
-        .order("published_at", { ascending: false, nullsFirst: false })
-        .limit(30);
+      const data = IMPORTED_VIDEOS.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()).slice(0, 30);
       if (!active) return;
-      const nextItems = ((data as ImportedVideo[] | null) ?? []).filter(
-        (item) => item.source !== "youtube" || item.external_id,
+      const nextItems = ((data as any) ?? []).filter(
+        (item: any) => item.source !== "youtube" || item.external_id,
       );
-      const youtubeIds = nextItems
-        .filter((item) => item.source === "youtube")
-        .map((item) => item.external_id)
-        .filter((value): value is string => Boolean(value));
-      const availability = await hydrateYouTubeAvailability(youtubeIds).catch(() => []);
-      const unavailable = new Set(availability.filter((item) => !item.available).map((item) => item.video_id));
-      setItems(
-        nextItems.filter((item) => item.source !== "youtube" || !item.external_id || !unavailable.has(item.external_id)),
-      );
+      setItems(nextItems);
       setLoaded(true);
     })();
     return () => {

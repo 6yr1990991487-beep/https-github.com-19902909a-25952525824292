@@ -1,38 +1,41 @@
+User-agent: *
+Allow: /
+
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-User-agent: Twitterbot
+User-agent: Yandex
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: SeznamBot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: Twitterbot
 Allow: /
 
-Disallow: /admin
-Disallow: /admin/
-Disallow: /.lovable/
+Host: lovanet.fr
 
-# Alias URLs that only 301 to a canonical route - keeps them out of the
-# "Page avec redirection" report in Search Console.
-Disallow: /youtube$
-Disallow: /anime-moments-youtube$
-Disallow: /animemoments$
-Disallow: /animemomentsanimeofficiel$
-Disallow: /discover$
-Disallow: /prime$
-Disallow: /amazon-prime$
-Disallow: /tik-tok$
-Disallow: /boutique$
-Disallow: /catalogue$
-Disallow: /anime$
-Disallow: /a-venir$
-Disallow: /countdown$
-
-Sitemap: https://lovanet.fr/sitemap-index.xml
+# XML sitemaps
 Sitemap: https://lovanet.fr/sitemap.xml
-Sitemap: https://lovanet.fr/sitemap-i18n.xml
+Sitemap: https://lovanet.fr/sitemap-pages.xml
+Sitemap: https://lovanet.fr/sitemap-locales.xml
+Sitemap: https://animemomentsofficiel.fr/sitemap.xml
+Sitemap: https://animeofficiel.fr/sitemap.xml

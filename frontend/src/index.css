@@ -4,6 +4,26 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  cursor: url('https://cdn.custom-cursor.com/db/8573/32/anime-naruto-kunai-cursor.png'), auto !important;
+}
+a, button, [role="button"], input, select {
+  cursor: url('https://cdn.custom-cursor.com/db/8572/32/anime-naruto-sharingan-pointer.png'), pointer !important;
+}
+
+/* ─── Contrôle global décors & vidéos via attributs sur body ─────────────── */
+body[data-hide-videos] video[data-bg-video],
+body[data-hide-videos] .hero-banner-video,
+body[data-hide-videos] video.hero-banner-video {
+  display: none !important;
+}
+
+body[data-hide-decors] [data-3d-decor],
+body[data-hide-decors] [data-animated-bg] {
+  display: none !important;
+}
+/* ──────────────────────────────────────────────────────────────────────────── */
+
 @layer utilities {
   /* Unified RGB neon signature used as the source of truth for menu-themed
      text, icons, borders and buttons. Transparent / glass backgrounds stay light. */
@@ -134,7 +154,7 @@
     --theme-neon-b: #f472b6;
     --theme-neon-c: #8b5cf6;
     --theme-noise-opacity: 0.028;
-    --site-tint: radial-gradient(circle at 18% 18%, rgba(56,189,248,0.18) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(244,114,182,0.16) 0%, transparent 22%), linear-gradient(160deg, #0a1020 0%, #10182c 55%, #0a0f1a 100%);
+    --site-tint: linear-gradient(160deg, #020617 0%, #0f172a 55%, #020617 100%);
     --bubble-h: 210;
     --bubble-s: 92%;
     --bubble-l: 58%;
@@ -151,6 +171,144 @@
     --nav-theme-muted: rgba(226, 232, 240, 0.7);
     --nav-theme-shadow: 0 18px 54px -28px rgba(0, 0, 0, 0.58);
   }
+
+  .theme-cyberpunk {
+    --theme-bg: #09090b;
+    --theme-card: #18181b;
+    --theme-card-2: #27272a;
+    --theme-border: rgba(34, 197, 94, 0.4);
+    --theme-border-soft: rgba(34, 197, 94, 0.2);
+    --theme-border-strong: rgba(34, 197, 94, 0.6);
+    --theme-overlay: rgba(9, 9, 11, 0.85);
+    --theme-overlay-strong: rgba(9, 9, 11, 0.95);
+    --theme-fg-on-bg: #facc15;
+    --theme-fg-on-card: #eab308;
+    --theme-fg-on-overlay: #facc15;
+    --theme-muted: rgba(250, 204, 21, 0.7);
+    --theme-link: #22c55e;
+    --theme-link-hover: #facc15;
+    --theme-glow: 0 0 18px rgba(34, 197, 94, 0.4), 0 0 44px rgba(250, 204, 21, 0.3);
+    --theme-glow-2: 0 0 12px rgba(34, 197, 94, 0.2), 0 0 28px rgba(239, 68, 68, 0.2);
+    --theme-ring: #22c55e;
+    --theme-neon-a: #22c55e;
+    --theme-neon-b: #facc15;
+    --theme-neon-c: #ef4444;
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(34,197,94,0.15) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(250,204,21,0.15) 0%, transparent 22%), linear-gradient(160deg, #09090b 0%, #18181b 55%, #050505 100%);
+    --bubble-a: #22c55e;
+    --bubble-b: #facc15;
+    --bubble-c: #ef4444;
+    --nav-theme-bg: rgba(9, 9, 11, 0.75);
+    --nav-theme-surface: rgba(9, 9, 11, 0.9);
+    --nav-theme-border: rgba(34, 197, 94, 0.3);
+    --nav-theme-accent: #22c55e;
+    --nav-theme-accent-2: #facc15;
+    --nav-theme-accent-3: #ef4444;
+    --nav-theme-text: #facc15;
+  }
+
+  .theme-kawaii {
+    --theme-bg: #fff0f5;
+    --theme-card: #ffe4e1;
+    --theme-card-2: #ffd1dc;
+    --theme-border: rgba(255, 105, 180, 0.3);
+    --theme-border-soft: rgba(255, 105, 180, 0.15);
+    --theme-border-strong: rgba(255, 105, 180, 0.5);
+    --theme-overlay: rgba(255, 240, 245, 0.85);
+    --theme-overlay-strong: rgba(255, 240, 245, 0.95);
+    --theme-fg-on-bg: #d23669;
+    --theme-fg-on-card: #b82857;
+    --theme-fg-on-overlay: #d23669;
+    --theme-muted: rgba(210, 54, 105, 0.7);
+    --theme-link: #ff69b4;
+    --theme-link-hover: #ff1493;
+    --theme-glow: 0 0 18px rgba(255, 105, 180, 0.3), 0 0 44px rgba(255, 20, 147, 0.2);
+    --theme-glow-2: 0 0 12px rgba(255, 105, 180, 0.15), 0 0 28px rgba(186, 85, 211, 0.15);
+    --theme-ring: #ff69b4;
+    --theme-neon-a: #ff69b4;
+    --theme-neon-b: #ff1493;
+    --theme-neon-c: #ba55d3;
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(255,105,180,0.15) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(186,85,211,0.15) 0%, transparent 22%), linear-gradient(160deg, #fff0f5 0%, #ffe4e1 55%, #fff0f5 100%);
+    --bubble-a: #ff69b4;
+    --bubble-b: #ff1493;
+    --bubble-c: #ba55d3;
+    --nav-theme-bg: rgba(255, 240, 245, 0.75);
+    --nav-theme-surface: rgba(255, 240, 245, 0.9);
+    --nav-theme-border: rgba(255, 105, 180, 0.3);
+    --nav-theme-accent: #ff69b4;
+    --nav-theme-accent-2: #ff1493;
+    --nav-theme-accent-3: #ba55d3;
+    --nav-theme-text: #d23669;
+  }
+
+  .theme-samurai {
+    --theme-bg: #1a0f14;
+    --theme-card: #2a161f;
+    --theme-card-2: #381c28;
+    --theme-border: rgba(220, 38, 38, 0.4);
+    --theme-border-soft: rgba(220, 38, 38, 0.2);
+    --theme-border-strong: rgba(220, 38, 38, 0.6);
+    --theme-overlay: rgba(26, 15, 20, 0.85);
+    --theme-overlay-strong: rgba(26, 15, 20, 0.95);
+    --theme-fg-on-bg: #fca5a5;
+    --theme-fg-on-card: #fecaca;
+    --theme-fg-on-overlay: #fca5a5;
+    --theme-muted: rgba(252, 165, 165, 0.7);
+    --theme-link: #dc2626;
+    --theme-link-hover: #b91c1c;
+    --theme-glow: 0 0 18px rgba(220, 38, 38, 0.4), 0 0 44px rgba(185, 28, 28, 0.3);
+    --theme-glow-2: 0 0 12px rgba(220, 38, 38, 0.2), 0 0 28px rgba(234, 179, 8, 0.2);
+    --theme-ring: #dc2626;
+    --theme-neon-a: #dc2626;
+    --theme-neon-b: #b91c1c;
+    --theme-neon-c: #eab308;
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(220,38,38,0.15) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(234,179,8,0.15) 0%, transparent 22%), linear-gradient(160deg, #1a0f14 0%, #2a161f 55%, #110a0d 100%);
+    --bubble-a: #dc2626;
+    --bubble-b: #b91c1c;
+    --bubble-c: #eab308;
+    --nav-theme-bg: rgba(26, 15, 20, 0.75);
+    --nav-theme-surface: rgba(26, 15, 20, 0.9);
+    --nav-theme-border: rgba(220, 38, 38, 0.3);
+    --nav-theme-accent: #dc2626;
+    --nav-theme-accent-2: #b91c1c;
+    --nav-theme-accent-3: #eab308;
+    --nav-theme-text: #fca5a5;
+  }
+
+  .theme-aurora {
+    --theme-bg: #071a1c;
+    --theme-card: #0c2a2e;
+    --theme-card-2: #123a3f;
+    --theme-border: rgba(45, 212, 191, 0.4);
+    --theme-border-soft: rgba(45, 212, 191, 0.2);
+    --theme-border-strong: rgba(45, 212, 191, 0.6);
+    --theme-overlay: rgba(7, 26, 28, 0.85);
+    --theme-overlay-strong: rgba(7, 26, 28, 0.95);
+    --theme-fg-on-bg: #99f6e4;
+    --theme-fg-on-card: #ccfbf1;
+    --theme-fg-on-overlay: #99f6e4;
+    --theme-muted: rgba(153, 246, 228, 0.72);
+    --theme-link: #2dd4bf;
+    --theme-link-hover: #22d3ee;
+    --theme-glow: 0 0 18px rgba(45, 212, 191, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
+    --theme-glow-2: 0 0 12px rgba(45, 212, 191, 0.2), 0 0 28px rgba(129, 140, 248, 0.2);
+    --theme-ring: #2dd4bf;
+    --theme-neon-a: #2dd4bf;
+    --theme-neon-b: #22d3ee;
+    --theme-neon-c: #818cf8;
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(45,212,191,0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34,211,238,0.15) 0%, transparent 22%), linear-gradient(160deg, #071a1c 0%, #0c2a2e 55%, #04100f 100%);
+    --bubble-a: #2dd4bf;
+    --bubble-b: #22d3ee;
+    --bubble-c: #818cf8;
+    --nav-theme-bg: rgba(7, 26, 28, 0.75);
+    --nav-theme-surface: rgba(7, 26, 28, 0.9);
+    --nav-theme-border: rgba(45, 212, 191, 0.3);
+    --nav-theme-accent: #2dd4bf;
+    --nav-theme-accent-2: #22d3ee;
+    --nav-theme-accent-3: #818cf8;
+    --nav-theme-text: #99f6e4;
+  }
+
+
 
   .dark {
     --background: 0 0% 7%;
@@ -2123,11 +2281,11 @@
     flex-direction: column;
     overflow: hidden;
     border-radius: 1rem;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: linear-gradient(180deg, rgba(9,14,22,0.96), rgba(9,14,22,0.92));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 12px 28px -22px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.28);
+    background: linear-gradient(180deg, rgba(30,45,70,0.85), rgba(15,22,38,0.80));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 12px 28px -22px rgba(0,0,0,0.62), inset 0 1px 0 rgba(255,255,255,0.25), 0 0 20px rgba(90,220,255,0.15);
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     contain: layout paint;
   }
@@ -2135,8 +2293,8 @@
   .hero-premium-lower-card:hover,
   .hero-premium-lower-card:focus-visible {
     transform: translateY(-3px);
-    border-color: rgba(255,255,255,0.24);
-    box-shadow: 0 22px 54px -24px rgba(0,0,0,0.7), 0 0 26px rgba(90,220,255,0.12);
+    border-color: rgba(255,255,255,0.55);
+    box-shadow: 0 22px 54px -24px rgba(0,0,0,0.7), 0 0 50px rgba(90,220,255,0.45);
   }
 
   .hero-premium-lower-thumb-shell {
@@ -2319,8 +2477,8 @@
   }
 
   .portal-card-neutral-video {
-    filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important;
-    -webkit-filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important;
+    /* filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important;
+    -webkit-filter: grayscale(1) saturate(0) brightness(1.28) contrast(1.16) drop-shadow(0 0 18px rgba(255,255,255,0.14)) !important; */
   }
 
   .portal-card-neutral-shell {
@@ -2346,5 +2504,124 @@
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+
+/* ============================================================= *
+ * Global interactivity layer (cursor spotlight + scroll reveal) *
+ * ============================================================= */
+
+/* 1) Cursor spotlight — intelligent light overlay above the whole UI */
+.fx-cursor-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
+  margin: -260px 0 0 -260px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
+  transform: translate(var(--fx-x, 50vw), var(--fx-y, 50vh));
+  background: radial-gradient(
+    circle at center,
+    hsl(var(--neon-cyan) / 0.16) 0%,
+    hsl(var(--neon-purple) / 0.10) 34%,
+    hsl(var(--neon-magenta) / 0.06) 55%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  filter: blur(6px);
+  transition: opacity 0.4s ease;
+  will-change: transform, opacity;
+}
+.fx-cursor-spotlight.fx-pulse {
+  background: radial-gradient(
+    circle at center,
+    hsl(var(--neon-magenta) / 0.24) 0%,
+    hsl(var(--neon-purple) / 0.14) 36%,
+    hsl(var(--neon-cyan) / 0.08) 58%,
+    transparent 74%
+  );
+}
+
+/* 5) Pointer-driven parallax for decorative depth layers */
+.fx-parallax {
+  transform: translate3d(
+    calc(var(--fx-parallax-x, 0) * var(--fx-depth, 14px)),
+    calc(var(--fx-parallax-y, 0) * var(--fx-depth, 14px)),
+    0
+  );
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
+/* 4) Scroll reveal — cards slide/scale in, sections fade up */
+.fx-reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0) scale(0.985);
+  transition:
+    opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.fx-reveal-soft {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.fx-reveal.fx-in,
+.fx-reveal-soft.fx-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* Only show the custom spotlight when a fine pointer is present */
+@media (pointer: coarse) {
+  .fx-cursor-spotlight { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-cursor-spotlight { display: none !important; }
+  .fx-reveal,
+  .fx-reveal-soft {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* Douce transition (crossfade) lors du changement de thème / bascule jour-nuit */
+.fx-theme-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* Transitions douces des surfaces qui utilisent les variables de thème */
+html,
+body,
+.theme-shell,
+.theme-panel-surface,
+.theme-main-content,
+.theme-subpanel {
+  transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-theme-veil { display: none !important; }
+  html,
+  body,
+  .theme-shell,
+  .theme-panel-surface,
+  .theme-main-content,
+  .theme-subpanel { transition: none !important; }
 }
 

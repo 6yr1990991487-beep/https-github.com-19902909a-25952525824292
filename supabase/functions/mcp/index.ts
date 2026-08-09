@@ -29,7 +29,8 @@ var CATEGORY_LABEL = {
   sneakers: "Chaussure",
   music: "Musique",
   manga: "Manga & BD",
-  daily: "Quotidien"
+  daily: "Quotidien",
+  lovacoins: "LovaCoins Exclusif"
 };
 var SEEDS = [
   // ===== AFFICHES / POSTERS (12) =====
@@ -114,21 +115,39 @@ var SEEDS = [
   { name: "Stickers Pack Holographiques", category: "daily", tag: "Stickers x20", price: 12, description: "20 stickers holographiques d\xE9coup\xE9s, vinyle waterproof r\xE9sistant UV.", source: "tiktok" },
   { name: "Carnet A5 Pages Pointill\xE9es", category: "daily", tag: "Stationery", price: 16, description: "Carnet bullet journal 192 pages, papier 100g, \xE9lastique et marque-page.", source: "youtube" },
   { name: "Lampe LED Akari Cube Anime", category: "daily", tag: "D\xE9co", price: 39, description: "Cube lumineux 15 cm, 16 millions de couleurs, t\xE9l\xE9commande et appli mobile.", source: "both" },
-  { name: "Coque Smartphone Holo Magenta", category: "daily", tag: "Accessoire", price: 22, description: "Coque silicone renforc\xE9e effet holographique, compatible MagSafe.", source: "tiktok" }
+  { name: "Coque Smartphone Holo Magenta", category: "daily", tag: "Accessoire", price: 22, description: "Coque silicone renforc\xE9e effet holographique, compatible MagSafe.", source: "tiktok" },
+  // ===== LOVACOINS EXCLUSIF (4) =====
+  { name: "Titre Holographique: Otaku Supr\xEAme", category: "lovacoins", tag: "Digital", price: 1500, currency: "LC", description: "D\xE9bloque un titre holographique unique pour ton profil. Effet visuel incroyable.", source: "both" },
+  { name: "Cadre Avatar N\xE9on Flamme", category: "lovacoins", tag: "Digital", price: 800, currency: "LC", description: "Un cadre de profil anim\xE9 avec des flammes n\xE9on magenta. Rends ton avatar \xE9pique.", source: "youtube" },
+  { name: "Ticket Watch Party Priv\xE9e", category: "lovacoins", tag: "Digital", price: 2500, currency: "LC", description: "Rejoins l'\xE9quipe Lovanet pour une s\xE9ance de visionnage en direct exclusive.", source: "tiktok" },
+  { name: "Banni\xE8re Profil Cyber-City", category: "lovacoins", tag: "Digital", price: 1200, currency: "LC", description: "Banni\xE8re de profil anim\xE9e repr\xE9sentant une ville cyberpunk sous la pluie.", source: "both" }
 ];
 var SHOP_CATEGORIES = Object.keys(CATEGORY_LABEL).map((id) => ({
   id,
   label: CATEGORY_LABEL[id]
 }));
-var SHOP_PRODUCTS = SEEDS.map((s, i) => ({
-  id: `am-${String(i + 1).padStart(3, "0")}`,
-  name: s.name,
-  category: s.category,
-  tag: s.tag,
-  price: s.price,
-  description: s.description,
-  source: s.source
-}));
+var SHOP_PRODUCTS = [
+  ...SEEDS.filter((s) => s.category === "lovacoins").map((s, i) => ({
+    id: `am-lc-${String(i + 1).padStart(3, "0")}`,
+    name: s.name,
+    category: s.category,
+    tag: s.tag,
+    price: s.price,
+    currency: s.currency || "EUR",
+    description: s.description,
+    source: s.source
+  })),
+  ...SEEDS.filter((s) => s.category !== "lovacoins").map((s, i) => ({
+    id: `am-${String(i + 1).padStart(3, "0")}`,
+    name: s.name,
+    category: s.category,
+    tag: s.tag,
+    price: s.price,
+    currency: s.currency || "EUR",
+    description: s.description,
+    source: s.source
+  }))
+];
 
 // src/lib/mcp/tools/list-shop-products.ts
 var list_shop_products_default = defineTool2({

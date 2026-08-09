@@ -1,35 +1,41 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /admin/sync
-Disallow: /.lovable/
 
 User-agent: Googlebot
 Allow: /
 
-User-agent: Googlebot-Image
-Allow: /products/
-Allow: /assets/
-Allow: /lovanet-logo-custom.svg
-Allow: /lovanet-logo-custom.png
-Allow: /lovanet-og.svg
-Allow: /favicon.ico
-Allow: /favicon-32x32.png
-Allow: /favicon-16x16.png
-Allow: /apple-touch-icon.png
-
-User-agent: Googlebot-Video
+User-agent: Bingbot
 Allow: /
 
-Sitemap: https://lovanet.fr/sitemap.xml
-Sitemap: https://lovanet.fr/sitemap-images.xml
-Sitemap: https://lovanet.fr/sitemap-videos.xml
-Sitemap: https://lovanet.fr/sitemap-products.xml
-Sitemap: https://lovanet.fr/sitemap-news.xml
-Sitemap: https://lovanet.fr/sitemap-catalog.xml
-Sitemap: https://animemomentsofficiel.fr/sitemap-animemomentsofficiel-fr.xml
-Sitemap: https://animemomentsofficiel.fr/sitemap-catalog-animemomentsofficiel-fr.xml
-Sitemap: https://animeofficiel.fr/sitemap-animeofficiel-fr.xml
-Sitemap: https://animeofficiel.fr/sitemap-catalog-animeofficiel-fr.xml
+User-agent: Yandex
+Allow: /
 
-# Google Search Console verification: add the provided google-site-verification value in index.html when available.
+User-agent: Baiduspider
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: SeznamBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+Host: lovanet.fr
+
+# XML sitemaps
+Sitemap: https://lovanet.fr/sitemap.xml
+Sitemap: https://lovanet.fr/sitemap-pages.xml
+Sitemap: https://lovanet.fr/sitemap-locales.xml
+Sitemap: https://animemomentsofficiel.fr/sitemap.xml
+Sitemap: https://animeofficiel.fr/sitemap.xml
