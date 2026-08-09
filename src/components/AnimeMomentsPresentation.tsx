@@ -487,6 +487,7 @@ export const AnimeMomentsPresentation = () => {
               style={{ letterSpacing: "-0.02em" }}
             >
               ANIME<br />MOMENTS
+              <span className="sr-only"> — portail officiel anime, manga et pop culture japonaise</span>
             </h1>
 
             {/* Primary CTAs */}

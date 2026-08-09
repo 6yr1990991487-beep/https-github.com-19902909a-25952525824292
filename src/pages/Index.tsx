@@ -235,6 +235,9 @@ const Index = () => {
   return (
     <PageShell>
       <section className="relative overflow-hidden">
+        <h1 className="sr-only">
+          Lovanet — Portail anime, manga, gaming et pop culture japonaise
+        </h1>
         <div
           className="absolute inset-0 -z-10"
           style={{
@@ -307,7 +310,8 @@ const Index = () => {
       </div>
 
       <section className="container mx-auto px-4 lg:px-8 py-16">
-        <div className="flex items-center justify-end mb-4">
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Nouveautés de la boutique anime</h2>
           <Link to="/shop" className="text-sm text-primary hover:underline whitespace-nowrap">Boutique →</Link>
         </div>
 
