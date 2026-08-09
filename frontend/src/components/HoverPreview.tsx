@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Ban, Play } from "lucide-react";
 import { getVideoStatusSync } from "@/lib/videoAvailability";
 import { siteFallbackImage } from "@/lib/mediaFallback";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 
 type Props = {
   videoId: string;
@@ -95,14 +96,14 @@ export const HoverPreview = ({
         <div className={iframeWrap}>
           {vertical ? (
             <iframe
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? 1 : 0}&controls=0&rel=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1`}
+              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-[178%] border-0"
             />
           ) : (
             <iframe
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${muted ? 1 : 0}&controls=0&rel=0&playsinline=1&loop=1&playlist=${videoId}&modestbranding=1`}
+              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
               className="w-full h-full border-0"
@@ -120,9 +121,9 @@ export const HoverPreview = ({
       )}
 
       {knownUnavailable && knownUnavailable !== "ok" && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[rgba(5,10,24,0.55)] backdrop-blur-sm pointer-events-none">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(8,12,24,0.68)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/88">
-            <Ban className="h-3.5 w-3.5" /> Vidéo privée
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[radial-gradient(circle_at_center,transparent_20%,rgba(5,10,24,0.6)_100%)] pointer-events-none">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-[rgba(8,12,24,0.68)] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-white/88 shadow-lg">
+            <Ban className="h-3.5 w-3.5" /> <span className="notranslate">Vidéo privée</span>
           </div>
         </div>
       )}

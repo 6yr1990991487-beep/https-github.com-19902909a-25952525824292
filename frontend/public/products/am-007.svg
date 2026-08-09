@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Affiche XXL Mur Lovanet — AnimemomentsAnimeofficiel">
-  <title>Affiche XXL Mur Lovanet — AnimemomentsAnimeofficiel</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
   <defs>
-    <linearGradient id="gyppq93" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ff006e"/>
-      <stop offset="55%" stop-color="#fb5607"/>
-      <stop offset="100%" stop-color="#ffbe0b"/>
+    <linearGradient id="g7" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
     </linearGradient>
+    <radialGradient id="r7" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="400" fill="url(#gyppq93)"/>
-  <g transform="rotate(-12 200 200)" opacity="0.55">
-    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
-    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
-    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
-  </g>
-  <circle cx="297.0" cy="200.0" r="11" fill="#fff" opacity="0.45"/><circle cx="105.6" cy="286.5" r="8" fill="#fff" opacity="0.45"/><circle cx="213.9" cy="41.6" r="5" fill="#fff" opacity="0.45"/><circle cx="248.7" cy="263.5" r="12" fill="#fff" opacity="0.45"/><circle cx="90.7" cy="180.7" r="9" fill="#fff" opacity="0.45"/><circle cx="319.8" cy="123.7" r="6" fill="#fff" opacity="0.45"/><circle cx="155.2" cy="367.1" r="13" fill="#fff" opacity="0.45"/><circle cx="156.6" cy="116.6" r="10" fill="#fff" opacity="0.45"/><circle cx="317.5" cy="242.8" r="7" fill="#fff" opacity="0.45"/><circle cx="55.9" cy="259.7" r="4" fill="#fff" opacity="0.45"/><circle cx="279.0" cy="30.5" r="11" fill="#fff" opacity="0.45"/><circle cx="232.5" cy="303.0" r="8" fill="#fff" opacity="0.45"/><circle cx="79.6" cy="130.5" r="5" fill="#fff" opacity="0.45"/><circle cx="366.0" cy="163.2" r="12" fill="#fff" opacity="0.45"/><circle cx="147.8" cy="274.5" r="9" fill="#fff" opacity="0.45"/><circle cx="184.1" cy="79.0" r="6" fill="#fff" opacity="0.45"/><circle cx="317.2" cy="298.3" r="13" fill="#fff" opacity="0.45"/><circle cx="16.2" cy="208.0" r="10" fill="#fff" opacity="0.45"/>
-  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
-  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#ff006e">P</text>
-  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">POSTER</text>
-  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Affiche XXL Mur Lovanet</text>
-  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-007</text>
+  <rect width="600" height="800" fill="url(#g7)"/>
+  <rect width="600" height="800" fill="url(#r7)"/>
+  <circle cx="300" cy="320" r="140" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="300" cy="320" r="140" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4"/>
+  <polygon points="270,260 270,380 380,320" fill="white"/>
+  <text x="50%" y="580" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="middle" letter-spacing="6">FI</text>
+  <text x="50%" y="640" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="rgba(255,255,255,0.75)" text-anchor="middle" letter-spacing="4">LOVANET</text>
+  <text x="50%" y="700" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="400" fill="rgba(255,255,255,0.65)" text-anchor="middle" letter-spacing="6">ANIME · MOMENTS</text>
 </svg>

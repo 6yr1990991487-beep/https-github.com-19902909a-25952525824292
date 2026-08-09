@@ -1,6 +1,8 @@
+const CATALOG_TOP_VIDEO = "/catalogue-banner.mp4";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
 import { Navbar } from "@/components/Navbar";
@@ -8,6 +10,8 @@ import CatalogCardColorBubble from "@/components/CatalogCardColorBubble";
 import BlisterFrame from "@/components/BlisterFrame";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslationToggleButton } from "@/components/TranslationToggleButton";
+import { StarRating } from "@/components/StarRating";
+import { AudioLanguageSwitcher } from "@/components/AudioLanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,6 +41,8 @@ import {
 import { idbGet, idbSet, normalizeTitle } from "@/lib/animeCache";
 import { warmVideoAvailability, getVideoStatusSync, setVideoStatus } from "@/lib/videoAvailability";
 import { useFrenchTranslation } from "@/hooks/useFrenchTranslation";
+import { useAuth } from "@/contexts/AuthContext";
+
 
 type Media = {
   id: number;
@@ -91,6 +97,50 @@ function hasPlayableVideo(media: Media | null | undefined) {
   return Boolean(hasTrailer(media) || mediaTitle(media).trim());
 }
 
+// Robustly extract a trailer id from a language bucket which may contain
+// either objects ({ id }) or raw id strings.
+function extractTrailerId(bucket: any): string | undefined {
+  if (Array.isArray(bucket) && bucket.length > 0) {
+    const first = bucket[0];
+    const id = typeof first === "string" ? first : first?.id;
+    if (id) return id as string;
+  }
+  return undefined;
+}
+
+// Accurate, French-first labels for the trailer version selector.
+const CATALOG_VERSION_LABELS: Record<string, string> = {
+  vostfr: "🇫🇷 VOSTFR (VO + s-t FR)",
+  vf: "🇫🇷 Français (VF · doublage)",
+  vo: "🇯🇵 VO (Japonais)",
+  ensub: "🇬🇧 English (VO + subs)",
+  endub: "🇬🇧 English Dub",
+};
+
+const TRANSLATION_LANGUAGE_OPTIONS = [
+  { code: "fr", label: "Français" },
+  { code: "en", label: "English" },
+  { code: "es", label: "Español" },
+  { code: "de", label: "Deutsch" },
+  { code: "it", label: "Italiano" },
+  { code: "pt", label: "Português" },
+  { code: "nl", label: "Nederlands" },
+  { code: "pl", label: "Polski" },
+  { code: "ro", label: "Română" },
+  { code: "tr", label: "Türkçe" },
+  { code: "ar", label: "العربية" },
+  { code: "hi", label: "हिन्दी" },
+  { code: "id", label: "Bahasa Indonesia" },
+  { code: "ja", label: "日本語" },
+  { code: "ko", label: "한국어" },
+  { code: "zh", label: "中文" },
+  { code: "ru", label: "Русский" },
+  { code: "uk", label: "Українська" },
+  { code: "sv", label: "Svenska" },
+  { code: "vi", label: "Tiếng Việt" },
+];
+
+
 function normalizeStatus(raw: string | undefined | null): string | undefined {
   if (!raw) return undefined;
   const s = String(raw).toLowerCase();
@@ -122,6 +172,11 @@ query ($page: Int, $perPage: Int, $sort: [MediaSort]) {
   }
 }`;
 
+import { Canvas } from "@react-three/fiber";
+import { Carousel3D } from "@/components/Carousel3D";
+import { OrbitControls } from "@react-three/drei";
+
+import { ErrorBoundary } from "react-error-boundary";
 export default function AnimeCatalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [items, setItems] = useState<Media[]>([]);
@@ -130,21 +185,38 @@ export default function AnimeCatalog() {
   const [loading, setLoading] = useState(true);
   const [activePlayerId, setActivePlayerId] = useState<number | null>(null);
   const [detailMedia, setDetailMedia] = useState<Media | null>(null);
+  const [detailTrailers, setDetailTrailers] = useState<Record<string, any[]>>({});
+  const [activeTrailerLang, setActiveTrailerLang] = useState<string>("vostfr");
+  const [catalogCandidateIndex, setCatalogCandidateIndex] = useState(0);
   const [playerMode, setPlayerMode] = useState<PlayerMode>("video");
-  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+    const { favorites: favoriteIds, toggleFavorite: authToggleFavorite, ratings, rateAnime } = useAuth();
+  const toggleFavorite = (media: Media) => { authToggleFavorite(media.id); };
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [soundUnlocked, setSoundUnlocked] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const [availabilityReady, setAvailabilityReady] = useState(false);
   const [filterGenre, setFilterGenre] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "carousel">("grid");
   const [minScore, setMinScore] = useState<string>("0");
   const [minYear, setMinYear] = useState<string>("0");
   const [sortBy, setSortBy] = useState<"default" | "newest" | "score" | "alpha">("default");
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [translationLang, setTranslationLang] = useState<string>("fr");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  const [showVideoPrompt, setShowVideoPrompt] = useState(true);
+  const [topCardCount, setTopCardCount] = useState(8);
+  useEffect(() => {
+    const counts = [4, 8, 16, 8];
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % counts.length;
+      setTopCardCount(counts[idx]);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+    const [showVideoPrompt, setShowVideoPrompt] = useState(true);
+  const [recommendations, setRecommendations] = useState<Media[]>([]);
   const PAGE_SIZE = 48;
   const [renderCount, setRenderCount] = useState<number>(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -156,26 +228,9 @@ export default function AnimeCatalog() {
     warmVideoAvailability().finally(() => setAvailabilityReady(true));
   }, []);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        setFavoriteIds(parsed.map((value) => Number(value)).filter((value) => Number.isFinite(value)));
-      }
-    } catch {
-      // ignore persisted favorites failures
-    }
-  }, []);
+  
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteIds));
-    } catch {
-      // ignore persistence failures
-    }
-  }, [favoriteIds]);
+  
 
   const fetchData = async () => {
     try {
@@ -397,6 +452,71 @@ export default function AnimeCatalog() {
     return Array.from(map.values());
   }, [items, gridItems]);
 
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (Object.keys(ratings).length === 0) {
+        setRecommendations([]);
+        return;
+      }
+      try {
+        const API = process.env.REACT_APP_BACKEND_URL + "/api";
+        const res = await fetch(`${API}/ratings/recommendations`, { credentials: "include" });
+        if (!res.ok) {
+          setRecommendations([]);
+          return;
+        }
+        const data = await res.json();
+        const recIds = (data.recommendations || []).map((r: any) => r.id);
+        const recMedia = allMedia.filter((m) => recIds.includes(m.id));
+        setRecommendations(recMedia);
+      } catch (e) {
+        console.error("Failed to fetch recommendations", e);
+        setRecommendations([]);
+      }
+    };
+    fetchRecommendations();
+  }, [ratings, allMedia]);
+
+  useEffect(() => {
+    if (!detailMedia) {
+      setDetailTrailers({});
+      setActiveTrailerLang("vostfr");
+      return;
+    }
+    
+    const fetchMultilingualTrailers = async () => {
+      try {
+        const API = process.env.REACT_APP_BACKEND_URL + "/api";
+        const title = mediaTitle(detailMedia);
+        const res = await fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
+        if (!res.ok) {
+          setDetailTrailers({});
+          return;
+        }
+        const data = await res.json();
+        if (data.results && Object.keys(data.results).length > 0) {
+          setDetailTrailers(data.results);
+          // Auto-select first available language, prefer 'ja' if available
+          if (data.results['ja'] && data.results['ja'].length > 0) {
+            setActiveTrailerLang('ja');
+          } else if (data.results['fr'] && data.results['fr'].length > 0) {
+            setActiveTrailerLang('fr');
+          } else {
+            setActiveTrailerLang(Object.keys(data.results)[0]);
+          }
+        } else {
+          setDetailTrailers({});
+        }
+      } catch (e) {
+        console.error("Failed to fetch multilingual trailers", e);
+        setDetailTrailers({});
+      }
+    };
+    
+    fetchMultilingualTrailers();
+  }, [detailMedia]);
+
+
   const allGenres = useMemo(() => {
     const set = new Set<string>();
     for (const media of gridItems) (media.genres ?? []).forEach((genre) => set.add(genre));
@@ -459,6 +579,106 @@ export default function AnimeCatalog() {
     return allMedia.find((media) => media.id === activePlayerId) ?? null;
   }, [activePlayerId, allMedia]);
 
+  // Versions that resolve to a real video id, French-first order:
+  // VOSTFR, VF, VO, English sub, English dub. The VO can fall back to the
+  // title's own AniList trailer. The backend classifies each video accurately,
+  // so the French option is never an English-subbed trailer.
+  const CATALOG_VERSION_ORDER = ["vostfr", "vf", "vo", "ensub", "endub"];
+  const availableCatalogLangs = useMemo<string[]>(() => {
+    const langs: string[] = [];
+    for (const code of CATALOG_VERSION_ORDER) {
+      if (extractTrailerId(detailTrailers[code])) langs.push(code);
+    }
+    if (!langs.includes("vo") && activePlayer?.trailer?.id) langs.push("vo");
+    return langs.length ? langs : ["vo"];
+  }, [detailTrailers, activePlayer]);
+
+  // Concrete trailer id for the currently selected language: a real per-language
+  // trailer when available, otherwise the title's own trailer so a real video
+  // always plays (YouTube's iframe search feature is deprecated).
+  const extractTrailerIds = (bucket: any): string[] => {
+    if (!Array.isArray(bucket)) return [];
+    return bucket.map((x: any) => (typeof x === "string" ? x : x?.id)).filter(Boolean);
+  };
+
+  const catalogTrailerCandidates = useMemo<string[]>(() => {
+    const ids = extractTrailerIds(detailTrailers[activeTrailerLang]);
+    if (activeTrailerLang === "vo" && activePlayer?.trailer?.id && !ids.includes(activePlayer.trailer.id)) {
+      ids.push(activePlayer.trailer.id);
+    }
+    return ids;
+  }, [detailTrailers, activeTrailerLang, activePlayer]);
+
+  const getCatalogTrailerCandidatesForLang = (lang: string): string[] => {
+    const ids = extractTrailerIds(detailTrailers[lang]);
+    if (lang === "vo" && activePlayer?.trailer?.id && !ids.includes(activePlayer.trailer.id)) {
+      ids.push(activePlayer.trailer.id);
+    }
+    return ids;
+  };
+
+  const catalogActiveTrailerId = useMemo<string | undefined>(() => {
+    if (catalogTrailerCandidates.length === 0) return activePlayer?.trailer?.id;
+    return catalogTrailerCandidates[Math.min(catalogCandidateIndex, catalogTrailerCandidates.length - 1)];
+  }, [catalogTrailerCandidates, catalogCandidateIndex, activePlayer]);
+
+  const catalogTrailerSources = useMemo<Record<string, string>>(() => {
+    const out: Record<string, string> = {};
+    for (const code of Object.keys(detailTrailers || {})) {
+      const arr: any = detailTrailers[code];
+      const first = Array.isArray(arr) ? arr[0] : null;
+      if (first && typeof first !== "string" && first.source) out[code] = first.source;
+    }
+    if (!out.vo && activePlayer?.trailer?.id) out.vo = "Bande-annonce officielle";
+    return out;
+  }, [detailTrailers, activePlayer]);
+
+  const handleCatalogTrailerUnavailable = () => {
+    if (catalogCandidateIndex + 1 < catalogTrailerCandidates.length) {
+      setCatalogCandidateIndex(catalogCandidateIndex + 1);
+      return;
+    }
+
+    const currentLangIndex = Math.max(availableCatalogLangs.indexOf(activeTrailerLang), 0);
+    for (let step = 1; step < availableCatalogLangs.length; step += 1) {
+      const nextLang = availableCatalogLangs[(currentLangIndex + step) % availableCatalogLangs.length];
+      const nextCandidates = getCatalogTrailerCandidatesForLang(nextLang);
+      if (nextCandidates.length > 0) {
+        setActiveTrailerLang(nextLang);
+        setCatalogCandidateIndex(0);
+        setPlayerMode("video");
+        return;
+      }
+    }
+
+    const sequence = playerQueue.length ? playerQueue : filteredSorted;
+    if (activePlayer && sequence.length > 1) {
+      const currentIndex = sequence.findIndex((media) => media.id === activePlayer.id);
+      const nextIndex = currentIndex === -1 || currentIndex === sequence.length - 1 ? 0 : currentIndex + 1;
+      const nextMedia = sequence[nextIndex];
+      if (nextMedia && nextMedia.id !== activePlayer.id) {
+        setPlayerMode("video");
+        activatePlayer(nextMedia, { unlockSound: soundUnlocked });
+        return;
+      }
+    }
+
+    if (activePlayer?.id != null) setVideoStatus(activePlayer.id, "unavailable");
+    setPlayerMode("fallback");
+  };
+
+  // Reset the candidate cursor when the language or the active title changes.
+  useEffect(() => {
+    setCatalogCandidateIndex(0);
+  }, [activeTrailerLang, activePlayerId]);
+
+  // Keep the selected language valid for the available versions.
+  useEffect(() => {
+    if (!availableCatalogLangs.includes(activeTrailerLang)) {
+      setActiveTrailerLang(availableCatalogLangs[0]);
+    }
+  }, [availableCatalogLangs, activeTrailerLang]);
+
   const pagedItems = useMemo(() => filteredSorted.slice(0, renderCount), [filteredSorted, renderCount]);
 
   const translationTexts = useMemo(() => {
@@ -482,8 +702,12 @@ export default function AnimeCatalog() {
     translateNow: translateCatalogNow,
   } = useFrenchTranslation(translationTexts, {
     auto: true,
-    storageKey: "lovanet.catalog.translation.auto.v1",
+    storageKey: `lovanet.catalog.translation.auto.${translationLang}.v1`,
+    targetLang: translationLang,
   });
+
+  const translationLangLabel =
+    TRANSLATION_LANGUAGE_OPTIONS.find((option) => option.code === translationLang)?.label || translationLang.toUpperCase();
 
   const translatedMediaTitle = (media: Media | null | undefined) => getTranslatedText(mediaTitle(media));
   const translatedMediaDescription = (media: Media | null | undefined) => getTranslatedText(mediaDescription(media));
@@ -508,30 +732,39 @@ export default function AnimeCatalog() {
     }
   };
 
-  const activatePlayer = (media: Media, options?: { forceFavorite?: boolean; unlockSound?: boolean }) => {
+  const activatePlayer = async (media: Media, options?: { forceFavorite?: boolean; unlockSound?: boolean }) => {
     if (options?.forceFavorite) {
-      setFavoriteIds((current) => (current.includes(media.id) ? current : [media.id, ...current]));
+      if (!favoriteIds.includes(media.id)) {
+        authToggleFavorite(media.id);
+      }
     }
     if (options?.unlockSound) {
       setSoundUnlocked(true);
     }
     setActivePlayerId(media.id);
     syncSearchParam(media);
-  };
-
-  const toggleFavorite = (media: Media) => {
-    const isFavorite = favoriteIds.includes(media.id);
-    setFavoriteIds((current) => {
-      if (isFavorite) return current.filter((id) => id !== media.id);
-      return [media.id, ...current];
-    });
-    if (isFavorite && activePlayerId === media.id) {
-      const remaining = favoriteIds.filter((id) => id !== media.id);
-      const nextId = remaining[0] ?? videoSuggestionItems[0]?.id ?? null;
-      setActivePlayerId(nextId);
-      syncSearchParam(nextId ? allMedia.find((entry) => entry.id === nextId) ?? null : null);
+    
+    // Fetch multilingual trailers for giant player
+    const q = mediaTitle(media);
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL || ""}/api/prime/multilingual-trailers?q=${encodeURIComponent(q)}`);
+      if (res.ok) {
+        const data = await res.json();
+        const trs = data.results || {};
+        setDetailTrailers(trs); // we reuse detailTrailers state for the giant player's languages
+        
+        // Pick a French-first version for the giant player.
+        const order = ["vostfr", "vf", "vo", "ensub", "endub"];
+        const firstAvailable = order.find((code) => Array.isArray(trs[code]) && trs[code].length > 0);
+        setActiveTrailerLang(firstAvailable || Object.keys(trs)[0] || "vo");
+      }
+    } catch (e) {
+      console.error("Failed to fetch multilingual trailers for active player", e);
     }
   };
+
+  // toggleFavorite is now defined at line 137 using authToggleFavorite from useAuth context
+  // Removed duplicate declaration to fix compilation error
 
   const handlePrevious = () => {
     unlockSound();
@@ -588,7 +821,12 @@ export default function AnimeCatalog() {
 
   const addSuggestedSelectionToFavorites = () => {
     const ids = videoSuggestionItems.map((media) => media.id);
-    setFavoriteIds((current) => Array.from(new Set([...ids, ...current])));
+    // Add each ID to favorites if not already present
+    ids.forEach(id => {
+      if (!favoriteIds.includes(id)) {
+        authToggleFavorite(id);
+      }
+    });
     if (!activePlayer && videoSuggestionItems[0]) {
       activatePlayer(videoSuggestionItems[0]);
     }
@@ -605,7 +843,7 @@ export default function AnimeCatalog() {
   const openMiniPlayer = async () => {
     if (!activePlayer) return;
     const trailerUrl = hasTrailer(activePlayer)
-      ? `https://www.youtube-nocookie.com/embed/${activePlayer.trailer?.id}?autoplay=1&mute=${soundUnlocked ? 0 : 1}&controls=0&rel=0&modestbranding=1&playsinline=1`
+      ? buildYouTubeEmbedUrl(activePlayer.trailer?.id || "", { autoplay: true, muted: !soundUnlocked, controls: false, playsInline: true })
       : null;
 
     try {
@@ -809,22 +1047,43 @@ export default function AnimeCatalog() {
                 }}
               />
               <div className="relative grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
-                <div className="min-h-[88px] rounded-[1.5rem] border border-white/8 bg-[rgba(255,255,255,0.015)]" data-testid="catalog-premium-hero-spacer" />
+                <div className="relative min-h-[140px] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(255,255,255,0.015)]" data-testid="catalog-premium-hero-spacer">
+                  <video
+                    src={CATALOG_TOP_VIDEO}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute bottom-4 left-6">
+                    <h2 className="font-display text-2xl font-bold text-white tracking-wide">Catalogue Vidéo</h2>
+                    <p className="text-sm font-medium text-white/70">Explorez notre vaste sélection anime</p>
+                  </div>
+                </div>
 
                 <div className="grid gap-3 sm:grid-cols-3" data-testid="catalog-premium-metrics">
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
+                      <Heart className="mb-2 h-5 w-5 text-white/50" />
                       <p className="font-display text-3xl font-black" data-testid="catalog-favorites-count">{favoriteItems.length}</p>
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Favoris</p>
                     </CardContent>
                   </Card>
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
+                      <PlayCircle className="mb-2 h-5 w-5 text-white/50" />
                       <p className="font-display text-3xl font-black" data-testid="catalog-ready-trailers-count">{playerQueue.length}</p>
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Vidéos Actives</p>
                     </CardContent>
                   </Card>
                   <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex min-h-[122px] items-center justify-center p-4">
+                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
+                      <Clapperboard className="mb-2 h-5 w-5 text-white/50" />
                       <p className="font-display text-3xl font-black" data-testid="catalog-visible-count">{filteredSorted.length}</p>
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Résultats</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -847,8 +1106,8 @@ export default function AnimeCatalog() {
                     </Button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5" data-testid="catalog-video-selection-grid">
-                    {(promptPreviewItems.length ? promptPreviewItems : pagedItems.slice(0, 5)).slice(0, 5).map((media) => (
+                  <div className="grid grid-cols-4 gap-2 sm:gap-3" data-testid="catalog-video-selection-grid">
+                    {(promptPreviewItems.length ? promptPreviewItems : pagedItems.slice(0, 16)).slice(0, topCardCount).map((media) => (
                       <button
                         key={`suggestion-${media.id}`}
                         type="button"
@@ -898,15 +1157,37 @@ export default function AnimeCatalog() {
                 </div>
               ) : activePlayer ? (
                 <div className="relative space-y-5">
-                  <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black" data-testid="catalog-giant-player-stage">
+                  
+                  {availableCatalogLangs.length > 1 && (
+                    <div className="mb-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 rounded-xl border-2 border-amber-500/80 bg-amber-500/20 p-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] z-20 relative backdrop-blur-md">
+                      <span className="text-sm sm:text-base font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" /> Choisir la langue / Sous-titres du Trailer :
+                      </span>
+                      <Select value={activeTrailerLang} onValueChange={(val) => { setActiveTrailerLang(val); setIsPlaying(true); }}>
+                        <SelectTrigger className="w-full sm:w-[220px] h-10 bg-black/80 border-amber-500/50 text-white font-bold text-sm">
+                          <SelectValue placeholder="Changer la langue..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/95 border-amber-500/50 text-white">
+                          {availableCatalogLangs.map(lang => (
+                            <SelectItem key={lang} value={lang} className="focus:bg-amber-500/20 focus:text-amber-400 cursor-pointer">
+                              {CATALOG_VERSION_LABELS[lang] || lang.toUpperCase()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+<div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-black" data-testid="catalog-giant-player-stage">
                     <div className="aspect-[16/9] min-h-[280px] sm:min-h-[440px]">
-                      {hasTrailer(activePlayer) && playerMode !== "hidden" ? (
+                      
+                      {playerMode !== "hidden" && catalogActiveTrailerId ? (
+
                         <div className="relative h-full w-full">
                           <YouTubeEmbed
-                            key={`catalog-player-${activePlayer.id}-${playerMode}`}
-                            videoId={playerMode === "video" ? activePlayer.trailer?.id : undefined}
-                            searchQuery={`${mediaTitle(activePlayer)} bande annonce anime`}
-                            title={mediaTitle(activePlayer)}
+                            key={`catalog-player-${activePlayer.id}-${playerMode}-${activeTrailerLang}-${catalogCandidateIndex}`}
+                            videoId={playerMode === "video" ? catalogActiveTrailerId : undefined}
+                            captionLang={activeTrailerLang === "vostfr" ? "fr" : undefined}
+                            title={activeTrailerLang && detailTrailers[activeTrailerLang]?.[0]?.title ? detailTrailers[activeTrailerLang][0].title : mediaTitle(activePlayer)}
                             autoplay
                             muted={!soundUnlocked}
                             hideControls
@@ -939,14 +1220,8 @@ export default function AnimeCatalog() {
                                 }
                               }
                             }}
-                            onUnavailable={() => {
-                              setVideoStatus(activePlayer.id, "unavailable");
-                              setPlayerMode("fallback");
-                            }}
-                            onExhausted={() => {
-                              setVideoStatus(activePlayer.id, "hidden");
-                              setPlayerMode("hidden");
-                            }}
+                            onUnavailable={handleCatalogTrailerUnavailable}
+                            onExhausted={handleCatalogTrailerUnavailable}
                           />
                           {!soundUnlocked && (
                             <div className="absolute bottom-4 left-4 z-10 max-w-sm rounded-2xl border border-white/10 bg-[rgba(8,12,24,0.6)] px-4 py-3 text-sm text-white/78 backdrop-blur-md" data-testid="catalog-player-sound-hint">
@@ -960,6 +1235,7 @@ export default function AnimeCatalog() {
                             aria-label="Activer le son du lecteur vidéo"
                             data-testid="catalog-player-activate-sound-overlay"
                           />
+
                         </div>
                       ) : (
                         <div className="relative flex h-full w-full items-end overflow-hidden">
@@ -972,6 +1248,27 @@ export default function AnimeCatalog() {
                             <h2 className="max-w-2xl font-display text-2xl font-black text-white sm:text-3xl" data-testid="catalog-player-fallback-title">
                               {showTranslatedCards ? translatedMediaTitle(activePlayer) : mediaTitle(activePlayer)}
                             </h2>
+                            <div className="flex flex-wrap items-center gap-2" data-testid="catalog-player-fallback-translation-controls">
+                              <span className="text-[11px] uppercase tracking-[0.2em] text-white/58">Traduction</span>
+                              <Select value={translationLang} onValueChange={setTranslationLang}>
+                                <SelectTrigger className="h-9 w-[210px] rounded-xl border-white/20 bg-black/50 text-white">
+                                  <SelectValue placeholder="Choisir une langue" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-72 bg-black/95 text-white">
+                                  {TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
+                                    <SelectItem key={option.code} value={option.code}>{option.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <TranslationToggleButton
+                                active={showTranslatedCards}
+                                loading={translationsLoading}
+                                targetLangLabel={translationLangLabel}
+                                onTranslate={translateCatalogNow}
+                                onToggle={() => setShowTranslatedCards((value) => !value)}
+                                dataTestId="catalog-player-fallback-translate-toggle-button"
+                              />
+                            </div>
                             <p className="max-w-2xl text-sm leading-7 text-white/72" data-testid="catalog-player-fallback-description">
                               {showTranslatedCards ? translatedMediaDescription(activePlayer) : mediaDescription(activePlayer)}
                             </p>
@@ -1006,6 +1303,27 @@ export default function AnimeCatalog() {
                           <h2 className="font-display text-2xl font-black leading-tight text-white sm:text-3xl" data-testid="catalog-player-title">
                             {showTranslatedCards ? translatedMediaTitle(activePlayer) : mediaTitle(activePlayer)}
                           </h2>
+                          <div className="flex flex-wrap items-center gap-2" data-testid="catalog-player-translation-controls">
+                            <span className="text-[11px] uppercase tracking-[0.2em] text-white/58">Traduction</span>
+                            <Select value={translationLang} onValueChange={setTranslationLang}>
+                              <SelectTrigger className="h-9 w-[210px] rounded-xl border-white/20 bg-black/50 text-white">
+                                <SelectValue placeholder="Choisir une langue" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-72 bg-black/95 text-white">
+                                {TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
+                                  <SelectItem key={option.code} value={option.code}>{option.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <TranslationToggleButton
+                              active={showTranslatedCards}
+                              loading={translationsLoading}
+                              targetLangLabel={translationLangLabel}
+                              onTranslate={translateCatalogNow}
+                              onToggle={() => setShowTranslatedCards((value) => !value)}
+                              dataTestId="catalog-player-translate-toggle-button"
+                            />
+                          </div>
                           <p className="max-w-4xl text-sm leading-7 text-white/72 sm:text-base" data-testid="catalog-player-description">
                             {showTranslatedCards ? translatedMediaDescription(activePlayer) : mediaDescription(activePlayer)}
                           </p>
@@ -1042,6 +1360,20 @@ export default function AnimeCatalog() {
                             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                             {isMuted ? "Activer" : "Couper"}
                           </Button>
+                          
+                          {activePlayer && availableCatalogLangs.length > 1 && (
+                            <div className="flex w-full">
+                              <AudioLanguageSwitcher 
+                                activeLang={activeTrailerLang || "ja"}
+                                languages={availableCatalogLangs}
+                                sources={catalogTrailerSources}
+                                onLanguageChange={(lang) => {
+                                  setActiveTrailerLang(lang);
+                                  setIsPlaying(true);
+                                }}
+                              />
+                            </div>
+                          )}
                           <Button type="button" variant="glass" className="min-h-[48px] rounded-2xl text-white" onClick={openMiniPlayer} disabled={!activePlayer} data-testid="catalog-player-pip-button">
                             <PictureInPicture2 className="h-4 w-4" /> {pipOpen ? "Fermer PiP" : "Ouvrir PiP"}
                           </Button>
@@ -1150,6 +1482,10 @@ export default function AnimeCatalog() {
 
             <Card className="theme-panel-surface overflow-hidden rounded-[1.9rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="catalog-filter-panel">
               <CardContent className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))] lg:items-center">
+              <div className="flex gap-2">
+                <Button variant={viewMode === "grid" ? "default" : "outline"} onClick={() => setViewMode("grid")} className="rounded-xl">Grille</Button>
+                <Button variant={viewMode === "carousel" ? "default" : "outline"} onClick={() => setViewMode("carousel")} className="rounded-xl">Carrousel 3D</Button>
+              </div>
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/44" />
                   <Input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Rechercher un animé, un studio, une licence..." className="theme-search-input h-12 rounded-2xl pl-10 text-white placeholder:text-white/40" aria-label="Rechercher dans le catalogue" data-testid="catalog-search-input" />
@@ -1235,57 +1571,92 @@ export default function AnimeCatalog() {
               </div>
             )}
 
-            <div className="flex justify-end">
-              <TranslationToggleButton
-                active={showTranslatedCards}
-                loading={translationsLoading}
-                onTranslate={translateCatalogNow}
-                onToggle={() => setShowTranslatedCards((value) => !value)}
-                dataTestId="catalog-translate-toggle-button"
-              />
-            </div>
-
-            {!!featuredRail.length && (
-              <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] p-4 text-white shadow-[0_18px_36px_rgba(6,12,24,0.24)] sm:p-5" data-testid="catalog-featured-strip">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Accès rapide</p>
-                    <h3 className="mt-2 font-display text-2xl font-black">Sélection vidéo à projeter</h3>
-                  </div>
-                </div>
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {featuredRail.map((media) => (
-                    <button
-                      key={`featured-${media.id}`}
-                      type="button"
-                      onClick={() => activatePlayer(media, { forceFavorite: true, unlockSound: true })}
-                      className="flex min-h-[94px] min-w-[250px] items-center gap-3 rounded-[1.2rem] border px-3 py-3 text-left transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5"
-                      data-testid={`catalog-featured-chip-${media.id}`}
-                      style={{
-                        background: "var(--catalog-card-bg, rgba(255,255,255,0.03))",
-                        color: "var(--catalog-card-fg, #ffffff)",
-                        borderColor: "var(--catalog-card-border, rgba(255,255,255,0.12))",
-                        backgroundSize: "var(--catalog-card-size, auto)",
-                        animation: "var(--catalog-card-anim, none)",
-                      }}
-                    >
-                      <div className="relative h-20 w-14 overflow-hidden rounded-xl border border-white/12 bg-[rgba(255,255,255,0.04)]">
-                        <img src={mediaImage(media)} alt={mediaTitle(media)} className="h-full w-full object-cover brightness-[1.05] saturate-[1.06]" loading="lazy" />
-                        <div className="pointer-events-none absolute inset-0 rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.34),0_0_18px_rgba(255,255,255,0.12)]" />
-                        <BlisterFrame radius={10} intensity={0.88} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="line-clamp-1 text-sm font-semibold">{showTranslatedCards ? translatedMediaTitle(media) : mediaTitle(media)}</p>
-                        <p className="mt-1 text-xs opacity-75">{media.format || "Anime"} · {media.seasonYear || "Catalogue"}</p>
-                      </div>
-                      <PlayCircle className="h-5 w-5 shrink-0 text-[var(--theme-link)]" />
-                    </button>
-                  ))}
+            {recommendations.length > 0 && !search && filterGenre === "all" && (
+              <div className="mb-8" data-testid="catalog-recommendations-section">
+                <h3 className="mb-4 font-display text-2xl font-bold tracking-wider text-white">Recommandé Pour Vous</h3>
+                <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory hide-scrollbar">
+                  {recommendations.map((m) => {
+                    const title = mediaTitle(m);
+                    const image = m.coverImage.extraLarge || m.coverImage.large || mediaImage(m);
+                    const isFavorite = favoriteIds.includes(m.id);
+                    const isActive = activePlayerId === m.id;
+                    return (
+                      <article
+                        key={`rec-${m.id}`}
+                        className={`group relative overflow-hidden rounded-[1.2rem] border text-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 min-w-[200px] snap-center shrink-0 ${isActive ? "shadow-[0_14px_28px_rgba(6,12,24,0.24)]" : "shadow-[0_8px_18px_rgba(6,12,24,0.16)]"}`}
+                        data-testid={`catalog-rec-card-${m.id}`}
+                        style={{
+                          background: "var(--catalog-card-bg, linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018)))",
+                          color: "var(--catalog-card-fg, #ffffff)",
+                          borderColor: isActive ? "var(--catalog-card-border, rgba(255,255,255,0.26))" : "var(--catalog-card-border, rgba(255,255,255,0.12))",
+                          backgroundSize: "var(--catalog-card-size, auto)",
+                          animation: "var(--catalog-card-anim, none)",
+                          backdropFilter: "blur(1px)",
+                          WebkitBackdropFilter: "blur(1px)",
+                        }}
+                      >
+                        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0.1),transparent_18%,transparent_82%,rgba(255,255,255,0.04))]" />
+                        <div className="relative aspect-[3/4] overflow-hidden rounded-t-[1.2rem] border-b border-white/10 bg-[rgba(255,255,255,0.04)]">
+                          <img
+                            src={image}
+                            alt={title}
+                            loading="lazy"
+                            className="h-full w-full object-cover object-center contrast-[1.03] saturate-[1.14] transition-transform duration-300 group-hover:scale-[1.015]"
+                          />
+                          <div className="pointer-events-none absolute inset-0 rounded-t-[1.2rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.26),0_0_20px_rgba(255,255,255,0.08)]" />
+                          <div className="absolute left-2 top-2 right-2 flex items-start justify-between gap-2">
+                            <Badge className="rounded-full border border-white/14 bg-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-white/88">
+                              {m.format || "Anime"}
+                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="glass"
+                                className={`h-8 w-8 rounded-full text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`}
+                                onClick={() => {
+                                  if (!isFavorite) {
+                                    authToggleFavorite(m.id);
+                                  }
+                                  activatePlayer(m, { unlockSound: true });
+                                }}
+                              >
+                                {isFavorite ? <Heart className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4" />}
+                              </Button>
+                              <Button type="button" size="icon" variant="glass" className="h-8 w-8 rounded-full text-white" onClick={() => setDetailMedia(m)}>
+                                <Info className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                          <BlisterFrame radius={12} intensity={0.78} />
+                        </div>
+                        <CardContent className="space-y-2 p-2.5">
+                          <h3 className="line-clamp-2 font-display text-[12px] font-black leading-tight">
+                            {showTranslatedCards ? translatedMediaTitle(m) : title}
+                          </h3>
+                        </CardContent>
+                      </article>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {pagedItems.length ? (
+              viewMode === "carousel" ? (
+              <div className="w-full h-[600px] relative mt-10 rounded-[2rem] overflow-hidden border border-white/10 bg-black/40">
+                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.1),transparent)]" />
+                 <ErrorBoundary fallback={<div className="flex h-full items-center justify-center"><p>Impossible de charger la 3D.</p><Button onClick={() => setViewMode("grid")}>Retour à la grille</Button></div>}>
+                   <Canvas camera={{ position: [0, 2, 8], fov: 45 }}>
+                      <ambientLight intensity={0.5} />
+                      <pointLight position={[10, 10, 10]} intensity={1} />
+                      <Carousel3D items={pagedItems.slice(0, 20)} onSelect={(media) => { setActivePlayerId(media.id); setDetailMedia(media); }} activeId={activePlayerId} />
+                      <OrbitControls enableZoom={false} maxPolarAngle={Math.PI / 2} minPolarAngle={Math.PI / 2.5} />
+                   </Canvas>
+                 </ErrorBoundary>
+                 <div className="absolute top-4 left-4 text-xs text-white/50 bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10 pointer-events-none">Faites glisser pour tourner</div>
+              </div>
+            ) : (
               <div className="grid grid-cols-4 gap-2 sm:gap-3 xl:gap-4" data-testid="catalog-grid">
                 {pagedItems.map((media, index) => {
                   const title = mediaTitle(media);
@@ -1340,7 +1711,7 @@ export default function AnimeCatalog() {
                               className={`h-8 w-8 rounded-full text-white ${isFavorite ? "border-primary/60 text-primary" : ""}`}
                               onClick={() => {
                                 if (!isFavorite) {
-                                  setFavoriteIds((current) => (current.includes(media.id) ? current : [media.id, ...current]));
+                                  authToggleFavorite(media.id);
                                 }
                                 activatePlayer(media, { unlockSound: true });
                               }}
@@ -1402,7 +1773,8 @@ export default function AnimeCatalog() {
                   );
                 })}
               </div>
-            ) : (
+            )) : null}
+            {!pagedItems.length && (
               <Card className="theme-panel-surface rounded-[1.9rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="catalog-grid-empty-state">
                 <CardContent className="space-y-4 p-8 text-center">
                   <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Aucun résultat</p>
@@ -1442,19 +1814,69 @@ export default function AnimeCatalog() {
 
                 <div className="grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
                   <div className="space-y-4">
-                    <div className="relative aspect-video overflow-hidden rounded-[1.7rem] border border-white/10 bg-black" data-testid="catalog-detail-media-panel">
-                      {hasTrailer(detailMedia) ? (
-                        <YouTubeEmbed
-                          key={`detail-${detailMedia.id}`}
-                          videoId={detailMedia.trailer?.id}
-                          searchQuery={`${mediaTitle(detailMedia)} bande annonce anime`}
-                          title={mediaTitle(detailMedia)}
-                          autoplay={false}
-                          muted={!soundUnlocked}
-                          hideControls
-                        />
-                      ) : (
-                        <img src={mediaImage(detailMedia)} alt={mediaTitle(detailMedia)} className="h-full w-full object-cover" />
+                    <div className="flex flex-col gap-3">
+                      
+                  {Object.keys(detailTrailers).length > 0 && (
+                    <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border-2 border-amber-500/80 bg-amber-500/20 p-3 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                      <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" /> Changer la langue (Audio/Sous-titres) :
+                      </span>
+                      <Select value={activeTrailerLang} onValueChange={setActiveTrailerLang}>
+                        <SelectTrigger className="w-full sm:w-[200px] h-9 bg-black/80 border-amber-500/50 text-white font-bold text-xs">
+                          <SelectValue placeholder="Choisir..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-black/95 border-amber-500/50 text-white">
+                          {Object.keys(detailTrailers).map(lang => (
+                            <SelectItem key={lang} value={lang} className="focus:bg-amber-500/20 focus:text-amber-400 cursor-pointer">
+                              {CATALOG_VERSION_LABELS[lang] || lang.toUpperCase()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+<div className="relative aspect-video overflow-hidden rounded-[1.7rem] border border-white/10 bg-black" data-testid="catalog-detail-media-panel">
+                        {activeTrailerLang && detailTrailers[activeTrailerLang]?.[0] ? (
+                          <YouTubeEmbed
+                            key={`detail-${detailTrailers[activeTrailerLang][0].id}`}
+                            videoId={detailTrailers[activeTrailerLang][0].id}
+                            searchQuery={`${mediaTitle(detailMedia)} trailer ${activeTrailerLang}`}
+                            title={detailTrailers[activeTrailerLang][0].title}
+                            autoplay={false}
+                            muted={!soundUnlocked}
+                            hideControls
+                          />
+                        ) : hasTrailer(detailMedia) ? (
+                          <YouTubeEmbed
+                            key={`detail-${detailMedia.id}`}
+                            videoId={detailMedia.trailer?.id}
+                            searchQuery={`${mediaTitle(detailMedia)} bande annonce anime`}
+                            title={mediaTitle(detailMedia)}
+                            autoplay={false}
+                            muted={!soundUnlocked}
+                            hideControls
+                          />
+                        ) : (
+                          <img src={mediaImage(detailMedia)} alt={mediaTitle(detailMedia)} className="h-full w-full object-cover" />
+                        )}
+                      </div>
+                      
+                      {Object.keys(detailTrailers).length > 0 && (
+                        <div className="flex items-center gap-3" data-testid="catalog-detail-language-selector-container">
+                          <span className="text-xs text-white/50 font-bold uppercase tracking-wider">Langue du Trailer:</span>
+                          <Select value={activeTrailerLang} onValueChange={setActiveTrailerLang}>
+                            <SelectTrigger className="w-[140px] h-8 bg-white/5 border-white/10 text-xs" data-testid="catalog-detail-language-selector">
+                              <SelectValue placeholder="Choisir..." />
+                            </SelectTrigger>
+                            <SelectContent data-testid="catalog-detail-language-options">
+                              {Object.keys(detailTrailers).map(lang => (
+                                <SelectItem key={lang} value={lang} data-testid={`catalog-detail-language-option-${lang}`}>
+                                  {CATALOG_VERSION_LABELS[lang] || lang.toUpperCase()}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       )}
                     </div>
                     <div className="flex flex-wrap gap-2" data-testid="catalog-detail-genres-row">
@@ -1467,11 +1889,14 @@ export default function AnimeCatalog() {
                   </div>
 
                   <div className="space-y-5">
-                    <div className="grid gap-3 sm:grid-cols-3">
+
+                    <div className="grid gap-3 sm:grid-cols-4">
                       <Card className="theme-subpanel border-none bg-transparent text-white"><CardContent className="p-4"><p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Score</p><p className="mt-2 font-display text-3xl font-black">{detailMedia.averageScore ?? "—"}</p></CardContent></Card>
                       <Card className="theme-subpanel border-none bg-transparent text-white"><CardContent className="p-4"><p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Année</p><p className="mt-2 font-display text-3xl font-black">{detailMedia.seasonYear ?? "—"}</p></CardContent></Card>
                       <Card className="theme-subpanel border-none bg-transparent text-white"><CardContent className="p-4"><p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Épisodes</p><p className="mt-2 font-display text-3xl font-black">{detailMedia.episodes ?? "—"}</p></CardContent></Card>
+                      <Card className="theme-subpanel border-none bg-transparent text-white"><CardContent className="p-4"><p className="text-[11px] uppercase tracking-[0.24em] text-white/50">Ma Note</p><div className="mt-4"><StarRating initialRating={ratings[detailMedia.id] || 0} onRate={(r) => rateAnime(detailMedia.id, r)} /></div></CardContent></Card>
                     </div>
+
 
                     <Card className="theme-subpanel border-none bg-transparent text-white" data-testid="catalog-detail-copy-card">
                       <CardContent className="space-y-4 p-5">

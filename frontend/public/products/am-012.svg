@@ -1,23 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Affiche Premium Encadrée Alu — AnimemomentsAnimeofficiel">
-  <title>Affiche Premium Encadrée Alu — AnimemomentsAnimeofficiel</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
   <defs>
-    <linearGradient id="g103qw7x" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10b981"/>
-      <stop offset="55%" stop-color="#06b6d4"/>
-      <stop offset="100%" stop-color="#6366f1"/>
+    <linearGradient id="g12" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#fde047"/>
     </linearGradient>
+    <radialGradient id="r12" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="400" fill="url(#g103qw7x)"/>
-  <g transform="rotate(-86 200 200)" opacity="0.55">
-    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
-    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
-    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
-  </g>
-  <circle cx="327.0" cy="200.0" r="11" fill="#fff" opacity="0.45"/><circle cx="83.5" cy="306.7" r="8" fill="#fff" opacity="0.45"/><circle cx="216.5" cy="11.7" r="5" fill="#fff" opacity="0.45"/><circle cx="267.0" cy="287.3" r="12" fill="#fff" opacity="0.45"/><circle cx="61.1" cy="175.5" r="9" fill="#fff" opacity="0.45"/><circle cx="345.1" cy="107.6" r="6" fill="#fff" opacity="0.45"/><circle cx="175.9" cy="289.8" r="13" fill="#fff" opacity="0.45"/><circle cx="142.7" cy="90.0" r="10" fill="#fff" opacity="0.45"/><circle cx="345.7" cy="253.0" r="7" fill="#fff" opacity="0.45"/><circle cx="28.2" cy="271.2" r="4" fill="#fff" opacity="0.45"/><circle cx="245.2" cy="103.0" r="11" fill="#fff" opacity="0.45"/><circle cx="241.5" cy="331.6" r="8" fill="#fff" opacity="0.45"/><circle cx="53.6" cy="115.5" r="5" fill="#fff" opacity="0.45"/><circle cx="287.9" cy="180.5" r="12" fill="#fff" opacity="0.45"/><circle cx="130.6" cy="299.1" r="9" fill="#fff" opacity="0.45"/><circle cx="180.2" cy="49.3" r="6" fill="#fff" opacity="0.45"/><circle cx="340.2" cy="317.6" r="13" fill="#fff" opacity="0.45"/><circle cx="96.1" cy="204.5" r="10" fill="#fff" opacity="0.45"/>
-  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
-  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#10b981">P</text>
-  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">POSTER</text>
-  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Affiche Premium Encadrée Alu</text>
-  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-012</text>
+  <rect width="600" height="800" fill="url(#g12)"/>
+  <rect width="600" height="800" fill="url(#r12)"/>
+  <circle cx="300" cy="320" r="140" fill="rgba(0,0,0,0.25)"/>
+  <circle cx="300" cy="320" r="140" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4"/>
+  <polygon points="270,260 270,380 380,320" fill="white"/>
+  <text x="50%" y="580" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="middle" letter-spacing="6">GM</text>
+  <text x="50%" y="640" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="rgba(255,255,255,0.75)" text-anchor="middle" letter-spacing="4">LOVANET</text>
+  <text x="50%" y="700" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="400" fill="rgba(255,255,255,0.65)" text-anchor="middle" letter-spacing="6">ANIME · MOMENTS</text>
 </svg>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { videos } from "@/data/videos";
-import { supabase } from "@/integrations/supabase/client";
+import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 
 const ytThumb = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 const ytThumbFallback = (id: string) => `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
@@ -131,7 +131,6 @@ const flowTransform = (
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-const CAPTURE_OVERLAY_VIDEO = "https://customer-assets-39nsmqrw.emergentagent.net/job_16dccaa9-172a-47f9-83d4-c61db40f190a/artifacts/vajscga7_562-07d7-49-86fd-d037713525344-2560x1440.mp4";
 
 const placeholderThumb = (id: string, title: string) => {
   let h = 0;
@@ -150,7 +149,8 @@ const placeholderThumb = (id: string, title: string) => {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 
-export const HeroCarousel = () => {
+export const HeroCarousel = ({ captureVideo }: { captureVideo?: string } = {}) => {
+
   const containerRef = useRef<HTMLDivElement>(null);
   const constrainedRef = useRef(false);
   const pausedRef = useRef(false);
@@ -225,22 +225,18 @@ export const HeroCarousel = () => {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase
-        .from("imported_videos")
-        .select("external_id, title, thumbnail_url, source, published_at, video_url")
-        .order("published_at", { ascending: false })
-        .limit(160);
-      if (cancelled || error || !data?.length) return;
+      const data = IMPORTED_VIDEOS.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()).slice(0, 160);
+      if (cancelled || !data?.length) return;
       const mapped: WheelVideo[] = data
-        .map((r) => ({
+        .map((r: any) => ({
           id: r.external_id,
           title: r.title ?? "Anime Moment",
           thumb: r.thumbnail_url || (r.source === "youtube" ? ytThumb(r.external_id) : ""),
           source: (r.source as WheelVideo["source"]) ?? "youtube",
           url: r.video_url ?? undefined,
         }))
-        .filter((v) => Boolean(v.id));
-      const unique = Array.from(new Map(mapped.map((v) => [v.id, v])).values());
+        .filter((v: any) => Boolean(v.id));
+      const unique = Array.from(new Map(mapped.map((v: any) => [v.id, v])).values());
       setAllVideos(unique.slice(0, constrainedRef.current ? 48 : 96));
     })();
     return () => {
@@ -515,14 +511,15 @@ export const HeroCarousel = () => {
         <div className="relative w-[82%] sm:w-[72%] lg:w-[58%] overflow-hidden rounded-[1.35rem] border border-white/14 bg-black/10 shadow-[0_18px_42px_-18px_rgba(0,0,0,0.65)] backdrop-blur-[2px]">
           <div className="aspect-video">
             <video
-              src={CAPTURE_OVERLAY_VIDEO}
+              src={captureVideo || "/custom_video_lovanet.mp4"}
               autoPlay
               muted
               loop
               playsInline
               preload="metadata"
-              className="h-full w-full object-cover opacity-[0.82]"
+              className="h-full w-full object-cover"
               data-testid="anime-moments-capture-video"
+              data-bg-video
             />
           </div>
           <div className="pointer-events-none absolute inset-0 ring-1 ring-white/10" />

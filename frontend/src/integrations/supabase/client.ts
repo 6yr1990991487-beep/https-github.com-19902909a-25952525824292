@@ -2,8 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || "https://fake-project.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY || "fake-anon-key";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

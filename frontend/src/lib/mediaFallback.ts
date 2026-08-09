@@ -1,6 +1,7 @@
 import type { SyntheticEvent } from "react";
 
 const LOCAL_VIDEO_FALLBACKS = [
+  "/custom_video_lovanet.mp4",
   "/root-capture-video-latest.mp4",
   "/banner-seq-2.mp4",
   "/banner-seq-3.mp4",

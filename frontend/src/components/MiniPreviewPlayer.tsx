@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { IMPORTED_VIDEOS } from "@/data/importedVideos";
+import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 
 type Kind = "youtube" | "tiktok" | "mp4";
 
@@ -68,12 +69,7 @@ export const MiniPreviewPlayer = ({
     if (!loadTiktokFromDB) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("imported_videos")
-        .select("external_id")
-        .eq("source", "tiktok")
-        .order("published_at", { ascending: false })
-        .limit(20);
+      const data = IMPORTED_VIDEOS.filter((v) => v.source === "tiktok").sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()).slice(0, 20);
       if (cancelled || !data?.length) return;
       const ids = data.map((r: any) => r.external_id).filter(Boolean);
       if (ids.length) setList(ids);
@@ -136,7 +132,7 @@ export const MiniPreviewPlayer = ({
   if (kind === "youtube") {
     const current = list[i];
     // Single-video loop requires playlist=ID for the YouTube IFrame API.
-    const src = `https://www.youtube-nocookie.com/embed/${current}?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playsinline=1&rel=0&playlist=${current}`;
+    const src = buildYouTubeEmbedUrl(current, { autoplay: true, muted: true, controls: false, loop: true, playlist: current, playsInline: true });
     return (
       <div ref={wrapRef} className={"w-full h-full " + className}>
         {active ? (

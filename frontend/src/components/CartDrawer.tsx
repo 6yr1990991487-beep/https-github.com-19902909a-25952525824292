@@ -3,9 +3,22 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useGamification } from "@/contexts/GamificationContext";
 
 export const CartDrawer = () => {
   const { items, open, setOpen, remove, setQty, clear, total, count } = useCart();
+  const { incrementEpic } = useGamification();
+  
+  const handleCheckout = () => {
+    if (!items.length) return;
+    incrementEpic("epic_shop_purchase", 1);
+    incrementEpic("epic_shop_vip", 1);
+    incrementEpic("epic_shop_whale", Math.round(total));
+    clear();
+    toast({ title: "Commande validée !", description: `Vos ${count} article(s) sont en cours de préparation.` });
+    setOpen(false);
+  };
+  
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="right" className="w-full sm:max-w-md flex flex-col">
@@ -43,8 +56,7 @@ export const CartDrawer = () => {
           <p className="text-[10px] text-muted-foreground">Livraison estimée 3–7 jours · dropshipping suivi</p>
           <div className="flex gap-2">
             <Button variant="outline" className="flex-1" onClick={clear} disabled={!items.length}>Vider</Button>
-            <Button className="flex-1" disabled={!items.length}
-              onClick={() => toast({ title: "Commande simulée", description: `Merci ! ${count} article(s) — ${total.toFixed(2)} €.` })}>
+            <Button className="flex-1" disabled={!items.length} onClick={handleCheckout}>
               Commander
             </Button>
           </div>

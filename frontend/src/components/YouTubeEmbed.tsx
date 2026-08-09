@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { requestBestYouTubeQuality } from "@/lib/youtubeEmbed";
 
 let ytApiPromise: Promise<any> | null = null;
 function loadYouTubeAPI(): Promise<any> {
@@ -34,6 +35,7 @@ type Props = {
   hideControls?: boolean;
   className?: string;
   title?: string;
+  captionLang?: string; // when set, force captions in this language (e.g. "fr")
 };
 
 export default function YouTubeEmbed({
@@ -48,6 +50,7 @@ export default function YouTubeEmbed({
   hideControls = true,
   className,
   title,
+  captionLang,
 }: Props) {
   const holderRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
@@ -84,7 +87,9 @@ export default function YouTubeEmbed({
         fs: hideControls ? 0 : 1,
         disablekb: hideControls ? 1 : 0,
         iv_load_policy: 3,
-        cc_load_policy: 0,
+        cc_load_policy: captionLang ? 1 : 0,
+        vq: "highres",
+        ...(captionLang ? { cc_lang_pref: captionLang, hl: captionLang } : {}),
       };
 
       const opts: any = {
@@ -100,6 +105,15 @@ export default function YouTubeEmbed({
               if (muted) playerRef.current?.mute?.();
               else playerRef.current?.unMute?.();
               if (autoplay) playerRef.current?.playVideo?.();
+              requestBestYouTubeQuality(playerRef.current);
+              if (captionLang) {
+                try {
+                  playerRef.current?.setOption?.("captions", "reload", true);
+                  playerRef.current?.setOption?.("captions", "track", { languageCode: captionLang });
+                } catch {
+                  // captions may not be available on this video
+                }
+              }
             } catch {
               // ignore autoplay sync errors
             }
@@ -154,6 +168,8 @@ export default function YouTubeEmbed({
                 if (muted) playerRef.current?.mute?.();
                 else playerRef.current?.unMute?.();
                 if (autoplay) playerRef.current?.playVideo?.();
+                requestBestYouTubeQuality(playerRef.current);
+                requestBestYouTubeQuality(playerRef.current);
                 callbacksRef.current.onPlayerReady?.(playerRef.current);
                 return;
               } catch {
@@ -177,7 +193,7 @@ export default function YouTubeEmbed({
       playerRef.current = null;
       callbacksRef.current.onPlayerReady?.(null);
     };
-  }, [autoplay, hideControls, muted, searchQuery, title, videoId]);
+  }, [autoplay, hideControls, muted, searchQuery, title, videoId, captionLang]);
 
   return <div ref={holderRef} className={className ?? "absolute inset-0 h-full w-full"} aria-label={title} />;
 }
