@@ -1,4 +1,4 @@
-const FerryBackground = require("@/components/FerryBackground").default;
+import FerryBackground from "@/components/FerryBackground";
 
 export default function HubFerryStandalone() {
   return (

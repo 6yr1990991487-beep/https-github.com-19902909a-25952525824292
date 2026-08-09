@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-const TrainStation = require("@/components/TrainStation").default;
+import TrainStation from "@/components/TrainStation";
 
 const LuxuryStationColumn = ({ side, color }: { side: "left" | "right"; color: string }) => {
   return (
