@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 // an MCP client (Claude / ChatGPT / Codex) requests authorization to act as
 // the signed-in user. Uses the beta supabase.auth.oauth namespace — cast
 // through `any` because it's not yet in the shipping types.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const oauth = (supabase.auth as any).oauth;
 
 type ClientInfo = { name?: string; logo_uri?: string; client_uri?: string };

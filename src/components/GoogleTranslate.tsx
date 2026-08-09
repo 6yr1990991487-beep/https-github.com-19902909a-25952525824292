@@ -60,7 +60,7 @@ export default function GoogleTranslate() {
       (window as any).googleTranslateElementInit = () => {
         try {
           // @ts-ignore
-          new google.translate.TranslateElement(
+          new (window as any).google.translate.TranslateElement(
             {
               pageLanguage: SOURCE_LANG,
               includedLanguages: LANGS.map((l) => l.code).join(","),
@@ -121,56 +121,7 @@ export default function GoogleTranslate() {
       {/* Hidden Google element required by the script */}
       <div id="google_translate_element" style={{ position: "absolute", left: -9999, top: -9999 }} />
 
-      {/* Auto-detect banner */}
-      {banner && (
-        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-[60] max-w-md w-[92%] rounded-2xl border border-fuchsia-400/40 bg-black/85 backdrop-blur-xl px-4 py-3 shadow-[0_0_30px_rgba(217,70,239,0.35)] flex items-center gap-3 notranslate">
-          <Globe className="w-5 h-5 text-fuchsia-300 shrink-0" />
-          <span className="text-sm text-white/90 flex-1">
-            Traduire ce site en <strong>{banner.label}</strong> ?
-          </span>
-          <button
-            onClick={() => switchTo(banner.code)}
-            className="text-xs px-3 py-1.5 rounded-full bg-fuchsia-500 hover:bg-fuchsia-400 text-white font-semibold"
-          >
-            Oui
-          </button>
-          <button
-            onClick={dismissBanner}
-            className="text-white/50 hover:text-white"
-            aria-label="Fermer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Floating language switcher */}
-      <div className="fixed bottom-4 left-4 z-[55] notranslate">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/70 border border-white/15 backdrop-blur-md text-white text-xs hover:border-fuchsia-400/60 hover:shadow-[0_0_18px_rgba(217,70,239,0.45)] transition"
-          aria-label="Changer la langue"
-        >
-          <Globe className="w-4 h-4" />
-          <span>{active.flag} {active.label}</span>
-        </button>
-        {open && (
-          <div className="absolute bottom-12 left-0 max-h-72 overflow-y-auto w-52 rounded-xl border border-white/15 bg-black/90 backdrop-blur-xl shadow-2xl p-1 notranslate">
-            {LANGS.map((l) => (
-              <button
-                key={l.code}
-                onClick={() => switchTo(l.code)}
-                className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 ${
-                  l.code === lang ? "bg-fuchsia-500/25 text-fuchsia-200" : "text-white/85 hover:bg-white/10"
-                }`}
-              >
-                <span>{l.flag}</span>
-                <span>{l.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Auto-detect banner + floating language switcher removed at user request */}
     </>
   );
 }
