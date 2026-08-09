@@ -40,7 +40,7 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       // Fetch full profile from backend
-      fetch(`${process.env.REACT_APP_BACKEND_URL}/api/profile/me`, {
+      fetch(`${(import.meta.env.VITE_BACKEND_URL ?? "")}/api/profile/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("lovanet_session_token") || ""}`,
         }
@@ -64,7 +64,7 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/profile/me`, {
+      const res = await fetch(`${(import.meta.env.VITE_BACKEND_URL ?? "")}/api/profile/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

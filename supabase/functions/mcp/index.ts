@@ -490,7 +490,7 @@ var search_shop_products_default = defineTool4({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = process.env.REACT_APP_SUPABASE_PROJECT_ID ?? "project-ref-unset";
+var projectRef = "pvgfxzzwuhjhfqsiylpr";
 var mcp_default = defineMcp({
   name: "lovanet-mcp",
   title: "Lovanet MCP",

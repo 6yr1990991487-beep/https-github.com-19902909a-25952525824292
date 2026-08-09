@@ -47,7 +47,7 @@ type PrimeAnime = {
 const PRIME_CACHE = "lovanet.cache.prime.anime.v2";
 const PRIME_WATCH_KEY = "lovanet.prime.watch-tonight.v1";
 const PRIME_RECENT_KEY = "lovanet.prime.recent.v1";
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api`;
 
 // Human-friendly labels for the trailer version selector.
 const TRAILER_VERSION_LABEL: Record<string, string> = {

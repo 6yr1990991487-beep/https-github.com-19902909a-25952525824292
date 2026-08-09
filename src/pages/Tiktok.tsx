@@ -19,7 +19,7 @@ type TTItem = {
   thumb?: string | null;
 };
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api`;
 const TIKTOK_HANDLE = "@anime.moments.officiel";
 const TIKTOK_BANNER_VIDEO = "/actualites-banner-2.mp4";
 const PRIME_GHOST_BTN =

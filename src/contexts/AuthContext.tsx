@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   updateAvatar: async () => {},
 });
 
-const API = process.env.REACT_APP_BACKEND_URL + "/api";
+const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

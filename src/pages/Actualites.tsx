@@ -34,7 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/sonner";
 
 const PRIMARY_SITE = "https://lovanet.fr";
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api`;
 const PAGE_SIZE = 24;
 
 const ACTUALITES_BANNER_VIDEO = "https://drive.google.com/uc?export=download&id=1Rf2nvttvwP8pLXhgT5pU8vFkPwkwy92N";

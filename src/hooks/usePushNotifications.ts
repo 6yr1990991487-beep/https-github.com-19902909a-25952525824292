@@ -13,7 +13,7 @@ export function usePushNotifications() {
       if (!("Notification" in window) || Notification.permission !== "granted") return;
 
       try {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || "";
+        const backendUrl = (import.meta.env.VITE_BACKEND_URL ?? "") || "";
         const res = await fetch(`${backendUrl}/api/news/home`);
         if (!res.ok) return;
         const data = await res.json();

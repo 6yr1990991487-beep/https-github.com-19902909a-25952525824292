@@ -3,7 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
 import { GoogleLogin } from "@react-oauth/google";
 
-const API = process.env.REACT_APP_BACKEND_URL + "/api";
+const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);

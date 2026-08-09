@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type Platform = "youtube" | "tiktok" | "prime" | "news" | "all";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api`;
 
 type Props = {
   /** Which sync edge functions to trigger. */

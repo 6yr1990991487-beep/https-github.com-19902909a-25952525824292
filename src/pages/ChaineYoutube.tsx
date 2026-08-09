@@ -42,7 +42,7 @@ type VideoRow = {
   origin: VideoOrigin;
 };
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api`;
 const PAGE_SIZE = 24;
 const TRAILER_WINDOW_SIZE = 110;
 const YOUTUBE_BANNER_VIDEO = "/manga-universe-banner.mp4";

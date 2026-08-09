@@ -148,7 +148,7 @@ const AppShell = () => {
 };
 
 const App = () => (
-  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || "mock_client_id"}>
+  <GoogleOAuthProvider clientId={(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "") || "mock_client_id"}>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>

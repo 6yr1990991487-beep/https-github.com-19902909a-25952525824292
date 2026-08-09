@@ -13,7 +13,7 @@ export async function hydrateYouTubeAvailability(videoIds: Array<string | null |
   const missing = unique.filter((videoId) => !getVideoStatusSync(videoId));
   if (!missing.length) return [] as YouTubeAvailabilityApiItem[];
 
-  const endpoint = `${process.env.REACT_APP_BACKEND_URL}/api/youtube/availability`;
+  const endpoint = `${(import.meta.env.VITE_BACKEND_URL ?? "")}/api/youtube/availability`;
   const items: YouTubeAvailabilityApiItem[] = [];
   const chunkSize = 40;
   for (let i = 0; i < missing.length; i += chunkSize) {

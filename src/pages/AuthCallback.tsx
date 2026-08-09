@@ -25,7 +25,7 @@ export default function AuthCallback() {
 
     const exchange = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/auth/session`, {
+        const res = await fetch(`${(import.meta.env.VITE_BACKEND_URL ?? "")}/api/auth/session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ session_id: sessionId }),

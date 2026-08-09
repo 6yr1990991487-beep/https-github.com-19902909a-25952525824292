@@ -235,7 +235,7 @@ export const Onboarding3D = () => {
     setIsSpeaking(true);
 
     try {
-      const res = await fetch(process.env.REACT_APP_BACKEND_URL + "/api/chat/lovanet", {
+      const res = await fetch((import.meta.env.VITE_BACKEND_URL ?? "") + "/api/chat/lovanet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

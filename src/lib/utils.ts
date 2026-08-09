@@ -80,7 +80,7 @@ export async function translateTexts(texts: Array<string | null | undefined>, ta
 
   if (!missing.length) return result;
 
-  const backendBase = process.env.REACT_APP_BACKEND_URL || "";
+  const backendBase = (import.meta.env.VITE_BACKEND_URL ?? "") || "";
   const endpoint = `${backendBase}/api/translate`;
 
   try {

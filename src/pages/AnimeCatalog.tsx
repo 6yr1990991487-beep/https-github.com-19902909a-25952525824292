@@ -459,7 +459,7 @@ export default function AnimeCatalog() {
         return;
       }
       try {
-        const API = process.env.REACT_APP_BACKEND_URL + "/api";
+        const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
         const res = await fetch(`${API}/ratings/recommendations`, { credentials: "include" });
         if (!res.ok) {
           setRecommendations([]);
@@ -486,7 +486,7 @@ export default function AnimeCatalog() {
     
     const fetchMultilingualTrailers = async () => {
       try {
-        const API = process.env.REACT_APP_BACKEND_URL + "/api";
+        const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
         const title = mediaTitle(detailMedia);
         const res = await fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(title)}`);
         if (!res.ok) {
@@ -747,7 +747,7 @@ export default function AnimeCatalog() {
     // Fetch multilingual trailers for giant player
     const q = mediaTitle(media);
     try {
-      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL || ""}/api/prime/multilingual-trailers?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`${(import.meta.env.VITE_BACKEND_URL ?? "") || ""}/api/prime/multilingual-trailers?q=${encodeURIComponent(q)}`);
       if (res.ok) {
         const data = await res.json();
         const trs = data.results || {};

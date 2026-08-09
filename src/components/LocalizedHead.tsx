@@ -14,11 +14,11 @@ const PRIMARY_SITE = "https://lovanet.fr";
 const ALTERNATE_SITES = ["https://animemomentsofficiel.fr", "https://animeofficiel.fr"];
 const OG_IMAGE = `${PRIMARY_SITE}/lovanet-logo-custom.png`;
 const LOGO = `${PRIMARY_SITE}/lovanet-logo-custom.png`;
-const GOOGLE_SITE_VERIFICATION = process.env.REACT_APP_GOOGLE_SITE_VERIFICATION;
-const BING_SITE_VERIFICATION = process.env.REACT_APP_BING_SITE_VERIFICATION;
-const YANDEX_SITE_VERIFICATION = process.env.REACT_APP_YANDEX_SITE_VERIFICATION;
-const BAIDU_SITE_VERIFICATION = process.env.REACT_APP_BAIDU_SITE_VERIFICATION;
-const NAVER_SITE_VERIFICATION = process.env.REACT_APP_NAVER_SITE_VERIFICATION;
+const GOOGLE_SITE_VERIFICATION = (import.meta.env.VITE_GOOGLE_SITE_VERIFICATION ?? "");
+const BING_SITE_VERIFICATION = (import.meta.env.VITE_BING_SITE_VERIFICATION ?? "");
+const YANDEX_SITE_VERIFICATION = (import.meta.env.VITE_YANDEX_SITE_VERIFICATION ?? "");
+const BAIDU_SITE_VERIFICATION = (import.meta.env.VITE_BAIDU_SITE_VERIFICATION ?? "");
+const NAVER_SITE_VERIFICATION = (import.meta.env.VITE_NAVER_SITE_VERIFICATION ?? "");
 
 const KEYWORDS = [
   "anime",
