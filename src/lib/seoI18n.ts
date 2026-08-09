@@ -232,7 +232,7 @@ export const SEO_I18N: Record<Locale, Record<RouteKey, Meta>> = {
 };
 
 export const HREFLANG_MAP: Record<Locale, string> = {
-  fr: "Lovanet  Portail anime, manga, gaming, pop culture japonaise.", en: "en", es: "es", de: "de", it: "it", pt: "pt", ja: "ja", zh: "zh",
+  fr: "fr", en: "en", es: "es", de: "de", it: "it", pt: "pt", ja: "ja", zh: "zh",
 };
 
 export function detectLocale(search: string, navLang: string | undefined): Locale {
