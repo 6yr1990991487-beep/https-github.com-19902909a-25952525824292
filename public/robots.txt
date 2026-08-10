@@ -39,3 +39,6 @@ Sitemap: https://lovanet.fr/sitemap-pages.xml
 Sitemap: https://lovanet.fr/sitemap-locales.xml
 Sitemap: https://animemomentsofficiel.fr/sitemap.xml
 Sitemap: https://animeofficiel.fr/sitemap.xml
+Sitemap: https://lovanet.fr/sitemap-index.xml
+Sitemap: https://lovanet.fr/sitemap-i18n.xml
+Sitemap: https://lovanet.fr/sitemap-actualites.xml
