@@ -2,4 +2,8 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap><loc>https://lovanet.fr/sitemap.xml</loc></sitemap>
   <sitemap><loc>https://lovanet.fr/sitemap-i18n.xml</loc></sitemap>
+  <sitemap><loc>https://lovanet.fr/sitemap-pages.xml</loc></sitemap>
+  <sitemap><loc>https://lovanet.fr/sitemap-actualites.xml</loc></sitemap>
+  <sitemap><loc>https://lovanet.fr/sitemap-shop.xml</loc></sitemap>
+  <sitemap><loc>https://lovanet.fr/sitemap-locales.xml</loc></sitemap>
 </sitemapindex>

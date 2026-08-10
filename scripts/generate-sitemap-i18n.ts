@@ -21,6 +21,8 @@ const ROUTES: Array<{ path: string; changefreq: string; priority: string }> = [
   { path: "/shop", changefreq: "weekly", priority: "0.9" },
   { path: "/anime-catalog", changefreq: "weekly", priority: "0.8" },
   { path: "/anime-countdown", changefreq: "weekly", priority: "0.7" },
+  { path: "/actualites", changefreq: "daily", priority: "0.8" },
+  { path: "/leaderboard", changefreq: "weekly", priority: "0.5" },
   { path: "/contact", changefreq: "monthly", priority: "0.5" },
   { path: "/legals", changefreq: "yearly", priority: "0.3" },
 ];

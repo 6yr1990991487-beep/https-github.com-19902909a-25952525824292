@@ -153,6 +153,36 @@
   </url>
 
   <url>
+    <loc>https://lovanet.fr/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
+  </url>
+
+  <url>
     <loc>https://lovanet.fr/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -330,6 +360,36 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-countdown" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/en/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/en/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
   </url>
 
   <url>
@@ -513,6 +573,36 @@
   </url>
 
   <url>
+    <loc>https://lovanet.fr/es/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/es/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
+  </url>
+
+  <url>
     <loc>https://lovanet.fr/es/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -690,6 +780,36 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-countdown" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/de/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/de/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
   </url>
 
   <url>
@@ -873,6 +993,36 @@
   </url>
 
   <url>
+    <loc>https://lovanet.fr/it/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/it/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
+  </url>
+
+  <url>
     <loc>https://lovanet.fr/it/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -1050,6 +1200,36 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-countdown" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/pt/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/pt/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
   </url>
 
   <url>
@@ -1233,6 +1413,36 @@
   </url>
 
   <url>
+    <loc>https://lovanet.fr/ja/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/ja/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
+  </url>
+
+  <url>
     <loc>https://lovanet.fr/ja/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -1410,6 +1620,36 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-countdown" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-countdown" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/zh/actualites</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/actualites" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/actualites" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/actualites" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/actualites" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/actualites" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/actualites" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/actualites" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/actualites" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/actualites" />
+  </url>
+
+  <url>
+    <loc>https://lovanet.fr/zh/leaderboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://lovanet.fr/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://lovanet.fr/en/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://lovanet.fr/es/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://lovanet.fr/de/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://lovanet.fr/it/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/leaderboard" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lovanet.fr/leaderboard" />
   </url>
 
   <url>
