@@ -1485,7 +1485,7 @@ export default function AnimeCatalog() {
               <div>
                 <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Bibliothèque indexée</p>
                 <h2 className="mt-2 font-display text-3xl font-black text-white" data-testid="catalog-grid-title">
-                  Tout le catalogue · {filteredSorted.length} / {gridItems.length} titres
+                    Tout le catalogue · {filteredSorted.length} / {gridItems.length} titres · TEST LOVABLE
                 </h2>
               </div>
               {gridLoading && <span className="text-xs text-white/52" data-testid="catalog-grid-loading-label">Indexation en cours…</span>}
