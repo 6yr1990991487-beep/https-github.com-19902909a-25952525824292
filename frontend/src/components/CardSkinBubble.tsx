@@ -75,23 +75,20 @@ const getTriggerAnchor = (selector: string) => {
 const preferredRightAnchor = (width: number, selector?: string) => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const panelW = Math.min(width, Math.min(Math.round(w * 0.9), PANEL_W));
+  const panelW = Math.min(width, Math.min(Math.round(w * 0.92), PANEL_W));
+  const panelH = Math.min(Math.round(h * 0.72), 260);
   const triggerRect = selector ? getTriggerAnchor(selector) : null;
 
   if (triggerRect) {
-    const gap = 12;
-    const spaceRight = w - triggerRect.right - VIEWPORT_MARGIN;
-    const spaceLeft = triggerRect.left - VIEWPORT_MARGIN;
-    const useRight = spaceRight >= panelW + gap || spaceRight >= spaceLeft;
-    const x = useRight ? triggerRect.right + gap : triggerRect.left - panelW - gap;
-    const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
-    const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
+    const gap = 14;
+    const preferLeft = triggerRect.left > w * 0.52;
+    const x = preferLeft ? triggerRect.left - panelW - gap : triggerRect.right + gap;
+    const rawY = triggerRect.top + (triggerRect.height - panelH) / 2;
+    const maxX = Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN);
+    const maxY = Math.max(VIEWPORT_MARGIN, h - panelH - VIEWPORT_MARGIN);
 
     return {
-      x: Math.min(
-        Math.max(x, VIEWPORT_MARGIN),
-        Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN),
-      ),
+      x: Math.min(Math.max(x, VIEWPORT_MARGIN), maxX),
       y: Math.min(Math.max(rawY, VIEWPORT_MARGIN), maxY),
     };
   }
@@ -340,7 +337,7 @@ export const CardSkinBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,290px)] min-w-0 max-w-[calc(100vw-24px)] overflow-x-hidden"
+          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/20 bg-[linear-gradient(180deg,rgba(9,15,28,0.9),rgba(15,23,42,0.96))] p-0 text-white shadow-[0_32px_90px_rgba(2,6,23,0.7)] ring-1 ring-white/15 backdrop-blur-2xl w-[min(90vw,290px)] min-w-0 max-w-[calc(100vw-24px)] overflow-x-hidden"
           style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
           onPointerDown={onDown}
           onPointerMove={onMove}

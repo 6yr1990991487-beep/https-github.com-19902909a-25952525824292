@@ -123,13 +123,15 @@ const preferredRightAnchor = (width: number, selector?: string) => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const panelW = Math.min(width, Math.min(Math.round(w * 0.94), THEME_PANEL_W));
+  const panelH = Math.min(Math.round(h * 0.82), 620);
   const triggerRect = selector ? getTriggerAnchor(selector) : null;
 
   if (triggerRect) {
-    const gap = 12;
-    const x = triggerRect.right + gap;
-    const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
-    const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
+    const gap = 14;
+    const preferLeft = triggerRect.left > w * 0.55;
+    const x = preferLeft ? triggerRect.left - panelW - gap : triggerRect.right + gap;
+    const maxY = Math.max(VIEWPORT_MARGIN, h - panelH - VIEWPORT_MARGIN);
+    const rawY = triggerRect.top + (triggerRect.height - panelH) / 2;
 
     return {
       x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN)),
