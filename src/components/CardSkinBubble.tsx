@@ -64,16 +64,43 @@ const VIEWPORT_MARGIN = 16;
 const SIDE_SAFE_OFFSET = 92;
 
 /** Returns a position that keeps the panel on screen and clear of the bottom-left settings panel. */
-const safeDefault = () => {
+const getTriggerAnchor = (selector: string) => {
+  if (typeof document === "undefined") return null;
+  const trigger = document.querySelector(selector) as HTMLElement | null;
+  if (!trigger) return null;
+  const rect = trigger.getBoundingClientRect();
+  return rect;
+};
+
+const preferredRightAnchor = (width: number, selector?: string) => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const panelW = Math.min(Math.round(w * 0.9), PANEL_W);
-  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : SIDE_SAFE_OFFSET + 10;
+  const panelW = Math.min(width, Math.min(Math.round(w * 0.9), PANEL_W));
+  const triggerRect = selector ? getTriggerAnchor(selector) : null;
+
+  if (triggerRect) {
+    const gap = 12;
+    const prefersRight = triggerRect.left < w / 2;
+    const x = prefersRight
+      ? Math.min(triggerRect.right + gap, Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN))
+      : Math.max(VIEWPORT_MARGIN, triggerRect.left - panelW - gap);
+    const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
+    const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
+
+    return {
+      x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN)),
+      y: Math.min(Math.max(rawY, VIEWPORT_MARGIN), maxY),
+    };
+  }
+
+  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : w < 600 ? 12 : 18;
   return {
     x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
     y: w < 600 ? 24 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.08)),
   };
 };
+
+const safeDefault = () => preferredRightAnchor(PANEL_W, "[aria-label='Apparence des cartes']");
 
 /** Clamp a saved position so it stays fully visible after a resize or device change. */
 const clampPos = (x: number, y: number) => ({
@@ -132,6 +159,18 @@ const getBottomBarRect = (): PanelRect => {
   return { x: 0, y: h - reserved, w, h: reserved };
 };
 
+const clampInsideViewport = (x: number, y: number, w: number, h: number) => {
+  const minX = VIEWPORT_MARGIN;
+  const minY = VIEWPORT_MARGIN;
+  const maxX = Math.max(minX, window.innerWidth - w - minX);
+  const maxY = Math.max(minY, window.innerHeight - h - minY);
+
+  return {
+    x: Math.min(Math.max(x, minX), maxX),
+    y: Math.min(Math.max(y, minY), maxY),
+  };
+};
+
 const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
   const gap = 12;
   const blockers: PanelRect[] = [
@@ -142,36 +181,27 @@ const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: n
       .sort(([left], [right]) => getPriority(right) - getPriority(left))
       .map(([, rect]) => rect),
   ];
+
   let rect = { x, y, w, h };
+  rect = { ...rect, ...clampInsideViewport(rect.x, rect.y, rect.w, rect.h) };
 
-  rect.x = Math.min(Math.max(rect.x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN));
-  rect.y = Math.min(Math.max(rect.y, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN));
-
-  for (let i = 0; i < 8; i += 1) {
+  for (let i = 0; i < 12; i += 1) {
     const hit = blockers.find((b) => overlaps(rect, b));
     if (!hit) break;
 
-    let nextX = hit.x - rect.w - gap;
-    if (nextX < VIEWPORT_MARGIN) {
-      nextX = hit.x + hit.w + gap;
-    }
-    if (nextX > window.innerWidth - rect.w - VIEWPORT_MARGIN) {
-      nextX = rect.x;
-    }
+    const candidates = [
+      { x: hit.x + hit.w + gap, y: rect.y },
+      { x: hit.x - rect.w - gap, y: rect.y },
+      { x: rect.x, y: hit.y + hit.h + gap },
+      { x: rect.x, y: hit.y - rect.h - gap },
+      { x: Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN), y: rect.y },
+      { x: VIEWPORT_MARGIN, y: rect.y },
+      { x: rect.x, y: Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN) },
+      { x: rect.x, y: VIEWPORT_MARGIN },
+    ].map((candidate) => ({ ...candidate, ...clampInsideViewport(candidate.x, candidate.y, rect.w, rect.h) }));
 
-    let nextY = rect.y;
-    if (nextX === rect.x) {
-      nextY = hit.y + hit.h + gap;
-      if (nextY > window.innerHeight - rect.h - VIEWPORT_MARGIN) {
-        nextY = Math.max(VIEWPORT_MARGIN, hit.y - rect.h - gap);
-      }
-    }
-
-    rect = {
-      ...rect,
-      x: Math.min(Math.max(nextX, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN)),
-      y: Math.min(Math.max(nextY, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN)),
-    };
+    const nextRect = candidates.find((candidate) => !blockers.some((blocker) => overlaps(candidate, blocker))) ?? clampInsideViewport(rect.x, rect.y, rect.w, rect.h);
+    rect = { ...rect, ...nextRect };
   }
 
   return { x: rect.x, y: rect.y };
@@ -298,28 +328,28 @@ export const CardSkinBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none rounded-2xl border border-white/40 bg-white/20 p-3 text-white shadow-[0_20px_56px_rgba(0,0,0,0.3)] backdrop-blur-2xl w-[min(90vw,290px)]"
-          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px` }}
+          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,290px)] max-w-[calc(100vw-24px)] overflow-x-hidden"
+          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
         >
-          <div className="mb-2 flex cursor-grab select-none items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.25em] text-white/70">
+          <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70">
               <Move className="h-3.5 w-3.5" />
-              Apparence des cartes
+              Apparence
             </span>
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Fermer le panneau apparence des cartes"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/8 text-white/90 transition-colors hover:bg-white/15"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="grid grid-cols-5 gap-3 sm:grid-cols-6">
+          <div className="grid grid-cols-5 gap-3 p-3 sm:grid-cols-6">
             {SKINS.map((s) => (
               <button
                 key={s.key}
@@ -345,7 +375,8 @@ export const CardSkinBubble = () => {
           setOpen((o) => {
             const next = !o;
             if (next) {
-              const base = panelPos ?? safeDefault();
+              const width = panelRef.current?.offsetWidth || Math.min(Math.round(window.innerWidth * 0.9), PANEL_W);
+              const base = preferredRightAnchor(width, "[aria-label='Apparence des cartes']");
               const resolved = placePanel(base);
               setPanelPos(resolved);
               localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
@@ -354,6 +385,7 @@ export const CardSkinBubble = () => {
           });
         }}
         aria-label="Apparence des cartes"
+        data-floating-trigger="card-skin"
         className="fixed bottom-5 left-4 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/90 shadow-[0_10px_30px_hsl(var(--primary)/0.45)] backdrop-blur-xl transition-all hover:scale-110 sm:left-5"
       >
         {open ? <X className="h-5 w-5" /> : <Layers className="h-5 w-5" />}
