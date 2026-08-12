@@ -98,12 +98,18 @@ const preferredRightAnchor = (width: number, selector?: string) => {
 
   if (triggerRect) {
     const gap = 12;
-    const x = triggerRect.right + gap;
+    const spaceRight = w - triggerRect.right - VIEWPORT_MARGIN;
+    const spaceLeft = triggerRect.left - VIEWPORT_MARGIN;
+    const useRight = spaceRight >= panelW + gap || spaceRight >= spaceLeft;
+    const x = useRight ? triggerRect.right + gap : triggerRect.left - panelW - gap;
     const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
     const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
 
     return {
-      x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN)),
+      x: Math.min(
+        Math.max(x, VIEWPORT_MARGIN),
+        Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN),
+      ),
       y: Math.min(Math.max(rawY, VIEWPORT_MARGIN), maxY),
     };
   }
@@ -261,7 +267,11 @@ export const CatalogCardColorBubble = () => {
       ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
       : estimatePanelSize();
     const clamped = clampPos(base.x, base.y);
-    return resolveNonOverlapping(PANEL_ID, clamped.x, clamped.y, size.w, size.h);
+    const positioned = resolveNonOverlapping(PANEL_ID, clamped.x, clamped.y, size.w, size.h);
+    return {
+      x: Math.min(Math.max(positioned.x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - size.w - VIEWPORT_MARGIN)),
+      y: Math.min(Math.max(positioned.y, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerHeight - size.h - VIEWPORT_MARGIN)),
+    };
   };
 
   useEffect(() => {
@@ -357,7 +367,7 @@ export const CatalogCardColorBubble = () => {
       {open && panelPos && (
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,340px)] max-w-[calc(100vw-24px)] max-h-[80vh] overflow-y-auto overflow-x-hidden"
+          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,340px)] min-w-0 max-w-[calc(100vw-24px)] max-h-[80vh] overflow-y-auto overflow-x-hidden"
           style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
           onPointerDown={onDown}
           onPointerMove={onMove}
