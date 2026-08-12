@@ -57,7 +57,7 @@ const SKINS: Skin[] = [
 
 const STORAGE = "lovanet:card-skin";
 // v3 key forces refresh from old overlapping positions
-const POSITION_STORAGE = "lovanet:card-skin-pos-v3";
+const POSITION_STORAGE = "lovanet:card-skin-pos-v4";
 
 const PANEL_W = 290;
 const VIEWPORT_MARGIN = 16;
@@ -80,10 +80,7 @@ const preferredRightAnchor = (width: number, selector?: string) => {
 
   if (triggerRect) {
     const gap = 12;
-    const prefersRight = triggerRect.left < w / 2;
-    const x = prefersRight
-      ? Math.min(triggerRect.right + gap, Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN))
-      : Math.max(VIEWPORT_MARGIN, triggerRect.left - panelW - gap);
+    const x = triggerRect.right + gap;
     const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
     const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
 
@@ -198,10 +195,15 @@ const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: n
       { x: VIEWPORT_MARGIN, y: rect.y },
       { x: rect.x, y: Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN) },
       { x: rect.x, y: VIEWPORT_MARGIN },
-    ].map((candidate) => ({ ...candidate, ...clampInsideViewport(candidate.x, candidate.y, rect.w, rect.h) }));
+    ].map((candidate) => {
+      const clamped = clampInsideViewport(candidate.x, candidate.y, rect.w, rect.h);
+      return { x: clamped.x, y: clamped.y, w: rect.w, h: rect.h };
+    });
 
-    const nextRect = candidates.find((candidate) => !blockers.some((blocker) => overlaps(candidate, blocker))) ?? clampInsideViewport(rect.x, rect.y, rect.w, rect.h);
-    rect = { ...rect, ...nextRect };
+    const fallback = clampInsideViewport(rect.x, rect.y, rect.w, rect.h);
+    const nextRect = candidates.find((candidate) => !blockers.some((blocker) => overlaps(candidate, blocker)))
+      ?? { x: fallback.x, y: fallback.y, w: rect.w, h: rect.h };
+    rect = { ...rect, x: nextRect.x, y: nextRect.y };
   }
 
   return { x: rect.x, y: rect.y };

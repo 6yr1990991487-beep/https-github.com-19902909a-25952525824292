@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye, EyeOff, Video, VideoOff, Check } from "lucide-react";
 import { usePerformance } from "@/contexts/PerformanceContext";
 
