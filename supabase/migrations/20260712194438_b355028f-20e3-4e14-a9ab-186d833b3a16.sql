@@ -51,35 +51,14 @@ create trigger trg_ymv_backup
   after insert or update on public.youtube_manga_videos
   for each row execute function public._ymv_backup_trg();
 
-do $$
-declare
-  anon_key text := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2Z2Z4enp3dWhqaGZxc2l5bHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMjkzNzgsImV4cCI6MjA4NzcwNTM3OH0.1et7WeiRnOKbqTLamK4M01Ac2OFC_v1r6LqFg5goga0';
-  project_url text := 'https://pvgfxzzwuhjhfqsiylpr.supabase.co';
-begin
-  perform cron.unschedule(jobid) from cron.job
-    where jobname in ('lovanet-sync-videos', 'lovanet-youtube-anime-sync');
+-- NOTE: The following cron scheduling block previously embedded a project
+-- anon key directly in the migration. Storing secrets in repository history is
+-- unsafe. If you need to schedule these cron jobs, run equivalent SQL via a
+-- secure deploy-time process and supply the anon key from a secrets manager.
 
-  perform cron.schedule(
-    'lovanet-sync-videos',
-    '*/30 * * * *',
-    format($f$
-      select net.http_post(
-        url := '%s/functions/v1/sync-videos',
-        headers := jsonb_build_object('Content-Type','application/json','Authorization','Bearer %s'),
-        body := '{}'::jsonb
-      );
-    $f$, project_url, anon_key)
-  );
-
-  perform cron.schedule(
-    'lovanet-youtube-anime-sync',
-    '17 */6 * * *',
-    format($f$
-      select net.http_post(
-        url := '%s/functions/v1/youtube-anime-sync',
-        headers := jsonb_build_object('Content-Type','application/json','Authorization','Bearer %s'),
-        body := '{}'::jsonb
-      );
-    $f$, project_url, anon_key)
-  );
-end $$;
+-- Example (to be run outside of repo with a real key):
+-- perform cron.schedule('lovanet-sync-videos', '*/30 * * * *', format($f$
+--   select net.http_post(url := '%s/functions/v1/sync-videos',
+--     headers := jsonb_build_object('Content-Type','application/json','Authorization','Bearer %s'),
+--     body := '{}'::jsonb);
+-- $f$, project_url, ANON_KEY));
