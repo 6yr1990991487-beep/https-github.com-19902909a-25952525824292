@@ -282,7 +282,8 @@ export default function RootLandingPage() {
     document.body.removeAttribute("data-hide-videos");
     const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
     nodes.forEach((node) => {
-      const video = node as HTMLVideoElement;
+      const video = node;
+      if (!(video instanceof HTMLVideoElement)) return;
       try {
         video.muted = true;
         const playPromise = video.play();

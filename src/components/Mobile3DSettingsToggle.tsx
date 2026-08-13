@@ -1,6 +1,46 @@
-import { useEffect, useRef, useState } from "react";
-import { Eye, EyeOff, Video, VideoOff, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Eye, EyeOff, Video, VideoOff, Check, X } from "lucide-react";
 import { usePerformance } from "@/contexts/PerformanceContext";
+
+const DetachedBubblePanel = ({
+  panelId,
+  open,
+  onClose,
+  className,
+  children,
+}: {
+  panelId: string;
+  open: boolean;
+  onClose: () => void;
+  className?: string;
+  children: React.ReactNode;
+}) => {
+  if (!open) return null;
+  return (
+    <div
+      id={panelId}
+      className="fixed inset-0 z-[9998] flex items-end justify-center bg-black/30 p-4 sm:items-center sm:p-6"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className={`relative w-full max-w-[420px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl ${className ?? ""}`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          aria-label="Fermer"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
 
 const DECOR_GROUPS = [
   { group: "marine", label: "🌊 Océan", emoji: "🌊", color: "#38bdf8", items: [
@@ -107,9 +147,6 @@ export function Mobile3DSettingsToggle() {
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
   );
-  const [panelPos, setPanelPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(activeDecors)); } catch {}
@@ -173,44 +210,6 @@ export function Mobile3DSettingsToggle() {
   const anyOff = !decorOverlayEnabled || disableVideos;
   const buttonRight = isDesktop ? 24 : 14;
 
-  const getPanelPosition = () => {
-    const trigger = triggerRef.current;
-    const panelWidth = panelRef.current?.offsetWidth || (isDesktop ? 320 : Math.min(window.innerWidth - 24, 320));
-    const panelHeight = panelRef.current?.offsetHeight || (isDesktop ? 450 : 520);
-    const margin = 12;
-
-    if (!trigger) {
-      return {
-        x: Math.max(margin, window.innerWidth - panelWidth - margin),
-        y: Math.max(margin, Math.min(window.innerHeight * 0.22, window.innerHeight - panelHeight - margin)),
-      };
-    }
-
-    const rect = trigger.getBoundingClientRect();
-    let x = rect.right + 12;
-    let y = rect.top + (rect.height - panelHeight) / 2;
-
-    const maxX = Math.max(margin, window.innerWidth - panelWidth - margin);
-    const maxY = Math.max(margin, window.innerHeight - panelHeight - margin);
-
-    x = Math.min(Math.max(x, margin), maxX);
-    y = Math.min(Math.max(y, margin), maxY);
-
-    return { x, y };
-  };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const syncPosition = () => setPanelPos(getPanelPosition());
-    syncPosition();
-    window.addEventListener("resize", syncPosition);
-    window.addEventListener("scroll", syncPosition, true);
-    return () => {
-      window.removeEventListener("resize", syncPosition);
-      window.removeEventListener("scroll", syncPosition, true);
-    };
-  }, [isOpen, isDesktop]);
-
   return (
     <>
       <style>{`
@@ -219,17 +218,8 @@ export function Mobile3DSettingsToggle() {
       `}</style>
       {/* Main orb button */}
       <button
-        ref={triggerRef}
         type="button"
-        onClick={() => {
-          setIsOpen((v) => {
-            const next = !v;
-            if (next) {
-              setPanelPos(getPanelPosition());
-            }
-            return next;
-          });
-        }}
+        onClick={() => setIsOpen((v) => !v)}
         aria-label="Arrière-plans et décors"
         style={{
           position: "fixed",
@@ -251,23 +241,13 @@ export function Mobile3DSettingsToggle() {
         <OrbIcon anyOff={anyOff} />
       </button>
 
-      {/* Panel — independently centered on screen */}
-      {isOpen && (
-        <div
-          ref={panelRef}
-          style={{
-            position: "fixed",
-            left: `${panelPos.x}px`,
-            top: `${panelPos.y}px`,
-            zIndex: 10050,
-            background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
-            borderRadius: 20, padding: "12px 12px 10px",
-            width: isDesktop ? 320 : "min(86vw, 320px)",
-            maxHeight: "min(78vh, 620px)",
-            backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
-            display: "flex", flexDirection: "column", gap: 10,
-          }}
-        >
+      <DetachedBubblePanel
+        panelId="visual-settings"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="detached-bubble-panel--settings"
+      >
+        <div style={{ padding: "12px 12px 10px", display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {/* Tabs */}
             <div style={{ display: "flex", gap: 5 }}>
@@ -339,12 +319,12 @@ export function Mobile3DSettingsToggle() {
                           >
                             <span style={{
                               width: 14, height: 14, borderRadius: 4,
-                              border: `1.5px solid ${status.all ? "#ffffff" : status.some ? "#ffffff" : "rgba(255,255,255,0.2)"}`,
-                              background: status.all ? "rgba(255,255,255,0.95)" : status.some ? "rgba(255,255,255,0.45)" : "transparent",
+                              border: `1.5px solid ${status.all ? "rgba(255,255,255,0.72)" : status.some ? "rgba(255,255,255,0.52)" : "rgba(255,255,255,0.16)"}`,
+                              background: status.all ? "rgba(255,255,255,0.14)" : status.some ? "rgba(255,255,255,0.08)" : "transparent",
                               display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
                               {status.all && <Check size={9} color="#000" />}
-                              {status.some && <span style={{ width: 6, height: 2, background: "#fff", borderRadius: 2, display: "block" }} />}
+                              {status.some && <span style={{ width: 6, height: 2, background: "rgba(255,255,255,0.88)", borderRadius: 2, display: "block" }} />}
                             </span>
                           </button>
 
@@ -356,7 +336,7 @@ export function Mobile3DSettingsToggle() {
                               flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between",
                               gap: 6, padding: "7px 10px 7px 4px", border: "none",
                               background: "transparent", cursor: "pointer",
-                              color: status.some || status.all ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.55)",
+                              color: status.some || status.all ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.45)",
                               fontSize: 12, fontWeight: 600,
                             }}
                           >
@@ -398,20 +378,20 @@ export function Mobile3DSettingsToggle() {
                 <div style={{ display: "flex", gap: 5, paddingTop: 2 }}>
                   <button type="button" onClick={() => setActiveDecors(ALL_KEYS)} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.12)",
-                    color: "#ffffff", cursor: "pointer",
+                    border: "1px solid rgba(255,255,255,0.22)", background: "rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.92)", cursor: "pointer",
                   }}>Tout activer</button>
                   <button type="button" onClick={() => setActiveDecors([])} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)",
-                    color: "rgba(255,255,255,0.45)", cursor: "pointer",
+                    border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)",
+                    color: "rgba(255,255,255,0.65)", cursor: "pointer",
                   }}>Tout effacer</button>
                 </div>
               </>
             )}
           </div>
         </div>
-      )}
+      </DetachedBubblePanel>
     </>
   );
 }
