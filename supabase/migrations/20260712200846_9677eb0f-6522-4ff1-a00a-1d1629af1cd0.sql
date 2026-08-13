@@ -33,7 +33,8 @@ SELECT cron.schedule(
     url := 'https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/sync-videos',
     headers := jsonb_build_object(
       'Content-Type','application/json',
-      'apikey','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2Z2Z4enp3dWhqaGZxc2l5bHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMjkzNzgsImV4cCI6MjA4NzcwNTM3OH0.1et7WeiRnOKbqTLamK4M01Ac2OFC_v1r6LqFg5goga0',
+      -- DO NOT COMMIT SECRETS: supply the apikey (anon key) at deploy-time
+      'apikey','REDACTED_ANON_KEY',
       'x-sync-secret', internal.sync_secret_header()
     ),
     body := jsonb_build_object('triggered_at', now(), 'source', 'cron-5min')
@@ -49,7 +50,8 @@ SELECT cron.schedule(
     url := 'https://pvgfxzzwuhjhfqsiylpr.supabase.co/functions/v1/youtube-anime-sync',
     headers := jsonb_build_object(
       'Content-Type','application/json',
-      'apikey','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2Z2Z4enp3dWhqaGZxc2l5bHByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxMjkzNzgsImV4cCI6MjA4NzcwNTM3OH0.1et7WeiRnOKbqTLamK4M01Ac2OFC_v1r6LqFg5goga0',
+      -- DO NOT COMMIT SECRETS: supply the apikey (anon key) at deploy-time
+      'apikey','REDACTED_ANON_KEY',
       'x-sync-secret', internal.sync_secret_header()
     ),
     body := jsonb_build_object('scheduled_at', now(), 'source', 'cron-5min')
