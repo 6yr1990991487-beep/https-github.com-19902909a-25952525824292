@@ -101,12 +101,13 @@ const catalogBatchSize = 12;
 const catalogRowSize = 6;
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
+  { id: "b1", src: "/drive-bg.mp4", label: "Bannière hero (haut)" },
   { id: "b2", src: "", label: "Carte du haut" },
   { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
 ];
 const BANNER_STATE_KEY = "lovanet.home.banners.v2";
 const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
+const HERO_BANNER_ROTATE_INTERVAL_MS = 18000;
 
 const loadHomeBanners = () => {
   const byId = Object.fromEntries(DEFAULT_HOME_BANNERS.map((b) => [b.id, b]));
@@ -165,6 +166,20 @@ export default function RootLandingPage() {
 
   const heroBanner = homeBanners[0];
   const cardBanners = [homeBanners[1], homeBanners[2]];
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
+
+  const activeBannerVideoSrc = isMobileScreen
+    ? heroBanner?.src || "/custom-hero-banner-mobile.mp4"
+    : heroBanner?.src || "/custom-hero-banner-web.mp4";
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const sync = () => setIsMobileScreen(media.matches);
+    sync();
+    media.addEventListener?.("change", sync);
+    return () => media.removeEventListener?.("change", sync);
+  }, []);
+
 
   const persistBanners = (next) => {
     setHomeBanners(next);
@@ -262,6 +277,23 @@ export default function RootLandingPage() {
       playPromise.catch(() => {});
     }
   }, [heroBanner?.id, heroBanner?.visible]);
+
+  useEffect(() => {
+    document.body.removeAttribute("data-hide-videos");
+    const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
+    nodes.forEach((node) => {
+      const video = node as HTMLVideoElement;
+      try {
+        video.muted = true;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      } catch (error) {
+        // ignore autoplay issues
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -365,11 +397,12 @@ export default function RootLandingPage() {
             >
               {heroBanner && heroBanner.visible !== false ? (
                 <video
+                  key={activeBannerVideoSrc}
                   ref={bannerVideoRef}
                   className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
                   autoPlay
-                  muted
                   loop
+                  muted
                   playsInline
                   preload="auto"
                   decoding="async"
@@ -378,9 +411,42 @@ export default function RootLandingPage() {
                   data-testid="hero-banner-background-video"
                   data-bg-video
                   poster="/custom-hero-banner-poster.jpg"
+                  onPause={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video || video.ended) return;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onWaiting={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video || video.ended) return;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onEnded={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video) return;
+                    video.currentTime = 0;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onError={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video) return;
+                    video.load();
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
                 >
-                  <source src="/custom-hero-banner-mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
-                  <source src={heroBanner.src} type="video/mp4" />
+                  <source src={activeBannerVideoSrc} type="video/mp4" />
                 </video>
               ) : (
                 <div
