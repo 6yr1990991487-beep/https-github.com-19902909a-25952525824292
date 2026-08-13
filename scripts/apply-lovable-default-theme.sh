@@ -5,7 +5,15 @@ set -euo pipefail
 # Usage: bash scripts/apply-lovable-default-theme.sh [branch]
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BRANCH="${1:-conflict_290726_1841}"
+SYNC_TARGET_FILE="$ROOT_DIR/.lovable/sync-target.env"
+if [[ -f "$SYNC_TARGET_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$SYNC_TARGET_FILE"
+fi
+
+SYNC_REMOTE_NAME="${LOVABLE_SYNC_REMOTE_NAME:-lovable-sync}"
+SYNC_REMOTE_URL="${LOVABLE_SYNC_REMOTE_URL:-$(git -C "$ROOT_DIR" remote get-url origin)}"
+BRANCH="${1:-${LOVABLE_SYNC_BRANCH:-fix-right-anchor-lovable}}"
 THEME_ID="mint-vibrant-cyber"
 
 FILES=(
@@ -16,9 +24,15 @@ FILES=(
 echo "Using branch: $BRANCH"
 cd "$ROOT_DIR"
 
+if git remote get-url "$SYNC_REMOTE_NAME" >/dev/null 2>&1; then
+  git remote set-url "$SYNC_REMOTE_NAME" "$SYNC_REMOTE_URL"
+else
+  git remote add "$SYNC_REMOTE_NAME" "$SYNC_REMOTE_URL"
+fi
+
 if ! git rev-parse --verify "$BRANCH" >/dev/null 2>&1; then
   echo "Branch '$BRANCH' does not exist locally. Fetching from origin..."
-  git fetch origin "$BRANCH":"$BRANCH"
+  git fetch "$SYNC_REMOTE_NAME" "$BRANCH":"$BRANCH"
 fi
 
 git checkout "$BRANCH"
@@ -42,10 +56,10 @@ done
 
 if [[ "$git_status_changed" == true ]]; then
   git commit -m "Apply Lovable default theme: $THEME_ID"
-  git push origin "$BRANCH"
+  git push "$SYNC_REMOTE_NAME" "$BRANCH"
   echo "Committed and pushed changes to branch $BRANCH."
 else
   echo "No changes needed. Theme already set to $THEME_ID in available files."
 fi
 
-echo "Done. If you need to publish from Lovable, use branch $BRANCH."
+echo "Done. If you need to publish from Lovable, use remote $SYNC_REMOTE_NAME and branch $BRANCH."

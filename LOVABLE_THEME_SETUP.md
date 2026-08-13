@@ -17,8 +17,22 @@ Assurer que le projet actif utilise la bonne configuration de thème et que cell
 
 ## Branches de publication
 
-Le projet Lovable actuel surveille la branche :
-- `conflict_290726_1841`
+Le projet Lovable actuel doit surveiller la branche :
+- `fix-right-anchor-lovable`
+
+## Cible de synchronisation verrouillée
+
+Le push helper lit ce fichier pour éviter tout envoi vers un ancien repo ou un mauvais remote :
+
+- `.lovable/sync-target.env`
+
+La cible courante est :
+
+- repo : `https://github.com/lijk7677-dev/lovanet-fr-4dc85ff8.git`
+- remote local : `lovable-sync`
+- branche : `fix-right-anchor-lovable`
+
+Si Lovable recrée encore un repo au reconnect, mets à jour ce seul fichier pour changer la cible de publication.
 
 ## Script d'application
 
@@ -31,12 +45,12 @@ bash scripts/apply-lovable-default-theme.sh [branch]
 ### Exemple
 
 ```bash
-bash scripts/apply-lovable-default-theme.sh conflict_290726_1841
+bash scripts/apply-lovable-default-theme.sh fix-right-anchor-lovable
 ```
 
 ## Ce que fait le script
 
-1. Bascule sur la branche spécifiée (par défaut `conflict_290726_1841`).
+1. Bascule sur la branche spécifiée (par défaut `fix-right-anchor-lovable`).
 2. Met à jour les fichiers `ThemeBubble.tsx` suivants si nécessaire :
    - `src/components/ThemeBubble.tsx`
    - `frontend/src/components/ThemeBubble.tsx`
@@ -48,12 +62,12 @@ bash scripts/apply-lovable-default-theme.sh conflict_290726_1841
 
 1. Clonez le dépôt :
    ```bash
-git clone git@github.com:lijk7677-dev/lovanet-fr.git
-cd lovanet-fr
+git clone git@github.com:lijk7677-dev/lovanet-fr-4dc85ff8.git
+cd lovanet-fr-4dc85ff8
 ```
 2. Exécutez le script :
    ```bash
-bash scripts/apply-lovable-default-theme.sh conflict_290726_1841
+   bash scripts/apply-lovable-default-theme.sh fix-right-anchor-lovable
 ```
 3. Vérifiez que les fichiers ont bien été modifiés :
    ```bash
