@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
 import { HoverPreview } from "@/components/HoverPreview";
@@ -9,6 +9,9 @@ import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallba
 import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
+import portalHeroVideo1 from "@/assets/portal-hero-video-1.mp4";
+import portalHeroVideo2 from "@/assets/portal-hero-video-2.mp4";
+import portalHeroVideo3 from "@/assets/portal-hero-video-3.mp4";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
@@ -99,9 +102,17 @@ const portalRotationIntervalMs = 10000;
 const catalogRotationIntervalMs = 12000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
+
+const PORTAL_HERO_BANNER_VIDEOS = [
+  "/drive-bg.mp4",
+  portalHeroVideo1,
+  portalHeroVideo2,
+  portalHeroVideo3,
+];
+
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
+  { id: "b1", src: PORTAL_HERO_BANNER_VIDEOS, label: "Bannière hero (haut)" },
   { id: "b2", src: "", label: "Carte du haut" },
   { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
 ];
@@ -165,6 +176,35 @@ export default function RootLandingPage() {
 
   const heroBanner = homeBanners[0];
   const cardBanners = [homeBanners[1], homeBanners[2]];
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
+  const [heroVideoIndex, setHeroVideoIndex] = useState(0);
+
+  const heroBannerSources = Array.isArray(heroBanner?.src)
+    ? heroBanner.src.filter(Boolean)
+    : typeof heroBanner?.src === "string" && heroBanner.src
+    ? [heroBanner.src]
+    : [];
+
+  useEffect(() => {
+    setHeroVideoIndex(0);
+  }, [heroBanner?.src, isMobileScreen]);
+
+  const activeBannerVideoSrc = heroBannerSources[heroVideoIndex] ||
+    (isMobileScreen ? "/custom-hero-banner-mobile.mp4" : "/custom-hero-banner-web.mp4");
+
+  const showPlaylist = heroBannerSources.length > 1;
+  const advanceHeroBannerVideo = useCallback(() => {
+    if (heroBannerSources.length <= 1) return;
+    setHeroVideoIndex((current) => (current + 1) % heroBannerSources.length);
+  }, [heroBannerSources.length]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const sync = () => setIsMobileScreen(media.matches);
+    sync();
+    media.addEventListener?.("change", sync);
+    return () => media.removeEventListener?.("change", sync);
+  }, []);
 
   const persistBanners = (next) => {
     setHomeBanners(next);
@@ -365,11 +405,12 @@ export default function RootLandingPage() {
             >
               {heroBanner && heroBanner.visible !== false ? (
                 <video
+                  key={`${activeBannerVideoSrc}-${heroVideoIndex}`}
                   ref={bannerVideoRef}
                   className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
                   autoPlay
+                  loop={!showPlaylist}
                   muted
-                  loop
                   playsInline
                   preload="auto"
                   decoding="async"
@@ -378,9 +419,50 @@ export default function RootLandingPage() {
                   data-testid="hero-banner-background-video"
                   data-bg-video
                   poster="/custom-hero-banner-poster.jpg"
+                  onPause={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video || video.ended) return;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onWaiting={() => {
+                    const video = bannerVideoRef.current;
+                    if (!video || video.ended) return;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onEnded={() => {
+                    if (showPlaylist) {
+                      advanceHeroBannerVideo();
+                      return;
+                    }
+                    const video = bannerVideoRef.current;
+                    if (!video) return;
+                    video.currentTime = 0;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
+                  onError={() => {
+                    if (showPlaylist) {
+                      advanceHeroBannerVideo();
+                      return;
+                    }
+                    const video = bannerVideoRef.current;
+                    if (!video) return;
+                    video.load();
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === "function") {
+                      playPromise.catch(() => {});
+                    }
+                  }}
                 >
-                  <source src="/custom-hero-banner-mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
-                  <source src={heroBanner.src} type="video/mp4" />
+                  <source src={activeBannerVideoSrc} type="video/mp4" />
                 </video>
               ) : (
                 <div
