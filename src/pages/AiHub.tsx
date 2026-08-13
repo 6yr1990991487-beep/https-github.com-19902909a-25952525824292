@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import bannerVideo from '@/assets/video_banner_compressed.mp4';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +9,15 @@ import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from 
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) {
+      const p = v.play();
+      if (p && typeof p.then === 'function') p.catch(() => {});
+    }
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -67,7 +77,21 @@ export const AiHub = () => {
   return (
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
-        
+        {/* Video Banner */}
+        <div className="w-full mb-6">
+          <video
+            ref={videoRef}
+            src={bannerVideo}
+            className="w-full h-72 md:h-96 object-cover rounded-2xl overflow-hidden"
+            autoPlay
+            loop
+            playsInline
+            controls
+            preload="metadata"
+            controlsList="nodownload noremoteplayback"
+          />
+        </div>
+
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button 
