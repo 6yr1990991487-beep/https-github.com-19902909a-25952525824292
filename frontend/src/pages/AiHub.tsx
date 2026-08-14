@@ -67,7 +67,19 @@ export const AiHub = () => {
   return (
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
-        
+        {/* Top video banner added from Drive (requested) */}
+        <div className="w-full mb-6 overflow-hidden rounded-2xl border border-white/6">
+          <video
+            className="w-full h-48 object-cover object-center"
+            src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            data-testid="aihubs-top-banner-video"
+          />
+        </div>
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button 
