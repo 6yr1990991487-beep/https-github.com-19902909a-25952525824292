@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png?v=5">
+    <link rel="apple-touch-icon" href="/lovanet-icon-180.png?v=5" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -176,30 +176,11 @@
     ]
   }
   </script>
-</head>
+  <script type="module" crossorigin src="/assets/index-Y6Q9A3zr.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BMg5obgN.css">
+<script defer src="/~flock.js" data-proxy-url="/~api/analytics"></script></head>
 
   <body>
-    <script>
-      // If an old service worker is active and serving cached app shells,
-      // unregister it and clear caches once, then reload to fetch fresh assets.
-      (function(){
-        try {
-          if ('serviceWorker' in navigator && !sessionStorage.getItem('lovanet_index_sw_unregistered')) {
-            navigator.serviceWorker.getRegistrations().then(function(regs){
-              return Promise.all(regs.map(function(r){ return r.unregister(); }));
-            }).then(function(){
-              return caches.keys().then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); });
-            }).then(function(){
-              sessionStorage.setItem('lovanet_index_sw_unregistered','1');
-              // reload so the browser fetches the updated resources from server
-              location.reload(true);
-            }).catch(function(){/* ignore */});
-          }
-        } catch (e) {
-          // ignore
-        }
-      })();
-    </script>
     <div id="root"></div>
     <noscript>
       <nav aria-label="Lovanet : Plan du site">
@@ -216,6 +197,5 @@
         </ul>
       </nav>
     </noscript>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
