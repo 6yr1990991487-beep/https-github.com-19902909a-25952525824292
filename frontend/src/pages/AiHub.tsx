@@ -1,11 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
-import aiHubBannerVideo from '@/assets/aihub-banner.mp4';
+import VideoWithFallback from '@/components/VideoWithFallback';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
+
+const AI_HUB_DRIVE_VIDEO = 'https://drive.google.com/file/d/1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO/view?usp=drive_link';
+
+const resolveDriveVideoUrl = (input: string) => {
+  const match = input.match(/\/file\/d\/([^/]+)/);
+  if (match?.[1]) {
+    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+  }
+  return input;
+};
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
@@ -96,7 +106,7 @@ export const AiHub = () => {
       <div className="max-w-7xl w-full">
         {/* Top video banner added from Drive (requested) */}
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : { minHeight: '24rem' }}>
-          <video
+          <VideoWithFallback
             ref={videoRef}
             data-testid="aihubs-top-banner-video"
             className={`w-full h-full object-cover bg-black transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -107,6 +117,8 @@ export const AiHub = () => {
             preload="auto"
             controls
             controlsList="nodownload noremoteplayback"
+            src={resolveDriveVideoUrl(AI_HUB_DRIVE_VIDEO)}
+            fallbacks={["/banner-top.mp4", "/home-banner.mp4"]}
             onLoadedMetadata={(event) => {
               const target = event.currentTarget;
               if (target.videoWidth && target.videoHeight) {
@@ -120,11 +132,8 @@ export const AiHub = () => {
               const p = v.play();
               if (p && typeof p.then === 'function') p.catch(() => {});
             }}
-          >
-            <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
-            <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
-            <source src={aiHubBannerVideo} type="video/mp4" />
-          </video>
+            onError={() => setVideoLoaded(false)}
+          />
           <button
             type="button"
             onClick={toggleMute}
