@@ -56,7 +56,7 @@ const getActiveDecoratorIds = () => {
 };
 
 export function ThemeDecorOverlay() {
-  const { disableAnimations, decorOverlayEnabled } = usePerformance();
+  const { disableAnimations } = usePerformance();
   const [pointerX, setPointerX] = useState(50);
   const [pointerY, setPointerY] = useState(50);
   const [activeDecorIds, setActiveDecorIds] = useState<string[]>([]);
@@ -92,15 +92,10 @@ export function ThemeDecorOverlay() {
   }, []);
 
   const layers = useMemo(() => buildActiveLayers(activeDecorIds), [activeDecorIds]);
-  if (!decorOverlayEnabled || !activeDecorIds.length) return null;
+  if (disableAnimations || !activeDecorIds.length) return null;
 
   return (
-    <div
-      className="pointer-events-none absolute inset-0 overflow-hidden z-[10]"
-      data-3d-decor
-      data-animated-bg
-      style={{ isolation: "isolate", opacity: 1, mixBlendMode: "normal" }}
-    >
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" data-3d-decor data-animated-bg style={{ opacity: 0.9, mixBlendMode: "screen" }}>
       {layers.map((layer) => {
         const offsetX = (pointerX - 50) * layer.velocity;
         const offsetY = (pointerY - 50) * layer.velocity;

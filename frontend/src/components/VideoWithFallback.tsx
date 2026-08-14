@@ -1,59 +1,39 @@
-import { useMemo, useState } from "react";
-import type { VideoHTMLAttributes } from "react";
+import React, { useMemo, useState } from "react";
+import { siteFallbackVideo } from "@/lib/mediaFallback";
 
-type VideoWithFallbackProps = VideoHTMLAttributes<HTMLVideoElement> & {
+type VideoWithFallbackProps = React.VideoHTMLAttributes<HTMLVideoElement> & {
+  src: string;
   seed?: string;
 };
 
-const FALLBACKS = [
-  "linear-gradient(135deg, rgba(56,189,248,0.35), rgba(15,23,42,0.9))",
-  "linear-gradient(135deg, rgba(236,72,153,0.3), rgba(15,23,42,0.92))",
-  "linear-gradient(135deg, rgba(34,197,94,0.28), rgba(15,23,42,0.9))",
-  "linear-gradient(135deg, rgba(245,158,11,0.32), rgba(15,23,42,0.92))",
-];
+export default function VideoWithFallback({ src, seed, onError, ...props }: VideoWithFallbackProps) {
+  const fallbacks = useMemo(() => {
+    const list = [String(src)];
+    try {
+      const fb = siteFallbackVideo(seed || String(src));
+      if (fb && fb !== list[0]) list.push(fb);
+    } catch {}
+    if (!list.includes("/banner-top.mp4")) list.push("/banner-top.mp4");
+    return list;
+  }, [src, seed]);
 
-const pickFallback = (seed?: string) => {
-  if (!seed) return FALLBACKS[0];
-  let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  }
-  return FALLBACKS[hash % FALLBACKS.length];
-};
+  const [index, setIndex] = useState(0);
+  const current = fallbacks[index] || fallbacks[0];
 
-export default function VideoWithFallback({
-  seed,
-  className,
-  onError,
-  children,
-  ...props
-}: VideoWithFallbackProps) {
-  const [failed, setFailed] = useState(false);
-  const fallbackBg = useMemo(() => pickFallback(seed), [seed]);
-
-  if (failed) {
-    return (
-      <div
-        className={className}
-        style={{
-          background: fallbackBg,
-          display: "block",
-        }}
-        aria-hidden="true"
-      />
-    );
-  }
+  const handleError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    if (onError) {
+      try { onError(e); } catch {}
+    }
+    if (index < fallbacks.length - 1) {
+      setIndex((i) => i + 1);
+    }
+  };
 
   return (
     <video
       {...props}
-      className={className}
-      onError={(event) => {
-        setFailed(true);
-        onError?.(event);
-      }}
-    >
-      {children}
-    </video>
+      src={current}
+      onError={handleError}
+    />
   );
 }

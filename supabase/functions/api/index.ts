@@ -1,9 +1,6 @@
 // Lovanet API edge function: translation, news feeds, multilingual trailers.
-const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "https://lovanet.fr";
-const IMAGE_PROXY_ALLOWLIST = (Deno.env.get("IMAGE_PROXY_ALLOWLIST") || "").split(",").map((s) => s.trim()).filter(Boolean);
-const MAX_IMAGE_BYTES = Number(Deno.env.get("MAX_IMAGE_BYTES") || "5242880"); // 5MB default
 const corsHeaders = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
@@ -719,7 +716,7 @@ async function handleNewsDetail(slug: string) {
   return json({ item, related, source: item.source_id });
 }
 
-async function handleImageProxy(url: URL, req?: Request) {
+async function handleImageProxy(url: URL) {
   const target = url.searchParams.get("url");
   if (!target) return json({ error: "missing-url" }, 400);
 
@@ -733,19 +730,6 @@ async function handleImageProxy(url: URL, req?: Request) {
   if (parsed.username || parsed.password) return json({ error: "bad-url" }, 400);
   if (!["http:", "https:"].includes(parsed.protocol)) return json({ error: "unsupported-scheme" }, 400);
   if (await isPrivateTarget(parsed.hostname)) return json({ error: "blocked-host" }, 403);
-
-  // Require requests to originate from the allowed origin (browser requests include Origin)
-  const originHeader = (req && (req.headers.get("Origin") || req.headers.get("Referer"))) || "";
-  const hasValidOrigin = originHeader.startsWith(ALLOWED_ORIGIN);
-  const hasSyncSecret = req ? await requireSyncSecret(req) : false;
-  if (!hasValidOrigin && !hasSyncSecret) return json({ error: "forbidden" }, 403);
-
-  // If an allowlist is configured, only allow those hostnames (and subdomains)
-  if (IMAGE_PROXY_ALLOWLIST.length) {
-    const host = parsed.hostname.toLowerCase();
-    const allowed = IMAGE_PROXY_ALLOWLIST.some((allowedHost) => host === allowedHost || host.endsWith(`.${allowedHost}`));
-    if (!allowed) return json({ error: "blocked-host" }, 403);
-  }
 
   const fallback = () => Response.redirect(target, 302);
   try {
@@ -778,13 +762,8 @@ async function handleImageProxy(url: URL, req?: Request) {
     const contentType = String(res.headers.get("content-type") || "").toLowerCase();
     if (!contentType.startsWith("image/")) return fallback();
 
-    const contentLength = Number(res.headers.get("content-length") || "0");
-    if (contentLength > 0 && contentLength > MAX_IMAGE_BYTES) return json({ error: "too-large" }, 413);
-
-    const buffer = await res.arrayBuffer();
-    if (buffer.byteLength > MAX_IMAGE_BYTES) return json({ error: "too-large" }, 413);
-
-    return new Response(buffer, {
+    const body = await res.arrayBuffer();
+    return new Response(body, {
       headers: {
         ...corsHeaders,
         "Content-Type": contentType,
@@ -1015,15 +994,12 @@ Deno.serve(async (req) => {
   const route = path.replace(/^\/?api\b/, "").replace(/^\//, "").replace(/^api\//, "");
 
   try {
-    if (route === "translate" && req.method === "POST") {
-      if (!(await requireSyncSecret(req))) return json({ error: "unauthorized" }, 401);
-      return await handleTranslate(req);
-    }
+    if (route === "translate" && req.method === "POST") return await handleTranslate(req);
     if (route === "prime/multilingual-trailers") return await handleMultilingualTrailers(url);
     if (route === "prime/catalog") return await handlePrimeCatalog(url);
     if (route === "news/home") return await handleNewsHome();
-    if (route === "news/image-proxy") return await handleImageProxy(url, req);
-    if (route === "image-proxy") return await handleImageProxy(url, req);
+    if (route === "news/image-proxy") return await handleImageProxy(url);
+    if (route === "image-proxy") return await handleImageProxy(url);
     if (route === "sync/news" && req.method === "POST") {
       if (!(await requireSyncSecret(req))) return json({ error: "unauthorized" }, 401);
       const items = await loadNews(true);

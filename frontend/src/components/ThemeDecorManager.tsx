@@ -20,7 +20,7 @@ const DECOR_GROUPS = [
     group: "train",
     label: "Train",
     items: [
-      { key: "platform-sign", label: "Panneau animé", description: "Signalisation lumineuse clignotante." },
+      { key: "platform-sign", label: "Panneau animé", description: "Signalisation rétrofuturiste clignotante." },
       { key: "rail-arc", label: "Arc ferroviaire", description: "Arc lumineux et rails énergétiques." },
       { key: "signal-beam", label: "Faisceau signal", description: "Rayons dynamiques au-dessus du quai." },
       { key: "station-holo", label: "Holo gare", description: "Façade holographique et plateforme flottante." },
@@ -136,7 +136,7 @@ const generateDecorItems = () => DECOR_GROUPS.flatMap((group) => group.items.map
 const DECOR_MODELS = generateDecorItems();
 
 export function ThemeDecorManager() {
-  const { disableAnimations, decorOverlayEnabled, toggleAnimations, toggleDecorOverlay } = usePerformance();
+  const { disableAnimations } = usePerformance();
   const [activeDecorIds, setActiveDecorIds] = useState<string[]>(getStored);
   const [visible, setVisible] = useState(false);
   const [search, setSearch] = useState("");
@@ -155,20 +155,6 @@ export function ThemeDecorManager() {
     }
     window.dispatchEvent(new Event("lovanet:decor-update"));
   }, [activeDecorIds]);
-
-  // If user enables any decor while animations are disabled, turn animations back on.
-  useEffect(() => {
-    if (activeDecorIds.length > 0 && disableAnimations) {
-      try { toggleAnimations(); } catch { /* ignore */ }
-    }
-  }, [activeDecorIds, disableAnimations, toggleAnimations]);
-
-  // If user selects decors while the overlay is disabled, enable it.
-  useEffect(() => {
-    if (activeDecorIds.length > 0 && !decorOverlayEnabled) {
-      try { toggleDecorOverlay(); } catch { /* ignore */ }
-    }
-  }, [activeDecorIds, decorOverlayEnabled, toggleDecorOverlay]);
 
   const toggleDecor = (id: string) => {
     setActiveDecorIds((prev) =>

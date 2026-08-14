@@ -9,7 +9,7 @@ import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
 
-const ANIME_MOMENTS_CAPTURE_VIDEO = "/catalogue-banner.mp4";
+const ANIME_MOMENTS_CAPTURE_VIDEO = "https://drive.google.com/uc?export=download&id=1bo0FDHxvNvIGulffMKbyJFlmb0vA3YCs";
 
 import NeonFooterBar from "@/components/NeonFooterBar";
 import MangaNeonBar from "@/components/MangaNeonBar";
@@ -224,7 +224,7 @@ const Index = () => {
   const platforms = [
     { to: "/chaine-youtube", title: "YouTube", desc: "Vidéos anime et shorts officiels", icon: Youtube,
       preview: { kind: "youtube" as const, sources: ytForYoutube } },
-    { to: "/prime-video", title: "Prime Vidéo", desc: "Lecture multi-plateforme premium", icon: Play,
+    { to: "/prime-video", title: "Prime Vidéo", desc: "Lecture multi-plateforme immersive", icon: Play,
       preview: { kind: "youtube" as const, sources: ytForPrime } },
     { to: "/tiktok", title: "TikTok", desc: "Posts courts et réactions rapides", icon: Music2,
       preview: { kind: "tiktok" as const, sources: [], loadTiktokFromDB: true } },

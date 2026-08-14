@@ -6,9 +6,7 @@ const VIDEO_PREF_MANUAL_KEY = "site_disable_videos_manual";
 interface PerformanceContextType {
   disableAnimations: boolean;
   disableVideos: boolean;
-  decorOverlayEnabled: boolean;
   toggleAnimations: () => void;
-  toggleDecorOverlay: () => void;
   toggleVideos: () => void;
   isMobile: boolean;
 }
@@ -18,7 +16,6 @@ const PerformanceContext = createContext<PerformanceContextType | undefined>(und
 export function PerformanceProvider({ children }: { children: React.ReactNode }) {
   const [disableAnimations, setDisableAnimations] = useState(false);
   const [disableVideos, setDisableVideos] = useState(false);
-  const [decorOverlayEnabled, setDecorOverlayEnabled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -49,12 +46,6 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
         setDisableVideos(false);
         localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
       }
-      const savedDecorOverlay = localStorage.getItem("site_decor_overlay_enabled");
-      if (savedDecorOverlay !== null) {
-        setDecorOverlayEnabled(JSON.parse(savedDecorOverlay));
-      } else {
-        setDecorOverlayEnabled(true);
-      }
     } catch {}
 
     window.addEventListener("resize", checkMobile);
@@ -64,16 +55,12 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
   // CSS class on <body> — survives React re-renders without DOM manipulation
   useEffect(() => {
     try { localStorage.setItem("site_disable_animations", JSON.stringify(disableAnimations)); } catch {}
-  }, [disableAnimations]);
-
-  useEffect(() => {
-    try { localStorage.setItem("site_decor_overlay_enabled", JSON.stringify(decorOverlayEnabled)); } catch {}
-    if (!decorOverlayEnabled) {
+    if (disableAnimations) {
       document.body.setAttribute("data-hide-decors", "1");
     } else {
       document.body.removeAttribute("data-hide-decors");
     }
-  }, [decorOverlayEnabled]);
+  }, [disableAnimations]);
 
   useEffect(() => {
     try { localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(disableVideos)); } catch {}
@@ -96,30 +83,14 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
     }
   }, [disableVideos]);
 
-  useEffect(() => {
-    try { localStorage.setItem("site_decor_overlay_enabled", JSON.stringify(decorOverlayEnabled)); } catch {}
-  }, [decorOverlayEnabled]);
-
   const toggleAnimations = () => setDisableAnimations((v) => !v);
-  const toggleDecorOverlay = () => setDecorOverlayEnabled((v) => !v);
   const toggleVideos = () => {
     try { localStorage.setItem(VIDEO_PREF_MANUAL_KEY, "1"); } catch {}
     setDisableVideos((v) => !v);
   };
 
-  const _toggleAnimationsImmediate = () => {
-    setDisableAnimations((v) => {
-      const next = !v;
-      try { localStorage.setItem("site_disable_animations", JSON.stringify(next)); } catch {}
-      if (next) document.body.setAttribute("data-hide-decors", "1");
-      else document.body.removeAttribute("data-hide-decors");
-      try { window.dispatchEvent(new Event("lovanet:decor-update")); } catch {}
-      return next;
-    });
-  };
-
   return (
-    <PerformanceContext.Provider value={{ disableAnimations, disableVideos, decorOverlayEnabled, toggleAnimations: _toggleAnimationsImmediate, toggleDecorOverlay, toggleVideos, isMobile }}>
+    <PerformanceContext.Provider value={{ disableAnimations, disableVideos, toggleAnimations, toggleVideos, isMobile }}>
       {children}
     </PerformanceContext.Provider>
   );

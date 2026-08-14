@@ -70,6 +70,7 @@ const getStored = (): string[] => {
 
 /** Animated transparent orb icon */
 function OrbIcon({ anyOff }: { anyOff: boolean }) {
+  const spin = useRef(0);
   return (
     <span style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28 }}>
       {/* outer ring */}
@@ -77,39 +78,33 @@ function OrbIcon({ anyOff }: { anyOff: boolean }) {
         position: "absolute", inset: 0, borderRadius: "50%",
         border: "1.5px solid rgba(255,255,255,0.45)",
         animation: "lv-orb-spin 6s linear infinite",
-        boxShadow: anyOff ? "0 0 10px rgba(255,255,255,0.5)" : "0 0 14px rgba(255,255,255,0.55)",
+        boxShadow: anyOff ? "0 0 10px rgba(249,115,22,0.6)" : "0 0 14px rgba(56,189,248,0.5)",
       }} />
       {/* inner dot */}
       <span style={{
         width: 10, height: 10, borderRadius: "50%",
-        background: "rgba(255,255,255,0.92)",
-        boxShadow: anyOff ? "0 0 12px rgba(255,255,255,0.75)" : "0 0 16px rgba(255,255,255,0.8)",
+        background: anyOff ? "rgba(249,115,22,0.9)" : "rgba(56,189,248,0.9)",
+        boxShadow: anyOff ? "0 0 12px rgba(249,115,22,0.8)" : "0 0 16px rgba(56,189,248,0.8)",
         animation: "lv-orb-pulse 2s ease-in-out infinite",
       }} />
       {/* orbit dot */}
       <span style={{
         position: "absolute", width: 5, height: 5, borderRadius: "50%",
-        background: "#ffffff",
+        background: anyOff ? "#f97316" : "#a78bfa",
         top: 1, left: "50%", transformOrigin: "0 12px",
         animation: "lv-orb-spin 3s linear infinite reverse",
-        boxShadow: "0 0 8px rgba(255,255,255,0.9)",
+        boxShadow: anyOff ? "0 0 6px #f97316" : "0 0 8px #a78bfa",
       }} />
     </span>
   );
 }
 
 export function Mobile3DSettingsToggle() {
-  const { disableAnimations, disableVideos, decorOverlayEnabled, toggleAnimations, toggleDecorOverlay, toggleVideos } = usePerformance();
+  const { disableAnimations, disableVideos, toggleAnimations, toggleVideos } = usePerformance();
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<"controls" | "decors">("controls");
   const [activeDecors, setActiveDecors] = useState<string[]>(getStored);
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
-  );
-  const [panelPos, setPanelPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(activeDecors)); } catch {}
@@ -123,35 +118,6 @@ export function Mobile3DSettingsToggle() {
     }
     window.dispatchEvent(new Event("lovanet:decor-update"));
   }, [activeDecors]);
-
-  // If user enables decors from the orb panel while animations are disabled, re-enable animations.
-  useEffect(() => {
-    if (activeDecors.length > 0 && disableAnimations) {
-      try { toggleAnimations(); } catch {}
-    }
-  }, [activeDecors, disableAnimations, toggleAnimations]);
-
-  useEffect(() => {
-    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
-    onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-
-  const DEFAULT_ACTIVE_DECORS = [
-  "skyline-glow",
-  "billboard-holo",
-  "drone-orbit",
-  "starfield",
-  "nebula-drift",
-];
-
-  const handleToggleDecorOverlay = () => {
-    if (!decorOverlayEnabled && activeDecors.length === 0) {
-      setActiveDecors(DEFAULT_ACTIVE_DECORS);
-    }
-    toggleDecorOverlay();
-  };
 
   const toggleDecor = (key: string) =>
     setActiveDecors((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]);
@@ -170,46 +136,7 @@ export function Mobile3DSettingsToggle() {
     return { all: count === keys.length, some: count > 0 && count < keys.length, count };
   };
 
-  const anyOff = !decorOverlayEnabled || disableVideos;
-  const buttonRight = isDesktop ? 24 : 14;
-
-  const getPanelPosition = () => {
-    const trigger = triggerRef.current;
-    const panelWidth = panelRef.current?.offsetWidth || (isDesktop ? 320 : Math.min(window.innerWidth - 24, 320));
-    const panelHeight = panelRef.current?.offsetHeight || (isDesktop ? 450 : 520);
-    const margin = 12;
-
-    if (!trigger) {
-      return {
-        x: Math.max(margin, window.innerWidth - panelWidth - margin),
-        y: Math.max(margin, Math.min(window.innerHeight * 0.22, window.innerHeight - panelHeight - margin)),
-      };
-    }
-
-    const rect = trigger.getBoundingClientRect();
-    let x = rect.right + 12;
-    let y = rect.top + (rect.height - panelHeight) / 2;
-
-    const maxX = Math.max(margin, window.innerWidth - panelWidth - margin);
-    const maxY = Math.max(margin, window.innerHeight - panelHeight - margin);
-
-    x = Math.min(Math.max(x, margin), maxX);
-    y = Math.min(Math.max(y, margin), maxY);
-
-    return { x, y };
-  };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const syncPosition = () => setPanelPos(getPanelPosition());
-    syncPosition();
-    window.addEventListener("resize", syncPosition);
-    window.addEventListener("scroll", syncPosition, true);
-    return () => {
-      window.removeEventListener("resize", syncPosition);
-      window.removeEventListener("scroll", syncPosition, true);
-    };
-  }, [isOpen, isDesktop]);
+  const anyOff = disableAnimations || disableVideos;
 
   return (
     <>
@@ -217,67 +144,45 @@ export function Mobile3DSettingsToggle() {
         @keyframes lv-orb-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes lv-orb-pulse { 0%,100% { transform: scale(1); opacity:0.85; } 50% { transform: scale(1.3); opacity:1; } }
       `}</style>
-      {/* Main orb button */}
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => {
-          setIsOpen((v) => {
-            const next = !v;
-            if (next) {
-              setPanelPos(getPanelPosition());
-            }
-            return next;
-          });
-        }}
-        aria-label="Arrière-plans et décors"
-        style={{
-          position: "fixed",
-          bottom: isDesktop ? 104 : 84,
-          right: buttonRight,
-          zIndex: 9999,
-          width: 54, height: 54, borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.2)",
-          background: "rgba(255,255,255,0.14)",
-          backdropFilter: "blur(16px)",
-          boxShadow: anyOff
-            ? "0 0 24px rgba(255,255,255,0.35), 0 8px 32px rgba(0,0,0,0.4)"
-            : "0 0 28px rgba(255,255,255,0.4), 0 8px 32px rgba(0,0,0,0.4)",
-          cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          transition: "box-shadow 0.3s, background 0.3s",
-        }}
-      >
-        <OrbIcon anyOff={anyOff} />
-      </button>
-
-      {/* Panel — independently centered on screen */}
-      {isOpen && (
-        <div
-          ref={panelRef}
+      <div style={{ position: "fixed", bottom: 90, left: 16, zIndex: 9999, display: "flex", flexDirection: "column-reverse", alignItems: "flex-start", gap: 10 }}>
+        {/* Main orb button */}
+        <button
+          type="button"
+          onClick={() => setIsOpen((v) => !v)}
+          aria-label="Arrière-plans et décors"
           style={{
-            position: "fixed",
-            left: `${panelPos.x}px`,
-            top: `${panelPos.y}px`,
-            zIndex: 10050,
-            background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.40)",
-            borderRadius: 20, padding: "12px 12px 10px",
-            width: isDesktop ? 320 : "min(86vw, 320px)",
-            maxHeight: "min(78vh, 620px)",
-            backdropFilter: "blur(22px) saturate(1.14)", boxShadow: "0 20px 56px rgba(0,0,0,0.3)",
-            display: "flex", flexDirection: "column", gap: 10,
+            width: 54, height: 54, borderRadius: "50%",
+            border: "1px solid rgba(255,255,255,0.2)",
+            background: anyOff ? "rgba(234,88,12,0.18)" : "rgba(6,182,212,0.12)",
+            backdropFilter: "blur(16px)",
+            boxShadow: anyOff
+              ? "0 0 24px rgba(249,115,22,0.4), 0 8px 32px rgba(0,0,0,0.4)"
+              : "0 0 28px rgba(56,189,248,0.35), 0 8px 32px rgba(0,0,0,0.4)",
+            cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "box-shadow 0.3s, background 0.3s",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <OrbIcon anyOff={anyOff} />
+        </button>
+
+        {/* Panel */}
+        {isOpen && (
+          <div style={{
+            background: "rgba(3,7,18,0.92)", border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: 20, padding: "12px 12px 10px", width: 272,
+            backdropFilter: "blur(28px)", boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+            display: "flex", flexDirection: "column", gap: 10,
+          }}>
             {/* Tabs */}
             <div style={{ display: "flex", gap: 5 }}>
               {(["controls", "decors"] as const).map((t) => (
                 <button key={t} type="button" onClick={() => setTab(t)} style={{
                   flex: 1, padding: "6px 0", borderRadius: 10, fontSize: 11, fontWeight: 700,
                   letterSpacing: "0.08em", textTransform: "uppercase",
-                  border: tab === t ? "1px solid rgba(255,255,255,0.45)" : "1px solid rgba(255,255,255,0.08)",
-                  background: tab === t ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.03)",
-                  color: tab === t ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.4)", cursor: "pointer",
+                  border: tab === t ? "1px solid rgba(56,189,248,0.55)" : "1px solid rgba(255,255,255,0.08)",
+                  background: tab === t ? "rgba(56,189,248,0.14)" : "rgba(255,255,255,0.03)",
+                  color: tab === t ? "#7dd3fc" : "rgba(255,255,255,0.4)", cursor: "pointer",
                 }}>
                   {t === "controls" ? "Réglages" : `Ambiance (${activeDecors.length})`}
                 </button>
@@ -285,39 +190,31 @@ export function Mobile3DSettingsToggle() {
             </div>
 
             {tab === "controls" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 8 }}>
-                <button type="button" onClick={toggleVideos} aria-pressed={!disableVideos} style={{
+              <>
+                <button type="button" onClick={toggleVideos} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${disableVideos ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
-                  background: disableVideos ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
-                  color: "rgba(255,255,255,0.9)", cursor: "pointer", fontSize: 12, fontWeight: 600,
-                  minHeight: 58,
+                  border: `1px solid ${disableVideos ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
+                  background: disableVideos ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
+                  color: disableVideos ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
                 }}>
                   {disableVideos ? <VideoOff size={14} /> : <Video size={14} />}
-                  <span style={{ lineHeight: 1.15 }}>{disableVideos ? "Vidéo fond OFF" : "Vidéo fond ON"}</span>
-                  <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.24)", background: "rgba(255,255,255,0.08)", color: "#fff" }}>
-                    {disableVideos ? "OFF" : "ON"}
-                  </span>
+                  {disableVideos ? "Arrière-plan vidéo : désactivé" : "Arrière-plan vidéo : activé"}
                 </button>
-                <button type="button" onClick={handleToggleDecorOverlay} aria-pressed={decorOverlayEnabled} style={{
+                <button type="button" onClick={toggleAnimations} style={{
                   display: "flex", alignItems: "center", gap: 9, padding: "9px 11px", borderRadius: 11,
-                  border: `1px solid ${!decorOverlayEnabled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.36)"}`,
-                  background: !decorOverlayEnabled ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.16)",
-                  color: "rgba(255,255,255,0.92)", cursor: "pointer", fontSize: 12, fontWeight: 700,
-                  minHeight: 58,
+                  border: `1px solid ${disableAnimations ? "rgba(249,115,22,0.4)" : "rgba(255,255,255,0.1)"}`,
+                  background: disableAnimations ? "rgba(249,115,22,0.1)" : "rgba(255,255,255,0.03)",
+                  color: disableAnimations ? "#fb923c" : "rgba(255,255,255,0.78)", cursor: "pointer", fontSize: 12, fontWeight: 600,
                 }}>
-                  {!decorOverlayEnabled ? <EyeOff size={14} /> : <Eye size={14} />}
-                  <span style={{ lineHeight: 1.15 }}>{!decorOverlayEnabled ? "Décors 3D OFF" : "Décors 3D ON"}</span>
-                  <span style={{ marginLeft: "auto", fontSize: 10, borderRadius: 999, padding: "2px 7px", border: "1px solid rgba(255,255,255,0.26)", background: "rgba(255,255,255,0.1)", color: "#fff" }}>
-                    {!decorOverlayEnabled ? "OFF" : "ON"}
-                  </span>
+                  {disableAnimations ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {disableAnimations ? "Effets visuels 3D : désactivés" : "Effets visuels 3D : activés"}
                 </button>
-              </div>
+              </>
             )}
 
             {tab === "decors" && (
               <>
-                <div style={{ maxHeight: "min(48vh, 360px)", overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, paddingRight: 2 }}>
+                <div style={{ maxHeight: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6, paddingRight: 2 }}>
                   {DECOR_GROUPS.map((g) => {
                     const status = groupActive(g);
                     const isExpanded = expandedGroup === g.group;
@@ -339,12 +236,12 @@ export function Mobile3DSettingsToggle() {
                           >
                             <span style={{
                               width: 14, height: 14, borderRadius: 4,
-                              border: `1.5px solid ${status.all ? "#ffffff" : status.some ? "#ffffff" : "rgba(255,255,255,0.2)"}`,
-                              background: status.all ? "rgba(255,255,255,0.95)" : status.some ? "rgba(255,255,255,0.45)" : "transparent",
+                              border: `1.5px solid ${status.all ? g.color : status.some ? g.color : "rgba(255,255,255,0.2)"}`,
+                              background: status.all ? g.color : status.some ? `${g.color}55` : "transparent",
                               display: "flex", alignItems: "center", justifyContent: "center",
                             }}>
                               {status.all && <Check size={9} color="#000" />}
-                              {status.some && <span style={{ width: 6, height: 2, background: "#fff", borderRadius: 2, display: "block" }} />}
+                              {status.some && <span style={{ width: 6, height: 2, background: g.color, borderRadius: 2, display: "block" }} />}
                             </span>
                           </button>
 
@@ -356,11 +253,11 @@ export function Mobile3DSettingsToggle() {
                               flex: 1, display: "flex", alignItems: "center", justifyContent: "space-between",
                               gap: 6, padding: "7px 10px 7px 4px", border: "none",
                               background: "transparent", cursor: "pointer",
-                              color: status.some || status.all ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.55)",
+                              color: status.some || status.all ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.55)",
                               fontSize: 12, fontWeight: 600,
                             }}
                           >
-                            <span>{g.label} {status.count > 0 ? <span style={{ fontSize: 10, color: "#fff" }}>({status.count})</span> : null}</span>
+                            <span>{g.label} {status.count > 0 ? <span style={{ fontSize: 10, color: g.color }}>({status.count})</span> : null}</span>
                             <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
                           </button>
                         </div>
@@ -377,13 +274,13 @@ export function Mobile3DSettingsToggle() {
                                   onClick={() => toggleDecor(item.key)}
                                   style={{
                                     padding: "3px 9px", borderRadius: 99, fontSize: 11, fontWeight: 600,
-                                    border: `1px solid ${on ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.1)"}`,
-                                    background: on ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.03)",
-                                    color: on ? "#ffffff" : "rgba(255,255,255,0.6)",
+                                    border: `1px solid ${on ? g.color : "rgba(255,255,255,0.1)"}`,
+                                    background: on ? `${g.color}22` : "rgba(255,255,255,0.03)",
+                                    color: on ? g.color : "rgba(255,255,255,0.5)",
                                     cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
                                   }}
                                 >
-                                  {on && <Check size={10} />} {item.label}
+                                  {on && <Check size={9} />}{item.label}
                                 </button>
                               );
                             })}
@@ -398,8 +295,8 @@ export function Mobile3DSettingsToggle() {
                 <div style={{ display: "flex", gap: 5, paddingTop: 2 }}>
                   <button type="button" onClick={() => setActiveDecors(ALL_KEYS)} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                    border: "1px solid rgba(255,255,255,0.32)", background: "rgba(255,255,255,0.12)",
-                    color: "#ffffff", cursor: "pointer",
+                    border: "1px solid rgba(56,189,248,0.3)", background: "rgba(56,189,248,0.08)",
+                    color: "#7dd3fc", cursor: "pointer",
                   }}>Tout activer</button>
                   <button type="button" onClick={() => setActiveDecors([])} style={{
                     flex: 1, padding: "7px 0", borderRadius: 10, fontSize: 11, fontWeight: 600,
@@ -410,8 +307,8 @@ export function Mobile3DSettingsToggle() {
               </>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 }

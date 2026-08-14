@@ -1,13 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { PageShell } from "@/components/PageShell";
-import { Music2, Heart, MessageCircle, Share2, ArrowUp, ArrowDown, ExternalLink, VolumeX, Volume2, Sparkles, Building2 } from "lucide-react";
+import { Music2, Heart, MessageCircle, Share2, ArrowUp, ArrowDown, ExternalLink, VolumeX, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AdminRemoveVideo } from "@/components/AdminRemoveVideo";
+import { ManualSyncButton } from "@/components/ManualSyncButton";
 import { GDriveCinematicBanner } from "@/components/GDriveCinematicBanner";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import FerryTrainCityPlaza from "@/components/FerryTrainCityPlaza";
-import { TrainStationReplicaWorld } from "@/components/TrainStation";
 
 type TTItem = {
   id: string;
@@ -21,10 +18,6 @@ type TTItem = {
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const TIKTOK_HANDLE = "@anime.moments.officiel";
 const TIKTOK_BANNER_VIDEO = "/actualites-banner-2.mp4";
-const PRIME_GHOST_BTN =
-  "inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:border-cyan-200/80 hover:bg-white/10";
-const PRIME_GHOST_PANEL_BTN =
-  "inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-transparent px-4 py-2 text-xs font-semibold text-white/90 transition-all hover:border-cyan-200/80 hover:bg-white/10";
 
 const Tiktok = () => {
   const [list, setList] = useState<TTItem[]>([]);
@@ -32,11 +25,8 @@ const Tiktok = () => {
   const [idx, setIdx] = useState(0);
   const [muted, setMuted] = useState(true);
   const [orientation, setOrientation] = useState<"vertical" | "horizontal">("vertical");
-  const [hubScene, setHubScene] = useState<"train" | "ferry">("train");
-  const [hubParallaxY, setHubParallaxY] = useState(0);
   const v = list[idx];
   const safeIdx = list.length ? idx : 0;
-  const hubSectionRef = useRef<HTMLElement | null>(null);
 
   // Load TikTok videos synced from the FastAPI/MongoDB connector.
   useEffect(() => {
@@ -155,132 +145,23 @@ const Tiktok = () => {
     };
   }, []);
 
-  // Soft parallax so the pro showcase feels more cinematic while scrolling.
-  useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        ticking = false;
-        const section = hubSectionRef.current;
-        if (!section) return;
-        const rect = section.getBoundingClientRect();
-        const viewportH = window.innerHeight || 1;
-        const progress = (viewportH - rect.top) / (viewportH + rect.height);
-        const centered = (progress - 0.5) * 2;
-        const clamped = Math.max(-1, Math.min(1, centered));
-        setHubParallaxY(clamped * 18);
-      });
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, []);
-
   const hasSyncedVideos = list.length > 0;
 
   return (
     <PageShell>
-      <GDriveCinematicBanner
-        title="Bannière TikTok — Anime Moments"
-        src={TIKTOK_BANNER_VIDEO}
-        className="pt-6"
-        heightClassName="h-[420px] sm:h-[520px] lg:h-[620px]"
-      />
+      <ManualSyncButton platform="tiktok" label="Sync TikTok" onDone={() => window.location.reload()} />
+      <GDriveCinematicBanner title="Bannière TikTok — Anime Moments" src={TIKTOK_BANNER_VIDEO} className="pt-6" height={360} />
       <section className="container mx-auto px-4 lg:px-8 py-12 text-center" data-testid="tiktok-page-hero">
         <div className="mt-4">
           <a
             href="https://www.tiktok.com/@anime.moments.officiel"
             target="_blank"
             rel="noreferrer"
-            className={PRIME_GHOST_BTN}
+            className="rgb-pill inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] px-5 py-2.5 text-sm font-semibold text-cyan-100 shadow-[0_12px_32px_-16px_rgba(56,189,248,0.5)] backdrop-blur-xl"
             data-testid="tiktok-official-link"
           >
             Ouvrir TikTok <ExternalLink className="w-4 h-4" />
           </a>
-        </div>
-      </section>
-
-      <section
-        ref={hubSectionRef}
-        className="container mx-auto px-4 lg:px-8 pb-8"
-        data-testid="tiktok-pro-scene-section"
-      >
-        <div className="overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(145deg,rgba(10,17,35,0.96),rgba(9,16,30,0.9))] shadow-[0_35px_100px_-50px_rgba(56,189,248,0.5)]">
-          <div className="relative z-10 p-6 md:p-8 lg:p-10">
-            <div className="mt-1 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setHubScene("train")}
-                className={cn(PRIME_GHOST_PANEL_BTN, hubScene === "train" ? "border-cyan-200/80 bg-white/12 text-white" : "")}
-                data-testid="tiktok-hub-scene-train"
-              >
-                <Building2 className="w-3.5 h-3.5" /> Train Station
-              </button>
-              <button
-                type="button"
-                onClick={() => setHubScene("ferry")}
-                className={cn(PRIME_GHOST_PANEL_BTN, hubScene === "ferry" ? "border-cyan-200/80 bg-white/12 text-white" : "")}
-                data-testid="tiktok-hub-scene-ferry"
-              >
-                <Music2 className="w-3.5 h-3.5" /> Ferry Hub
-              </button>
-            </div>
-          </div>
-
-          <div
-            className="relative h-[240px] sm:h-[300px] md:h-[360px] border-t border-white/10 bg-[#0a1322]"
-            style={{ transform: `translateY(${hubParallaxY}px)` }}
-            data-testid="tiktok-hub-3d-strip"
-          >
-            <Canvas
-              dpr={[1, 1.5]}
-              camera={hubScene === "train" ? { position: [0, 8, 26], fov: 48 } : { position: [24, 9, 20], fov: 52 }}
-              gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
-              style={{ background: "#89b4ce" }}
-            >
-              <ambientLight intensity={1.15} color="#fff9ec" />
-              <directionalLight position={[18, 28, 16]} intensity={1.35} color="#fff0ca" />
-              <directionalLight position={[-12, 15, -12]} intensity={0.6} color="#cfe8ff" />
-
-              {hubScene === "train" ? (
-                <group position={[0, -1.2, 0]} scale={[0.72, 0.72, 0.72]}>
-                  <TrainStationReplicaWorld
-                    isNight={false}
-                    isMobile
-                    compactScene
-                    includeLocalLights={false}
-                    onTrainHorn={null}
-                  />
-                </group>
-              ) : (
-                <FerryTrainCityPlaza
-                  night={false}
-                  isMobile
-                  compactScene
-                  position={[0, -1.68, -24]}
-                  rotation={[0, -0.2, 0]}
-                  scale={[0.16, 0.16, 0.16]}
-                />
-              )}
-
-              <OrbitControls
-                enablePan={false}
-                enableZoom={false}
-                enableRotate={false}
-                autoRotate
-                autoRotateSpeed={hubScene === "train" ? 0.62 : 0.34}
-                target={hubScene === "train" ? [0, 1.5, 6] : [0, 0, -20]}
-              />
-            </Canvas>
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-[#0a1322] to-transparent" />
-          </div>
         </div>
       </section>
 
@@ -289,7 +170,7 @@ const Tiktok = () => {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 rounded-full border border-white/20 bg-transparent text-slate-100 text-xs font-bold flex items-center gap-1.5">
+                <div className="rgb-pill px-3 py-1.5 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] text-cyan-100 text-xs font-bold flex items-center gap-1.5 shadow-[0_12px_32px_-16px_rgba(56,189,248,0.45)] backdrop-blur-xl">
                   <Music2 className="w-3.5 h-3.5" /> TikTok
                 </div>
                 <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground" data-testid="tiktok-feed-mode">
@@ -299,23 +180,23 @@ const Tiktok = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setMuted((m) => !m)}
-                  className="px-3 py-2 rounded-full border border-white/20 bg-transparent text-xs font-semibold text-slate-100 hover:border-cyan-200/80 hover:bg-white/10 transition-colors flex items-center gap-1.5"
+                  className="rgb-pill px-3 py-2 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] text-xs font-semibold text-cyan-100 hover:border-cyan-300/70 transition-colors flex items-center gap-1.5 shadow-[0_12px_28px_-18px_rgba(56,189,248,0.45)] backdrop-blur-xl"
                   data-testid="tiktok-mute-toggle"
                 >
                   {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                   {muted ? "Son OFF" : "Son ON"}
                 </button>
-                <div className="inline-flex p-1 rounded-full border border-white/20 bg-transparent">
+                <div className="rgb-pill inline-flex p-1 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] shadow-[0_12px_28px_-18px_rgba(56,189,248,0.45)] backdrop-blur-xl">
                   <button
                     onClick={() => setOrientation("vertical")}
-                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "vertical" ? "bg-white/12 border border-cyan-200/70" : "text-white/60")}
+                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "vertical" ? "bg-white/12 shadow-[0_0_18px_rgba(56,189,248,0.25)]" : "text-white/55")}
                     data-testid="tiktok-orientation-vertical"
                   >
                     ▯ Vertical
                   </button>
                   <button
                     onClick={() => setOrientation("horizontal")}
-                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "horizontal" ? "bg-white/12 border border-cyan-200/70" : "text-white/60")}
+                    className={cn("px-3 py-1.5 text-xs rounded-full font-semibold text-white transition-colors", orientation === "horizontal" ? "bg-white/12 shadow-[0_0_18px_rgba(34,211,238,0.22)]" : "text-white/55")}
                     data-testid="tiktok-orientation-horizontal"
                   >
                     ▭ Horizontal
@@ -463,7 +344,7 @@ const Tiktok = () => {
                     href={v.videoUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className={PRIME_GHOST_BTN}
+                    className="rgb-pill inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] px-5 py-2.5 text-sm font-semibold text-cyan-100 shadow-[0_12px_32px_-16px_rgba(56,189,248,0.5)] backdrop-blur-xl"
                     data-testid="tiktok-open-original-link"
                   >
                     Ouvrir l’original <ExternalLink className="w-4 h-4" />
@@ -474,6 +355,9 @@ const Tiktok = () => {
 
             {!loading && !hasSyncedVideos && (
               <div className="rounded-[28px] border border-white/12 bg-white/[0.04] backdrop-blur-xl p-4 md:p-6 shadow-[0_20px_60px_-30px_rgba(56,189,248,0.55)]" data-testid="tiktok-official-profile-widget">
+                <div className="mb-4">
+                  <h2 className="font-display text-2xl font-bold text-white">@anime.moments.officiel</h2>
+                </div>
                 <blockquote
                   className="tiktok-embed"
                   cite="https://www.tiktok.com/@anime.moments.officiel"
@@ -484,7 +368,7 @@ const Tiktok = () => {
                 >
                   <section>
                     <a target="_blank" href="https://www.tiktok.com/@anime.moments.officiel?refer=creator_embed" rel="noreferrer">
-                      Profil officiel TikTok
+                      @anime.moments.officiel
                     </a>
                   </section>
                 </blockquote>
@@ -499,13 +383,20 @@ const Tiktok = () => {
                 href="https://www.tiktok.com/@anime.moments.officiel"
                 target="_blank"
                 rel="noreferrer"
-                className={PRIME_GHOST_BTN}
+                className="rgb-pill inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-[rgba(7,12,24,0.72)] px-5 py-2.5 text-sm font-semibold text-cyan-100 shadow-[0_12px_32px_-16px_rgba(56,189,248,0.5)] backdrop-blur-xl"
                 data-testid="tiktok-profile-cta"
               >
                 Voir le profil officiel <ExternalLink className="w-4 h-4" />
               </a>
             </div>
 
+            <div className="rounded-[28px] border border-white/12 bg-white/[0.04] backdrop-blur-xl p-5 shadow-[0_20px_60px_-35px_rgba(56,189,248,0.45)]" data-testid="tiktok-status-card">
+              <h3 className="font-display text-xl font-bold text-white mb-2">Flux</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• <span className="text-white">@anime.moments.officiel</span></li>
+                <li>• <span className="text-white">{hasSyncedVideos ? "lecteur + carrousel" : "widget TikTok"}</span></li>
+              </ul>
+            </div>
           </aside>
         </div>
       </section>

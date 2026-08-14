@@ -39,6 +39,8 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
 import { NavSuggestionsIndicator } from "@/components/NavSuggestionsIndicator";
+import QuickNavCarousel from "@/components/QuickNavCarousel";
+import LeftFloaterPanel from "@/components/LeftFloaterPanel";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
   "/anime-moments": "navbar-anime-moments-link",
@@ -115,6 +117,8 @@ const mobileGroups = [
 ];
 
 export const Navbar = () => {
+  const [appliedNavStyle, setAppliedNavStyle] = useState<string | null>(null);
+  const [showStyleHint, setShowStyleHint] = useState(false);
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -166,6 +170,64 @@ export const Navbar = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Apply saved nav style on mount and listen for changes
+  useEffect(() => {
+    const applyStyleById = (id: string | null, fromRandom = false) => {
+      try {
+        if (!id) {
+          document.documentElement.style.removeProperty('--nav-card-overlay');
+          document.documentElement.style.removeProperty('--nav-text-color');
+          document.documentElement.style.removeProperty('--nav-accent');
+          document.documentElement.style.removeProperty('--nav-font');
+          setAppliedNavStyle(null);
+          return;
+        }
+        const styles = require('@/data/navStyles').default as any[];
+        const s = styles.find((x) => x.id === id);
+        if (!s) return;
+        document.documentElement.style.setProperty('--nav-card-overlay', s.cardOverlay);
+        document.documentElement.style.setProperty('--nav-text-color', s.textColor);
+        document.documentElement.style.setProperty('--nav-accent', s.accent);
+        document.documentElement.style.setProperty('--nav-font', s.fontFamily);
+        setAppliedNavStyle(id);
+        // If style was applied from random selection, mark hint to show (unless already shown for this style)
+        if (fromRandom) {
+          try {
+            const shownKey = `lovanet.nav.hintShown.${id}`;
+            const already = localStorage.getItem(shownKey);
+            if (!already) {
+              setShowStyleHint(true);
+              // do not mark as shown here; mark when user closes hint
+            }
+          } catch {}
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    try {
+      const stored = localStorage.getItem('lovanet.nav.style');
+      if (stored) {
+        applyStyleById(stored);
+      } else {
+        // No user selection: apply a stable default preset to avoid changing theme per visit
+        try {
+          const defaultPreset = 'preset-1';
+          localStorage.setItem('lovanet.nav.style', defaultPreset);
+          applyStyleById(defaultPreset, false);
+        } catch {}
+      }
+    } catch {}
+
+    const onChange = (e: Event) => {
+      const id = (e as CustomEvent).detail as string | null;
+      applyStyleById(id);
+    };
+    window.addEventListener('navstyle:change', onChange as EventListener);
+    return () => window.removeEventListener('navstyle:change', onChange as EventListener);
+  }, []);
+
   useEffect(() => {
     const id = window.setInterval(() => {
       setMenuRotationIndex((value) => (value + 1) % rotatingDestinations.length);
@@ -203,6 +265,27 @@ export const Navbar = () => {
 
   return (
     <>
+      <LeftFloaterPanel />
+      {/* One-time AI hint about personalization */}
+      {showStyleHint && (
+        <div className="fixed top-20 right-4 z-60 max-w-xs">
+          <div className="rounded-xl border border-white/10 bg-gradient-to-r from-black/80 to-black/70 p-3 shadow-2xl backdrop-blur-md text-sm text-white">
+            <div className="flex items-start gap-3">
+              <div className="flex-1">
+                <div className="font-semibold">Astuce personnalisée</div>
+                <div className="text-xs mt-1">Une bulle flottante contient une option "Personnaliser" pour choisir la couleur du menu et la police — vous pouvez la laisser en favori.</div>
+                <div className="mt-2 flex items-center gap-2">
+                  <button onClick={() => {
+                    setShowStyleHint(false);
+                    try { localStorage.setItem(`lovanet.nav.hintShown.${appliedNavStyle}`, '1'); } catch {}
+                  }} className="rounded-full bg-white/6 px-2 py-1 text-xs">J'ai compris</button>
+                  <button onClick={() => { setShowStyleHint(false); navigate('/'); }} className="rounded-full bg-white/6 px-2 py-1 text-xs">Fermer</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="fixed inset-x-0 top-0 z-50 px-2 pt-2 sm:px-3" data-testid="site-navbar">
         <div className="mx-auto max-w-[1120px]">
           <div className="relative">
@@ -210,11 +293,25 @@ export const Navbar = () => {
               <div className="flex items-center gap-2" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
                 {renderLogo()}
               </div>
+              {/* Quick nav toggle button */}
+              <div className="ml-3 hidden md:flex">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('quicknav:toggle'));
+                    navigate('/anime-catalog');
+                  }}
+                  className="nav-theme-chip inline-flex h-10 w-10 items-center justify-center rounded-full"
+                  aria-label="Afficher le carrousel de navigation rapide"
+                >
+                  <Compass className="h-4 w-4" />
+                </button>
+              </div>
 
               {/* Dynamic suggestions bar — fills the empty space between logo and cart on mobile */}
               <NavSuggestionsBar />
 
-              <div className="hidden items-center gap-2 lg:flex" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
+              <div className="items-center gap-2 hidden md:flex" onMouseEnter={cancelClose} onMouseLeave={scheduleClose}>
                 <button
                   type="button"
                   aria-haspopup="true"
@@ -229,17 +326,18 @@ export const Navbar = () => {
                     setMegaOpen(true);
                   }}
                   className={cn(
-                    "nav-theme-chip hidden h-11 w-11 items-center justify-center rounded-full lg:inline-flex",
-                    megaOpen && "nav-theme-chip-active rotate-45",
+                    "nav-theme-chip h-11 w-11 items-center justify-center rounded-full lg:inline-flex ml-auto",
+                    megaOpen && "nav-theme-chip-active",
                   )}
-                  aria-label="Ouvrir le méga-menu de navigation"
+                  aria-label="Ouvrir le menu"
                   data-testid="desktop-mega-menu-button"
+                  style={{ marginRight: 0 }}
                 >
-                  <Sparkles className="h-4 w-4" strokeWidth={1.7} />
+                  <Menu className="h-5 w-5" strokeWidth={2} />
                 </button>
               </div>
 
-              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-hidden lg:flex">
+              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-hidden md:flex">
                 {rotatingNavItems.map((item, index) => {
                   const active = isActivePath(item.to);
                   const Icon = item.icon;
@@ -351,33 +449,47 @@ export const Navbar = () => {
                         <X className="h-4 w-4" />
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-                      {megaSections.map((item) => {
-                        const active = isActivePath(item.to);
-                        return (
-                          <Link
-                            key={item.to}
-                            to={item.to}
-                            role="menuitem"
-                            aria-current={active ? "page" : undefined}
-                            data-testid={navTestIds[item.to] ?? undefined}
-                            onClick={() => setMegaOpen(false)}
-                            className={cn(
-                              "nav-theme-chip group relative flex min-h-[88px] items-start gap-3 rounded-[1.3rem] p-4 text-left",
-                              active && "nav-theme-chip-active",
-                            )}
-                          >
-                            <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[var(--nav-theme-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                              <item.icon className="h-4 w-4" strokeWidth={1.8} />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block text-sm font-semibold nav-theme-accent-text">{item.label}</span>
-                              <span className="mt-1 block text-xs leading-5 text-[var(--nav-theme-muted)]">{item.desc}</span>
-                            </span>
-                            {active && <span className="nav-theme-active-dot absolute left-0 top-5 h-10 w-1 rounded-r-full" />}
-                          </Link>
-                        );
-                      })}
+                    {/* Quick navigation carousel appears before the grid of cards */}
+                    <div className="mt-2">
+                      <QuickNavCarousel />
+                    </div>
+
+                    <div className="relative">
+                      <div className="relative flex gap-4 overflow-x-auto no-scrollbar py-2 px-1">
+                        {megaSections.map((item) => {
+                          const active = isActivePath(item.to);
+                          return (
+                            <Link
+                              key={item.to}
+                              to={item.to}
+                              role="menuitem"
+                              aria-current={active ? "page" : undefined}
+                              data-testid={navTestIds[item.to] ?? undefined}
+                              onClick={() => setMegaOpen(false)}
+                              className={cn(
+                                "flex-shrink-0 w-56 sm:w-64 h-28 rounded-2xl p-3 text-left relative overflow-hidden transform-gpu transition-transform duration-200 hover:scale-105 focus:scale-105",
+                                active && "ring-1 ring-white/20",
+                              )}
+                              style={{ background: 'transparent' }}
+                            >
+                              <div className="absolute inset-0 rounded-2xl" style={{ background: 'var(--nav-card-overlay, rgba(0,0,0,0.4))', backdropFilter: 'blur(6px)' }} />
+                              <div className="relative z-10 flex items-center h-full gap-3">
+                                <span className="flex items-center justify-center h-10 w-10 rounded-lg bg-white/6 text-white/90">
+                                  <item.icon className="h-5 w-5" strokeWidth={1.6} />
+                                </span>
+                                <div className="min-w-0" style={{ color: 'var(--nav-text-color, #fff)', fontFamily: 'var(--nav-font, Inter, system-ui, sans-serif)' }}>
+                                  <div className="text-sm font-semibold">{item.label}</div>
+                                  <div className="text-xs truncate">{item.desc}</div>
+                                </div>
+                                {active && <span className="nav-theme-active-dot absolute left-0 top-5 h-10 w-1 rounded-r-full" />}
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {/* Quick navigation carousel inside the mega menu for rapid access */}
+                    <div className="mt-4">
                     </div>
                   </div>
                 </div>
@@ -462,7 +574,7 @@ export const Navbar = () => {
                     <ShoppingCart className="h-5 w-5" />
                     Ouvrir le panier
                   </span>
-                  <span className="nav-theme-active-dot grid min-h-[28px] min-w-[28px] place-items-center rounded-full px-2 text-[12px] font-black text-white bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
+                  <span className="nav-theme-active-dot grid min-h-[28px] min-w-[28px] place-items-center rounded-full px-2 text-[12px] font-black text-black bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]">
                     {count}
                   </span>
                 </motion.button>

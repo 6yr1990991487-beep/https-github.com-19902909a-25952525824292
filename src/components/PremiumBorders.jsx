@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const Leaf = ({ delay, x, duration }) => (
@@ -40,6 +40,24 @@ const Cloud = ({ delay, y, duration, scale }) => (
   />
 );
 
+const resolveGoogleDriveVideoSource = (input) => {
+  if (typeof input !== "string") return input;
+  const match = input.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (match?.[1]) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+  return input;
+};
+
+const OVERLAY_BACKGROUND_VIDEOS = [
+  {
+    id: "drive-bg",
+    src: "/drive-bg.mp4",
+  },
+  { id: "hero-extra-1W0eh", src: "/hero-banner-extra-1W0eh.mp4" },
+  { id: "overlay-1dp9", src: "/overlay-1dp9.mp4" },
+];
+
+const ORDERED_OVERLAY_VIDEO_IDS = OVERLAY_BACKGROUND_VIDEOS.map((video) => video.id);
+
 export const PremiumBorders = () => {
   const [hidden, setHidden] = useState(() => document.body.hasAttribute("data-hide-decors"));
   const [customDecors, setCustomDecors] = useState(() => {
@@ -50,6 +68,36 @@ export const PremiumBorders = () => {
       return false;
     }
   });
+  const [overlayQueue, setOverlayQueue] = useState([]);
+  const [activeOverlayVideoId, setActiveOverlayVideoId] = useState(OVERLAY_BACKGROUND_VIDEOS[0]?.id || "");
+  const overlayVideoRef = useRef(null);
+
+  const activeOverlayVideo = OVERLAY_BACKGROUND_VIDEOS.find((video) => video.id === activeOverlayVideoId) || OVERLAY_BACKGROUND_VIDEOS[0];
+
+  useEffect(() => {
+    setOverlayQueue(ORDERED_OVERLAY_VIDEO_IDS);
+    setActiveOverlayVideoId(ORDERED_OVERLAY_VIDEO_IDS[0] || OVERLAY_BACKGROUND_VIDEOS[0].id);
+  }, []);
+
+  useEffect(() => {
+    if (!overlayQueue.length) return undefined;
+    const video = overlayVideoRef.current;
+    if (!video) return undefined;
+
+    const playCurrentVideo = () => {
+      video.pause();
+      video.currentTime = 0;
+      video.muted = true;
+      video.load();
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    };
+
+    playCurrentVideo();
+    return undefined;
+  }, [activeOverlayVideoId, overlayQueue.length]);
 
   // React to toggle changes via body attribute mutations
   useEffect(() => {
@@ -84,21 +132,47 @@ export const PremiumBorders = () => {
     <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-3d-decor data-animated-bg>
       {/* Global Background Video */}
       <video
+        ref={overlayVideoRef}
+        key={activeOverlayVideoId}
         autoPlay
         muted={true}
-        loop
         playsInline
-        preload="auto"
+        preload="metadata"
         decoding="async"
         disablePictureInPicture
         className="absolute inset-0 w-full h-full object-cover z-[-1] opacity-60"
         style={{ pointerEvents: 'none' }}
         poster="/global-bg-poster.jpg"
         data-bg-video
-      >
-        <source src="/global-bg-mobile.mp4" type="video/mp4" media="(max-width: 768px)" />
-        <source src="/global-bg-web.mp4" type="video/mp4" />
-      </video>
+        src={activeOverlayVideo.src}
+        onEnded={() => {
+          setOverlayQueue((currentQueue) => {
+            const nextQueue = currentQueue.slice(1);
+            if (!nextQueue.length) {
+              setActiveOverlayVideoId(ORDERED_OVERLAY_VIDEO_IDS[0] || OVERLAY_BACKGROUND_VIDEOS[0].id);
+              return ORDERED_OVERLAY_VIDEO_IDS;
+            }
+            setActiveOverlayVideoId(nextQueue[0]);
+            return nextQueue;
+          });
+        }}
+        onPause={() => {
+          const video = overlayVideoRef.current;
+          if (!video || video.ended) return;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+          }
+        }}
+        onWaiting={() => {
+          const video = overlayVideoRef.current;
+          if (!video || video.ended) return;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+          }
+        }}
+      />
 
       {/* All animated décors hidden when toggle is active or when custom decors are used elsewhere */}
       {!hidden && !customDecors && (<> 
