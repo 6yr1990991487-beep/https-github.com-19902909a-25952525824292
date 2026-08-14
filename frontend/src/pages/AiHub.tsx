@@ -12,12 +12,28 @@ const AI_HUB_DRIVE_VIDEO = 'https://drive.google.com/file/d/1utYWlV1PCrvXWIYJuCC
 const resolveDriveVideoUrl = (input: string) => {
   const match = input.match(/\/file\/d\/([^/]+)/);
   if (match?.[1]) {
-    return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    const preview = `https://drive.google.com/uc?export=preview&id=${match[1]}`;
+    return `/api/videos/proxy?url=${encodeURIComponent(preview)}`;
+  }
+  if (input.includes('uc?export=download')) {
+    const preview = input.replace('uc?export=download', 'uc?export=preview');
+    return `/api/videos/proxy?url=${encodeURIComponent(preview)}`;
+  }
+  // If already a direct URL to a public asset, proxy it via the API to ensure proper headers
+  try {
+    const parsed = new URL(input, window.location.origin);
+    const host = parsed.host || '';
+    if (host && !host.includes(window.location.host)) {
+      return `/api/videos/proxy?url=${encodeURIComponent(input)}`;
+    }
+  } catch (e) {
+    // ignore
   }
   return input;
 };
 
 export const AiHub = () => {
+  const [videoSrc, setVideoSrc] = useState<string | null>(resolveDriveVideoUrl(AI_HUB_DRIVE_VIDEO));
   const [activeTab, setActiveTab] = useState('lova-bot');
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
@@ -33,6 +49,27 @@ export const AiHub = () => {
       playPromise.catch(() => {});
     }
   }, [isMuted]);
+
+  // Fetch and cache Drive video on server, then use local URL
+  useEffect(() => {
+    const match = AI_HUB_DRIVE_VIDEO.match(/\/file\/d\/([^/]+)/);
+    const id = match?.[1];
+    if (!id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const resp = await fetch(`/api/videos/fetch_and_cache?driveId=${encodeURIComponent(id)}`, { method: 'POST' });
+        if (!resp.ok) return;
+        const payload = await resp.json();
+        if (payload && payload.url && !cancelled) {
+          setVideoSrc(payload.url);
+        }
+      } catch (e) {
+        // ignore, keep fallback
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const toggleMute = () => {
     const nextMuted = !isMuted;
@@ -106,7 +143,7 @@ export const AiHub = () => {
       <div className="max-w-7xl w-full">
         {/* Top video banner added from Drive (requested) */}
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : { minHeight: '24rem' }}>
-          <VideoWithFallback
+            <VideoWithFallback
             ref={videoRef}
             data-testid="aihubs-top-banner-video"
             className={`w-full h-full object-cover bg-black transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -117,7 +154,7 @@ export const AiHub = () => {
             preload="auto"
             controls
             controlsList="nodownload noremoteplayback"
-            src={resolveDriveVideoUrl(AI_HUB_DRIVE_VIDEO)}
+            src={videoSrc || resolveDriveVideoUrl(AI_HUB_DRIVE_VIDEO)}
             fallbacks={["/banner-top.mp4", "/home-banner.mp4"]}
             onLoadedMetadata={(event) => {
               const target = event.currentTarget;

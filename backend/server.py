@@ -2002,6 +2002,95 @@ async def get_videos(
     return {"videos": normalized, "total": len(normalized), "source": source}
 
 
+@api_router.get("/videos/proxy")
+async def video_proxy(url: str, request: Request):
+    parsed = urllib.parse.urlparse(url)
+    allowed_hosts = {"drive.google.com", "lh3.googleusercontent.com", "docs.google.com", "storage.googleapis.com", "googleusercontent.com"}
+    host = (parsed.netloc or "").lower()
+    if not any(host == h or host.endswith(f".{h}") for h in allowed_hosts):
+        raise HTTPException(status_code=400, detail="Domaine vidéo non autorisé pour le proxy.")
+
+    # Forward Range if present to support seeking
+    req_headers = {"User-Agent": UA, "Accept": "*/*", "Referer": "https://lovanet.fr/"}
+    incoming_range = request.headers.get("range")
+    if incoming_range:
+        req_headers["Range"] = incoming_range
+
+    def _fetch():
+        req = urllib.request.Request(url, headers=req_headers)
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            resp_headers = {k: v for k, v in resp.getheaders()}
+            content = resp.read()
+            status = resp.getcode()
+            return status, resp_headers, content
+
+    try:
+        status, resp_headers, content = await asyncio.to_thread(_fetch)
+        media_type = resp_headers.get("Content-Type", "video/mp4")
+        forward_headers = {}
+        for h in ("Content-Range", "Accept-Ranges", "Content-Length", "ETag", "Last-Modified", "Cache-Control"):
+            if h in resp_headers:
+                forward_headers[h] = resp_headers[h]
+        # Allow caching for a short time
+        forward_headers.setdefault("Cache-Control", "public, max-age=300")
+        return Response(content=content, status_code=status, media_type=media_type, headers=forward_headers)
+    except Exception as exc:
+        logger.exception("Video proxy failed: %s", exc)
+        raise HTTPException(status_code=502, detail=f"Erreur lors du proxy vidéo: {str(exc)[:200]}")
+
+
+
+@api_router.post("/videos/fetch_and_cache")
+async def fetch_and_cache_video(driveId: str):
+    """Download a Drive file once and save it under the frontend public/videos directory.
+
+    Returns JSON with the local URL to use for playback.
+    """
+    safe_id = re.sub(r"[^A-Za-z0-9_-]", "", str(driveId))
+    if not safe_id:
+        raise HTTPException(status_code=400, detail="driveId invalide")
+
+    videos_dir = PUBLIC_DIR / "videos"
+    videos_dir.mkdir(parents=True, exist_ok=True)
+    out_path = videos_dir / f"{safe_id}.mp4"
+
+    if out_path.exists() and out_path.stat().st_size > 1024:
+        return {"url": f"/videos/{out_path.name}", "cached": True}
+
+    download_url = f"https://drive.google.com/uc?export=download&id={safe_id}"
+
+    def _download_to_file():
+        req = urllib.request.Request(download_url, headers={"User-Agent": UA, "Accept": "*/*"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            # follow redirects to the actual content
+            with open(out_path.with_suffix('.tmp'), 'wb') as fh:
+                chunk_size = 64 * 1024
+                while True:
+                    chunk = resp.read(chunk_size)
+                    if not chunk:
+                        break
+                    fh.write(chunk)
+        # finalize
+        tmp = out_path.with_suffix('.tmp')
+        tmp.replace(out_path)
+
+    try:
+        await asyncio.to_thread(_download_to_file)
+        if not out_path.exists() or out_path.stat().st_size == 0:
+            raise RuntimeError("Téléchargement échoué")
+        return {"url": f"/videos/{out_path.name}", "cached": False}
+    except Exception as exc:
+        # Cleanup
+        try:
+            tmp = out_path.with_suffix('.tmp')
+            if tmp.exists():
+                tmp.unlink()
+        except Exception:
+            pass
+        logger.exception("Failed to fetch and cache drive video: %s", exc)
+        raise HTTPException(status_code=502, detail=f"Impossible de télécharger la vidéo: {str(exc)[:200]}")
+
+
 @api_router.get("/countdowns")
 async def get_countdowns():
     return {"countdowns": COUNTDOWNS}
