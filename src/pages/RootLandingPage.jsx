@@ -424,19 +424,11 @@ export default function RootLandingPage() {
             >
               {heroBanner && heroBanner.visible !== false ? (
                 <video
-<<<<<<< HEAD
-                  key={activeBannerVideoSrc}
-                  ref={bannerVideoRef}
-                  className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
-                  autoPlay
-                  loop
-=======
                   key={`${activeBannerVideoSrc}-${heroVideoIndex}`}
                   ref={bannerVideoRef}
                   className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
                   autoPlay
                   loop={!showPlaylist}
->>>>>>> lovable/fix-right-anchor-lovable
                   muted
                   playsInline
                   preload="auto"
@@ -463,13 +455,10 @@ export default function RootLandingPage() {
                     }
                   }}
                   onEnded={() => {
-<<<<<<< HEAD
-=======
                     if (showPlaylist) {
                       advanceHeroBannerVideo();
                       return;
                     }
->>>>>>> lovable/fix-right-anchor-lovable
                     const video = bannerVideoRef.current;
                     if (!video) return;
                     video.currentTime = 0;
