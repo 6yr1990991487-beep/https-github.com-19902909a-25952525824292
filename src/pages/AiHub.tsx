@@ -11,7 +11,6 @@ export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
   const [isMuted, setIsMuted] = useState(true);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoVisible, setVideoVisible] = useState(true);
   const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number } | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -105,69 +104,45 @@ export const AiHub = () => {
   return (
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
-        {/* Video Banner */}
-        {videoVisible ? (
-          <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle}>
-            <video
-              ref={videoRef}
-              data-testid="aihubs-top-banner-video"
-              className={`w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-              autoPlay
-              loop
-              playsInline
-              muted={isMuted}
-              preload="auto"
-              controls
-              controlsList="nodownload noremoteplayback"
-              onLoadedMetadata={(event) => {
-                const target = event.currentTarget;
-                if (target.videoWidth && target.videoHeight) {
-                  setVideoDimensions({ width: target.videoWidth, height: target.videoHeight });
-                }
-              }}
-              onLoadedData={() => {
-                setVideoLoaded(true);
-                const v = videoRef.current;
-                if (!v) return;
-                const p = v.play();
-                if (p && typeof p.then === 'function') p.catch(() => {});
-              }}
-              onCanPlay={() => {
-                setVideoLoaded(true);
-              }}
-              onError={() => {
-                if (!videoLoaded) {
-                  setVideoVisible(false);
-                }
-              }}
-            >
-              <source src={aiHubBannerVideo} type="video/mp4" />
-              <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
-              <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
-              <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
-            </video>
-            {!videoLoaded && (
-              <div className="absolute inset-0 bg-gray-900/70 flex items-center justify-center text-white text-sm font-semibold">
-                Lecture de la vidéo en cours...
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={toggleMute}
-              className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
-            >
-              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-              {isMuted ? 'Activer le son' : 'Couper le son'}
-            </button>
-          </div>
-        ) : (
-          <div className="w-full mb-6 rounded-2xl border border-white/10 bg-slate-950 text-white shadow-2xl shadow-black/20" style={videoContainerStyle ?? { minHeight: '18rem' }}>
-            <div className="flex h-full min-h-[18rem] flex-col items-center justify-center gap-4 p-6 text-center">
-              <div className="text-xl font-semibold">Vidéo non disponible</div>
-              <div className="max-w-lg text-sm text-slate-400">La bannière vidéo ne peut pas s’afficher correctement. Elle a été remplacée par un conteneur dimensionné pour cette vidéo.</div>
-            </div>
-          </div>
-        )}
+        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle ?? { minHeight: '24rem' }}>
+          <video
+            ref={videoRef}
+            data-testid="aihubs-top-banner-video"
+            className="w-full h-full object-cover bg-black"
+            autoPlay
+            loop
+            playsInline
+            muted={isMuted}
+            preload="auto"
+            controls
+            controlsList="nodownload noremoteplayback"
+            onLoadedMetadata={(event) => {
+              const target = event.currentTarget;
+              if (target.videoWidth && target.videoHeight) {
+                setVideoDimensions({ width: target.videoWidth, height: target.videoHeight });
+              }
+            }}
+            onLoadedData={() => {
+              setVideoLoaded(true);
+              const v = videoRef.current;
+              if (!v) return;
+              const p = v.play();
+              if (p && typeof p.then === 'function') p.catch(() => {});
+            }}
+          >
+            <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
+            <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
+            <source src={aiHubBannerVideo} type="video/mp4" />
+          </video>
+          <button
+            type="button"
+            onClick={toggleMute}
+            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            {isMuted ? 'Activer le son' : 'Couper le son'}
+          </button>
+        </div>
 
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
