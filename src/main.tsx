@@ -18,14 +18,23 @@ createRoot(document.getElementById("root")!).render(
 if (typeof window !== "undefined" && "serviceWorker" in navigator) {
   try {
     if (!sessionStorage.getItem("lovanet_sw_unregistered")) {
+      const refresh = () => {
+        const url = new URL(window.location.href);
+        if (!url.searchParams.has("lovanet_reload")) {
+          url.searchParams.set("lovanet_reload", "1");
+          window.location.replace(url.toString());
+        } else {
+          window.location.reload();
+        }
+      };
+
       navigator.serviceWorker.getRegistrations().then((regs) => {
         return Promise.all(regs.map((r) => r.unregister()));
       }).then(() => {
         return caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
       }).then(() => {
         sessionStorage.setItem("lovanet_sw_unregistered", "1");
-        // reload to fetch fresh assets from the server once
-        window.location.reload();
+        refresh();
       }).catch(() => {
         // ignore errors
       });
