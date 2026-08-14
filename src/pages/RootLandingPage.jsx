@@ -199,29 +199,6 @@ export default function RootLandingPage() {
     setHeroVideoIndex((current) => (current + 1) % heroBannerSources.length);
   }, [heroBannerSources.length]);
 
->>>>>>> lovable/fix-right-anchor-lovable
-  const [heroVideoIndex, setHeroVideoIndex] = useState(0);
-
-  const heroBannerSources = Array.isArray(heroBanner?.src)
-    ? heroBanner.src.filter(Boolean)
-    : typeof heroBanner?.src === "string" && heroBanner.src
-    ? [heroBanner.src]
-    : [];
-
-  useEffect(() => {
-    setHeroVideoIndex(0);
-  }, [heroBanner?.src, isMobileScreen]);
-
-  const activeBannerVideoSrc = heroBannerSources[heroVideoIndex] ||
-    (isMobileScreen ? "/custom-hero-banner-mobile.mp4" : "/custom-hero-banner-web.mp4");
-
-  const showPlaylist = heroBannerSources.length > 1;
-  const advanceHeroBannerVideo = useCallback(() => {
-    if (heroBannerSources.length <= 1) return;
-    setHeroVideoIndex((current) => (current + 1) % heroBannerSources.length);
-  }, [heroBannerSources.length]);
->>>>>>> lovable/fix-right-anchor-lovable
-
   useEffect(() => {
     const media = window.matchMedia("(max-width: 768px)");
     const sync = () => setIsMobileScreen(media.matches);
@@ -229,10 +206,6 @@ export default function RootLandingPage() {
     media.addEventListener?.("change", sync);
     return () => media.removeEventListener?.("change", sync);
   }, []);
-<<<<<<< HEAD
-
-=======
->>>>>>> lovable/fix-right-anchor-lovable
 
   const persistBanners = (next) => {
     setHomeBanners(next);
