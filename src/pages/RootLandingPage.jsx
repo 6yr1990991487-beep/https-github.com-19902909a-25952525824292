@@ -468,13 +468,10 @@ export default function RootLandingPage() {
                     }
                   }}
                   onError={() => {
-<<<<<<< HEAD
-=======
                     if (showPlaylist) {
                       advanceHeroBannerVideo();
                       return;
                     }
->>>>>>> lovable/fix-right-anchor-lovable
                     const video = bannerVideoRef.current;
                     if (!video) return;
                     video.load();
