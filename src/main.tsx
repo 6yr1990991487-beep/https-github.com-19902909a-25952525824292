@@ -14,10 +14,23 @@ createRoot(document.getElementById("root")!).render(
   </HelmetProvider>,
 );
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch((error) => {
-      console.warn("SW registration failed: ", error);
-    });
-  });
+// Ensure old service workers and caches are unregistered once to avoid stale preview assets.
+if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+  try {
+    if (!sessionStorage.getItem("lovanet_sw_unregistered")) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        return Promise.all(regs.map((r) => r.unregister()));
+      }).then(() => {
+        return caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+      }).then(() => {
+        sessionStorage.setItem("lovanet_sw_unregistered", "1");
+        // reload to fetch fresh assets from the server once
+        window.location.reload();
+      }).catch(() => {
+        // ignore errors
+      });
+    }
+  } catch (e) {
+    // ignore
+  }
 }

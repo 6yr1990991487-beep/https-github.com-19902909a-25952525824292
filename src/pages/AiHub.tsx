@@ -123,7 +123,9 @@ export const AiHub = () => {
                 setVideoLoaded(true);
               }}
             >
-              {/* Local copy of the Drive video to ensure playback on deploy */}
+              {/* Local copy of the Drive video (new upload) to ensure playback on deploy */}
+              <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
+              {/* Fallback to the previous local copy */}
               <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
               <source src={aiHubBannerVideo} type="video/mp4" />
               {/* Google Drive direct-download URL as fallback */}
