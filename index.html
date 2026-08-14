@@ -179,6 +179,27 @@
 </head>
 
   <body>
+    <script>
+      // If an old service worker is active and serving cached app shells,
+      // unregister it and clear caches once, then reload to fetch fresh assets.
+      (function(){
+        try {
+          if ('serviceWorker' in navigator && !sessionStorage.getItem('lovanet_index_sw_unregistered')) {
+            navigator.serviceWorker.getRegistrations().then(function(regs){
+              return Promise.all(regs.map(function(r){ return r.unregister(); }));
+            }).then(function(){
+              return caches.keys().then(function(keys){ return Promise.all(keys.map(function(k){ return caches.delete(k); })); });
+            }).then(function(){
+              sessionStorage.setItem('lovanet_index_sw_unregistered','1');
+              // reload so the browser fetches the updated resources from server
+              location.reload(true);
+            }).catch(function(){/* ignore */});
+          }
+        } catch (e) {
+          // ignore
+        }
+      })();
+    </script>
     <div id="root"></div>
     <noscript>
       <nav aria-label="Lovanet : Plan du site">
