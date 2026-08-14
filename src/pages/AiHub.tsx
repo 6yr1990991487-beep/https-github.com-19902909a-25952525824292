@@ -113,8 +113,10 @@ export const AiHub = () => {
               preload="metadata"
               controlsList="nodownload noremoteplayback"
             >
+              {/* Local copy of the Drive video to ensure playback on deploy */}
+              <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
               <source src={aiHubBannerVideo} type="video/mp4" />
-              {/* Google Drive direct-download URL for provided file ID */}
+              {/* Google Drive direct-download URL as fallback */}
               <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
             </video>
           <button
