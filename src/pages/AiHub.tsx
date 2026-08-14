@@ -10,8 +10,10 @@ import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
   const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoVisible, setVideoVisible] = useState(true);
+  const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number } | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -98,20 +100,30 @@ export const AiHub = () => {
     );
   };
 
+  const videoContainerStyle = videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : undefined;
+
   return (
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
         {/* Video Banner */}
-        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20">
-          <video
+        {videoVisible ? (
+          <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle}>
+            <video
               ref={videoRef}
-              className={`w-full h-72 md:h-96 object-cover ${videoLoaded ? '' : 'opacity-0'}`}
+              className={`w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               autoPlay
               loop
               playsInline
               muted={isMuted}
               preload="auto"
+              controls
               controlsList="nodownload noremoteplayback"
+              onLoadedMetadata={(event) => {
+                const target = event.currentTarget;
+                if (target.videoWidth && target.videoHeight) {
+                  setVideoDimensions({ width: target.videoWidth, height: target.videoHeight });
+                }
+              }}
               onLoadedData={() => {
                 setVideoLoaded(true);
                 const v = videoRef.current;
@@ -122,46 +134,53 @@ export const AiHub = () => {
               onCanPlay={() => {
                 setVideoLoaded(true);
               }}
+              onError={() => {
+                setVideoVisible(false);
+              }}
             >
-              {/* Local copy of the Drive video (new upload) to ensure playback on deploy */}
               <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
-              {/* Fallback to the previous local copy */}
               <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
               <source src={aiHubBannerVideo} type="video/mp4" />
-              {/* Google Drive direct-download URL as fallback */}
               <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
             </video>
-          {/* Grey fallback shown until videoLoaded */}
-          {!videoLoaded && (
-            <div className="absolute inset-0 bg-gray-800/60 flex items-center justify-center text-white">
-              Chargement de la bannière...
+            {!videoLoaded && (
+              <div className="absolute inset-0 bg-gray-900/70 flex items-center justify-center text-white text-sm font-semibold">
+                Lecture de la vidéo en cours...
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={toggleMute}
+              className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
+            >
+              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              {isMuted ? 'Activer le son' : 'Couper le son'}
+            </button>
+          </div>
+        ) : (
+          <div className="w-full mb-6 rounded-2xl border border-white/10 bg-slate-950 text-white shadow-2xl shadow-black/20" style={videoContainerStyle ?? { minHeight: '18rem' }}>
+            <div className="flex h-full min-h-[18rem] flex-col items-center justify-center gap-4 p-6 text-center">
+              <div className="text-xl font-semibold">Vidéo non disponible</div>
+              <div className="max-w-lg text-sm text-slate-400">La bannière vidéo ne peut pas s’afficher correctement. Elle a été remplacée par un conteneur dimensionné pour cette vidéo.</div>
             </div>
-          )}
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
-          >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            {isMuted ? 'Activer le son' : 'Couper le son'}
-          </button>
-        </div>
+          </div>
+        )}
 
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button 
+          <button
             onClick={() => setActiveTab('lova-bot')}
             className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'bg-gradient-to-r from-green-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <Bot className="w-5 h-5" /> Lova-Bot
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('lova-ai')}
             className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <Cpu className="w-5 h-5" /> Lova-AI
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('lova-king')}
             className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'bg-gradient-to-r from-amber-400 to-red-600 text-white shadow-lg shadow-red-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
@@ -170,7 +189,6 @@ export const AiHub = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
-          {/* UI Feature Panel */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
@@ -185,8 +203,6 @@ export const AiHub = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-
-          {/* 3D Model Panel */}
           <div className="bg-black/20 border border-white/5 rounded-3xl overflow-hidden relative">
             <div className="absolute top-4 left-4 z-10 bg-black/50 px-4 py-1 rounded-full text-xs font-mono text-white/50 border border-white/10">
               LIVE RENDER
@@ -194,13 +210,10 @@ export const AiHub = () => {
             {render3D()}
           </div>
         </div>
-
       </div>
     </div>
   );
 };
-
-// --- Sub Components for Features ---
 
 const TreasureHuntFeature = () => {
   const [hunted, setHunted] = useState(false);
@@ -218,7 +231,6 @@ const TreasureHuntFeature = () => {
     <div className="flex flex-col h-full">
       <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">Chasse aux Trésors</h2>
       <p className="text-slate-400 mb-8">Lova-Bot a caché des récompenses sur le site aujourd'hui !</p>
-      
       <div className="flex-1 flex flex-col justify-center items-center">
         {!hunted ? (
           <div className="bg-emerald-950/30 border border-emerald-500/20 p-6 rounded-2xl text-center max-w-sm w-full">
@@ -227,12 +239,8 @@ const TreasureHuntFeature = () => {
             </div>
             <h3 className="text-lg font-bold text-white mb-2">L'énigme du jour</h3>
             <p className="text-emerald-200/70 italic mb-6">"Je brille dans la nuit, mais je ne suis pas une étoile. Que suis-je ?"</p>
-            <Button 
-              onClick={handleHunt} 
-              disabled={loading}
-              className="w-full rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all"
-            >
-              {loading ? "Recherche en cours..." : "Fouiller la zone"}
+            <Button onClick={handleHunt} disabled={loading} className="w-full rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all">
+              {loading ? 'Recherche en cours...' : 'Fouiller la zone'}
             </Button>
           </div>
         ) : (
@@ -257,7 +265,6 @@ const PlaylistFeature = () => {
   const generate = (mood: string) => {
     setLoading(true);
     setPlaylist([]);
-    // Mock generation
     setTimeout(() => {
       setLoading(false);
       if (mood === 'epic') setPlaylist(['Attack on Titan', 'Jujutsu Kaisen', 'Demon Slayer']);
@@ -270,13 +277,11 @@ const PlaylistFeature = () => {
     <div className="flex flex-col h-full">
       <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 mb-2">Playlist par Humeur</h2>
       <p className="text-slate-400 mb-8">Lova-AI génère une sélection parfaite basée sur ton état d'esprit.</p>
-      
       <div className="grid grid-cols-3 gap-3 mb-8">
         <Button onClick={() => generate('epic')} className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30">🔥 Épique</Button>
         <Button onClick={() => generate('chill')} className="bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30">😌 Détente</Button>
         <Button onClick={() => generate('sad')} className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30">😢 Émotion</Button>
       </div>
-
       <div className="flex-1 bg-black/20 rounded-2xl p-4 border border-white/5">
         {loading && <div className="h-full flex items-center justify-center text-sky-400 animate-pulse">Lova-AI analyse tes goûts...</div>}
         {!loading && playlist.length === 0 && <div className="h-full flex items-center justify-center text-slate-600">Sélectionne une humeur pour commencer.</div>}
@@ -302,7 +307,7 @@ const FortressVIPFeature = () => {
   const placeBid = () => {
     setBid(prev => prev + 100);
     setIsHighest(true);
-    setTimeout(() => setIsHighest(false), 5000); // Someone else bids after 5s
+    setTimeout(() => setIsHighest(false), 5000);
   };
 
   return (
@@ -314,9 +319,7 @@ const FortressVIPFeature = () => {
         </div>
       </div>
       <p className="text-slate-400 mb-6">Lova King AI gère les accès exclusifs et les enchères secrètes.</p>
-      
       <div className="space-y-6">
-        {/* Quests */}
         <div className="bg-red-950/20 border border-red-500/20 p-5 rounded-2xl">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-amber-500" /> Défis Exclusifs
@@ -329,33 +332,25 @@ const FortressVIPFeature = () => {
             <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden">
               <div className="bg-gradient-to-r from-amber-500 to-red-500 w-2/5 h-full" />
             </div>
-            
             <div className="flex justify-between items-center text-sm pt-2">
               <span className="text-slate-300 line-through">Connecter son compte Discord</span>
               <CheckCircle2 className="w-5 h-5 text-green-500" />
             </div>
           </div>
         </div>
-
-        {/* Auctions */}
         <div className="bg-amber-950/20 border border-amber-500/20 p-5 rounded-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-lg">LIVE</div>
           <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
             <Gavel className="w-5 h-5 text-amber-500" /> Enchère Secrète
           </h3>
-          <p className="text-sm text-slate-400 mb-4">Figurine Holographique Lova King (Édition Limitée 1/10)</p>
-          
+          <p className="text-sm text-slate-400 mb-4">Figurine Holographique Lova King AI (Édition Limitée 1/10)</p>
           <div className="flex justify-between items-end">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Enchère Actuelle</p>
               <p className="text-3xl font-black text-amber-400 font-mono">{bid} <span className="text-sm text-amber-500/50">LC</span></p>
             </div>
-            <Button 
-              onClick={placeBid} 
-              disabled={isHighest}
-              className={`rounded-full font-bold transition-all ${isHighest ? 'bg-green-500/20 text-green-400 border-none hover:bg-green-500/20' : 'bg-gradient-to-r from-amber-500 to-red-600 text-white hover:scale-105'}`}
-            >
-              {isHighest ? "Meilleur Enchérisseur" : `Enchérir ${bid + 100} LC`}
+            <Button onClick={placeBid} disabled={isHighest} className={`rounded-full font-bold transition-all ${isHighest ? 'bg-green-500/20 text-green-400 border-none hover:bg-green-500/20' : 'bg-gradient-to-r from-amber-500 to-red-600 text-white hover:scale-105'}`}>
+              {isHighest ? 'Meilleur Enchérisseur' : `Enchérir ${bid + 100} LC`}
             </Button>
           </div>
         </div>
