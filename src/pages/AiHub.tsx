@@ -110,6 +110,7 @@ export const AiHub = () => {
           <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle}>
             <video
               ref={videoRef}
+              data-testid="aihubs-top-banner-video"
               className={`w-full h-full object-cover transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               autoPlay
               loop
@@ -135,12 +136,14 @@ export const AiHub = () => {
                 setVideoLoaded(true);
               }}
               onError={() => {
-                setVideoVisible(false);
+                if (!videoLoaded) {
+                  setVideoVisible(false);
+                }
               }}
             >
+              <source src={aiHubBannerVideo} type="video/mp4" />
               <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
               <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
-              <source src={aiHubBannerVideo} type="video/mp4" />
               <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
             </video>
             {!videoLoaded && (
