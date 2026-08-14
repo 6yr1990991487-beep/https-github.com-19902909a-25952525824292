@@ -103,17 +103,20 @@ export const AiHub = () => {
         {/* Video Banner */}
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20">
           <video
-            ref={videoRef}
-            src={aiHubBannerVideo}
-            className="w-full h-72 md:h-96 object-cover"
-            autoPlay
-            loop
-            playsInline
-            muted={isMuted}
-            controls
-            preload="metadata"
-            controlsList="nodownload noremoteplayback"
-          />
+              ref={videoRef}
+              className="w-full h-72 md:h-96 object-cover"
+              autoPlay
+              loop
+              playsInline
+              muted={isMuted}
+              controls
+              preload="metadata"
+              controlsList="nodownload noremoteplayback"
+            >
+              <source src={aiHubBannerVideo} type="video/mp4" />
+              {/* Google Drive direct-download URL for provided file ID */}
+              <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
+            </video>
           <button
             type="button"
             onClick={toggleMute}
