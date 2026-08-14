@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import aiHubBannerVideo from '@/assets/aihub-banner.mp4';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock } from 'lucide-react';
+import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
+  const [isMuted, setIsMuted] = useState(true);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number } | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = isMuted;
+    const playPromise = v.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  }, [isMuted]);
+
+  const toggleMute = () => {
+    const nextMuted = !isMuted;
+    setIsMuted(nextMuted);
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = nextMuted;
+    const playPromise = v.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -68,17 +95,44 @@ export const AiHub = () => {
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
         {/* Top video banner added from Drive (requested) */}
-        <div className="w-full mb-6 overflow-hidden rounded-2xl border border-white/6">
+        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : { minHeight: '24rem' }}>
           <video
-            className="w-full h-48 object-cover object-center"
-            src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO"
+            ref={videoRef}
+            data-testid="aihubs-top-banner-video"
+            className={`w-full h-full object-cover bg-black transition-opacity duration-500 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
             autoPlay
-            muted
             loop
             playsInline
+            muted={isMuted}
             preload="auto"
-            data-testid="aihubs-top-banner-video"
-          />
+            controls
+            controlsList="nodownload noremoteplayback"
+            onLoadedMetadata={(event) => {
+              const target = event.currentTarget;
+              if (target.videoWidth && target.videoHeight) {
+                setVideoDimensions({ width: target.videoWidth, height: target.videoHeight });
+              }
+            }}
+            onLoadedData={() => {
+              setVideoLoaded(true);
+              const v = videoRef.current;
+              if (!v) return;
+              const p = v.play();
+              if (p && typeof p.then === 'function') p.catch(() => {});
+            }}
+          >
+            <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
+            <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
+            <source src={aiHubBannerVideo} type="video/mp4" />
+          </video>
+          <button
+            type="button"
+            onClick={toggleMute}
+            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            {isMuted ? 'Activer le son' : 'Couper le son'}
+          </button>
         </div>
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
