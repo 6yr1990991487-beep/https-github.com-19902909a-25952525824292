@@ -11,6 +11,7 @@ export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -104,14 +105,23 @@ export const AiHub = () => {
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20">
           <video
               ref={videoRef}
-              className="w-full h-72 md:h-96 object-cover"
+              className={`w-full h-72 md:h-96 object-cover ${videoLoaded ? '' : 'opacity-0'}`}
               autoPlay
               loop
               playsInline
               muted={isMuted}
-              controls
-              preload="metadata"
+              preload="auto"
               controlsList="nodownload noremoteplayback"
+              onLoadedData={() => {
+                setVideoLoaded(true);
+                const v = videoRef.current;
+                if (!v) return;
+                const p = v.play();
+                if (p && typeof p.then === 'function') p.catch(() => {});
+              }}
+              onCanPlay={() => {
+                setVideoLoaded(true);
+              }}
             >
               {/* Local copy of the Drive video to ensure playback on deploy */}
               <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
@@ -119,6 +129,12 @@ export const AiHub = () => {
               {/* Google Drive direct-download URL as fallback */}
               <source src="https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO" type="video/mp4" />
             </video>
+          {/* Grey fallback shown until videoLoaded */}
+          {!videoLoaded && (
+            <div className="absolute inset-0 bg-gray-800/60 flex items-center justify-center text-white">
+              Chargement de la bannière...
+            </div>
+          )}
           <button
             type="button"
             onClick={toggleMute}
