@@ -1226,7 +1226,18 @@ export const ThemeBubble = () => {
         <AnimatedThemeGlyph open={open} />
       </Button>
 
-      {floating ? (
+      {isMobile ? (
+        open && (
+          <>
+            <div
+              className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+              aria-hidden="true"
+            />
+            {panelBody}
+          </>
+        )
+      ) : floating ? (
         // Direct render when floating — no Sheet/Drawer backdrop
         open && panelBody
       ) : !isMobile ? (
