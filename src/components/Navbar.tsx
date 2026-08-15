@@ -75,20 +75,21 @@ const getRotatingDestination = (slotIndex: number, rotationIndex: number) =>
   rotatingDestinations[(slotIndex + rotationIndex) % rotatingDestinations.length];
 
 const megaSections = [
-  { to: "/", label: "Portail", desc: "Nouvelle landing Lovanet", icon: Home },
-  { to: "/anime-moments", label: "Anime Moments", desc: "Page officielle historique", icon: Film },
-  { to: "/tiktok", label: "TikTok", desc: "Shorts & réactions", icon: Music2 },
-  { to: "/chaine-youtube", label: "YouTube", desc: "Vidéos & shorts officiels", icon: Youtube },
-  { to: "/chaine-youtube/manga", label: "YouTube Manga", desc: "Chaîne dédiée manga", icon: Youtube },
-  { to: "/prime-video", label: "Prime Vidéo", desc: "Lecture premium multi-plateforme", icon: Play },
-  { to: "/lecteurs-video", label: "Lecteur vidéo", desc: "Player anime premium", icon: Film },
-  { to: "/anime-countdown", label: "Animés à venir", desc: "Countdown live des prochains épisodes", icon: Play },
-  { to: "/anime-catalog", label: "Catalogue Animés", desc: "Carrousel 3D tendances", icon: Film },
-  { to: "/decouvrir", label: "Univers Lovanet", desc: "", icon: Compass },
-  { to: "/actualites", label: "Actualités", desc: "News anime", icon: Sparkles },
-  { to: "/contact", label: "Contact", desc: "Écrire à l'équipe", icon: Mail },
-  { to: "/legals", label: "Mentions légales", desc: "CGV & confidentialité", icon: ScrollText },
-  { to: "/leaderboard", label: "Leaderboard Global", desc: "Top membres & LovaCoins", icon: Trophy },
+  { to: "/", label: "Portail", icon: Home },
+  { to: "/anime-moments", label: "Anime Moments", icon: Film },
+  { to: "/tiktok", label: "TikTok", icon: Music2 },
+  { to: "/chaine-youtube", label: "YouTube", icon: Youtube },
+  { to: "/chaine-youtube/manga", label: "YouTube Manga", icon: Youtube },
+  { to: "/prime-video", label: "Prime Vidéo", icon: Play },
+  { to: "/lecteurs-video", label: "Lecteur vidéo", icon: Film },
+  { to: "/anime-countdown", label: "Animés à venir", icon: Play },
+  { to: "/anime-catalog", label: "Catalogue Animés", icon: Film },
+  { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
+  { to: "/actualites", label: "Actualités", icon: Sparkles },
+  { to: "/contact", label: "Contact", icon: Mail },
+  { to: "/legals", label: "Mentions légales", icon: ScrollText },
+  { to: "/leaderboard", label: "Leaderboard Global", icon: Trophy },
+
 ];
 
 const mobileGroups = [
@@ -422,7 +423,6 @@ export const Navbar = () => {
                               </span>
                               <span className="min-w-0 text-white">
                                 <span className="block text-sm font-semibold">{item.label}</span>
-                                {item.desc && <span className="mt-1 block text-xs text-white/70">{item.desc}</span>}
                               </span>
                             </span>
                           </Link>

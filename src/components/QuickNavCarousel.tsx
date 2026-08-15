@@ -11,16 +11,15 @@ type QuickNavItem = {
   title: string;
   to: string;
   color?: string;
-  subtitle?: string;
 };
 
 const DEFAULT_ITEMS: QuickNavItem[] = [
-  { id: "home", title: "Portail", to: "/anime-moments", color: "linear-gradient(45deg, #22d3ee, #6366f1)", subtitle: "Accueil" },
-  { id: "catalog", title: "Catalogue", to: "/anime-catalog", color: "linear-gradient(45deg, #fbbf24, #ef4444)", subtitle: "Trailers & fiches" },
-  { id: "youtube", title: "YouTube", to: "/chaine-youtube", color: "linear-gradient(45deg, #4ade80, #059669)", subtitle: "Chaîne officielle" },
-  { id: "shop", title: "Boutique", to: "/shop", color: "linear-gradient(45deg, #f472b6, #9333ea)", subtitle: "Produits" },
-  { id: "tiktok", title: "TikTok", to: "/tiktok", color: "linear-gradient(45deg, #38bdf8, #2563eb)", subtitle: "Clips viraux" },
-  { id: "leader", title: "Classement", to: "/leaderboard", color: "linear-gradient(45deg, #e879f9, #e11d48)", subtitle: "Top" },
+  { id: "home", title: "Portail", to: "/anime-moments", color: "linear-gradient(45deg, #22d3ee, #6366f1)" },
+  { id: "catalog", title: "Catalogue", to: "/anime-catalog", color: "linear-gradient(45deg, #fbbf24, #ef4444)" },
+  { id: "youtube", title: "YouTube", to: "/chaine-youtube", color: "linear-gradient(45deg, #4ade80, #059669)" },
+  { id: "shop", title: "Boutique", to: "/shop", color: "linear-gradient(45deg, #f472b6, #9333ea)" },
+  { id: "tiktok", title: "TikTok", to: "/tiktok", color: "linear-gradient(45deg, #38bdf8, #2563eb)" },
+  { id: "leader", title: "Classement", to: "/leaderboard", color: "linear-gradient(45deg, #e879f9, #e11d48)" },
 ];
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
@@ -125,8 +124,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
           {items.map((item) => (
             <Link key={item.id} to={item.to} className="relative h-40 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus:scale-105" aria-label={item.title} draggable={false}>
               <div className="absolute inset-0 rounded-2xl backdrop-blur-md" style={{ background: "var(--nav-card-overlay, linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)))" }} />
-              <div className="relative flex h-full w-full flex-col justify-between rounded-xl p-3">
-                <div className="z-10 text-sm font-semibold opacity-90">{item.subtitle}</div>
+              <div className="relative flex h-full w-full flex-col justify-end rounded-xl p-3">
                 <div className="z-10 mt-2 text-xl font-extrabold">{item.title}</div>
                 <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20 blur-2xl" style={{ background: item.color }} />
                 <div className="absolute bottom-3 left-3 z-10 text-xs text-white/90">Aller →</div>
