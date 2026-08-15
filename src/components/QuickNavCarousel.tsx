@@ -11,16 +11,15 @@ type QuickNavItem = {
   title: string;
   to: string;
   color?: string;
-  subtitle?: string;
 };
 
 const DEFAULT_ITEMS: QuickNavItem[] = [
-  { id: "home", title: "Portail", to: "/anime-moments", color: "linear-gradient(45deg, #22d3ee, #6366f1)", subtitle: "Accueil" },
-  { id: "catalog", title: "Catalogue", to: "/anime-catalog", color: "linear-gradient(45deg, #fbbf24, #ef4444)", subtitle: "Trailers & fiches" },
-  { id: "youtube", title: "YouTube", to: "/chaine-youtube", color: "linear-gradient(45deg, #4ade80, #059669)", subtitle: "Chaîne officielle" },
-  { id: "shop", title: "Boutique", to: "/shop", color: "linear-gradient(45deg, #f472b6, #9333ea)", subtitle: "Produits" },
-  { id: "tiktok", title: "TikTok", to: "/tiktok", color: "linear-gradient(45deg, #38bdf8, #2563eb)", subtitle: "Clips viraux" },
-  { id: "leader", title: "Classement", to: "/leaderboard", color: "linear-gradient(45deg, #e879f9, #e11d48)", subtitle: "Top" },
+  { id: "home", title: "Portail", to: "/anime-moments", color: "linear-gradient(45deg, #22d3ee, #6366f1)" },
+  { id: "catalog", title: "Catalogue", to: "/anime-catalog", color: "linear-gradient(45deg, #fbbf24, #ef4444)" },
+  { id: "youtube", title: "YouTube", to: "/chaine-youtube", color: "linear-gradient(45deg, #4ade80, #059669)" },
+  { id: "shop", title: "Boutique", to: "/shop", color: "linear-gradient(45deg, #f472b6, #9333ea)" },
+  { id: "tiktok", title: "TikTok", to: "/tiktok", color: "linear-gradient(45deg, #38bdf8, #2563eb)" },
+  { id: "leader", title: "Classement", to: "/leaderboard", color: "linear-gradient(45deg, #e879f9, #e11d48)" },
 ];
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
