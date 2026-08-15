@@ -1,4 +1,6 @@
-const CATALOG_TOP_VIDEO = "/catalogue-banner.mp4";
+import catalogTopBanner from "@/assets/short-banner.mp4.asset.json";
+
+const CATALOG_TOP_VIDEO = catalogTopBanner.url;
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
