@@ -74,7 +74,9 @@ const menuRotationIntervalMs = 10000;
 const getRotatingDestination = (slotIndex: number, rotationIndex: number) =>
   rotatingDestinations[(slotIndex + rotationIndex) % rotatingDestinations.length];
 
-const megaSections = [
+type MegaItem = { to: string; label: string; icon: typeof Home; iconOnly?: boolean };
+
+const megaSections: MegaItem[] = [
   { to: "/", label: "Portail", icon: Home },
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
   { to: "/tiktok", label: "TikTok", icon: Music2 },
@@ -84,11 +86,14 @@ const megaSections = [
   { to: "/lecteurs-video", label: "Lecteur vidéo", icon: Film },
   { to: "/anime-countdown", label: "Animés à venir", icon: Play },
   { to: "/anime-catalog", label: "Catalogue Animés", icon: Film },
+  { to: "/ai-hub", label: "AI", icon: Bot },
+  { to: "/shop", label: "Boutique", icon: ShoppingBag },
   { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
   { to: "/actualites", label: "Actualités", icon: Sparkles },
+  { to: "/profile", label: "Profil", icon: User },
   { to: "/contact", label: "Contact", icon: Mail },
   { to: "/legals", label: "Mentions légales", icon: ScrollText },
-  { to: "/leaderboard", label: "Leaderboard Global", icon: Trophy },
+  { to: "/leaderboard", label: "Leaderboard Global", icon: Trophy, iconOnly: true },
 
 ];
 
@@ -96,7 +101,7 @@ const mobileGroups = [
   {
     id: "priority",
     label: "Accès Rapide",
-    items: megaSections.filter((item) => ["/prime-video", "/anime-catalog", "/anime-countdown", "/shop"].includes(item.to)),
+    items: megaSections.filter((item) => ["/prime-video", "/anime-catalog", "/anime-countdown", "/shop", "/ai-hub"].includes(item.to)),
     color: "text-amber-400",
     gradient: "from-amber-500/20 to-orange-600/20",
     border: "border-amber-500/50",
@@ -112,7 +117,7 @@ const mobileGroups = [
   {
     id: "explore",
     label: "Explorer & Plus",
-    items: megaSections.filter((item) => ["/", "/decouvrir", "/actualites", "/leaderboard", "/contact", "/legals"].includes(item.to)),
+    items: megaSections.filter((item) => ["/", "/decouvrir", "/actualites", "/leaderboard", "/profile", "/contact", "/legals"].includes(item.to)),
     color: "text-sky-400",
     gradient: "from-sky-500/20 to-blue-600/20",
     border: "border-sky-500/30",
@@ -411,19 +416,23 @@ export const Navbar = () => {
                             data-testid={navTestIds[item.to] ?? undefined}
                             onClick={() => setMegaOpen(false)}
                             className={cn(
-                              "relative h-28 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-3 text-left transition-transform duration-200 hover:scale-105 focus:scale-105 sm:w-64",
+                              "relative h-28 flex-shrink-0 overflow-hidden rounded-2xl p-3 text-left transition-transform duration-200 hover:scale-105 focus:scale-105",
+                              item.iconOnly ? "w-28" : "w-56 sm:w-64",
                               active && "ring-1 ring-white/20",
                             )}
+                            aria-label={item.iconOnly ? item.label : undefined}
                             style={{ background: "transparent" }}
                           >
                             <span className="absolute inset-0 rounded-2xl bg-black/40 backdrop-blur-md" />
-                            <span className="relative z-10 flex h-full items-center gap-3">
+                            <span className={cn("relative z-10 flex h-full items-center gap-3", item.iconOnly && "justify-center")}>
                               <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-white/90">
                                 <item.icon className="h-5 w-5" strokeWidth={1.6} />
                               </span>
-                              <span className="min-w-0 text-white">
-                                <span className="block text-sm font-semibold">{item.label}</span>
-                              </span>
+                              {!item.iconOnly && (
+                                <span className="min-w-0 text-white">
+                                  <span className="block text-sm font-semibold">{item.label}</span>
+                                </span>
+                              )}
                             </span>
                           </Link>
                         );
