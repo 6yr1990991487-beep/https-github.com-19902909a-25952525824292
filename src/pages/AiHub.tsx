@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import aiHubLongBanner from '@/assets/aihub-long-banner.mp4.asset.json';
+import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
