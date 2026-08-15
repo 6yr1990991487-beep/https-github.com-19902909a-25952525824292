@@ -3861,3 +3861,16 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   -ms-overflow-style: none;
   overscroll-behavior-x: contain;
 }
+
+/* Zones à défilement par glisser : pas de rail, pas de clic pendant le swipe */
+.drag-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+  touch-action: pan-x;
+}
+.drag-scroll::-webkit-scrollbar { display: none; }
+.drag-scroll:active { cursor: grabbing; }
+.drag-scroll.is-swiping a,
+.drag-scroll.is-swiping button { pointer-events: none; }
