@@ -4,6 +4,7 @@ import App from "./App";
 import "./index.css";
 import { initTilt3D } from "./lib/tilt3d";
 import { initInteractivity } from "./lib/interactivity";
+import { registerServiceWorker } from "./lib/registerServiceWorker";
 
 initTilt3D();
 initInteractivity();
@@ -97,13 +98,7 @@ if (typeof window !== "undefined") {
 
   }
 
-  // Enregistrement du service worker (requis pour l'installation PWA).
-  if ("serviceWorker" in navigator && !swIsPreview) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/service-worker.js", { scope: "/" }).catch(() => {
-        // ignore
-      });
-    });
-  }
+  // Enregistrement du service worker hors ligne (requis pour l'installation PWA).
+  registerServiceWorker();
 }
 
