@@ -1,4 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { initPanelDrag } from "@/lib/panelDrag";
+import { initPanelTint } from "@/lib/panelTint";
 import { AnimatePresence, motion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -104,6 +107,10 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
 const AppShell = () => {
   usePushNotifications();
   const location = useLocation();
+  useEffect(() => {
+    initPanelTint();
+    initPanelDrag();
+  }, []);
   if (location.hash?.includes('session_id=')) { return <AuthCallback />; }
 
   const pathname = location.pathname;
