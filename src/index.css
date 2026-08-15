@@ -3008,7 +3008,7 @@ body,
   color: #ffffff !important;
 }
 
-.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] > span {
+.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] > span:first-child {
   background: rgba(255, 255, 255, 0.06) !important;
   background-image: none !important;
   animation: none !important;
