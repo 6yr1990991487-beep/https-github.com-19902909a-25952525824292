@@ -5,7 +5,7 @@ import { PageShell } from "@/components/PageShell";
 import { HubEmbedFrame } from "@/components/HubEmbedFrame";
 import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
 import { videos, thumb } from "@/data/videos";
-import { ShoppingBag, Youtube, Music2, Play, Film, Calendar, ArrowRight } from "lucide-react";
+import { ShoppingBag, Youtube, Music2, Play, Film, Calendar, Sparkles, ArrowRight } from "lucide-react";
 import { ManualSyncButton } from "@/components/ManualSyncButton";
 
 /**
