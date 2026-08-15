@@ -1,5 +1,7 @@
-// Service worker auto-destructeur : purge tous les caches et se désinscrit.
-// Nécessaire car d'anciennes versions mettaient en cache des assets périmés.
+// Service worker minimal : aucun cache, mais un handler fetch actif.
+// Requis par Chrome/Android pour rendre l'application installable (PWA).
+const SW_VERSION = 'lovanet-sw-v4';
+
 self.addEventListener('install', () => {
   self.skipWaiting();
 });
@@ -7,16 +9,16 @@ self.addEventListener('install', () => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
+      // purge d'anciens caches périmés, mais on reste enregistré
       const keys = await caches.keys();
       await Promise.all(keys.map((k) => caches.delete(k)));
-      await self.registration.unregister();
-      const clients = await self.clients.matchAll({ type: 'window' });
-      clients.forEach((client) => client.navigate(client.url));
+      await self.clients.claim();
     })()
   );
 });
 
-// Toujours réseau : plus aucune mise en cache.
+// Passthrough réseau : pas de mise en cache, mais handler présent.
 self.addEventListener('fetch', (event) => {
-  event.respondWith(fetch(event.request));
+  if (event.request.method !== 'GET') return;
+  event.respondWith(fetch(event.request).catch(() => Response.error()));
 });
