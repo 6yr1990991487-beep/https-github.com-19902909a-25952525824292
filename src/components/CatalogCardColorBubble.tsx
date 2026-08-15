@@ -354,21 +354,14 @@ export const CatalogCardColorBubble = () => {
 
   return (
     <>
-      {open && panelPos && (
+      {open && (
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,340px)] max-w-[calc(100vw-24px)] max-h-[80vh] overflow-y-auto overflow-x-hidden"
-          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
-          onPointerDown={onDown}
-          onPointerMove={onMove}
-          onPointerUp={onUp}
-          onPointerCancel={onUp}
+          className="fixed left-[5.25rem] top-1/2 z-[10050] -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.88))] p-0 text-white shadow-[0_24px_70px_rgba(15,23,42,0.55)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(88vw,320px)] max-h-[76vh] overflow-y-auto sm:left-[6rem]"
+          style={{ boxSizing: "border-box" }}
         >
           <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70" aria-hidden="true">
-              <Move className="h-3.5 w-3.5" />
-              Palette
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.24em] text-white/70">Palette</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -404,31 +397,11 @@ export const CatalogCardColorBubble = () => {
       {/* Orb button stays fixed on right edge, vertically centered */}
       <button
         type="button"
-        onClick={() => {
-          setOpen((o) => {
-            const next = !o;
-            if (next) {
-              const width = panelRef.current?.offsetWidth || Math.min(Math.round(window.innerWidth * 0.9), PANEL_W);
-              const base = preferredRightAnchor(width, "[aria-label='Couleur des cartes du catalogue']");
-              const resolved = placePanel(base);
-              setPanelPos(resolved);
-              localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
-            }
-            return next;
-          });
-        }}
+        onClick={() => setOpen((o) => !o)}
         aria-label="Couleur des cartes du catalogue"
         data-floating-trigger="catalog-color"
         className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-white/35 bg-white/10 text-white shadow-[0_0_18px_rgba(255,255,255,0.18)] backdrop-blur-xl transition-all hover:scale-110 hover:bg-white/16 sm:right-3"
       >
-        <span
-          className="absolute inset-0 opacity-80"
-          style={{
-            background: "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
-            backgroundSize: "300% 300%",
-            animation: "lovanet-bg-shift 6s ease infinite",
-          }}
-        />
         <span className="relative z-10 text-white drop-shadow">
           {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
         </span>
