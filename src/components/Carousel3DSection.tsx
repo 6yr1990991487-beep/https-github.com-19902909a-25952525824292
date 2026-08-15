@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Carousel3D } from "@/components/Carousel3D";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "react-error-boundary";
 
 type Props = {
   items: any[];
