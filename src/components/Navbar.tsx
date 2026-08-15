@@ -226,17 +226,16 @@ export const Navbar = () => {
         whileHover={{ rotateY: 180, scale: 1.1, rotateX: 10 }}
         whileTap={{ scale: 0.9 }}
         transition={{ type: "spring", stiffness: 200, damping: 10 }}
-        className="relative inline-flex h-11 w-11 items-center justify-center rounded-[1.1rem] border border-white/25 bg-white/10 p-[2px] shadow-[0_8px_18px_rgba(0,0,0,0.45),0_0_18px_rgba(96,229,255,0.28),inset_0_2px_3px_rgba(255,255,255,0.45),inset_0_-3px_6px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:h-12 sm:w-12"
+        className="nav-logo-pin relative inline-flex h-11 w-11 items-center justify-center rounded-full p-[3px] sm:h-12 sm:w-12"
         style={{ transformStyle: "preserve-3d" }}
       >
-        <span className="absolute inset-[3px] rounded-[0.9rem] bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.9),rgba(255,255,255,0.18)_26%,rgba(89,204,255,0.26)_58%,rgba(86,35,163,0.38)_100%)] opacity-90" style={{ transform: "translateZ(-8px)" }} />
-        <span className="absolute -inset-[1px] rounded-[1.15rem] bg-[conic-gradient(from_180deg_at_50%_50%,rgba(94,234,212,0)_0deg,rgba(94,234,212,0.75)_90deg,rgba(186,108,255,0.7)_180deg,rgba(255,255,255,0.12)_270deg,rgba(94,234,212,0)_360deg)] opacity-70 blur-[2px] animate-[rgb-spin_10s_linear_infinite]" style={{ transform: "translateZ(-14px)" }} />
         <img
           src="/lovanet-logo-custom.png?v=6"
           alt="Lovanet"
-          className="relative z-10 h-full w-full scale-[1.04] rounded-[0.9rem] object-cover drop-shadow-[0_3px_6px_rgba(0,0,0,0.55)] drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]"
-          style={{ transform: "translateZ(16px)" }}
+          className="relative z-10 h-full w-full rounded-full object-cover drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
+          style={{ transform: "translateZ(12px)" }}
         />
+        <span className="nav-logo-pin-gloss" aria-hidden="true" />
       </motion.span>
     </Link>
   );
