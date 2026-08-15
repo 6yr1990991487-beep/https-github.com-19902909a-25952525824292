@@ -493,25 +493,6 @@ export default function RootLandingPage() {
               <div className="hero-banner-color-bloom pointer-events-none absolute inset-0" />
 
               <div className="hero-banner-content root-hero-content relative flex min-h-[350px] sm:min-h-[440px] flex-col justify-end p-4 sm:p-6 z-30 pointer-events-none">
-                <div className="flex flex-row flex-wrap gap-2 pointer-events-auto" data-testid="hero-banner-bottom-primary-buttons">
-                  <Button asChild size="sm" className="btn-neon-rainbow h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-hero-primary-cta-button">
-                    <Link to={heroPrimary.to}>
-                      <span key={`hero-primary-${heroPrimary.to}-${rotationIndex}`} className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                        {heroPrimary.label}
-                        <ArrowRight className="h-3 w-3" />
-                      </span>
-                    </Link>
-                  </Button>
-                  <Button asChild variant="glass" size="sm" className={`h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white bg-black/20 hover:bg-black/30 backdrop-blur-md border border-white/10`} data-testid="home-hero-secondary-cta-button">
-                    <Link to={heroSecondary.to}>
-                      <span key={`hero-secondary-${heroSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                        {heroSecondary.label}
-                        <Compass className="h-3 w-3 text-cyan-300" />
-                      </span>
-                    </Link>
-                  </Button>
-                </div>
-
               </div>
             </div>
           </div>
