@@ -17,7 +17,7 @@ import { useCart } from "@/context/CartContext";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Search, Star, Flame, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Zap, EyeOff, ExternalLink, Play, Heart, LayoutGrid, Package, Gamepad2 } from "lucide-react";
 import { videos as VIDEO_LIST } from "@/data/videos";
-import { WidgetDock, wishlistApi, recentApi } from "@/components/shop/WidgetDock";
+import { wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
 import { useGamification } from "@/contexts/GamificationContext";
 import { CyberRadarTracker } from "@/components/shop/CyberRadarTracker";
