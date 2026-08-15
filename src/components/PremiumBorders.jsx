@@ -49,11 +49,11 @@ const resolveGoogleDriveVideoSource = (input) => {
 
 const OVERLAY_BACKGROUND_VIDEOS = [
   {
-    id: "drive-bg",
-    src: "/drive-bg.mp4",
+    id: "global-bg",
+    src: "/global-bg-browser.webm",
   },
-  { id: "hero-extra-1W0eh", src: "/hero-banner-extra-1W0eh.mp4" },
-  { id: "overlay-1dp9", src: "/overlay-1dp9.mp4" },
+  { id: "global-bg-web", src: "/global-bg-web.mp4" },
+  { id: "global-bg-mobile", src: "/global-bg-mobile.mp4" },
 ];
 
 const ORDERED_OVERLAY_VIDEO_IDS = OVERLAY_BACKGROUND_VIDEOS.map((video) => video.id);
@@ -129,7 +129,7 @@ export const PremiumBorders = () => {
   // video overlay independently from custom 3D decors. When `customDecors` is
   // active we avoid rendering the duplicated decorative particles/leaves.
   return (
-    <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-3d-decor data-animated-bg>
+    <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-testid="global-video-background">
       {/* Global Background Video */}
       <video
         ref={overlayVideoRef}
@@ -137,14 +137,23 @@ export const PremiumBorders = () => {
         autoPlay
         muted={true}
         playsInline
-        preload="metadata"
+        preload="auto"
         decoding="async"
         disablePictureInPicture
-        className="absolute inset-0 w-full h-full object-cover z-[-1] opacity-60"
+        className="absolute inset-0 z-0 h-full w-full object-cover opacity-60"
         style={{ pointerEvents: 'none' }}
         poster="/global-bg-poster.jpg"
         data-bg-video
         src={activeOverlayVideo.src}
+        onCanPlay={() => {
+          const video = overlayVideoRef.current;
+          if (!video) return;
+          video.muted = true;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === "function") {
+            playPromise.catch(() => {});
+          }
+        }}
         onEnded={() => {
           setOverlayQueue((currentQueue) => {
             const nextQueue = currentQueue.slice(1);
@@ -175,7 +184,7 @@ export const PremiumBorders = () => {
       />
 
       {/* All animated décors hidden when toggle is active or when custom decors are used elsewhere */}
-      {!hidden && !customDecors && (<> 
+      {!hidden && !customDecors && (<div className="absolute inset-0 z-10" data-3d-decor data-animated-bg>
       {/* Ciel & Nuages (Haut) */}
       <div className="absolute top-0 left-0 right-0 h-[40vh] bg-gradient-to-b from-blue-600/30 via-indigo-600/10 to-transparent">
         <Cloud delay={0} y="5%" duration={40} scale={1} />
@@ -232,7 +241,7 @@ export const PremiumBorders = () => {
           />
         ))}
       </div>
-      </>)}
+      </div>)}
     </div>
   );
 };

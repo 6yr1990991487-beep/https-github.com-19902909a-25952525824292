@@ -3521,8 +3521,7 @@ body,
 [data-testid="home-platforms-pill-row"] a,
 [data-testid="home-platforms-pill-row"] a > div,
 [data-testid="home-platforms-pill-row"] a > div > div {
-  background-color: transparent !important;
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)) !important;
+  background: transparent !important;
   box-shadow: 0 8px 26px -18px rgba(0,0,0,0.7) !important;
   border-color: rgba(255,255,255,0.22) !important;
 }
@@ -3534,6 +3533,7 @@ body,
 
 [data-testid="home-platforms-pill-row"] a > div:hover,
 [data-testid="home-platforms-button"]:hover {
-  background-image: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
+  background-color: rgba(255,255,255,0.06) !important;
+  background-image: none !important;
   border-color: rgba(255,255,255,0.4) !important;
 }
