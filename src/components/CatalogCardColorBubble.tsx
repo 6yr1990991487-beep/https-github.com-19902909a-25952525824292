@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Move, Sparkles, X } from "lucide-react";
 
 /**
@@ -354,46 +355,61 @@ export const CatalogCardColorBubble = () => {
 
   return (
     <>
-      {open && (
-        <div
-          ref={panelRef}
-          className="fixed left-[5.25rem] top-1/2 z-[10050] -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.88))] p-0 text-white shadow-[0_24px_70px_rgba(15,23,42,0.55)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(88vw,320px)] max-h-[76vh] overflow-y-auto sm:left-[6rem]"
-          style={{ boxSizing: "border-box" }}
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
-            <span className="text-[10px] uppercase tracking-[0.24em] text-white/70">Palette</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Fermer le panneau couleur des cartes"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/8 text-white/90 transition-colors hover:bg-white/15"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-5 gap-3 p-3 sm:grid-cols-6 md:grid-cols-7">
-            {SKINS.map((s) => (
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            className="detached-bubble-panel detached-bubble-panel--catalog"
+            style={{
+              boxSizing: "border-box",
+              left: typeof panelPos?.x === "number" ? panelPos.x : undefined,
+              top: typeof panelPos?.y === "number" ? panelPos.y : undefined,
+            }}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+          >
+            <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+              <div className="flex items-center gap-2 text-white/70">
+                <Move className="h-3.5 w-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.24em]">Couleur des cartes</span>
+              </div>
               <button
-                key={s.key}
                 type="button"
-                onClick={() => pick(s)}
-                title={s.label}
-                aria-label={s.label}
-                className={`relative h-10 w-10 rounded-full border border-white/35 transition-transform hover:scale-110 sm:h-9 sm:w-9 md:h-8 md:w-8 ${
-                  active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
-                }`}
-                style={{
-                  background: s.swatch,
-                  backgroundSize: s.animated ? "300% 300%" : undefined,
-                  animation: s.animated ? "lovanet-bg-shift 8s ease infinite" : undefined,
-                }}
+                onClick={() => setOpen(false)}
+                aria-label="Fermer le panneau couleur des cartes"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-white/90 transition-colors hover:bg-white/15"
               >
-                {s.key === "off" && <span className="absolute inset-0" aria-hidden="true" />}
+                <X className="h-4 w-4" />
               </button>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5 p-3 sm:gap-2">
+              {SKINS.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => pick(s)}
+                  title={s.label}
+                  aria-label={s.label}
+                  className={`flex items-center justify-center rounded-full p-0.5 transition-transform hover:scale-110 ${
+                    active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
+                  }`}
+                >
+                  <span
+                    className="h-8 w-8 rounded-full border border-white/25 shadow-sm"
+                    style={{
+                      background: s.swatch,
+                      backgroundSize: s.animated ? "300% 300%" : undefined,
+                      animation: s.animated ? "lovanet-bg-shift 8s ease infinite" : undefined,
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
       {/* Orb button stays fixed on right edge, vertically centered */}
       <button
         type="button"
