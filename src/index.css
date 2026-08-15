@@ -3837,3 +3837,27 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 22%, rgba(8, 14, 20, 0.42) 100%) !important;
 }
+
+/* Panneau flottant « Navigation rapide » : déplaçable, sans rail de défilement */
+.quicknav-floating {
+  position: fixed;
+  left: 50%;
+  top: 12vh;
+  transform: translateX(-50%);
+  z-index: 80;
+  width: min(92vw, 720px);
+  max-height: 70vh;
+  overflow: hidden;
+  border-radius: 1.4rem;
+}
+.quicknav-floating[data-dragged="true"] {
+  transform: none;
+}
+.quicknav-floating .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.quicknav-floating .no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-x: contain;
+}
