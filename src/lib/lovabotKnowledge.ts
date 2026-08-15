@@ -13,7 +13,7 @@ export const SITE_KNOWLEDGE: KnowledgeEntry[] = [
     id: "portail",
     keywords: ["portail", "accueil", "home", "page principale", "landing", "demarrer", "commencer"],
     answer:
-      "Le Portail est la page d'accueil de Lovanet : bannière vidéo, trailers en avant-première et accès rapide vers toutes les plateformes (YouTube, TikTok, Prime Vidéo, Catalogue, Boutique).",
+      "Le Portail est la page d'accueil de Lovanet : bannière vidéo, trailers en avant-première et accès rapide vers toutes les plateformes (YouTube, TikTok, Prime Vidéo, Catalogue, Magasin).",
     link: { label: "Aller au Portail", to: "/" },
   },
   {
@@ -46,10 +46,10 @@ export const SITE_KNOWLEDGE: KnowledgeEntry[] = [
   },
   {
     id: "shop",
-    keywords: ["boutique", "shop", "magasin", "acheter", "poster", "collector", "produit", "produits", "panier", "commande", "livraison", "prix"],
+    keywords: ["magasin", "boutique", "shop", "acheter", "poster", "collector", "produit", "produits", "panier", "commande", "livraison", "prix"],
     answer:
-      "La Boutique propose posters, éditions collector, textiles et goodies. Ajoute au panier depuis une fiche produit : le panier s'ouvre dans un panneau transparent. Tu peux aussi ouvrir l'accès rapide Magasin depuis la barre de bulles à gauche.",
-    link: { label: "Voir la boutique", to: "/shop" },
+      "La Magasin propose posters, éditions collector, textiles et goodies. Ajoute au panier depuis une fiche produit : le panier s'ouvre dans un panneau transparent. Tu peux aussi ouvrir l'accès rapide Magasin depuis la barre de bulles à gauche.",
+    link: { label: "Voir la magasin", to: "/shop" },
   },
   {
     id: "commande",
@@ -109,7 +109,7 @@ export const SITE_KNOWLEDGE: KnowledgeEntry[] = [
     id: "navigation",
     keywords: ["menu", "navigation", "acces rapide", "accès rapide", "chercher", "trouver page"],
     answer:
-      "Le menu de navigation est accessible en haut (PC) et via l'accès rapide sur mobile : boutons Portail, Catalogue, YouTube, TikTok, Prime, AI, Boutique, Actualités, Profil. Les listes de boutons défilent par simple glissement.",
+      "Le menu de navigation est accessible en haut (PC) et via l'accès rapide sur mobile : boutons Portail, Catalogue, YouTube, TikTok, Prime, AI, Magasin, Actualités, Profil. Les listes de boutons défilent par simple glissement.",
   },
   {
     id: "lecteur",
@@ -161,7 +161,7 @@ export const SUGGESTIONS = [
 
 export const BOT_GREETINGS: Record<BotId, string> = {
   "lova-bot":
-    "Salut ! Je suis Lova-Bot, ton guide sur Lovanet. Pose-moi une question sur les pages, les vidéos, la boutique ou la personnalisation — c'est gratuit.",
+    "Salut ! Je suis Lova-Bot, ton guide sur Lovanet. Pose-moi une question sur les pages, les vidéos, la magasin ou la personnalisation — c'est gratuit.",
   "lova-ai":
     "Lova-AI en ligne. Je t'oriente vers le bon contenu : catalogue, filtres, langues du lecteur, recommandations.",
   "lova-king":
@@ -222,7 +222,7 @@ export function answerQuestion(question: string, botId: BotId = "lova-bot"): Bot
   if (!best) {
     return {
       text:
-        "Je n'ai pas la réponse exacte à ça. Je peux t'aider sur : les pages du site (Portail, Catalogue, YouTube, TikTok, Prime, Boutique, Actualités, AI Hub), le lecteur et les langues, la personnalisation (thème, bulles, couleurs des cartes), les comptes et les commandes.",
+        "Je n'ai pas la réponse exacte à ça. Je peux t'aider sur : les pages du site (Portail, Catalogue, YouTube, TikTok, Prime, Magasin, Actualités, AI Hub), le lecteur et les langues, la personnalisation (thème, bulles, couleurs des cartes), les comptes et les commandes.",
       matched: false,
     };
   }

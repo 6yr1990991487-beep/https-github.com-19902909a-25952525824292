@@ -313,8 +313,8 @@ const Index = () => {
 
       <section className="container mx-auto px-4 lg:px-8 py-16">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold">Nouveautés de la boutique anime</h2>
-          <Link to="/shop" className="text-sm text-primary hover:underline whitespace-nowrap">Boutique →</Link>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold">Nouveautés de la magasin anime</h2>
+          <Link to="/shop" className="text-sm text-primary hover:underline whitespace-nowrap">Magasin →</Link>
         </div>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">

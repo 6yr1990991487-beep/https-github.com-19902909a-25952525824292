@@ -347,7 +347,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* IDEA 8: Boutique de récompenses & Portefeuille */}
+          {/* IDEA 8: Magasin de récompenses & Portefeuille */}
           <Card className="bg-white/5 border-white/10 overflow-hidden">
             <div className="bg-gradient-to-r from-amber-500/20 to-orange-600/20 p-4 flex items-center justify-between border-b border-amber-500/20">
               <div className="flex items-center gap-2">
@@ -360,7 +360,7 @@ export default function Profile() {
               <p className="text-xs text-white/60 text-center mb-4">Utilisez vos LovaCoins pour débloquer des avantages exclusifs.</p>
               
               <Button variant="outline" className="w-full justify-start border-white/10 bg-black/40 hover:bg-white/10 text-sm">
-                <Gift className="w-4 h-4 mr-3 text-pink-400" /> Avatars Premium (Boutique)
+                <Gift className="w-4 h-4 mr-3 text-pink-400" /> Avatars Premium (Magasin)
               </Button>
               <Button variant="outline" className="w-full justify-start border-white/10 bg-black/40 hover:bg-white/10 text-sm">
                 <Trophy className="w-4 h-4 mr-3 text-sky-400" /> Titres Honorifiques

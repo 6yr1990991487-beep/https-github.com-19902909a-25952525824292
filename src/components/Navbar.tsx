@@ -63,7 +63,7 @@ const rotatingDestinations = [
   { to: "/ai-hub", label: "AI Hub", icon: Bot },
   { to: "/decouvrir", label: "Univers", icon: Compass },
   { to: "/actualites", label: "News", icon: Sparkles },
-  { to: "/shop", label: "Boutique", icon: ShoppingBag },
+  { to: "/shop", label: "Magasin", icon: ShoppingBag },
   { to: "/contact", label: "Contact", icon: Mail },
   { to: "/leaderboard", label: "Classement", icon: Trophy },
 ];
@@ -87,7 +87,7 @@ const megaSections: MegaItem[] = [
   { to: "/anime-countdown", label: "Animés à venir", icon: Play },
   { to: "/anime-catalog", label: "Catalogue Animés", icon: Film },
   { to: "/ai-hub", label: "AI", icon: Bot },
-  { to: "/shop", label: "Boutique", icon: ShoppingBag },
+  { to: "/shop", label: "Magasin", icon: ShoppingBag },
   { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
   { to: "/actualites", label: "Actualités", icon: Sparkles },
   { to: "/profile", label: "Profil", icon: User },

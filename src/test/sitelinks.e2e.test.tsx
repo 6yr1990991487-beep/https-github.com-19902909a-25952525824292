@@ -11,7 +11,7 @@ const InternalSitelinks: Array<[RegExp, string]> = [
   [/^Lovanet Plateforme officiel →$/i, "/"],
   [/^Catalogue →$/i, "/anime-catalog"],
   [/^Univers Lovanet →$/i, "/decouvrir"],
-  [/^Boutique →$/i, "/shop"],
+  [/^Magasin →$/i, "/shop"],
   [/^AnimemomentsAnimeofficiel → YouTube$/i, "/chaine-youtube"],
   [/^AnimemomentsAnimeofficiel →$/i, "/chaine-youtube"],
   [/^Anime\.Moments\.officiel → Prime Video$/i, "/prime-video"],

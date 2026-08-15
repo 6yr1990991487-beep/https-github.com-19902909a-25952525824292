@@ -188,7 +188,7 @@ const stepsData = [
     name: "Lova-Bot",
     icon: <Bot className="w-4 h-4" />,
     color: "from-cyan-300 to-blue-600",
-    text: "Je suis Lova-Bot ! Je t'accompagne dans tes premiers pas. N'hésite pas à explorer les vidéos et la boutique magique.",
+    text: "Je suis Lova-Bot ! Je t'accompagne dans tes premiers pas. N'hésite pas à explorer les vidéos et la magasin magique.",
     Component: LovaBot,
   },
   {

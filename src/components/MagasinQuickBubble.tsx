@@ -17,7 +17,7 @@ export const OPEN_SHOP_EVENT = "lovanet:open-shop-panel";
 
 /**
  * Bulle du dock : remplace le panneau de couleurs du menu mobile par un
- * accès rapide Magasin qui redirige vers la boutique.
+ * accès rapide Magasin qui redirige vers la magasin.
  */
 export const MagasinQuickBubble = () => {
   const [open, setOpen] = useState(() => {
@@ -111,7 +111,7 @@ export const MagasinQuickBubble = () => {
               >
                 <span className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.15em] text-white">
                   <ShoppingBag className="h-5 w-5 text-primary" />
-                  Voir la boutique
+                  Voir la magasin
                 </span>
                 <ArrowRight className="h-4 w-4 text-white/70" />
               </Link>

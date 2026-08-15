@@ -27,14 +27,14 @@ const Discover = () => {
   }, []);
 
   useEffect(() => {
-    document.title = "Univers Lovanet — Vidéos, shorts, boutique, animés";
+    document.title = "Univers Lovanet — Vidéos, shorts, magasin, animés";
     const meta = (name: string, value: string, prop = false) => {
       const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let el = document.querySelector(sel) as HTMLMetaElement | null;
       if (!el) { el = document.createElement("meta"); prop ? el.setAttribute("property", name) : el.setAttribute("name", name); document.head.appendChild(el); }
       el.content = value;
     };
-    meta("description", "Anime.Moments.officiel : Lovanet — la plateforme officielle dédiée à l'anime : chaîne YouTube AnimemomentsAnimeofficiel, shorts TikTok Anime.Moments.officiel, Prime Video, animés à venir, catalogue 1500+ titres et boutique collector.");
+    meta("description", "Anime.Moments.officiel : Lovanet — la plateforme officielle dédiée à l'anime : chaîne YouTube AnimemomentsAnimeofficiel, shorts TikTok Anime.Moments.officiel, Prime Video, animés à venir, catalogue 1500+ titres et magasin collector.");
     meta("og:title", "Univers Lovanet — AnimemomentsAnimeofficiel", true);
     meta("og:url", "https://lovanet.fr/decouvrir", true);
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
@@ -220,7 +220,7 @@ const Discover = () => {
                   to="/shop"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white border border-white/20 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors"
                 >
-                  <ShoppingBag className="w-4 h-4" /> Boutique
+                  <ShoppingBag className="w-4 h-4" /> Magasin
                 </Link>
               </div>
             </div>
