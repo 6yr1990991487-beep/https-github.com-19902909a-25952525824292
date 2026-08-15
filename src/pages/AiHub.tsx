@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import aiHubBannerVideo from '@/assets/aihub-banner.mp4';
+import aiHubLongBanner from '@/assets/aihub-long-banner.mp4.asset.json';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -104,11 +104,12 @@ export const AiHub = () => {
   return (
     <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
-        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle ?? { minHeight: '24rem' }}>
+        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle ?? { aspectRatio: '16 / 9' }}>
           <video
             ref={videoRef}
             data-testid="aihubs-top-banner-video"
-            className="w-full h-full object-cover bg-black"
+            className="w-full h-full object-contain bg-black"
+            src={aiHubLongBanner.url}
             autoPlay
             loop
             playsInline
@@ -129,11 +130,7 @@ export const AiHub = () => {
               const p = v.play();
               if (p && typeof p.then === 'function') p.catch(() => {});
             }}
-          >
-            <source src="/videos/ai-hub-drive-2.mp4" type="video/mp4" />
-            <source src="/videos/ai-hub-drive.mp4" type="video/mp4" />
-            <source src={aiHubBannerVideo} type="video/mp4" />
-          </video>
+          />
           <button
             type="button"
             onClick={toggleMute}
