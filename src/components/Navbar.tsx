@@ -221,7 +221,7 @@ export const Navbar = () => {
         <img
           src="/lovanet-logo-custom.png?v=6"
           alt="Lovanet"
-          className="relative z-10 h-full w-full rounded-[1.1rem] object-contain drop-shadow-[0_0_14px_rgba(255,255,255,0.42)]"
+          className="relative z-10 h-full w-full scale-[1.06] rounded-[1.1rem] object-cover drop-shadow-[0_0_14px_rgba(255,255,255,0.42)]"
           style={{ transform: "translateZ(10px)" }}
         />
       </motion.span>
