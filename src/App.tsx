@@ -41,6 +41,7 @@ import { AiHub } from "./pages/AiHub";
 
 import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
 import { FloatingDock, FloatingDockSlot } from "./components/FloatingDock";
+import QuickAccessBubble from "./components/QuickAccessBubble";
 import { CardSkinBubble } from "./components/CardSkinBubble";
 import MobileMenuSkinBubble from "./components/MobileMenuSkinBubble";
 import CatalogCardColorBubble from "./components/CatalogCardColorBubble";
@@ -146,6 +147,7 @@ const AppShell = () => {
       {!isHubPreviewRoute && (
         <FloatingDock>
           <FloatingDockSlot><ThemeBubble /></FloatingDockSlot>
+          <FloatingDockSlot><QuickAccessBubble /></FloatingDockSlot>
           <FloatingDockSlot><Mobile3DSettingsToggle /></FloatingDockSlot>
           <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>

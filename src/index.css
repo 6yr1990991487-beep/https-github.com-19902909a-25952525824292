@@ -3061,6 +3061,10 @@ body,
 .detached-bubble-panel--compact { width: min(290px, calc(100vw - clamp(212px, 17vw, 300px))); }
 .detached-bubble-panel--catalog { width: min(340px, calc(100vw - clamp(212px, 17vw, 300px))); }
 .detached-bubble-panel--settings { width: min(320px, calc(100vw - clamp(212px, 17vw, 300px))); }
+.detached-bubble-panel--quick-access {
+  width: min(340px, calc(100vw - clamp(212px, 17vw, 300px)));
+  max-height: min(76vh, 620px);
+}
 .detached-bubble-panel--menu-skin {
   width: min(356px, calc(100vw - clamp(212px, 17vw, 300px)));
   max-height: min(80vh, 640px);
@@ -3185,7 +3189,8 @@ body,
   .detached-bubble-panel--compact,
   .detached-bubble-panel--catalog,
   .detached-bubble-panel--settings,
-  .detached-bubble-panel--menu-skin {
+  .detached-bubble-panel--menu-skin,
+  .detached-bubble-panel--quick-access {
     left: 118px;
     width: calc(100vw - 134px);
     max-width: 340px;
@@ -3254,7 +3259,8 @@ body,
   .detached-bubble-panel--compact,
   .detached-bubble-panel--catalog,
   .detached-bubble-panel--settings,
-  .detached-bubble-panel--menu-skin {
+  .detached-bubble-panel--menu-skin,
+  .detached-bubble-panel--quick-access {
     left: 106px;
     width: calc(100vw - 120px);
     max-width: 330px;
@@ -3306,15 +3312,16 @@ body,
 }
 
 .mnav-shell {
-    background: linear-gradient(180deg, rgba(11,18,38,0.95), rgba(6,8,18,0.88));
-    border: 1px solid rgba(255,255,255,0.14);
-    backdrop-filter: blur(18px) saturate(1.1);
+    background: rgba(10, 18, 22, 0.72);
+    border: 1px solid rgba(255,255,255,0.32);
+    backdrop-filter: blur(24px) saturate(1.15);
+    -webkit-backdrop-filter: blur(24px) saturate(1.15);
     box-shadow: 0 24px 50px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
   }
 
   .mnav-section {
-    background: linear-gradient(180deg, rgba(18,28,55,0.95), rgba(12,18,38,0.88));
-    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255,255,255,0.14);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 28px rgba(0, 0, 0, 0.22);
     transform-style: preserve-3d;
     perspective: 900px;
