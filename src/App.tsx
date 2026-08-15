@@ -104,6 +104,10 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
 const AppShell = () => {
   usePushNotifications();
   const location = useLocation();
+  useEffect(() => {
+    initPanelTint();
+    initPanelDrag();
+  }, []);
   if (location.hash?.includes('session_id=')) { return <AuthCallback />; }
 
   const pathname = location.pathname;
