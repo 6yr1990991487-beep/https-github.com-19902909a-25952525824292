@@ -3874,3 +3874,54 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 .drag-scroll:active { cursor: grabbing; }
 .drag-scroll.is-swiping a,
 .drag-scroll.is-swiping button { pointer-events: none; }
+
+/* ===== Barre de navigation : verre transparent + vague lumineuse serpentine ===== */
+.nav-theme-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.nav-theme-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38px 16px at 0% 34%, color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 78%, white 12%), transparent 70%),
+    radial-gradient(26px 12px at 0% 66%, color-mix(in srgb, var(--nav-theme-accent-2, #22d3ee) 70%, white 10%), transparent 72%),
+    radial-gradient(90px 3px at 0% 50%, rgba(255,255,255,0.5), transparent 76%);
+  filter: blur(1px);
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  animation: nav-sparkle-wave 6.5s linear infinite;
+}
+@keyframes nav-sparkle-wave {
+  0%   { transform: translateX(-12%) translateY(-3px) skewX(-8deg); opacity: 0; }
+  8%   { opacity: 0.85; }
+  25%  { transform: translateX(25%) translateY(4px) skewX(6deg); }
+  50%  { transform: translateX(52%) translateY(-4px) skewX(-6deg); opacity: 0.9; }
+  75%  { transform: translateX(80%) translateY(4px) skewX(6deg); }
+  94%  { opacity: 0.7; }
+  100% { transform: translateX(112%) translateY(-3px) skewX(-8deg); opacity: 0; }
+}
+.nav-theme-shell > * { position: relative; z-index: 1; }
+
+/* Léger halo de la couleur du thème uniquement autour des boutons */
+.nav-theme-shell .nav-theme-chip {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 26%, transparent),
+    0 0 14px color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 22%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.14) !important;
+}
+.nav-theme-shell .nav-theme-chip:hover,
+.nav-theme-shell .nav-theme-chip-active {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 48%, transparent),
+    0 0 24px color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 38%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-theme-shell::after { animation: none; opacity: 0.25; }
+}
