@@ -269,7 +269,7 @@ export const Onboarding3D = () => {
         initial={{ opacity: 0, y: 50, scale: 0.8 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         whileHover={{ scale: 1.05 }}
-        className="fixed bottom-5 right-3 z-[60] cursor-pointer sm:right-4 md:bottom-6 md:right-6"
+        className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-3 z-[60] cursor-pointer sm:right-4 md:bottom-6 md:right-6"
         onClick={() => { setMinimized(false); }}
       >
         <div className="relative w-16 h-16 rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-[0_0_20px_rgba(56,189,248,0.3)] overflow-hidden">
@@ -291,7 +291,7 @@ export const Onboarding3D = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="dock-popup fixed bottom-5 left-4 right-4 z-[60] pointer-events-auto sm:left-5 sm:right-5 md:bottom-6 md:left-auto md:right-6 md:w-[400px]"
+        className="dock-popup fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] max-h-[78dvh] overflow-y-auto pointer-events-auto sm:left-5 sm:right-5 md:bottom-6 md:left-auto md:right-6 md:w-[400px] md:max-h-none md:overflow-visible"
       >
         <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.05)_inset]">
           
@@ -302,7 +302,7 @@ export const Onboarding3D = () => {
             <X className="w-4 h-4" />
           </button>
 
-          <div className="w-full h-[220px] relative bg-gradient-to-b from-transparent to-black/50">
+          <div className="relative h-[150px] w-full bg-gradient-to-b from-transparent to-black/50 sm:h-[190px] md:h-[220px]">
             <Canvas camera={{ position: [0, 0.5, 4], fov: 50 }}>
               <ambientLight intensity={1.5} />
               <directionalLight position={[5, 5, 5]} intensity={2} color="#ffffff" />
@@ -314,7 +314,7 @@ export const Onboarding3D = () => {
             </Canvas>
           </div>
 
-          <div className="p-5 text-center relative z-10 border-t border-white/10 bg-black/60 flex flex-col justify-end">
+          <div className="relative z-10 flex flex-col justify-end border-t border-white/10 bg-black/60 p-4 text-center sm:p-5">
             <h3 className={`text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${currentData.color} mb-2 flex items-center justify-center gap-2`}>
               <span className={`text-${currentData.color.split(' ')[1].replace('to-', '')}`}><SparkleIcon className="w-4 h-4" /></span>
               {currentData.name}
