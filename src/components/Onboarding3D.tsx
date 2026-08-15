@@ -10,7 +10,7 @@ import { answerQuestion, BOT_GREETINGS, SUGGESTIONS, type BotId } from '@/lib/lo
 // ---------------------------------------------------------
 const LovaOrb = ({ color, isSpeaking }: { color: string; isSpeaking?: boolean }) => {
   return (
-    <div className="lova-orb-scene">
+    <div className="lova-orb-scene" style={{ '--lova-orb-color': color } as React.CSSProperties}>
       <div className="lova-orb-glow" style={{ background: color }} />
       <div className={`lova-orb ${isSpeaking ? 'lova-orb-speaking' : ''}`}>
         <div className="lova-orb-reflection" />
