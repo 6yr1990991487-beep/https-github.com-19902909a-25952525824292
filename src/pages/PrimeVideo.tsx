@@ -577,7 +577,7 @@ const PrimeVideo = () => {
   }
 
   return (
-    <PageShell>
+    <PageShell className="page-nav-glass">
       <ManualSyncButton platform="prime" label="Sync Prime" onDone={() => window.location.reload()} />
 
       {selectedPrime && (

@@ -4287,3 +4287,127 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
     radial-gradient(120% 60% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 70%);
   mix-blend-mode: screen;
 }
+
+/* ============================================================
+   Pages Prime Vidéo & Catalogue : style identique à la barre de
+   menu (verre transparent 3D interactif) + suppression du bleu.
+   ============================================================ */
+.page-nav-glass [class*="text-sky-"],
+.page-nav-glass [class*="text-blue-"],
+.page-nav-glass [class*="text-cyan-"],
+.page-nav-glass [class*="text-indigo-"] {
+  color: hsl(var(--primary)) !important;
+}
+
+.page-nav-glass [class*="bg-sky-"],
+.page-nav-glass [class*="bg-blue-"],
+.page-nav-glass [class*="bg-cyan-"],
+.page-nav-glass [class*="bg-indigo-"],
+.page-nav-glass [class*="from-sky-"],
+.page-nav-glass [class*="from-blue-"],
+.page-nav-glass [class*="to-blue-"],
+.page-nav-glass [class*="to-sky-"] {
+  background-image: none !important;
+  background-color: hsl(var(--primary) / 0.18) !important;
+  color: #fff !important;
+}
+
+.page-nav-glass [class*="border-sky-"],
+.page-nav-glass [class*="border-blue-"],
+.page-nav-glass [class*="border-cyan-"],
+.page-nav-glass [class*="border-indigo-"] {
+  border-color: hsl(var(--primary) / 0.55) !important;
+}
+
+.page-nav-glass [class*="shadow-sky-"],
+.page-nav-glass [class*="shadow-blue-"] {
+  box-shadow: 0 0 22px -6px hsl(var(--primary) / 0.45) !important;
+}
+
+/* Boutons, chips et champs : verre 3D interactif comme la nav */
+.page-nav-glass button:not([data-panel-drag-handle]):not(.glass3d-plain):not([data-no-glass]),
+.page-nav-glass [role="tab"],
+.page-nav-glass input[type="text"],
+.page-nav-glass input[type="search"],
+.page-nav-glass input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+.page-nav-glass select,
+.page-nav-glass [role="combobox"] {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.06) 55%,
+    rgba(0, 0, 0, 0.2)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.32),
+    0 6px 14px -6px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+body[data-panel-tint="on"] .page-nav-glass button:not([data-panel-drag-handle]):not(.glass3d-plain):not([data-no-glass]),
+body[data-panel-tint="on"] .page-nav-glass input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+body[data-panel-tint="on"] .page-nav-glass [role="combobox"] {
+  border-color: hsl(var(--primary) / 0.4);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--primary) / 0.22),
+    rgba(255, 255, 255, 0.06) 55%,
+    rgba(0, 0, 0, 0.22)
+  );
+}
+
+.page-nav-glass button:not([data-panel-drag-handle]):not(.glass3d-plain):not([data-no-glass]):hover,
+.page-nav-glass [role="tab"]:hover {
+  transform: translateY(-1px) scale(1.02);
+  border-color: hsl(var(--primary) / 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 22px -10px rgba(0, 0, 0, 0.85),
+    0 0 20px hsl(var(--primary) / 0.35);
+}
+
+.page-nav-glass button:not([data-panel-drag-handle]):not(.glass3d-plain):not([data-no-glass]):active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.page-nav-glass input:focus-visible,
+.page-nav-glass [role="combobox"]:focus-visible {
+  outline: none;
+  border-color: hsl(var(--primary) / 0.8) !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.35) !important;
+}
+
+.page-nav-glass input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Descriptions et textes secondaires : blanc lisible, accents thème */
+.page-nav-glass p,
+.page-nav-glass .text-muted-foreground,
+.page-nav-glass [class*="text-white/"] {
+  color: rgba(255, 255, 255, 0.86) !important;
+}
+
+.page-nav-glass h1,
+.page-nav-glass h2,
+.page-nav-glass h3 {
+  color: #fff;
+}
+
+/* Bulles / badges */
+.page-nav-glass .badge,
+.page-nav-glass [data-slot="badge"] {
+  border-color: hsl(var(--primary) / 0.45) !important;
+  background: hsl(var(--primary) / 0.16) !important;
+  color: #fff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-nav-glass button:hover,
+  .page-nav-glass [role="tab"]:hover { transform: none; }
+}
