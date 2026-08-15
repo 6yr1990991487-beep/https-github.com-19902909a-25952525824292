@@ -4138,3 +4138,130 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   background: linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.14) 58%, transparent);
   filter: blur(1px);
 }
+
+/* ===== LovaBot : orbe transparent animé ===== */
+.lova-orb-scene {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (min-width: 640px) { .lova-orb-scene { width: 190px; height: 190px; } }
+@media (min-width: 768px) { .lova-orb-scene { width: 220px; height: 220px; } }
+
+.lova-orb {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 36%, transparent 70%);
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow:
+    inset 0 6px 14px rgba(255,255,255,0.45),
+    inset 0 -8px 16px rgba(255,255,255,0.18),
+    inset 0 0 0 1px rgba(255,255,255,0.35),
+    0 8px 32px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: lova-orb-float 5s ease-in-out infinite, lova-orb-morph 7s ease-in-out infinite;
+  overflow: hidden;
+}
+.lova-orb::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  border-radius: 50%;
+  background: var(--lova-orb-color, linear-gradient(135deg, rgba(56,189,248,0.65), rgba(59,130,246,0.45)));
+  filter: blur(28px);
+  opacity: 0.55;
+  animation: lova-orb-rotate 12s linear infinite;
+}
+.lova-orb-reflection {
+  position: absolute;
+  left: 14%;
+  top: 10%;
+  width: 42%;
+  height: 30%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.15) 55%, transparent);
+  filter: blur(1.5px);
+  transform: rotate(-25deg);
+  pointer-events: none;
+}
+.lova-orb-glow {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  filter: blur(36px);
+  opacity: 0.45;
+  animation: lova-orb-pulse 3.5s ease-in-out infinite;
+}
+.lova-orb-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  animation: lova-orb-spin 14s linear infinite;
+}
+.lova-orb-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border-top: 1.5px solid rgba(255,255,255,0.55);
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-left: 1px solid transparent;
+}
+.lova-orb-ring-2 {
+  width: 150px;
+  height: 150px;
+  animation: lova-orb-spin 22s linear infinite reverse;
+  opacity: 0.6;
+}
+.lova-orb-speaking .lova-orb {
+  animation: lova-orb-float 0.8s ease-in-out infinite, lova-orb-morph 2.5s ease-in-out infinite;
+}
+.lova-orb-speaking .lova-orb-glow {
+  opacity: 0.7;
+  animation: lova-orb-pulse 0.6s ease-in-out infinite;
+}
+.lova-orb-speaking .lova-orb-ring {
+  animation-duration: 4s;
+}
+.lova-orb-speaking .lova-orb-ring-2 {
+  animation-duration: 6s;
+}
+
+@keyframes lova-orb-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.03); }
+}
+@keyframes lova-orb-morph {
+  0%, 100% { border-radius: 50% 50% 52% 48% / 48% 52% 50% 50%; }
+  25% { border-radius: 52% 48% 50% 50% / 50% 50% 52% 48%; }
+  50% { border-radius: 50% 50% 48% 52% / 52% 48% 50% 50%; }
+  75% { border-radius: 48% 52% 50% 50% / 50% 50% 48% 52%; }
+}
+@keyframes lova-orb-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes lova-orb-pulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.65; }
+}
+@keyframes lova-orb-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lova-orb, .lova-orb-glow, .lova-orb-ring, .lova-orb::before {
+    animation: none !important;
+  }
+}
+
