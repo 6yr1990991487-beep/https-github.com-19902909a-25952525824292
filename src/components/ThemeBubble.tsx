@@ -106,7 +106,7 @@ const RECENTS_KEY = "lovanet:theme-recents";
 const NAV_MODE_KEY = "lovanet:nav-theme-mode";
 const FLOATING_KEY = "lovanet:theme-panel-floating";
 // v3 key forces refresh from old overlapping positions
-const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v4";
+const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v5";
 const DEFAULT_THEME_ID = "mint-vibrant-cyber";
 
 const THEME_PANEL_W = 480;
@@ -138,9 +138,9 @@ const preferredRightAnchor = (width: number, selector?: string) => {
     };
   }
 
-  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : w < 600 ? 12 : 18;
+  const leftInset = w >= 1024 ? SIDE_SAFE_OFFSET : w < 600 ? 12 : 18;
   return {
-    x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
+    x: Math.max(VIEWPORT_MARGIN, Math.min(leftInset, Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN))),
     y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.05)),
   };
 };
