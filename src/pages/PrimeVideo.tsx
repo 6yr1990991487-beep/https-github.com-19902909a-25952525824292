@@ -857,8 +857,7 @@ const PrimeVideo = () => {
       {/* QUICK PLAY STRIP */}
       {quickPlayList.length > 0 && (
         <section className="container mx-auto px-4 lg:px-8 pb-8" data-testid="prime-quick-play-section">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="font-display text-xl font-bold text-white">Lecture rapide</h3>
+          <div className="mb-4 flex items-center justify-end gap-3">
             <Button variant="ghost" size="sm" onClick={() => setQuickPlayList(shuffleArray(primeAnime).slice(0, 10))} className="text-xs text-sky-400 hover:text-sky-300">
               Rafraîchir
             </Button>
