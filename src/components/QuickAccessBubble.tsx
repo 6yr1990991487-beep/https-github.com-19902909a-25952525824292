@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { applyPanelTint, isPanelTintOn } from "@/lib/panelTint";
 import { resetPanelPositions } from "@/lib/panelDrag";
 import {
+  Bot,
   Compass,
   Film,
   Home,
@@ -16,6 +17,7 @@ import {
   ShoppingBag,
   Sparkles,
   Trophy,
+  User,
   X,
   Youtube,
 } from "lucide-react";
@@ -31,6 +33,7 @@ const GROUPS: { id: string; label: string; items: Item[] }[] = [
     items: [
       { to: "/", label: "Portail", icon: Home },
       { to: "/anime-catalog", label: "Catalogue", icon: Film },
+      { to: "/ai-hub", label: "AI", icon: Bot },
       { to: "/prime-video", label: "Prime Vidéo", icon: Play },
       { to: "/shop", label: "Boutique", icon: ShoppingBag },
     ],
@@ -52,6 +55,7 @@ const GROUPS: { id: string; label: string; items: Item[] }[] = [
       { to: "/decouvrir", label: "Univers", icon: Compass },
       { to: "/actualites", label: "Actualités", icon: Sparkles },
       { to: "/leaderboard", label: "Classement", icon: Trophy },
+      { to: "/profile", label: "Profil", icon: User },
       { to: "/contact", label: "Contact", icon: Mail },
     ],
   },
