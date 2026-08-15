@@ -383,10 +383,7 @@ export const Navbar = () => {
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,color-mix(in_srgb,var(--nav-theme-accent)_18%,transparent),transparent_24%),radial-gradient(circle_at_84%_14%,color-mix(in_srgb,var(--nav-theme-accent-2)_14%,transparent),transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%)]" />
                   <div className="relative space-y-4">
                     <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--nav-theme-muted)]">Navigation rapide</p>
-                        <h2 className="mt-2 font-display text-2xl font-black nav-theme-accent-text">Parcours Lovanet</h2>
-                      </div>
+                      <div />
                       <button
                         type="button"
                         onClick={() => setMegaOpen(false)}
@@ -396,9 +393,6 @@ export const Navbar = () => {
                       >
                         <X className="h-4 w-4" />
                       </button>
-                    </div>
-                    <div className="mt-2">
-                      <QuickNavCarousel onClose={() => setMegaOpen(false)} />
                     </div>
                     <div className="relative">
                       <div className="no-scrollbar relative flex gap-4 overflow-x-auto px-1 py-2">
