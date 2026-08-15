@@ -53,7 +53,7 @@ const Legals = () => {
             <h2 className="text-xl font-semibold mb-2 text-primary">Données personnelles &amp; cookies</h2>
             <p>
               Lovanet collecte uniquement les données strictement nécessaires au
-              fonctionnement du service (compte client, commandes via la boutique,
+              fonctionnement du service (compte client, commandes via la magasin,
               formulaire de contact). Conformément au RGPD, vous disposez d’un droit
               d’accès, de rectification et de suppression de vos données en nous
               contactant. Des cookies techniques peuvent être déposés pour la session

@@ -49,8 +49,8 @@ type Meta = { title: string; description: string };
 const ROUTE_DESCRIPTIONS: Record<RouteKey, string> = {
   "/": "Lovanet  Portail anime, manga, gaming, pop culture japonaise.",
   "/anime-moments": "Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet.",
-  "/decouvrir": "Découvrir Lovanet : entrée rapide vers les vidéos, la boutique, le catalogue, les actualités et les services du compte.",
-  "/shop": "Boutique Lovanet : posters, collectors, vêtements et produits manga, avec accès panier et parcours client.",
+  "/decouvrir": "Découvrir Lovanet : entrée rapide vers les vidéos, la magasin, le catalogue, les actualités et les services du compte.",
+  "/shop": "Magasin Lovanet : posters, collectors, vêtements et produits manga, avec accès panier et parcours client.",
   "/anime-catalog": "Catalogue anime Lovanet : fiches, trailers et recherche de titres pour explorer les séries et films.",
   "/anime-countdown": "Anime à venir : calendrier et compte à rebours des prochaines sorties d'épisodes et de saisons.",
   "/chaine-youtube": "Chaîne YouTube Lovanet : vidéos officielles, extraits, shorts et nouveautés anime.",
@@ -61,7 +61,7 @@ const ROUTE_DESCRIPTIONS: Record<RouteKey, string> = {
   "/leaderboard": "Classement Lovanet : top membres, points, progression et activités de la communauté.",
   "/profile": "Espace client Lovanet : profil, préférences, favoris et paramètres de compte utilisateur.",
   "/login": "Connexion Lovanet : accès sécurisé à votre compte, à vos favoris et à vos services personnalisés.",
-  "/contact": "Contact Lovanet : support, assistance compte, demandes boutique et informations générales.",
+  "/contact": "Contact Lovanet : support, assistance compte, demandes magasin et informations générales.",
   "/legals": "Mentions légales Lovanet : informations éditeur, conditions d'utilisation et politique de confidentialité.",
 };
 
@@ -71,8 +71,8 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   fr: {
     "/": "Lovanet : portail anime manga officiel",
     "/anime-moments": "Lovanet : page officielle Lovanet",
-    "/decouvrir": "Discover Lovanet : Univers anime, vidéos et boutique",
-    "/shop": "Boutique Lovanet : Posters, collectors et vêtements anime",
+    "/decouvrir": "Discover Lovanet : Univers anime, vidéos et magasin",
+    "/shop": "Magasin Lovanet : Posters, collectors et vêtements anime",
     "/anime-catalog": "Catalogue Anime : 1500+ animés avec trailers",
     "/anime-countdown": "Anime à venir : Countdown live des sorties",
     "/chaine-youtube": "YouTube : AnimeMoments chaîne officielle anime",

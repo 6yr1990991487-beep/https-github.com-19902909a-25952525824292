@@ -32,7 +32,7 @@ export function normalizeDescription(raw: string | null | undefined): string {
   const clean = (raw ?? "").replace(/[—–]/g, ":").trim();
   const base =
     clean ||
-    "Lovanet  Portail anime, manga, gaming, pop culture japonaise. Chaîne YouTube AnimeMoments, shorts TikTok, Prime Video et boutique.";
+    "Lovanet  Portail anime, manga, gaming, pop culture japonaise. Chaîne YouTube AnimeMoments, shorts TikTok, Prime Video et magasin.";
   return hasAllBrandTags(base) ? base : `${base}${BRAND_SUFFIX}`;
 }
 

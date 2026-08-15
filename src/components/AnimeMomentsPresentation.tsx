@@ -73,7 +73,7 @@ const services = [
     title: "Shop créateur",
     desc: "Drops manga exclusifs",
     accent: "from-violet-500 to-fuchsia-600",
-    cta: "Boutique",
+    cta: "Magasin",
   },
 ];
 
@@ -504,10 +504,10 @@ export const AnimeMomentsPresentation = () => {
               <Link
                 to="/shop"
                 className="group px-6 py-4 rounded-full font-bold text-sm inline-flex items-center justify-center gap-2 bg-white text-zinc-900 hover:bg-fuchsia-100 shadow-lg hover:scale-[1.03] transition-all"
-                aria-label="Ouvrir la boutique officielle"
+                aria-label="Ouvrir la magasin officielle"
               >
                 <ShoppingBag className="w-4 h-4" />
-                <span>Boutique officielle</span>
+                <span>Magasin officielle</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link

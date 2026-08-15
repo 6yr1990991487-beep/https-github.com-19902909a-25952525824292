@@ -14,7 +14,7 @@ const allDestinations = [
   { to: "/lecteurs-video", label: "Lecteurs Vidéo", icon: Clapperboard, color: "#8b5cf6" },
   { to: "/anime-countdown", label: "À venir", icon: Clock, color: "#f59e0b" },
   { to: "/actualites", label: "Actualités", icon: Newspaper, color: "#10b981" },
-  { to: "/shop", label: "Boutique", icon: ShoppingBag, color: "#f97316" },
+  { to: "/shop", label: "Magasin", icon: ShoppingBag, color: "#f97316" },
 ];
 
 const footerPanel =

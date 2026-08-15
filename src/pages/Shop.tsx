@@ -190,10 +190,10 @@ const Shop = () => {
       "@graph": [
         {
           "@type": "CollectionPage",
-          name: "Boutique AnimemomentsAnimeofficiel",
+          name: "Magasin AnimemomentsAnimeofficiel",
           url: `${origin}/shop`,
           image: shopImage,
-          description: "Boutique Lovanet avec produits anime, manga et culture pop japonaise.",
+          description: "Magasin Lovanet avec produits anime, manga et culture pop japonaise.",
           mainEntity: {
             "@id": `${origin}/shop#item-list`,
           },
@@ -201,7 +201,7 @@ const Shop = () => {
         {
           "@type": "ItemList",
           "@id": `${origin}/shop#item-list`,
-          name: "Boutique AnimemomentsAnimeofficiel",
+          name: "Magasin AnimemomentsAnimeofficiel",
           numberOfItems: uniqueProducts.length,
           itemListElement: uniqueProducts.slice(0, 200).map((p, i) => {
             const ratingValue = Number((p.rating ?? 4.7).toFixed(1));
@@ -308,7 +308,7 @@ const Shop = () => {
   return (
     <PageShell>
       <Helmet>
-        <title>Boutique — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel</title>
+        <title>Magasin — Lovanet · Anime.Moments.officiel & AnimemomentsAnimeofficiel</title>
         <script type="application/ld+json">{JSON.stringify(shopStructuredData)}</script>
       </Helmet>
       <section className="container mx-auto px-3 sm:px-4 lg:px-8 pt-6 sm:pt-8 pb-5" data-testid="shop-train-station-hub-section">

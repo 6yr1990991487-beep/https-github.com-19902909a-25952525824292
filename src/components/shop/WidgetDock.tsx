@@ -10,7 +10,7 @@ import { ALL_PRODUCTS } from "@/data/generatedProducts";
 import type { ShopProduct } from "@/data/shopProducts";
 
 /* ============================================================
-   WIDGET DOCK — Boutique "site dans le site"
+   WIDGET DOCK — Magasin "site dans le site"
    Widgets ajoutables, réagençables, persistés (localStorage).
    ============================================================ */
 
@@ -580,9 +580,9 @@ export const WidgetDock = ({ onOpen }: { onOpen?: (p: ShopProduct) => void }) =>
     <section className="container mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-10">
       <header className="flex items-end justify-between gap-3 mb-4">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-primary/80">Boutique · Tableau de bord</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-primary/80">Magasin · Tableau de bord</p>
           <h2 className="font-display font-black text-2xl sm:text-3xl gradient-text">Mes widgets</h2>
-          <p className="text-xs text-muted-foreground mt-1">Personnalisez la boutique · vos réglages sont sauvegardés.</p>
+          <p className="text-xs text-muted-foreground mt-1">Personnalisez la magasin · vos réglages sont sauvegardés.</p>
         </div>
         <div className="relative">
           <Button onClick={() => setPicker((v) => !v)} className="rounded-full h-9">

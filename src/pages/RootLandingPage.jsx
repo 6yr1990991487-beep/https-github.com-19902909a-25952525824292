@@ -22,7 +22,7 @@ const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
   { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
   { to: "/actualites", label: "Actualités", icon: Newspaper },
-  { to: "/shop", label: "Boutique", icon: ShoppingBag },
+  { to: "/shop", label: "Magasin", icon: ShoppingBag },
   { to: "/prime-video", label: "Prime Vidéo", icon: Play },
   { to: "/tiktok", label: "TikTok", icon: Play },
   { to: "/anime-catalog", label: "Catalogue", icon: Star },
@@ -34,7 +34,7 @@ const rotatingPortalDestinations = [
 
 const portalCards = [
   {
-    title: "Boutique premium",
+    title: "Magasin premium",
     subtitle: "",
     description: "Sélection produits, drops et pièces mises à jour en continu.",
     image: "",
@@ -82,7 +82,7 @@ const pageStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Lovanet : portail anime manga officiel",
-  description: "Portail Lovanet pour explorer Anime Moments, les vidéos, les actualités et la boutique collector.",
+  description: "Portail Lovanet pour explorer Anime Moments, les vidéos, les actualités et la magasin collector.",
   url: "https://lovanet.fr/",
 };
 
@@ -149,7 +149,7 @@ const getPortalDestination = (slotIndex, rotationIndex) =>
  *    carrousel 3D ou autre bannière = INTERDIT.
  * 2) VISUELS DES CARTES : utiliser EXCLUSIVEMENT item.cover (puis item.banner)
  *    de /catalog-seo.json, SANS reecriture d'URL (pas de large->extraLarge,
- *    pas de proxy, pas de CDN tiers). Le fallback boutique sert UNIQUEMENT
+ *    pas de proxy, pas de CDN tiers). Le fallback magasin sert UNIQUEMENT
  *    quand aucune image valide n'existe.
  * 3) Les evolutions visuelles restent purement CSS (taille, nettete, reflets).
  * ========================================================================== */

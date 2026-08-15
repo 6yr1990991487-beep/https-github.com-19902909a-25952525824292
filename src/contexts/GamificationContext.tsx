@@ -13,7 +13,7 @@ export const DAILY_QUESTS = [
 export const EPIC_QUESTS = [
   { id: "epic_shop_purchase", label: "Premier Achat", desc: "Valider une commande", target: 1, reward: 500, icon: "🛍️" },
   { id: "epic_shop_vip", label: "Client VIP", desc: "Valider 10 commandes", target: 10, reward: 2000, icon: "👑" },
-  { id: "epic_shop_whale", label: "Mécène Otaku", desc: "Dépenser 1000€ en boutique", target: 1000, reward: 5000, icon: "💎" },
+  { id: "epic_shop_whale", label: "Mécène Otaku", desc: "Dépenser 1000€ en magasin", target: 1000, reward: 5000, icon: "💎" },
   { id: "epic_news_reader", label: "Rat de bibliothèque", desc: "Lire 100 actualités", target: 100, reward: 1000, icon: "📚" },
 ];
 

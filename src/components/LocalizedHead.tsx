@@ -31,7 +31,7 @@ const KEYWORDS = [
   "animemomentsofficiel.fr",
   "manga animé",
   "catalogue anime",
-  "boutique manga",
+  "magasin manga",
   "vidéos anime",
   "YouTube anime",
   "TikTok anime",
@@ -52,7 +52,7 @@ function breadcrumbFor(route: string, canonical: string) {
     "/": "Portail Lovanet",
     "/anime-moments": "Anime Moments",
     "/decouvrir": "Univers Lovanet",
-    "/shop": "Boutique",
+    "/shop": "Magasin",
     "/anime-catalog": "Catalogue Anime",
     "/anime-countdown": "Anime à venir",
     "/chaine-youtube": "YouTube",
@@ -104,7 +104,7 @@ export function LocalizedHead() {
   const serviceLinks = [
     { name: "Accueil", url: `${PRIMARY_SITE}/` },
     { name: "Anime Moments", url: `${PRIMARY_SITE}/anime-moments` },
-    { name: "Boutique", url: `${PRIMARY_SITE}/shop` },
+    { name: "Magasin", url: `${PRIMARY_SITE}/shop` },
     { name: "Catalogue Anime", url: `${PRIMARY_SITE}/anime-catalog` },
     { name: "Prime Video", url: `${PRIMARY_SITE}/prime-video` },
     { name: "TikTok", url: `${PRIMARY_SITE}/tiktok` },
@@ -148,7 +148,7 @@ export function LocalizedHead() {
             url: `${PRIMARY_SITE}/shop`,
             availableLanguage: ["fr", "en"],
             areaServed: ["FR", "EU"],
-            serviceType: "Boutique manga et produits collectors",
+            serviceType: "Magasin manga et produits collectors",
           },
           {
             "@type": "ContactPoint",
@@ -163,7 +163,7 @@ export function LocalizedHead() {
           "@type": "OfferCatalog",
           name: "Catalogue des services Lovanet",
           itemListElement: [
-            { "@type": "Offer", name: "Boutique anime manga", url: `${PRIMARY_SITE}/shop` },
+            { "@type": "Offer", name: "Magasin anime manga", url: `${PRIMARY_SITE}/shop` },
             { "@type": "Offer", name: "Catalogue anime", url: `${PRIMARY_SITE}/anime-catalog` },
             { "@type": "Offer", name: "Lecteur video", url: `${PRIMARY_SITE}/lecteurs-video` },
             { "@type": "Offer", name: "Espace client", url: `${PRIMARY_SITE}/profile` },
@@ -173,7 +173,7 @@ export function LocalizedHead() {
         review: {
           "@type": "Review",
           name: "Avis éditorial Lovanet",
-          reviewBody: "Plateforme anime complète réunissant vidéos, catalogue, boutique manga et actualités Anime.Moments.officiel.",
+          reviewBody: "Plateforme anime complète réunissant vidéos, catalogue, magasin manga et actualités Anime.Moments.officiel.",
           reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
           author: { "@type": "Organization", name: "Lovanet" },
         },

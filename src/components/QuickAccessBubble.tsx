@@ -35,7 +35,7 @@ const GROUPS: { id: string; label: string; items: Item[] }[] = [
       { to: "/anime-catalog", label: "Catalogue", icon: Film },
       { to: "/ai-hub", label: "AI", icon: Bot },
       { to: "/prime-video", label: "Prime Vidéo", icon: Play },
-      { to: "/shop", label: "Boutique", icon: ShoppingBag },
+      { to: "/shop", label: "Magasin", icon: ShoppingBag },
     ],
   },
   {

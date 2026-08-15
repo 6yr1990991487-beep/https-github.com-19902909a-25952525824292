@@ -1,5 +1,5 @@
 // =============================================================
-//  Bannières vidéo de la Boutique — CONTENU ÉDITABLE
+//  Bannières vidéo de la Magasin — CONTENU ÉDITABLE
 // -------------------------------------------------------------
 //  Pour AJOUTER une bannière : déposez votre clip .mp4 dans le
 //  dossier /public puis ajoutez une entrée ci-dessous.
