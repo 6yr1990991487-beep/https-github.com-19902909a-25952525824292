@@ -51,6 +51,7 @@ import CatalogCardColorBubble from "./components/CatalogCardColorBubble";
 import { PiPProvider } from "./contexts/PiPContext";
 import { GamificationProvider } from "./contexts/GamificationContext";
 import { GlobalPiPWidget } from "./components/GlobalPiPWidget";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 import { Mobile3DSettingsToggle } from "./components/Mobile3DSettingsToggle";
 import { SuggestionsBubble } from "./components/SuggestionsBubble";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
@@ -127,6 +128,7 @@ const AppShell = () => {
           <Toaster />
           <Sonner />
           {!isHubPreviewRoute && <GlobalPiPWidget />}
+          <OfflineIndicator />
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               {APP_ROUTES.map((r) => (
