@@ -46,7 +46,7 @@ import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
 import { FloatingDock, FloatingDockSlot } from "./components/FloatingDock";
 import QuickAccessBubble from "./components/QuickAccessBubble";
 import { CardSkinBubble } from "./components/CardSkinBubble";
-import MobileMenuSkinBubble from "./components/MobileMenuSkinBubble";
+import MagasinQuickBubble from "./components/MagasinQuickBubble";
 import CatalogCardColorBubble from "./components/CatalogCardColorBubble";
 import { PiPProvider } from "./contexts/PiPContext";
 import { GamificationProvider } from "./contexts/GamificationContext";
@@ -158,7 +158,7 @@ const AppShell = () => {
           <FloatingDockSlot><Mobile3DSettingsToggle /></FloatingDockSlot>
           <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
-         <FloatingDockSlot><MobileMenuSkinBubble /></FloatingDockSlot>
+         <FloatingDockSlot><MagasinQuickBubble /></FloatingDockSlot>
           <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
           <FloatingDockSlot><ForceReloadBubble /></FloatingDockSlot>
           <FloatingDockSlot><Onboarding3D /></FloatingDockSlot>
