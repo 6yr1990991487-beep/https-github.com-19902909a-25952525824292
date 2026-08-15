@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Layers, Move, X } from "lucide-react";
 
 /**
@@ -63,6 +64,11 @@ const PANEL_W = 290;
 const VIEWPORT_MARGIN = 16;
 const SIDE_SAFE_OFFSET = 92;
 
+const responsivePanelWidth = () => {
+  const reservedForDock = window.innerWidth <= 768 ? 142 : VIEWPORT_MARGIN * 2;
+  return Math.min(Math.round(window.innerWidth * 0.9), PANEL_W, window.innerWidth - reservedForDock);
+};
+
 /** Returns a position that keeps the panel on screen and clear of the bottom-left settings panel. */
 const getTriggerAnchor = (selector: string) => {
   if (typeof document === "undefined") return null;
@@ -75,11 +81,11 @@ const getTriggerAnchor = (selector: string) => {
 const preferredRightAnchor = (width: number, selector?: string) => {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const panelW = Math.min(width, Math.min(Math.round(w * 0.9), PANEL_W));
+  const panelW = Math.min(width, responsivePanelWidth());
   const triggerRect = selector ? getTriggerAnchor(selector) : null;
 
   if (triggerRect) {
-    const gap = 12;
+    const gap = 24;
     const x = triggerRect.right + gap;
     const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
     const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
@@ -101,7 +107,7 @@ const safeDefault = () => preferredRightAnchor(PANEL_W, "[aria-label='Apparence 
 
 /** Clamp a saved position so it stays fully visible after a resize or device change. */
 const clampPos = (x: number, y: number) => ({
-  x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - Math.min(Math.round(window.innerWidth * 0.9), PANEL_W) - VIEWPORT_MARGIN)),
+  x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - responsivePanelWidth() - VIEWPORT_MARGIN)),
   y: Math.min(Math.max(y, VIEWPORT_MARGIN), window.innerHeight - (window.innerWidth >= 1024 ? 160 : 220)),
 });
 
@@ -225,7 +231,7 @@ export const CardSkinBubble = () => {
   const panelRef = useRef<HTMLDivElement | null>(null);
 
   const estimatePanelSize = () => ({
-    w: Math.min(Math.round(window.innerWidth * 0.9), PANEL_W),
+    w: responsivePanelWidth(),
     h: 250,
   });
 
@@ -327,11 +333,11 @@ export const CardSkinBubble = () => {
 
   return (
     <>
-      {open && panelPos && (
+      {open && panelPos && typeof document !== "undefined" && createPortal(
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,290px)] max-w-[calc(100vw-24px)] overflow-x-hidden"
-          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
+          className="card-skin-panel fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl overflow-x-hidden"
+          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, width: `${responsivePanelWidth()}px`, boxSizing: "border-box" }}
           onPointerDown={onDown}
           onPointerMove={onMove}
           onPointerUp={onUp}
@@ -351,7 +357,7 @@ export const CardSkinBubble = () => {
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="grid grid-cols-5 gap-3 p-3 sm:grid-cols-6">
+          <div className="grid grid-cols-4 place-items-center gap-3 p-3 sm:grid-cols-6">
             {SKINS.map((s) => (
               <button
                 key={s.key}
@@ -369,7 +375,8 @@ export const CardSkinBubble = () => {
           <p className="mt-2 px-1 text-[10px] text-white/60">
             {SKINS.find((s) => s.key === active)?.label}
           </p>
-        </div>
+        </div>,
+        document.body,
       )}
       <button
         type="button"
@@ -377,7 +384,7 @@ export const CardSkinBubble = () => {
           setOpen((o) => {
             const next = !o;
             if (next) {
-              const width = panelRef.current?.offsetWidth || Math.min(Math.round(window.innerWidth * 0.9), PANEL_W);
+              const width = panelRef.current?.offsetWidth || responsivePanelWidth();
               const base = preferredRightAnchor(width, "[aria-label='Apparence des cartes']");
               const resolved = placePanel(base);
               setPanelPos(resolved);

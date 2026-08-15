@@ -127,7 +127,7 @@ const preferredRightAnchor = (width: number, selector?: string) => {
   const triggerRect = selector ? getTriggerAnchor(selector) : null;
 
   if (triggerRect) {
-    const gap = 12;
+    const gap = 24;
     const x = triggerRect.right + gap;
     const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
     const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
@@ -999,7 +999,7 @@ export const ThemeBubble = () => {
       className={cn(
         "flex flex-col overflow-hidden text-white",
         isMobile
-          ? "fixed left-2 z-[10050] w-[min(94vw,420px)] rounded-[24px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(15,23,42,0.96))] shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+          ? "theme-dock-panel fixed z-[10050] rounded-[24px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(15,23,42,0.96))] shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
           : floating
             ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl"
             : "h-full rounded-[26px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.86))] shadow-[0_20px_60px_rgba(15,23,42,0.32)]"
@@ -1008,10 +1008,6 @@ export const ThemeBubble = () => {
         isMobile
           ? {
               boxSizing: "border-box",
-              top: "calc(env(safe-area-inset-top, 0px) + 8px)",
-              bottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)",
-              height: "auto",
-              maxHeight: "none",
             }
           : floating && panelPosition
             ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px`, boxSizing: "border-box" }
@@ -1229,17 +1225,7 @@ export const ThemeBubble = () => {
 
       {isMobile ? (
         open && typeof document !== "undefined"
-          ? createPortal(
-              <>
-                <div
-                  className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
-                  onClick={() => setOpen(false)}
-                  aria-hidden="true"
-                />
-                {panelBody}
-              </>,
-              document.body,
-            )
+          ? createPortal(panelBody, document.body)
           : null
       ) : floating ? (
         // Direct render when floating — no Sheet/Drawer backdrop
