@@ -78,18 +78,7 @@ export const ShopHeroBanner = ({
         <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold mt-2 gradient-text leading-[1.05]">
           Magasin
         </h1>
-        <div className="mt-3 flex justify-center sm:justify-start">
-          <BannerUploader onChange={loadUploaded} />
-        </div>
       </header>
-
-      {/* trust ticker */}
-      <div className="mt-3 flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 text-[10px] sm:text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1"><Truck className="w-4 h-4 text-primary" /> Livraison suivie 3–7j</span>
-        <span className="inline-flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-primary" /> Paiement sécurisé</span>
-        <span className="inline-flex items-center gap-1"><Star className="w-4 h-4 text-primary" /> 4,8/5 · +12 000 clients</span>
-        <span className="inline-flex items-center gap-1"><Sparkles className="w-4 h-4 text-primary" /> Retours 14 jours</span>
-      </div>
     </section>
   );
 };
