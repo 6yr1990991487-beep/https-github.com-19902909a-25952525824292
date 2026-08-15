@@ -2268,8 +2268,6 @@ body[data-hide-decors] [data-animated-bg] {
 
 
 
-  .theme-toast-desc {
-
   .hero-banner-tab {
     display: inline-flex;
     min-height: 42px;
@@ -2376,6 +2374,7 @@ body[data-hide-decors] [data-animated-bg] {
     }
   }
 
+  .theme-toast-desc {
     color: var(--theme-muted) !important;
   }
 
