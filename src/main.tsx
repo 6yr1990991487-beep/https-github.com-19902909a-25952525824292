@@ -85,6 +85,24 @@ if (typeof window !== "undefined") {
     } catch (e) {
       // ignore
     }
+
+    // Enregistrement du service worker (requis pour l'installation PWA).
+    const host = window.location.hostname;
+    const isPreview =
+      window.self !== window.top ||
+      host.startsWith("id-preview--") ||
+      host.startsWith("preview--") ||
+      host.endsWith("lovableproject.com") ||
+      host.endsWith("lovableproject-dev.com") ||
+      host === "localhost";
+
+    if (!isPreview) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js", { scope: "/" }).catch(() => {
+          // ignore
+        });
+      });
+    }
   }
 }
 
