@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Download, Share } from "lucide-react";
+import { X, Download, Share, Bell, BellRing, MoreVertical } from "lucide-react";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v3";
+const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v4";
 const DISMISS_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 const AUTO_OPEN_DELAY_MS = 2400;
 
-type DeviceClass = "ios" | "tablet" | "desktop" | "mobile";
+type Browser = "ios-safari" | "ios-other" | "firefox" | "safari" | "samsung" | "opera" | "edge" | "chromium" | "unknown";
 
 const isStandalone = () =>
   window.matchMedia("(display-mode: standalone)").matches ||
-  // iOS Safari
+  window.matchMedia("(display-mode: minimal-ui)").matches ||
   (window.navigator as unknown as { standalone?: boolean }).standalone === true;
 
 const canShowPrompt = () => {
@@ -23,113 +23,146 @@ const canShowPrompt = () => {
     const raw = localStorage.getItem(DISMISS_UNTIL_KEY);
     if (!raw) return true;
     const until = Number(raw);
-    if (!Number.isFinite(until)) return true;
-    return Date.now() >= until;
+    return !Number.isFinite(until) || Date.now() >= until;
   } catch {
     return true;
   }
 };
 
-const detectDeviceClass = (): DeviceClass => {
+const detectBrowser = (): Browser => {
   const ua = navigator.userAgent;
-  const width = window.innerWidth;
-  const isIos = /iPad|iPhone|iPod/.test(ua) && !/CriOS|FxiOS/.test(ua);
-  if (isIos) return "ios";
+  const isIos = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && "ontouchend" in document);
+  if (isIos) return /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua) ? "ios-other" : "ios-safari";
+  if (/SamsungBrowser/i.test(ua)) return "samsung";
+  if (/Firefox|FxiOS/i.test(ua)) return "firefox";
+  if (/OPR|Opera/i.test(ua)) return "opera";
+  if (/Edg\//i.test(ua)) return "edge";
+  if (/Chrome|Chromium|CriOS/i.test(ua)) return "chromium";
+  if (/Safari/i.test(ua)) return "safari";
+  return "unknown";
+};
 
-  const isTabletUA = /iPad|Tablet|PlayBook|Silk|Kindle|Nexus 7|Nexus 9|SM-T|Tab/i.test(ua);
-  const isTabletByWidth = width >= 768 && width <= 1180 && /Android|Macintosh|Windows/i.test(ua);
-  if (isTabletUA || isTabletByWidth) return "tablet";
-
-  if (width >= 1024) return "desktop";
-  return "mobile";
+const INSTRUCTIONS: Record<Browser, string> = {
+  "ios-safari": "Appuyez sur Partager, puis « Sur l'écran d'accueil ».",
+  "ios-other": "Sur iPhone/iPad, ouvrez cette page dans Safari, puis Partager → « Sur l'écran d'accueil ».",
+  firefox: "Firefox : menu ⋮ → « Installer » ou « Ajouter à l'écran d'accueil ».",
+  safari: "Safari (Mac) : menu Fichier → « Ajouter au Dock ».",
+  samsung: "Samsung Internet : menu ☰ → « Ajouter la page à » → « Écran d'accueil ».",
+  opera: "Opera : menu → « Ajouter à » → « Écran d'accueil ».",
+  edge: "Edge : menu ⋯ → « Applications » → « Installer ce site en tant qu'application ».",
+  chromium: "Chrome : menu ⋮ → « Installer l'application » / « Ajouter à l'écran d'accueil ».",
+  unknown: "Utilisez le menu de votre navigateur puis « Installer » ou « Ajouter à l'écran d'accueil ».",
 };
 
 export const InstallAppPrompt = () => {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [open, setOpen] = useState(false);
-  const [iosHint, setIosHint] = useState(false);
-  const [deviceClass, setDeviceClass] = useState<DeviceClass>("mobile");
+  const [browser, setBrowser] = useState<Browser>("unknown");
+  const [notifState, setNotifState] = useState<NotificationPermission | "unsupported">("default");
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.self !== window.top) return; // never inside preview iframe
+    if (window.self !== window.top) return; // jamais dans l'iframe de preview
     if (isStandalone()) return;
     if (!canShowPrompt()) return;
 
-    setDeviceClass(detectDeviceClass());
+    setBrowser(detectBrowser());
+    setNotifState("Notification" in window ? Notification.permission : "unsupported");
 
-    // Auto open for non-installed visitors on every platform.
-    const autoTimer = window.setTimeout(() => {
+    // Evenement capture avant le montage de React (script dans index.html)
+    const early = (window as any).__lovanetInstallEvent as BIPEvent | null;
+    if (early) setDeferred(early);
+
+    const onReady = () => {
+      const evt = (window as any).__lovanetInstallEvent as BIPEvent | null;
+      if (evt) setDeferred(evt);
       setOpen(true);
-    }, AUTO_OPEN_DELAY_MS);
+    };
+    window.addEventListener("lovanet:installready", onReady);
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
+      (window as any).__lovanetInstallEvent = e;
       setDeferred(e as BIPEvent);
-      setIosHint(false);
       setOpen(true);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    const ua = window.navigator.userAgent;
-    const isIos = /iPad|iPhone|iPod/.test(ua) && !/CriOS|FxiOS/.test(ua);
-    let timer: number | undefined;
-    if (isIos) {
-      timer = window.setTimeout(() => {
-        setIosHint(true);
-        setOpen(true);
-      }, 2500);
-    }
+    const autoTimer = window.setTimeout(() => setOpen(true), AUTO_OPEN_DELAY_MS);
 
     const onInstalled = () => {
       setOpen(false);
-      localStorage.setItem(DISMISS_UNTIL_KEY, String(Date.now() + 90 * 24 * 60 * 60 * 1000));
+      setDeferred(null);
+      try {
+        localStorage.setItem(DISMISS_UNTIL_KEY, String(Date.now() + 90 * 24 * 60 * 60 * 1000));
+      } catch { /* ignore */ }
     };
     window.addEventListener("appinstalled", onInstalled);
 
     return () => {
+      window.removeEventListener("lovanet:installready", onReady);
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
-      if (timer) window.clearTimeout(timer);
       window.clearTimeout(autoTimer);
     };
   }, []);
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setOpen(false);
-    localStorage.setItem(DISMISS_UNTIL_KEY, String(Date.now() + DISMISS_COOLDOWN_MS));
-  };
+    try {
+      localStorage.setItem(DISMISS_UNTIL_KEY, String(Date.now() + DISMISS_COOLDOWN_MS));
+    } catch { /* ignore */ }
+  }, []);
 
   const install = async () => {
-    if (!deferred) {
-      dismiss();
+    const evt = deferred || ((window as any).__lovanetInstallEvent as BIPEvent | null);
+    if (!evt) {
+      setNotice(INSTRUCTIONS[browser]);
       return;
     }
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
-    setOpen(false);
+    try {
+      await evt.prompt();
+      const choice = await evt.userChoice;
+      (window as any).__lovanetInstallEvent = null;
+      setDeferred(null);
+      if (choice.outcome === "accepted") setOpen(false);
+      else dismiss();
+    } catch {
+      setNotice(INSTRUCTIONS[browser]);
+    }
+  };
+
+  const enableNotifications = async () => {
+    if (!("Notification" in window)) {
+      setNotice("Les alertes ne sont pas supportées par ce navigateur.");
+      return;
+    }
+    try {
+      const perm = await Notification.requestPermission();
+      setNotifState(perm);
+      if (perm === "granted") {
+        const reg = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : null;
+        const options = {
+          body: "Vous recevrez les alertes Lovanet : nouveautés, sorties et actualités.",
+          icon: "/lovanet-icon-192.png?v=11",
+          badge: "/lovanet-icon-192.png?v=11",
+          tag: "lovanet-welcome",
+        };
+        if (reg) await reg.showNotification("Alertes Lovanet activées", options);
+        else new Notification("Alertes Lovanet activées", options);
+      } else if (perm === "denied") {
+        setNotice("Alertes bloquées : réactivez-les dans les réglages du navigateur (icône cadenas).");
+      }
+    } catch {
+      setNotice("Impossible d'activer les alertes sur ce navigateur.");
+    }
   };
 
   if (!open || typeof document === "undefined") return null;
 
-  const instructionText =
-    deviceClass === "ios"
-      ? "Appuyez sur Partager, puis « Sur l'ecran d'accueil »"
-      : deviceClass === "tablet"
-        ? "Sur tablette, utilisez l'option « Installer l'application » dans le menu du navigateur si le bouton direct n'apparaît pas."
-        : deviceClass === "desktop"
-          ? "Sur PC, utilisez l'icône d'installation dans la barre d'adresse ou le menu du navigateur."
-          : "Sur mobile Android, utilisez le menu du navigateur et choisissez « Installer l'application » si le bouton direct n'apparaît pas.";
-
-  const audienceLabel =
-    deviceClass === "ios"
-      ? "Version iOS"
-      : deviceClass === "tablet"
-        ? "Version Tablette"
-        : deviceClass === "desktop"
-          ? "Version PC"
-          : "Version Mobile";
+  const iosLike = browser === "ios-safari" || browser === "ios-other";
+  const canDirectInstall = Boolean(deferred);
 
   return createPortal(
     <div
@@ -156,26 +189,15 @@ export const InstallAppPrompt = () => {
           alt="Logo Lovanet"
           width={160}
           height={160}
-          className="mx-auto h-28 w-28 rounded-[1.5rem] object-contain shadow-xl sm:h-40 sm:w-40"
+          className="mx-auto h-24 w-24 rounded-[1.5rem] object-contain shadow-xl sm:h-32 sm:w-32"
         />
 
-        <h2 className="mt-4 text-xl font-bold tracking-tight sm:mt-5 sm:text-2xl">Installer Lovanet</h2>
+        <h2 className="mt-4 text-xl font-bold tracking-tight sm:text-2xl">Installer Lovanet</h2>
         <p className="mt-2 text-[13px] leading-relaxed text-slate-600 sm:text-sm">
           Lovanet Portail anime, manga, gaming, pop culture japonaise
         </p>
-        <p className="mt-1 text-[12px] text-slate-500 sm:text-xs">
-          Version installable optimisee pour une navigation mobile plus fluide.
-        </p>
-        <p className="mt-1 inline-flex rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-600">
-          {audienceLabel}
-        </p>
 
-        {iosHint && !deferred ? (
-          <p className="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-            <Share className="h-4 w-4 shrink-0" />
-            Appuyez sur Partager, puis « Sur l'écran d'accueil »
-          </p>
-        ) : deferred ? (
+        {canDirectInstall && !iosLike ? (
           <button
             onClick={install}
             className="mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
@@ -184,10 +206,24 @@ export const InstallAppPrompt = () => {
             Installer l'application
           </button>
         ) : (
-          <p className="mt-5 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-            {instructionText}
+          <p className="mt-5 flex items-start gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-left text-sm text-slate-700">
+            {iosLike ? <Share className="mt-0.5 h-4 w-4 shrink-0" /> : <MoreVertical className="mt-0.5 h-4 w-4 shrink-0" />}
+            <span>{INSTRUCTIONS[browser]}</span>
           </p>
         )}
+
+        {notifState !== "unsupported" && (
+          <button
+            onClick={enableNotifications}
+            disabled={notifState === "granted"}
+            className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:opacity-60"
+          >
+            {notifState === "granted" ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {notifState === "granted" ? "Alertes activées" : "Activer les alertes"}
+          </button>
+        )}
+
+        {notice && <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-[12px] text-amber-800">{notice}</p>}
 
         <button onClick={dismiss} className="mt-3 w-full text-xs font-medium text-slate-400 hover:text-slate-600">
           Plus tard
