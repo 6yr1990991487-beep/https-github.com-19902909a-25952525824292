@@ -383,7 +383,6 @@ export default function RootLandingPage() {
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
-  const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
   const portalEntries = useMemo(() => portalCards.map((card, index) => ({ ...card, action: getPortalDestination(index, rotationIndex) })), [rotationIndex]);
   const platformEntries = useMemo(
     () =>
