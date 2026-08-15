@@ -3509,3 +3509,31 @@ body,
   opacity: 1 !important;
   font-weight: 600 !important;
 }
+
+/* ============================================================
+   EXCLUSION THEME — Boutons plateformes page portail
+   Aucun fond bleu/teinté issu du thème sur "Catalogue premium",
+   le placeholder de titre et les pastilles plateformes.
+   ============================================================ */
+[data-testid="home-platforms-section"] [data-testid="home-platforms-heading-placeholder"],
+[data-testid="home-platforms-button"],
+[data-testid="home-platforms-button"] > *,
+[data-testid="home-platforms-pill-row"] a,
+[data-testid="home-platforms-pill-row"] a > div,
+[data-testid="home-platforms-pill-row"] a > div > div {
+  background-color: transparent !important;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)) !important;
+  box-shadow: 0 8px 26px -18px rgba(0,0,0,0.7) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+}
+
+[data-testid="home-platforms-pill-row"] a {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+[data-testid="home-platforms-pill-row"] a > div:hover,
+[data-testid="home-platforms-button"]:hover {
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}

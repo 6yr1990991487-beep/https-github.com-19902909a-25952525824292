@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Check,
   Clock3,
@@ -997,25 +998,42 @@ export const ThemeBubble = () => {
       ref={panelRef}
       className={cn(
         "flex flex-col overflow-hidden text-white",
-        floating ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl" : "h-full rounded-[26px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.86))] shadow-[0_20px_60px_rgba(15,23,42,0.32)]"
+        isMobile
+          ? "fixed left-2 z-[10050] w-[min(94vw,420px)] rounded-[24px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(15,23,42,0.96))] shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+          : floating
+            ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl"
+            : "h-full rounded-[26px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.86))] shadow-[0_20px_60px_rgba(15,23,42,0.32)]"
       )}
-      style={floating && panelPosition ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px`, boxSizing: "border-box" } : { boxSizing: "border-box" }}
+      style={
+        isMobile
+          ? {
+              boxSizing: "border-box",
+              top: "calc(env(safe-area-inset-top, 0px) + 8px)",
+              bottom: "calc(env(safe-area-inset-bottom, 0px) + 8px)",
+              height: "auto",
+              maxHeight: "none",
+            }
+          : floating && panelPosition
+            ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px`, boxSizing: "border-box" }
+            : { boxSizing: "border-box" }
+      }
       data-testid="theme-bubble-panel"
     >
       <div className="relative flex h-full flex-col before:absolute before:inset-x-4 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/50 before:to-transparent">
         <div className="border-b border-white/10 bg-white/[0.02] px-4 pb-3 pt-4 md:px-5">
           <div
-            className={cn("mb-2 flex select-none items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2", floating && "cursor-grab")}
-            onPointerDown={(e) => { if (!(e.target as Element).closest("button")) handleDragStart(e); }}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
+            className={cn("mb-2 flex select-none items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2", floating && !isMobile && "cursor-grab")}
+            onPointerDown={(e) => { if (!isMobile && !(e.target as Element).closest("button")) handleDragStart(e); }}
+            onPointerMove={isMobile ? undefined : handleDragMove}
+            onPointerUp={isMobile ? undefined : handleDragEnd}
+            onPointerCancel={isMobile ? undefined : handleDragEnd}
           >
             <div className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.24em] text-white/75">
               <Move className="h-3.5 w-3.5" />
               Panneau thèmes
             </div>
             <div className="flex items-center gap-1.5">
+              {!isMobile && (
               <button
                 type="button"
                 onClick={() => setFloating((value) => !value)}
@@ -1029,6 +1047,7 @@ export const ThemeBubble = () => {
               >
                 <Move className="h-4 w-4" />
               </button>
+              )}
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -1208,9 +1227,23 @@ export const ThemeBubble = () => {
         <AnimatedThemeGlyph open={open} />
       </Button>
 
-      {floating ? (
+      {isMobile ? (
+        open && typeof document !== "undefined"
+          ? createPortal(
+              <>
+                <div
+                  className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
+                  onClick={() => setOpen(false)}
+                  aria-hidden="true"
+                />
+                {panelBody}
+              </>,
+              document.body,
+            )
+          : null
+      ) : floating ? (
         // Direct render when floating — no Sheet/Drawer backdrop
-        open && panelBody
+        open && typeof document !== "undefined" ? createPortal(panelBody, document.body) : null
       ) : !isMobile ? (
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent side="right" className="w-full max-w-[480px] border-none bg-transparent p-3 shadow-none sm:max-w-[480px]" data-testid="theme-desktop-sheet">
