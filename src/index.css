@@ -3785,8 +3785,8 @@ body[data-panel-tint="on"] .glass3d-btn:hover {
 .glass3d-surface .mnav-section,
 .glass3d-surface [role="menuitem"],
 .glass3d-surface [data-quicknav-card],
-.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain),
-.glass3d-surface a:not(.glass3d-plain) {
+.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):not([style*="background"]):not([style*="gradient"]),
+.glass3d-surface a:not(.glass3d-plain):not([style*="background"]) {
   position: relative;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.28);
@@ -3803,8 +3803,8 @@ body[data-panel-tint="on"] .glass3d-btn:hover {
 .glass3d-surface .nav-theme-chip:hover,
 .glass3d-surface .mnav-section:hover,
 .glass3d-surface [role="menuitem"]:hover,
-.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):hover,
-.glass3d-surface a:not(.glass3d-plain):hover {
+.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):not([style*="background"]):not([style*="gradient"]):hover,
+.glass3d-surface a:not(.glass3d-plain):not([style*="background"]):hover {
   transform: translateY(-2px) scale(1.035);
   border-color: rgba(255, 255, 255, 0.6);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.1) 55%, rgba(0, 0, 0, 0.16)) !important;
@@ -3816,8 +3816,8 @@ body[data-panel-tint="on"] .glass3d-btn:hover {
 
 .glass3d-surface .nav-theme-chip:active,
 .glass3d-surface .mnav-section:active,
-.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):active,
-.glass3d-surface a:not(.glass3d-plain):active {
+.glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):not([style*="background"]):not([style*="gradient"]):active,
+.glass3d-surface a:not(.glass3d-plain):not([style*="background"]):active {
   transform: translateY(1px) scale(0.96);
   box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.55);
 }
@@ -3825,8 +3825,8 @@ body[data-panel-tint="on"] .glass3d-btn:hover {
 body[data-panel-tint="on"] .glass3d-surface .nav-theme-chip,
 body[data-panel-tint="on"] .glass3d-surface .mnav-section,
 body[data-panel-tint="on"] .glass3d-surface [role="menuitem"],
-body[data-panel-tint="on"] .glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain),
-body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain) {
+body[data-panel-tint="on"] .glass3d-surface button:not([data-panel-drag-handle]):not(.glass3d-plain):not([style*="background"]):not([style*="gradient"]),
+body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="background"]) {
   border-color: hsl(var(--primary) / 0.4);
   background: linear-gradient(180deg, hsl(var(--primary) / 0.26), rgba(255, 255, 255, 0.06) 55%, rgba(0, 0, 0, 0.2)) !important;
 }
