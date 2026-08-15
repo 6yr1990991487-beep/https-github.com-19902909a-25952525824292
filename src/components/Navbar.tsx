@@ -246,7 +246,10 @@ export const Navbar = () => {
       <header className="fixed inset-x-0 top-0 z-50 px-2 pt-2 sm:px-3" data-testid="site-navbar">
         <div className="mx-auto max-w-[1120px]">
           <div className="relative">
-            <div className="nav-theme-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
+            <div className="nav-theme-shell nav-bar-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
+              <span className="nav-cloud nav-cloud-1" aria-hidden="true" />
+              <span className="nav-cloud nav-cloud-2" aria-hidden="true" />
+              <span className="nav-cloud nav-cloud-3" aria-hidden="true" />
               <div className="flex items-center gap-2" onMouseEnter={cancelClose}>
                 {renderLogo()}
               </div>
