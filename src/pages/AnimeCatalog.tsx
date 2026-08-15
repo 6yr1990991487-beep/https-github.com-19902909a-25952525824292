@@ -1157,34 +1157,6 @@ export default function AnimeCatalog() {
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute bottom-4 left-6">
-                    <h2 className="font-display text-2xl font-bold text-white tracking-wide">Catalogue Vidéo</h2>
-                    <p className="text-sm font-medium text-white/70">Explorez notre vaste sélection anime</p>
-                  </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-3" data-testid="catalog-premium-metrics">
-                  <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
-                      <Heart className="mb-2 h-5 w-5 text-white/50" />
-                      <p className="font-display text-3xl font-black" data-testid="catalog-favorites-count">{favoriteItems.length}</p>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Favoris</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
-                      <PlayCircle className="mb-2 h-5 w-5 text-white/50" />
-                      <p className="font-display text-3xl font-black" data-testid="catalog-ready-trailers-count">{playerQueue.length}</p>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Vidéos Actives</p>
-                    </CardContent>
-                  </Card>
-                  <Card className="theme-subpanel border-none bg-transparent text-white">
-                    <CardContent className="flex flex-col min-h-[122px] items-center justify-center p-4">
-                      <Clapperboard className="mb-2 h-5 w-5 text-white/50" />
-                      <p className="font-display text-3xl font-black" data-testid="catalog-visible-count">{filteredSorted.length}</p>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60">Résultats</p>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
             </header>
