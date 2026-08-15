@@ -1731,7 +1731,7 @@ export default function AnimeCatalog() {
                    <Canvas camera={{ position: [0, 2, 8], fov: 45 }}>
                       <ambientLight intensity={0.5} />
                       <pointLight position={[10, 10, 10]} intensity={1} />
-                      <Carousel3D items={pagedItems.slice(0, 20)} onSelect={(media) => { setActivePlayerId(media.id); setDetailMedia(media); }} activeId={activePlayerId} />
+                      <Carousel3D items={pagedItems.slice(0, 20)} onSelect={(media: any) => { setActivePlayerId(media.id); setDetailMedia(media); }} activeId={activePlayerId} />
                       <OrbitControls enableZoom={false} maxPolarAngle={Math.PI / 2} minPolarAngle={Math.PI / 2.5} />
                    </Canvas>
                  </ErrorBoundary>
