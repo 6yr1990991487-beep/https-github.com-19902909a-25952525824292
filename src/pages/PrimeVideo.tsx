@@ -584,7 +584,6 @@ const PrimeVideo = () => {
           <div className="container mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-xs font-bold flex items-center gap-1.5">◆ prime</div>
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">lecteur premium</div>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap justify-end">
