@@ -1127,7 +1127,7 @@ export default function AnimeCatalog() {
         )}
       </Helmet>
 
-      <main className="min-h-screen overflow-hidden text-foreground" style={{ background: "transparent" }}>
+      <main className="page-nav-glass min-h-screen overflow-hidden text-foreground" style={{ background: "transparent" }}>
         <Navbar />
         <div className="h-12" />
 
