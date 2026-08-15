@@ -231,7 +231,7 @@ export const Navbar = () => {
         <img
           src="/lovanet-logo-custom.png?v=6"
           alt="Lovanet"
-          className="relative z-10 h-full w-full rounded-full object-contain object-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
+          className="relative z-10 h-full w-full object-contain object-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
         />
         <span className="nav-logo-pin-gloss" aria-hidden="true" />
       </motion.span>
