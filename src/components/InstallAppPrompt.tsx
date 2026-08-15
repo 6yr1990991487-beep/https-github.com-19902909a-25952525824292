@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Download, Share } from "lucide-react";
 
 type BIPEvent = Event & {
@@ -6,7 +7,7 @@ type BIPEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v2";
+const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v3";
 const DISMISS_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 const AUTO_OPEN_DELAY_MS = 2400;
 
