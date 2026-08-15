@@ -62,7 +62,16 @@ const forceLovanetReload = () => {
 if (typeof window !== "undefined") {
   (window as any).forceLovanetReload = forceLovanetReload;
 
-  if ("serviceWorker" in navigator) {
+  const swHost = window.location.hostname;
+  const swIsPreview =
+    window.self !== window.top ||
+    swHost.startsWith("id-preview--") ||
+    swHost.startsWith("preview--") ||
+    swHost.endsWith("lovableproject.com") ||
+    swHost.endsWith("lovableproject-dev.com") ||
+    swHost === "localhost";
+
+  if ("serviceWorker" in navigator && swIsPreview) {
     try {
       const alreadyCleaned =
         localStorage.getItem(LOVANET_RELOAD_FLAG) === LOVANET_RELOAD_VERSION ||
@@ -86,23 +95,15 @@ if (typeof window !== "undefined") {
       // ignore
     }
 
-    // Enregistrement du service worker (requis pour l'installation PWA).
-    const host = window.location.hostname;
-    const isPreview =
-      window.self !== window.top ||
-      host.startsWith("id-preview--") ||
-      host.startsWith("preview--") ||
-      host.endsWith("lovableproject.com") ||
-      host.endsWith("lovableproject-dev.com") ||
-      host === "localhost";
+  }
 
-    if (!isPreview) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js", { scope: "/" }).catch(() => {
-          // ignore
-        });
+  // Enregistrement du service worker (requis pour l'installation PWA).
+  if ("serviceWorker" in navigator && !swIsPreview) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js", { scope: "/" }).catch(() => {
+        // ignore
       });
-    }
+    });
   }
 }
 
