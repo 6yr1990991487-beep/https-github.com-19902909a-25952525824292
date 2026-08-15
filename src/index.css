@@ -2997,6 +2997,28 @@ body,
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* Force reload bubble : accent mint/cyan néon */
+.force-reload-bubble {
+  color: #ffffff;
+  background: rgba(0, 255, 157, 0.14);
+  border: 1px solid rgba(0, 255, 157, 0.45);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(0, 255, 157, 0.25);
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.force-reload-bubble:hover {
+  background: rgba(0, 255, 157, 0.26);
+  box-shadow: 0 0 28px rgba(0, 255, 157, 0.45);
+  transform: scale(0.68) !important;
+}
+
+.force-reload-bubble svg {
+  color: #ffffff;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 157, 0.9));
+}
+
+
 /* Rebuilt sub-panels for the three problematic dock bubbles.
    They are portalled under body and therefore cannot inherit dock transforms,
    clipping, scaling or stacking contexts. */
