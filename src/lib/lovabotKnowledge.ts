@@ -46,7 +46,7 @@ export const SITE_KNOWLEDGE: KnowledgeEntry[] = [
   },
   {
     id: "shop",
-    keywords: ["magasin", "shop", "magasin", "acheter", "poster", "collector", "produit", "produits", "panier", "commande", "livraison", "prix"],
+    keywords: ["magasin", "boutique", "shop", "acheter", "poster", "collector", "produit", "produits", "panier", "commande", "livraison", "prix"],
     answer:
       "La Magasin propose posters, éditions collector, textiles et goodies. Ajoute au panier depuis une fiche produit : le panier s'ouvre dans un panneau transparent. Tu peux aussi ouvrir l'accès rapide Magasin depuis la barre de bulles à gauche.",
     link: { label: "Voir la magasin", to: "/shop" },
