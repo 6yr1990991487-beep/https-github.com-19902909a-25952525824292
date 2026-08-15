@@ -41,6 +41,7 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MobileNavFloater } from "@/components/MobileNavFloater";
 import { NavSuggestionsBar } from "@/components/NavSuggestionsBar";
 import QuickNavCarousel, { OPEN_QUICKNAV_EVENT } from "@/components/QuickNavCarousel";
+import DragScroller from "@/components/DragScroller";
 import MobileMenuMiniWindow from "@/components/MobileMenuMiniWindow";
 const navTestIds: Record<string, string> = {
   "/": "navbar-home-link",
@@ -397,7 +398,7 @@ export const Navbar = () => {
                       </button>
                     </div>
                     <div className="relative">
-                      <div className="no-scrollbar relative flex gap-4 overflow-x-auto px-1 py-2">
+                      <DragScroller className="relative flex gap-4 px-1 py-2">
                       {megaSections.map((item) => {
                         const active = isActivePath(item.to);
                         return (
@@ -427,7 +428,7 @@ export const Navbar = () => {
                           </Link>
                         );
                       })}
-                      </div>
+                      </DragScroller>
                     </div>
                   </div>
                 </div>
@@ -547,7 +548,7 @@ export const Navbar = () => {
                           {group.id === "explore" && <Compass className="h-4 w-4" />}
                           {group.label}
                         </div>
-                        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" style={{ touchAction: "pan-x" }}>
+                        <DragScroller className="flex gap-2 pb-1">
                           {group.items.map((item) => {
                             const active = isActivePath(item.to);
                             return (
@@ -566,7 +567,7 @@ export const Navbar = () => {
                               </Link>
                             );
                           })}
-                        </div>
+                        </DragScroller>
                       </div>
                     ))}
                   </div>
