@@ -162,11 +162,6 @@ export const HoverPreview = ({
         </div>
       )}
 
-      {active && (
-        <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider pointer-events-none">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Preview
-        </span>
-      )}
 
       {children}
     </div>
