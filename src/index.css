@@ -3210,7 +3210,8 @@ body,
   .detached-bubble-panel--catalog,
   .detached-bubble-panel--settings,
   .detached-bubble-panel--menu-skin,
-  .detached-bubble-panel--quick-access {
+  .detached-bubble-panel--quick-access,
+  .detached-bubble-panel--magasin {
     left: 118px;
     width: calc(100vw - 134px);
     max-width: 340px;
