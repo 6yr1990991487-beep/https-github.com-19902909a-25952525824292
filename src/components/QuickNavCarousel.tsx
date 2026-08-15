@@ -124,8 +124,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
           {items.map((item) => (
             <Link key={item.id} to={item.to} className="relative h-40 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus:scale-105" aria-label={item.title} draggable={false}>
               <div className="absolute inset-0 rounded-2xl backdrop-blur-md" style={{ background: "var(--nav-card-overlay, linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)))" }} />
-              <div className="relative flex h-full w-full flex-col justify-between rounded-xl p-3">
-                <div className="z-10 text-sm font-semibold opacity-90">{item.subtitle}</div>
+              <div className="relative flex h-full w-full flex-col justify-end rounded-xl p-3">
                 <div className="z-10 mt-2 text-xl font-extrabold">{item.title}</div>
                 <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20 blur-2xl" style={{ background: item.color }} />
                 <div className="absolute bottom-3 left-3 z-10 text-xs text-white/90">Aller →</div>
