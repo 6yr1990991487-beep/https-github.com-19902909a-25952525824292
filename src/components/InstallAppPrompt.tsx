@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Download, Share } from "lucide-react";
 
 type BIPEvent = Event & {
@@ -6,7 +7,7 @@ type BIPEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v2";
+const DISMISS_UNTIL_KEY = "lovanet.install.dismissedUntil.v3";
 const DISMISS_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 const AUTO_OPEN_DELAY_MS = 2400;
 
@@ -110,7 +111,7 @@ export const InstallAppPrompt = () => {
     setOpen(false);
   };
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const instructionText =
     deviceClass === "ios"
@@ -130,7 +131,7 @@ export const InstallAppPrompt = () => {
           ? "Version PC"
           : "Version Mobile";
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[10050] flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-sm p-3 sm:p-4"
       role="dialog"
@@ -192,7 +193,8 @@ export const InstallAppPrompt = () => {
           Plus tard
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

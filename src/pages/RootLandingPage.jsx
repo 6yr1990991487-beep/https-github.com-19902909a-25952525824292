@@ -383,7 +383,6 @@ export default function RootLandingPage() {
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
-  const heroNews = useMemo(() => getPortalDestination(2, rotationIndex), [rotationIndex]);
   const portalEntries = useMemo(() => portalCards.map((card, index) => ({ ...card, action: getPortalDestination(index, rotationIndex) })), [rotationIndex]);
   const platformEntries = useMemo(
     () =>
@@ -513,15 +512,6 @@ export default function RootLandingPage() {
                   </Button>
                 </div>
 
-                <div className="mt-2 flex flex-row flex-wrap gap-2 pointer-events-auto" data-testid="home-hero-highlights-grid">
-                  {[heroPrimary, heroSecondary, heroNews].map((item, index) => (
-                    <Link key={`hero-highlight-${index}-${item.to}`} to={item.to} className="flex items-center justify-center h-7 px-3 rounded-full border border-white/10 bg-black/20 hover:bg-black/30 backdrop-blur-md text-[9px] sm:text-[10px] font-medium text-white transition-colors" data-testid={`home-hero-highlight-link-${index + 1}`}>
-                      <span key={`hero-highlight-label-${index}-${item.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">
-                        {item.label}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
               </div>
             </div>
           </div>
