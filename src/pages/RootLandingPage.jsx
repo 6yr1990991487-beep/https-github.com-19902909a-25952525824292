@@ -495,7 +495,7 @@ export default function RootLandingPage() {
 
               <div className="hero-banner-content root-hero-content relative flex min-h-[350px] sm:min-h-[440px] flex-col justify-end p-4 sm:p-6 z-30 pointer-events-none">
                 <div className="flex flex-row flex-wrap gap-2 pointer-events-auto" data-testid="hero-banner-bottom-primary-buttons">
-                  <Button asChild size="sm" className="btn-neon-rainbow h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white/90 backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-hero-primary-cta-button">
+                  <Button asChild size="sm" className="btn-neon-rainbow h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-hero-primary-cta-button">
                     <Link to={heroPrimary.to}>
                       <span key={`hero-primary-${heroPrimary.to}-${rotationIndex}`} className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
                         {heroPrimary.label}
@@ -503,7 +503,7 @@ export default function RootLandingPage() {
                       </span>
                     </Link>
                   </Button>
-                  <Button asChild variant="glass" size="sm" className={`h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white/90 bg-black/20 hover:bg-black/30 backdrop-blur-md border border-white/10`} data-testid="home-hero-secondary-cta-button">
+                  <Button asChild variant="glass" size="sm" className={`h-8 rounded-full px-4 text-[10px] sm:text-xs font-semibold text-white bg-black/20 hover:bg-black/30 backdrop-blur-md border border-white/10`} data-testid="home-hero-secondary-cta-button">
                     <Link to={heroSecondary.to}>
                       <span key={`hero-secondary-${heroSecondary.to}-${rotationIndex}`} className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
                         {heroSecondary.label}
@@ -515,7 +515,7 @@ export default function RootLandingPage() {
 
                 <div className="mt-2 flex flex-row flex-wrap gap-2 pointer-events-auto" data-testid="home-hero-highlights-grid">
                   {[heroPrimary, heroSecondary, heroNews].map((item, index) => (
-                    <Link key={`hero-highlight-${index}-${item.to}`} to={item.to} className="flex items-center justify-center h-7 px-3 rounded-full border border-white/10 bg-black/20 hover:bg-black/30 backdrop-blur-md text-[9px] sm:text-[10px] font-medium text-white/80 transition-colors" data-testid={`home-hero-highlight-link-${index + 1}`}>
+                    <Link key={`hero-highlight-${index}-${item.to}`} to={item.to} className="flex items-center justify-center h-7 px-3 rounded-full border border-white/10 bg-black/20 hover:bg-black/30 backdrop-blur-md text-[9px] sm:text-[10px] font-medium text-white transition-colors" data-testid={`home-hero-highlight-link-${index + 1}`}>
                       <span key={`hero-highlight-label-${index}-${item.to}-${rotationIndex}`} className="animate-in fade-in zoom-in-95 duration-500">
                         {item.label}
                       </span>
@@ -535,7 +535,7 @@ export default function RootLandingPage() {
             <div className="relative">
               <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-10 w-36 rounded-full border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)] backdrop-blur-md" data-testid="home-platforms-heading-placeholder" />
-                <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white/90 backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
+                <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
                   <Link to="/anime-catalog">
                     <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
                       Catalogue premium
@@ -558,9 +558,9 @@ export default function RootLandingPage() {
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/40"
                           style={{ perspective: "500px", transformStyle: "preserve-3d" }}
                         >
-                          <Icon className="h-3.5 w-3.5 text-white/80 group-hover:text-fuchsia-300 transition-colors drop-shadow-[0_0_5px_currentColor]" />
+                          <Icon className="h-3.5 w-3.5 text-white group-hover:text-fuchsia-300 transition-colors drop-shadow-[0_0_5px_currentColor]" />
                         </motion.div>
-                        {card.title && <p className="text-[11px] sm:text-xs font-semibold text-white/90 truncate">{card.title}</p>}
+                        {card.title && <p className="text-[11px] sm:text-xs font-semibold text-white truncate">{card.title}</p>}
                       </div>
                     </Link>
                   );
