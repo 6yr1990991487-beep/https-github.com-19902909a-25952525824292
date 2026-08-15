@@ -229,7 +229,7 @@ export const Navbar = () => {
         className="nav-logo-pin relative inline-flex h-11 w-11 items-center justify-center rounded-full p-[3px] sm:h-12 sm:w-12"
       >
         <img
-          src="/lovanet-logo-round.png?v=7"
+          src="/lovanet-logo-round.png?v=11"
           alt="Lovanet"
           className="relative z-10 h-full w-full rounded-full object-cover object-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
         />
