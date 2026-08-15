@@ -151,7 +151,7 @@ const AppShell = () => {
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
          <FloatingDockSlot><MobileMenuSkinBubble /></FloatingDockSlot>
           <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
-          <FloatingDockSlot><ForceReloadBubble /></FloatingDockSlot>
+          <FloatingDockSlot><div data-testid="force-reload-bubble" style={{width:40,height:40,background:'red',borderRadius:'50%'}}>TEST2</div></FloatingDockSlot>
           <FloatingDockSlot><Onboarding3D /></FloatingDockSlot>
         </FloatingDock>
       )}
