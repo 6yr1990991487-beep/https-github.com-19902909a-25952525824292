@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Eye, EyeOff, Video, VideoOff, Check, X } from "lucide-react";
 import { usePerformance } from "@/contexts/PerformanceContext";
 
@@ -15,30 +16,33 @@ const DetachedBubblePanel = ({
   className?: string;
   children: React.ReactNode;
 }) => {
-  if (!open) return null;
-  return (
+  if (!open || typeof document === "undefined") return null;
+  return createPortal(
     <div
       id={panelId}
-      className="fixed inset-0 z-[9998] flex items-end justify-center bg-black/30 p-4 sm:items-center sm:p-6"
-      onClick={onClose}
+      className={`detached-bubble-panel detached-bubble-panel--settings ${className ?? ""}`}
       role="dialog"
-      aria-modal="true"
+      aria-modal="false"
+      aria-label="Arrière-plans et décors"
     >
-      <div
-        className={`relative w-full max-w-[420px] overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-950/95 shadow-2xl backdrop-blur-2xl ${className ?? ""}`}
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="flex min-h-11 items-center justify-between gap-3 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/75">Arrière-plans et décors</span>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
-          aria-label="Fermer"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-white transition hover:bg-white/15"
+          aria-label="Fermer le panneau arrière-plans et décors"
         >
           <X className="h-4 w-4" />
         </button>
+      </div>
+      <div
+        className="min-h-0 overflow-y-auto"
+      >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

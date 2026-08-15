@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Layers, Move, X } from "lucide-react";
 
 /**
@@ -327,7 +328,7 @@ export const CardSkinBubble = () => {
 
   return (
     <>
-      {open && panelPos && (
+      {open && panelPos && typeof document !== "undefined" && createPortal(
         <div
           ref={panelRef}
           className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,290px)] max-w-[calc(100vw-24px)] overflow-x-hidden"
@@ -369,7 +370,8 @@ export const CardSkinBubble = () => {
           <p className="mt-2 px-1 text-[10px] text-white/60">
             {SKINS.find((s) => s.key === active)?.label}
           </p>
-        </div>
+        </div>,
+        document.body,
       )}
       <button
         type="button"

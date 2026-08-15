@@ -3066,6 +3066,16 @@ body,
   max-height: min(80vh, 640px);
 }
 
+/* Le grand sélecteur de thèmes reste à côté du dock, sans le recouvrir. */
+.theme-dock-panel {
+  left: 118px;
+  top: 50%;
+  bottom: auto;
+  width: min(420px, calc(100vw - 134px));
+  max-height: calc(100dvh - max(24px, env(safe-area-inset-top)) - max(24px, env(safe-area-inset-bottom)));
+  transform: translateY(-50%);
+}
+
 @keyframes detached-panel-enter {
   from { opacity: 0; transform: translate(12px, -50%); }
   to { opacity: 1; transform: translate(0, -50%); }
@@ -3180,6 +3190,12 @@ body,
     max-width: 340px;
     max-height: 72vh;
   }
+
+  .theme-dock-panel {
+    left: 118px;
+    width: min(420px, calc(100vw - 134px));
+    max-height: calc(100dvh - max(20px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+  }
 }
 
 @media (display-mode: standalone) and (max-width: 768px) {
@@ -3241,6 +3257,12 @@ body,
     width: calc(100vw - 120px);
     max-width: 330px;
     max-height: 64vh;
+  }
+
+  .theme-dock-panel {
+    left: 106px;
+    width: min(420px, calc(100vw - 120px));
+    max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
   }
 
   .root-hero-section {
