@@ -9,6 +9,7 @@ import { ManualSyncButton } from "@/components/ManualSyncButton";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslateCardButton } from "@/components/TranslateCardButton";
 import { AudioLanguageSwitcher } from "@/components/AudioLanguageSwitcher";
+import { Carousel3DSection } from "@/components/Carousel3DSection";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1027,6 +1028,19 @@ const PrimeVideo = () => {
                 <span className="rounded-full bg-black/40 px-1.5 py-0.5 text-[9px] font-bold text-white/80 font-medium">{count}</span>
               </button>
             ))}
+          </div>
+        )}
+
+        {filteredPrime.length > 0 && (
+          <div className="mb-12" data-testid="prime-carousel-3d">
+            <Carousel3DSection
+              items={filteredPrime.slice(0, 20)}
+              activeId={selectedPrimeId}
+              onSelect={(anime) => {
+                setSelectedPrimeId(anime.id);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
           </div>
         )}
 
