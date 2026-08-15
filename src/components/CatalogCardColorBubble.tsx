@@ -354,21 +354,14 @@ export const CatalogCardColorBubble = () => {
 
   return (
     <>
-      {open && panelPos && (
+      {open && (
         <div
           ref={panelRef}
-          className="fixed z-[10050] touch-none overflow-hidden rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] p-0 text-white shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(90vw,340px)] max-w-[calc(100vw-24px)] max-h-[80vh] overflow-y-auto overflow-x-hidden"
-          style={{ left: `${panelPos.x}px`, top: `${panelPos.y}px`, boxSizing: "border-box" }}
-          onPointerDown={onDown}
-          onPointerMove={onMove}
-          onPointerUp={onUp}
-          onPointerCancel={onUp}
+          className="fixed left-[5.25rem] top-1/2 z-[10050] -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.88))] p-0 text-white shadow-[0_24px_70px_rgba(15,23,42,0.55)] ring-1 ring-white/10 backdrop-blur-2xl w-[min(88vw,320px)] max-h-[76vh] overflow-y-auto sm:left-[6rem]"
+          style={{ boxSizing: "border-box" }}
         >
           <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70" aria-hidden="true">
-              <Move className="h-3.5 w-3.5" />
-              Palette
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.24em] text-white/70">Palette</span>
             <button
               type="button"
               onClick={() => setOpen(false)}
