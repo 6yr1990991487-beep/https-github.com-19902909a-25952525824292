@@ -158,7 +158,7 @@ const AppShell = () => {
           <FloatingDockSlot><Mobile3DSettingsToggle /></FloatingDockSlot>
           <FloatingDockSlot><GlobalTranslateWidget /></FloatingDockSlot>
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
-         <FloatingDockSlot><MobileMenuSkinBubble /></FloatingDockSlot>
+         <FloatingDockSlot><MagasinQuickBubble /></FloatingDockSlot>
           <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
           <FloatingDockSlot><ForceReloadBubble /></FloatingDockSlot>
           <FloatingDockSlot><Onboarding3D /></FloatingDockSlot>
