@@ -423,7 +423,6 @@ export const Navbar = () => {
                               </span>
                               <span className="min-w-0 text-white">
                                 <span className="block text-sm font-semibold">{item.label}</span>
-                                {item.desc && <span className="mt-1 block text-xs text-white/70">{item.desc}</span>}
                               </span>
                             </span>
                           </Link>
