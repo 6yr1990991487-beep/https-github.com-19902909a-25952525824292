@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
+import { Move, X } from "lucide-react";
+
+export const OPEN_QUICKNAV_EVENT = "lovanet:open-quicknav";
+const OPEN_KEY = "lovanet.quicknav.open";
 
 type QuickNavItem = {
   id: string;
@@ -20,60 +25,105 @@ const DEFAULT_ITEMS: QuickNavItem[] = [
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
-  const dragging = useRef(false);
-  const startX = useRef(0);
-  const initialScroll = useRef(0);
-  const [, redraw] = useState(0);
+  const [open, setOpen] = useState(() => {
+    try {
+      return localStorage.getItem(OPEN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-
-    const handleDown = (event: MouseEvent | TouchEvent) => {
-      dragging.current = true;
-      startX.current = "touches" in event ? event.touches[0].pageX : event.pageX;
-      initialScroll.current = carousel.scrollLeft;
-      carousel.classList.add("cursor-grabbing");
-    };
-    const handleMove = (event: MouseEvent | TouchEvent) => {
-      if (!dragging.current) return;
-      const x = "touches" in event ? event.touches[0].pageX : event.pageX;
-      carousel.scrollLeft = initialScroll.current - (x - startX.current);
-      redraw((value) => value + 1);
-    };
-    const handleUp = () => {
-      dragging.current = false;
-      carousel.classList.remove("cursor-grabbing");
-    };
-
-    carousel.addEventListener("mousedown", handleDown);
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
-    carousel.addEventListener("touchstart", handleDown, { passive: true });
-    window.addEventListener("touchmove", handleMove, { passive: true });
-    window.addEventListener("touchend", handleUp);
-    return () => {
-      carousel.removeEventListener("mousedown", handleDown);
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
-      carousel.removeEventListener("touchstart", handleDown);
-      window.removeEventListener("touchmove", handleMove);
-      window.removeEventListener("touchend", handleUp);
-    };
+    const openIt = () => setOpen(true);
+    window.addEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
+    return () => window.removeEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
   }, []);
 
-  return (
-    <div className="w-full py-6">
-      <div className="mx-auto max-w-7xl px-4 lg:px-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-bold">Navigation rapide</h3>
-          <button type="button" onClick={onClose} aria-label="Fermer la navigation rapide" className="rounded-full bg-white/5 p-2 text-sm text-white/90 hover:bg-white/10">
-            Fermer
-          </button>
-        </div>
-        <div ref={carouselRef} className="no-scrollbar relative flex gap-4 overflow-x-auto px-2 py-4 will-change-transform" aria-label="Carrousel de navigation rapide">
+  // Reste ouvert d'une page à l'autre (mobile, application et PC).
+  useEffect(() => {
+    try {
+      localStorage.setItem(OPEN_KEY, open ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, [open]);
+
+  // Défilement par glisser (souris, toucher, appui long) — sans rail de glissement.
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel || !open) return;
+    let active = false;
+    let startX = 0;
+    let base = 0;
+
+    const down = (e: PointerEvent) => {
+      active = true;
+      startX = e.clientX;
+      base = carousel.scrollLeft;
+      carousel.setPointerCapture?.(e.pointerId);
+    };
+    const move = (e: PointerEvent) => {
+      if (!active) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) carousel.classList.add("is-swiping");
+      carousel.scrollLeft = base - dx;
+    };
+    const up = (e: PointerEvent) => {
+      active = false;
+      carousel.releasePointerCapture?.(e.pointerId);
+      window.setTimeout(() => carousel.classList.remove("is-swiping"), 40);
+    };
+
+    carousel.addEventListener("pointerdown", down);
+    carousel.addEventListener("pointermove", move);
+    carousel.addEventListener("pointerup", up);
+    carousel.addEventListener("pointercancel", up);
+    return () => {
+      carousel.removeEventListener("pointerdown", down);
+      carousel.removeEventListener("pointermove", move);
+      carousel.removeEventListener("pointerup", up);
+      carousel.removeEventListener("pointercancel", up);
+    };
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    onClose?.();
+  };
+
+  if (!open || typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="dock-popup quicknav-floating glass3d-panel glass3d-surface"
+      data-panel-key="quick-nav"
+      role="dialog"
+      aria-label="Navigation rapide"
+    >
+      <div
+        data-panel-drag-handle
+        className="glass3d-header flex min-h-11 cursor-grab items-center justify-between gap-2 px-3 py-2 active:cursor-grabbing"
+      >
+        <Move className="h-3.5 w-3.5 text-white/70" />
+        <button
+          type="button"
+          onClick={close}
+          aria-label="Fermer la navigation rapide"
+          className="glass3d-btn inline-flex h-8 w-8 items-center justify-center rounded-full"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="p-2">
+        <div
+          ref={carouselRef}
+          data-no-panel-drag
+          className="no-scrollbar relative flex gap-4 overflow-x-auto px-2 py-2 will-change-transform [&.is-swiping_a]:pointer-events-none"
+          style={{ touchAction: "pan-x", scrollbarWidth: "none", cursor: "grab" }}
+          aria-label="Carrousel de navigation rapide"
+        >
           {items.map((item) => (
-            <Link key={item.id} to={item.to} onClick={onClose} className="relative h-40 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus:scale-105" aria-label={item.title}>
+            <Link key={item.id} to={item.to} className="relative h-40 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus:scale-105" aria-label={item.title} draggable={false}>
               <div className="absolute inset-0 rounded-2xl backdrop-blur-md" style={{ background: "var(--nav-card-overlay, linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)))" }} />
               <div className="relative flex h-full w-full flex-col justify-between rounded-xl p-3">
                 <div className="z-10 text-sm font-semibold opacity-90">{item.subtitle}</div>
@@ -91,6 +141,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

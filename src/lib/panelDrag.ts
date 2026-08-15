@@ -98,6 +98,8 @@ export const initPanelDrag = () => {
     const target = e.target as HTMLElement | null;
     const found = target?.closest?.(SELECTOR) as HTMLElement | null;
     if (!found) return;
+    // Zones exclues (ex. carrousel à défilement tactile) : pas de déplacement du panneau.
+    if (target?.closest?.("[data-no-panel-drag]")) return;
     panel = found;
     const rect = found.getBoundingClientRect();
     startX = e.clientX;
