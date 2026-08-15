@@ -240,10 +240,11 @@ export const Navbar = () => {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 px-2 pt-2 sm:px-3" data-testid="site-navbar">
-        <div className="mx-auto max-w-[1120px]">
+      <header className="fixed inset-x-0 top-0 z-50 px-2 pt-2 sm:px-3 lg:px-4" data-testid="site-navbar">
+        <div className="mx-auto w-full max-w-[95vw] sm:max-w-[98vw] lg:max-w-[1600px] xl:max-w-[1800px] 2xl:max-w-[1920px]">
           <div className="relative">
-            <div className="nav-theme-shell nav-bar-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-6">
+            <div className="nav-theme-shell nav-bar-shell flex min-h-[56px] items-center gap-2 rounded-[1.35rem] px-3 py-2 sm:min-h-[64px] sm:px-4 lg:px-5 xl:px-6">
+
               <span className="nav-cloud nav-cloud-1" aria-hidden="true" />
               <span className="nav-cloud nav-cloud-2" aria-hidden="true" />
               <span className="nav-cloud nav-cloud-3" aria-hidden="true" />
@@ -295,7 +296,7 @@ export const Navbar = () => {
                 </button>
               </div>
 
-              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-hidden md:flex">
+              <nav className="mx-auto hidden flex-1 items-center justify-center gap-1 overflow-visible md:flex">
                 {rotatingNavItems.map((item, index) => {
                   const active = isActivePath(item.to);
                   const Icon = item.icon;
@@ -305,7 +306,7 @@ export const Navbar = () => {
                       to={item.to}
                       data-testid={`navbar-rotating-link-${index + 1}`}
                       className={cn(
-                        "group nav-theme-chip nav-3d inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-sm font-medium",
+                        "group nav-theme-chip nav-3d inline-flex shrink-0 min-h-[44px] items-center gap-2 rounded-full px-3 py-2 text-sm font-medium lg:px-3 xl:px-4",
                         active && "nav-theme-chip-active",
                       )}
                       style={{ perspective: "600px" }}
@@ -318,13 +319,14 @@ export const Navbar = () => {
                       >
                         <Icon className="h-4 w-4 text-white group-hover:text-fuchsia-300 transition-colors" />
                       </motion.div>
-                      <span key={`desktop-label-${index}-${item.to}-${menuRotationIndex}`} className="inline-block animate-in fade-in zoom-in-95 duration-500 nav-theme-accent-text">
+                      <span key={`desktop-label-${index}-${item.to}-${menuRotationIndex}`} className="inline-block whitespace-nowrap animate-in fade-in zoom-in-95 duration-500 nav-theme-accent-text">
                         {item.label}
                       </span>
                     </Link>
                   );
                 })}
               </nav>
+
 
               <div className="ml-auto hidden items-center gap-2 md:flex">
                 <button
