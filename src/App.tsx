@@ -51,6 +51,8 @@ import { Mobile3DSettingsToggle } from "./components/Mobile3DSettingsToggle";
 import { SuggestionsBubble } from "./components/SuggestionsBubble";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "@/lib/seoI18n";
 import { usePushNotifications } from "./hooks/usePushNotifications";
+import { ForceReloadBubble } from "./components/ForceReloadBubble";
+
 
 const queryClient = new QueryClient();
 const LOCALE_PREFIXES = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE);
@@ -149,7 +151,7 @@ const AppShell = () => {
           <FloatingDockSlot><CardSkinBubble /></FloatingDockSlot>
          <FloatingDockSlot><MobileMenuSkinBubble /></FloatingDockSlot>
           <FloatingDockSlot><CatalogCardColorBubble /></FloatingDockSlot>
-          <FloatingDockSlot><SuggestionsBubble /></FloatingDockSlot>
+          <FloatingDockSlot><ForceReloadBubble /></FloatingDockSlot>
           <FloatingDockSlot><Onboarding3D /></FloatingDockSlot>
         </FloatingDock>
       )}

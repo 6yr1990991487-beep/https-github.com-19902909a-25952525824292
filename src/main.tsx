@@ -14,32 +14,77 @@ createRoot(document.getElementById("root")!).render(
   </HelmetProvider>,
 );
 
-// Ensure old service workers and caches are unregistered once to avoid stale preview assets.
-if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-  try {
-    if (!sessionStorage.getItem("lovanet_sw_unregistered")) {
-      const refresh = () => {
-        const url = new URL(window.location.href);
-        if (!url.searchParams.has("lovanet_reload")) {
-          url.searchParams.set("lovanet_reload", "1");
-          window.location.replace(url.toString());
-        } else {
-          window.location.reload();
-        }
-      };
+// Ensure old service workers and caches are unregistered to avoid stale preview assets.
+const LOVANET_RELOAD_FLAG = "lovanet_sw_unregistered";
+const LOVANET_RELOAD_VERSION = "2"; // bump to force a new cleanup cycle
 
-      navigator.serviceWorker.getRegistrations().then((regs) => {
-        return Promise.all(regs.map((r) => r.unregister()));
-      }).then(() => {
-        return caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
-      }).then(() => {
-        sessionStorage.setItem("lovanet_sw_unregistered", "1");
-        refresh();
-      }).catch(() => {
-        // ignore errors
-      });
+const forceLovanetReload = () => {
+  if (typeof window === "undefined") return;
+
+  const doReload = () => {
+    const url = new URL(window.location.href);
+    // Remove previous cache-buster so the URL stays clean, then force a hard reload
+    url.searchParams.delete("lovanet_reload");
+    url.searchParams.set("_v", Date.now().toString());
+    window.location.replace(url.toString());
+  };
+
+  const clearStorages = () => {
+    try {
+      localStorage.removeItem(LOVANET_RELOAD_FLAG);
+      sessionStorage.removeItem(LOVANET_RELOAD_FLAG);
+    } catch {
+      // ignore
     }
-  } catch (e) {
-    // ignore
+  };
+
+  if (!("serviceWorker" in navigator)) {
+    clearStorages();
+    doReload();
+    return;
+  }
+
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+    .then(() => caches.keys())
+    .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+    .then(() => {
+      clearStorages();
+      doReload();
+    })
+    .catch(() => {
+      clearStorages();
+      doReload();
+    });
+};
+
+if (typeof window !== "undefined") {
+  (window as any).forceLovanetReload = forceLovanetReload;
+
+  if ("serviceWorker" in navigator) {
+    try {
+      const alreadyCleaned =
+        localStorage.getItem(LOVANET_RELOAD_FLAG) === LOVANET_RELOAD_VERSION ||
+        sessionStorage.getItem(LOVANET_RELOAD_FLAG) === LOVANET_RELOAD_VERSION;
+
+      if (!alreadyCleaned) {
+        navigator.serviceWorker
+          .getRegistrations()
+          .then((regs) => Promise.all(regs.map((r) => r.unregister())))
+          .then(() => caches.keys())
+          .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+          .then(() => {
+            localStorage.setItem(LOVANET_RELOAD_FLAG, LOVANET_RELOAD_VERSION);
+            sessionStorage.setItem(LOVANET_RELOAD_FLAG, LOVANET_RELOAD_VERSION);
+          })
+          .catch(() => {
+            // ignore errors
+          });
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 }
+
