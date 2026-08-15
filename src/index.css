@@ -3013,43 +3013,25 @@ body,
   border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Bulles du dock : verre transparent (identique à la version en ligne) */
-.floating-dock-slot button[aria-label="Apparence des cartes"],
-.floating-dock-slot button[aria-label="Couleurs du menu mobile"],
-.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] {
-  background: rgba(255, 255, 255, 0.1) !important;
-  background-image: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
-  box-shadow: none !important;
-  color: #ffffff !important;
-}
-
-.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] > span:first-child {
-  background: rgba(255, 255, 255, 0.06) !important;
-  background-image: none !important;
-  animation: none !important;
-  opacity: 1 !important;
-}
-
-/* Force reload bubble : verre transparent */
+/* Force reload bubble : accent mint/cyan néon */
 .force-reload-bubble {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
-  border: 2px solid rgba(255, 255, 255, 0.24);
-  border-radius: 9999px;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.08);
+  background: rgba(0, 255, 157, 0.14);
+  border: 1px solid rgba(0, 255, 157, 0.45);
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(0, 255, 157, 0.25);
   transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .force-reload-bubble:hover {
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 0 22px rgba(255, 255, 255, 0.18);
+  background: rgba(0, 255, 157, 0.26);
+  box-shadow: 0 0 28px rgba(0, 255, 157, 0.45);
   transform: scale(0.68) !important;
 }
 
 .force-reload-bubble svg {
   color: #ffffff;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.7));
+  filter: drop-shadow(0 0 4px rgba(0, 255, 157, 0.9));
 }
 
 
