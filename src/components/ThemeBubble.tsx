@@ -999,10 +999,10 @@ export const ThemeBubble = () => {
       className={cn(
         "flex flex-col overflow-hidden text-white",
         isMobile
-          ? "theme-dock-panel fixed z-[10050] rounded-[24px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.9),rgba(15,23,42,0.96))] shadow-[0_24px_70px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+          ? "theme-dock-panel glass3d-panel glass3d-surface fixed z-[10050] rounded-[24px] backdrop-blur-2xl"
           : floating
-            ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl"
-            : "h-full rounded-[26px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.86))] shadow-[0_20px_60px_rgba(15,23,42,0.32)]"
+            ? "glass3d-panel glass3d-surface fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] backdrop-blur-2xl"
+            : "glass3d-panel glass3d-surface h-full"
       )}
       style={
         isMobile

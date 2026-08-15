@@ -379,7 +379,7 @@ export const Navbar = () => {
                 onMouseEnter={cancelClose}
                 className="absolute left-0 right-0 top-full z-[70] mt-3 hidden animate-in fade-in slide-in-from-top-2 duration-300 md:block"
               >
-                <div className="nav-theme-shell relative overflow-hidden rounded-[1.8rem] p-3 sm:p-5 lg:p-6" data-testid="desktop-mega-menu-panel">
+                <div className="nav-theme-shell glass3d-panel glass3d-surface relative overflow-hidden rounded-[1.8rem] p-3 sm:p-5 lg:p-6" data-testid="desktop-mega-menu-panel">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,color-mix(in_srgb,var(--nav-theme-accent)_18%,transparent),transparent_24%),radial-gradient(circle_at_84%_14%,color-mix(in_srgb,var(--nav-theme-accent-2)_14%,transparent),transparent_22%),linear-gradient(135deg,rgba(255,255,255,0.04),transparent_38%)]" />
                   <div className="relative space-y-4">
                     <div className="flex items-center justify-between gap-4">
@@ -448,7 +448,7 @@ export const Navbar = () => {
             <SheetTitle>Navigation mobile Lovanet</SheetTitle>
             <SheetDescription>Navigation principale, accès rapides et liens utiles.</SheetDescription>
           </SheetHeader>
-          <div className="mnav-shell nav-theme-shell flex h-full flex-col overflow-hidden rounded-[1.75rem] shadow-2xl relative z-10">
+          <div className="mnav-shell nav-theme-shell glass3d-panel glass3d-surface flex h-full flex-col overflow-hidden rounded-[1.75rem] relative z-10">
             <div className="mnav-section flex items-center justify-between gap-3 px-4 py-4">
               {renderLogo()}
               <div className="flex items-center gap-2">
