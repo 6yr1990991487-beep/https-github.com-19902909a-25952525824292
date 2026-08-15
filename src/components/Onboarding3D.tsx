@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Float, Sparkles, MeshTransmissionMaterial, ContactShadows } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Shield, Cpu, Bot, Sparkles as SparkleIcon } from 'lucide-react';
+import { X, ArrowRight, Shield, Cpu, Bot, MessagesSquare, Sparkles as SparkleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { answerQuestion, BOT_GREETINGS, SUGGESTIONS, type BotId } from '@/lib/lovabotKnowledge';
@@ -272,14 +272,11 @@ export const Onboarding3D = () => {
         className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-3 z-[60] cursor-pointer sm:right-4 md:bottom-6 md:right-6"
         onClick={() => { setMinimized(false); }}
       >
-        <div className="relative w-16 h-16 rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-[0_0_20px_rgba(56,189,248,0.3)] overflow-hidden">
-          <Canvas camera={{ position: [0, 0, 3] }}>
-            <ambientLight intensity={1} />
-            <directionalLight position={[5, 5, 5]} intensity={2} />
-            <Float speed={3} rotationIntensity={0.5} floatIntensity={1}>
-              <LovaBot isSpeaking={false} />
-            </Float>
-          </Canvas>
+        <div
+          className="glass3d-btn relative flex h-14 w-14 items-center justify-center rounded-full border border-white/35 bg-white/10 backdrop-blur-xl"
+          aria-label="Ouvrir LovaBot"
+        >
+          <MessagesSquare className="h-6 w-6 text-white/90 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]" strokeWidth={1.6} />
         </div>
       </motion.div>
     );

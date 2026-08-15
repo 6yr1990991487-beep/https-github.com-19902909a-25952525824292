@@ -17,7 +17,7 @@ import { useCart } from "@/context/CartContext";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { Search, Star, Flame, ShoppingCart, ChevronLeft, ChevronRight, Sparkles, Zap, EyeOff, ExternalLink, Play, Heart, LayoutGrid, Package, Gamepad2 } from "lucide-react";
 import { videos as VIDEO_LIST } from "@/data/videos";
-import { WidgetDock, wishlistApi, recentApi } from "@/components/shop/WidgetDock";
+import { wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
 import { useGamification } from "@/contexts/GamificationContext";
 import { CyberRadarTracker } from "@/components/shop/CyberRadarTracker";
@@ -330,29 +330,27 @@ const Shop = () => {
       />
 
       {/* SUB-NAV — site dans le site */}
-      <nav className="sticky top-12 z-30 border-y border-border/60 bg-background/80 backdrop-blur">
+      <nav className="sticky top-12 z-30 border-y border-white/20 bg-white/5 backdrop-blur-xl">
         <div className="container mx-auto px-3 sm:px-4 lg:px-8 flex items-center gap-1 overflow-x-auto no-scrollbar py-2 text-xs">
           {[
-            { href: "#dashboard", label: "Tableau de bord", icon: <LayoutGrid className="w-3.5 h-3.5" /> },
             { href: "#rails",     label: "Sélections",       icon: <Sparkles className="w-3.5 h-3.5" /> },
             { href: "#catalog",   label: "Catalogue",        icon: <Package className="w-3.5 h-3.5" /> },
             { href: "#games",     label: "Jouer & gagner",   icon: <Gamepad2 className="w-3.5 h-3.5" /> },
           ].map((l) => (
-            <a key={l.href} href={l.href} className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/60 bg-card/60 hover:border-primary/60 hover:text-primary transition">
+            <a key={l.href} href={l.href} className="glass3d-btn shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/30 bg-white/10 text-white font-semibold transition">
               {l.icon}{l.label}
             </a>
           ))}
           <div className="ml-auto flex items-center gap-2 shrink-0">
-            <span className="hidden sm:inline text-muted-foreground">{filtered.length.toLocaleString()} produits</span>
-            <span className="hidden md:inline text-muted-foreground">·</span>
-            <span className="inline-flex items-center gap-1 text-primary"><Heart className="w-3.5 h-3.5" /> {wl.length}</span>
+            <span className="hidden sm:inline text-white/90 font-semibold">{filtered.length.toLocaleString()} produits</span>
+            <span className="hidden md:inline text-white/60">·</span>
+            <span className="inline-flex items-center gap-1 text-white font-semibold"><Heart className="w-3.5 h-3.5" /> {wl.length}</span>
           </div>
         </div>
       </nav>
 
-      {/* WIDGET DASHBOARD */}
+      {/* TRACKER */}
       <div id="dashboard" className="flex items-center gap-4 px-4 py-2">
-        <WidgetDock onOpen={openProduct} />
         <CyberRadarTracker orderId="LVN-A984" />
       </div>
 
