@@ -16,7 +16,7 @@ createRoot(document.getElementById("root")!).render(
 
 // Ensure old service workers and caches are unregistered to avoid stale preview assets.
 const LOVANET_RELOAD_FLAG = "lovanet_sw_unregistered";
-const LOVANET_RELOAD_VERSION = "2"; // bump to force a new cleanup cycle
+const LOVANET_RELOAD_VERSION = "3"; // bump to force a new cleanup cycle
 
 const forceLovanetReload = () => {
   if (typeof window === "undefined") return;

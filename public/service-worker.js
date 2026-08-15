@@ -1,82 +1,22 @@
-// Ce fichier va gérer l'interception et la mise en cache (PWA Hors-ligne)
-// Il est conçu pour être enregistré dans index.tsx
-
-const CACHE_NAME = 'lovanet-offline-v2';
-
-// Fichiers statiques vitaux à mettre en cache immédiatement
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/static/js/bundle.js',
-  '/lovanet-logo-custom.png',
-  '/lovanet-og.svg',
-];
-
-// eslint-disable-next-line no-restricted-globals
-self.addEventListener('install', (event: any) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache');
-      return cache.addAll(PRECACHE_URLS);
-    })
-  );
-  // eslint-disable-next-line no-restricted-globals
+// Service worker auto-destructeur : purge tous les caches et se désinscrit.
+// Nécessaire car d'anciennes versions mettaient en cache des assets périmés.
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
-// eslint-disable-next-line no-restricted-globals
-self.addEventListener('activate', (event: any) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
-      );
-    })
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => caches.delete(k)));
+      await self.registration.unregister();
+      const clients = await self.clients.matchAll({ type: 'window' });
+      clients.forEach((client) => client.navigate(client.url));
+    })()
   );
-  // eslint-disable-next-line no-restricted-globals
-  self.clients.claim();
 });
 
-// eslint-disable-next-line no-restricted-globals
-self.addEventListener('fetch', (event: any) => {
-  const url = new URL(event.request.url);
-
-  // Exclude API requests from strict cache-first, but we can do network-first fallback to cache
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Clone the response and cache it
-          const resClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, resClone);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Offline fallback
-          return caches.match(event.request);
-        })
-    );
-    return;
-  }
-
-  // Assets (mp4, images) -> Cache first, then network
-  if (url.pathname.match(/\.(mp4|jpg|png|svg|ico)$/)) {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request).then((res) => {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-          return res;
-        });
-      })
-    );
-    return;
-  }
-
-  // Default network first for HTML/JS
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
-  );
+// Toujours réseau : plus aucune mise en cache.
+self.addEventListener('fetch', (event) => {
+  event.respondWith(fetch(event.request));
 });
