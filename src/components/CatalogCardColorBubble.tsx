@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Move, Sparkles, X } from "lucide-react";
+import { Move, Palette, X } from "lucide-react";
 
 /**
  * Floating bubble anchored to the middle of the RIGHT edge.
@@ -419,7 +419,7 @@ export const CatalogCardColorBubble = () => {
         className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-white/35 bg-white/10 text-white shadow-[0_0_18px_rgba(255,255,255,0.18)] backdrop-blur-xl transition-all hover:scale-110 hover:bg-white/16 sm:right-3"
       >
         <span className="relative z-10 text-white drop-shadow">
-          {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
+          {open ? <X className="h-5 w-5" /> : <Palette className="h-5 w-5" />}
         </span>
       </button>
     </>

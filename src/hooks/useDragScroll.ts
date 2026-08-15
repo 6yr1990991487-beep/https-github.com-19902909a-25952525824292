@@ -13,34 +13,54 @@ export function useDragScroll<T extends HTMLElement = HTMLDivElement>() {
     let active = false;
     let startX = 0;
     let base = 0;
+    let moved = false;
 
     const down = (e: PointerEvent) => {
       active = true;
+      moved = false;
       startX = e.clientX;
       base = el.scrollLeft;
-      el.setPointerCapture?.(e.pointerId);
     };
     const move = (e: PointerEvent) => {
       if (!active) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) el.classList.add("is-swiping");
+      if (Math.abs(dx) > 6 && !moved) {
+        moved = true;
+        el.classList.add("is-swiping");
+        // On ne capture le pointeur qu'une fois le glissement réel démarré,
+        // sinon les clics sur les liens ne se déclenchent jamais.
+        el.setPointerCapture?.(e.pointerId);
+      }
+      if (!moved) return;
       el.scrollLeft = base - dx;
     };
     const up = (e: PointerEvent) => {
       active = false;
-      el.releasePointerCapture?.(e.pointerId);
+      try {
+        if (el.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
       window.setTimeout(() => el.classList.remove("is-swiping"), 40);
+    };
+    const click = (e: MouseEvent) => {
+      if (el.classList.contains("is-swiping")) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     };
 
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
+    el.addEventListener("click", click, true);
     return () => {
       el.removeEventListener("pointerdown", down);
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
+      el.removeEventListener("click", click, true);
     };
   }, []);
 

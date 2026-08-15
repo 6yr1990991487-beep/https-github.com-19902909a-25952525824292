@@ -712,8 +712,8 @@ const AnimatedThemeGlyph = ({ open }: { open: boolean }) => {
   return (
     <div className="relative z-10 flex h-10 w-10 items-center justify-center md:h-11 md:w-11" data-testid="theme-bubble-glyph">
       <span className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.08] backdrop-blur-2xl" style={{ boxShadow: open ? "0 0 24px rgba(56,189,248,0.38), 0 0 48px rgba(232,121,249,0.32), inset 0 1px 0 rgba(255,255,255,0.22)" : "0 0 18px rgba(56,189,248,0.28), 0 0 34px rgba(232,121,249,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" }} />
-      <span className="absolute inset-[3px] rounded-full opacity-95" style={{ background: "conic-gradient(from 0deg,var(--theme-neon-a),var(--theme-neon-b),var(--theme-neon-c),var(--theme-neon-a))", filter: "blur(8px)", animation: "lovanet-glyph-spin 8s linear infinite" }} />
-      <span className="absolute inset-[6px] rounded-full border border-white/10 bg-[rgba(8,10,20,0.84)]" />
+      <span className="absolute inset-[3px] rounded-full opacity-80" style={{ background: "conic-gradient(from 0deg,rgba(255,255,255,0.42),rgba(255,255,255,0.06),rgba(255,255,255,0.32),rgba(255,255,255,0.42))", filter: "blur(8px)", animation: "lovanet-glyph-spin 8s linear infinite" }} />
+      <span className="absolute inset-[6px] rounded-full border border-white/15 bg-white/[0.06] backdrop-blur-xl" />
       {SHAPES.map((shape, index) => (
         <svg
           key={shape.key}
@@ -733,7 +733,6 @@ const AnimatedThemeGlyph = ({ open }: { open: boolean }) => {
           {shape.element}
         </svg>
       ))}
-      <Sparkles className="absolute -right-1 -top-1 h-4 w-4 text-white/90" />
     </div>
   );
 };
