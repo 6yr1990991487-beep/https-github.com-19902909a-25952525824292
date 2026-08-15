@@ -27,9 +27,16 @@ export function ForceReloadBubble() {
   };
 
   return (
-    <div data-testid="force-reload-bubble" style={{ width: 40, height: 40, background: "red", borderRadius: "50%" }}>
-      TEST
-    </div>
+    <button
+      type="button"
+      onClick={handleReload}
+      aria-label="Forcer le rechargement du site"
+      title="Forcer le rechargement du site"
+      className="floating-dock-bubble force-reload-bubble"
+      data-testid="force-reload-bubble"
+    >
+      <RefreshCw className={spinning ? "animate-spin" : ""} size={22} />
+    </button>
   );
 }
 
