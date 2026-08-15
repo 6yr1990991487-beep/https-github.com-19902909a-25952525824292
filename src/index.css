@@ -3447,3 +3447,43 @@ body,
   stroke: #ffffff !important;
   filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
 }
+
+/* Neutralisation du thème sur les pastilles plateformes (verre translucide identique
+   au bouton "Catalogue premium") + titre placeholder et icônes en blanc franc. */
+[data-testid="home-platforms-pill-row"] a > div,
+[data-testid="home-platforms-heading-placeholder"] {
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)) !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  box-shadow: 0 8px 26px -18px rgba(0,0,0,0.7) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+[data-testid="home-platforms-pill-row"] a > div > div {
+  background: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+}
+
+[data-testid="home-platforms-pill-row"] a p,
+[data-testid="home-platforms-pill-row"] a span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  opacity: 1 !important;
+}
+
+[data-testid="home-platforms-pill-row"] a svg,
+[data-testid="home-platforms-pill-row"] a:hover svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Bannière vidéo portail : textes des boutons/liens en blanc franc */
+[data-testid="hero-banner-bottom-primary-buttons"] a,
+[data-testid="hero-banner-bottom-primary-buttons"] span,
+[data-testid="home-hero-highlights-grid"] a,
+[data-testid="home-hero-highlights-grid"] span {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
