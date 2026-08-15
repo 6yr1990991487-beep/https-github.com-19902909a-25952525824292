@@ -4094,8 +4094,6 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   background:
     linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.18) 100%);
   border: 1px solid rgba(255,255,255,0.75);
-  backdrop-filter: blur(6px) saturate(1.25);
-  -webkit-backdrop-filter: blur(6px) saturate(1.25);
   padding: 4px;
   box-shadow:
     /* épaisseur du verre */
