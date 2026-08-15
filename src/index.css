@@ -2086,7 +2086,7 @@ body[data-hide-decors] [data-animated-bg] {
   .nav-theme-chip,
   .mobile-suggestion-chip {
     background: transparent !important;
-    border-color: rgba(255,255,255,0.16) !important;
+    border-color: rgba(255,255,255,0.18) !important;
     color: #ffffff !important;
   }
 
@@ -2096,9 +2096,9 @@ body[data-hide-decors] [data-animated-bg] {
   .mobile-suggestion-chip:hover,
   .mnav-item-active,
   .nav-theme-chip-active {
-    background: rgba(255,255,255,0.08) !important;
+    background: rgba(255,255,255,0.10) !important;
     color: #ffffff !important;
-    box-shadow: 0 16px 24px rgba(0,0,0,0.22) !important;
+    box-shadow: 0 16px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.10) !important;
   }
 
   .mobile-suggestion-chip-icon span,
