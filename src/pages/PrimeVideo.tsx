@@ -949,11 +949,7 @@ const PrimeVideo = () => {
       )}
 
       <section className="container mx-auto px-4 lg:px-8 pb-16" data-testid="prime-anime-library-section">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h2 className="font-display text-xl font-bold text-white">
-            Animés disponibles sur Prime Video
-            <span className="text-muted-foreground font-normal"> · {filteredPrime.length}/{primeAnime.length} titres</span>
-          </h2>
+        <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {primeLoading && <span className="text-muted-foreground">Synchronisation…</span>}
             <div className="relative min-w-[190px]">
