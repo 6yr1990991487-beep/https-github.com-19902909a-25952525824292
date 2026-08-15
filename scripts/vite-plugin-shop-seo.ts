@@ -104,6 +104,11 @@ function generate(products: Product[], videos: Video[]) {
     { loc: "/tiktok",            prio: "0.7", freq: "weekly" },
     { loc: "/anime-countdown",   prio: "0.6", freq: "daily"  },
     { loc: "/anime-catalog",     prio: "0.6", freq: "weekly" },
+    { loc: "/anime-moments",     prio: "0.7", freq: "weekly" },
+    { loc: "/chaine-youtube/manga", prio: "0.6", freq: "weekly" },
+    { loc: "/actualites",        prio: "0.7", freq: "daily"  },
+    { loc: "/leaderboard",       prio: "0.5", freq: "weekly" },
+    { loc: "/ai-hub",            prio: "0.6", freq: "weekly" },
     { loc: "/contact",           prio: "0.5", freq: "monthly" },
     { loc: "/legals",            prio: "0.2", freq: "yearly" },
   ];
