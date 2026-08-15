@@ -142,6 +142,12 @@ export const Navbar = () => {
   }, [floatingMenuOpen]);
 
   useEffect(() => {
+    const openFull = () => { setMinimized(false); setOpen(true); };
+    window.addEventListener("lovanet:open-mobile-menu", openFull);
+    return () => window.removeEventListener("lovanet:open-mobile-menu", openFull);
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("lovanet.mnav.minimized", minimized ? "1" : "0");
   }, [minimized]);
   useEffect(() => {
