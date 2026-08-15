@@ -1412,13 +1412,9 @@ export default function AnimeCatalog() {
 
                     <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] text-white shadow-[0_20px_40px_rgba(6,12,24,0.28)]" data-testid="catalog-player-controls-card">
                       <CardContent className="space-y-5 p-5 sm:p-6">
-                        <div>
-                          <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">Commandes lecteur</p>
-                          <h3 className="mt-2 font-display text-2xl font-black">Lecture, son et mini-écran</h3>
-                        </div>
                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                          <Button type="button" variant="glass" className="min-h-[48px] rounded-2xl text-white" onClick={handlePrevious} disabled={!playerQueue.length} data-testid="catalog-player-prev-button">
-                            <SkipBack className="h-4 w-4" /> Précédent
+                          <Button type="button" variant="glass" className="min-h-[48px] rounded-2xl text-white" onClick={handlePrevious} disabled={!playerQueue.length} data-testid="catalog-player-prev-button" aria-label="Précédent">
+                            <SkipBack className="h-4 w-4" />
                           </Button>
                           <Button type="button" className="btn-neon-rainbow min-h-[48px] rounded-2xl text-white" onClick={togglePlayback} disabled={!activePlayer || !hasTrailer(activePlayer) || playerMode === "hidden"} data-testid="catalog-player-play-toggle-button">
                             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
