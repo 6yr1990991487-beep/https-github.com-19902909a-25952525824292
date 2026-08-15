@@ -20,7 +20,6 @@ import {
   Flame,
   Zap,
   Bot,
-  User,
   Rows3,
   GalleryHorizontal,
 } from "lucide-react";
