@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Check,
   Clock3,
@@ -1227,19 +1228,22 @@ export const ThemeBubble = () => {
       </Button>
 
       {isMobile ? (
-        open && (
-          <>
-            <div
-              className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
-              onClick={() => setOpen(false)}
-              aria-hidden="true"
-            />
-            {panelBody}
-          </>
-        )
+        open && typeof document !== "undefined"
+          ? createPortal(
+              <>
+                <div
+                  className="fixed inset-0 z-[10040] bg-black/60 backdrop-blur-sm"
+                  onClick={() => setOpen(false)}
+                  aria-hidden="true"
+                />
+                {panelBody}
+              </>,
+              document.body,
+            )
+          : null
       ) : floating ? (
         // Direct render when floating — no Sheet/Drawer backdrop
-        open && panelBody
+        open && typeof document !== "undefined" ? createPortal(panelBody, document.body) : null
       ) : !isMobile ? (
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent side="right" className="w-full max-w-[480px] border-none bg-transparent p-3 shadow-none sm:max-w-[480px]" data-testid="theme-desktop-sheet">
