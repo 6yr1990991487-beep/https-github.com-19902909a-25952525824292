@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ProductArtwork } from "@/components/ProductArtwork";
 import type { ShopProduct } from "@/data/shopProducts";
 import { BANNER_VIDEO_SLIDES } from "@/data/shopBanners";
-import { BannerUploader } from "@/components/BannerUploader";
 import { getUploadedBanners } from "@/lib/bannerStore";
-import { ShoppingCart, Play, Sparkles, Truck, ShieldCheck, Star, Volume2, VolumeX } from "lucide-react";
+import { ShoppingCart, Play, Sparkles, Volume2, VolumeX } from "lucide-react";
 
 type VideoSlideData = { src: string; poster?: string; title: string; subtitle: string; badge?: string };
 
