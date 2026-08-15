@@ -579,13 +579,6 @@ const PrimeVideo = () => {
     <PageShell>
       <ManualSyncButton platform="prime" label="Sync Prime" onDone={() => window.location.reload()} />
 
-      <section className="container mx-auto px-4 lg:px-8 py-10 text-center">
-        <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Streaming partenaire</p>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold">
-          <span className="bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">Prime Vidéo</span>
-        </h1>
-      </section>
-
       {selectedPrime && (
         <section className="w-full pb-8 pt-4" data-testid="prime-main-player-section">
           <div className="container mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-3 mb-4">
