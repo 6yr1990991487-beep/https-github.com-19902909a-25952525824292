@@ -4107,8 +4107,9 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 }
 /* le logo remplit toute la bulle et se bombe comme sous une lentille */
 .nav-logo-pin > img {
-  transform: scale(0.94);
-  border-radius: 999px;
+  /* l'image entière tient dans le cercle : aucun bord coupé */
+  transform: scale(0.74);
+  border-radius: 0;
   object-fit: contain;
   filter: saturate(1.12) contrast(1.06);
 }
