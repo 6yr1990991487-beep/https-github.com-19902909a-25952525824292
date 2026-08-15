@@ -4034,7 +4034,8 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
     color-mix(in srgb, var(--nav-theme-accent-2, #22d3ee) 12%, transparent) 100%
   ) !important;
   border: 1px solid color-mix(in srgb, var(--nav-theme-accent, #00ff9d) 22%, rgba(255,255,255,0.16)) !important;
-  /*TESTNOBF*/
+  backdrop-filter: blur(16px) saturate(1.18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.18);
   box-shadow:
     0 18px 46px rgba(0, 0, 0, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
