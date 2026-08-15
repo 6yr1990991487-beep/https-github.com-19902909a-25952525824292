@@ -49,11 +49,11 @@ const resolveGoogleDriveVideoSource = (input) => {
 
 const OVERLAY_BACKGROUND_VIDEOS = [
   {
-    id: "drive-bg",
-    src: "/drive-bg.mp4",
+    id: "global-bg",
+    src: "/global-bg.mp4",
   },
-  { id: "hero-extra-1W0eh", src: "/hero-banner-extra-1W0eh.mp4" },
-  { id: "overlay-1dp9", src: "/overlay-1dp9.mp4" },
+  { id: "global-bg-web", src: "/global-bg-web.mp4" },
+  { id: "global-bg-mobile", src: "/global-bg-mobile.mp4" },
 ];
 
 const ORDERED_OVERLAY_VIDEO_IDS = OVERLAY_BACKGROUND_VIDEOS.map((video) => video.id);
