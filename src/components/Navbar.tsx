@@ -567,7 +567,7 @@ export const Navbar = () => {
                               </Link>
                             );
                           })}
-                        </div>
+                        </DragScroller>
                       </div>
                     ))}
                   </div>
