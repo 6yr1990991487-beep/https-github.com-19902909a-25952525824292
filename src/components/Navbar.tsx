@@ -260,6 +260,7 @@ export const Navbar = () => {
 
               {/* Dynamic suggestions bar — fills the empty space between logo and cart on mobile */}
               <NavSuggestionsBar />
+              <QuickNavCarousel />
 
               <div className="hidden items-center gap-2 md:flex" onMouseEnter={cancelClose}>
                 <button
@@ -270,6 +271,7 @@ export const Navbar = () => {
                   onClick={() => {
                     cancelClose();
                     setMegaOpen(true);
+                    window.dispatchEvent(new CustomEvent(OPEN_QUICKNAV_EVENT));
                   }}
                   onMouseEnter={() => {
                     cancelClose();
