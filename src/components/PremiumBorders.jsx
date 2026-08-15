@@ -50,7 +50,7 @@ const resolveGoogleDriveVideoSource = (input) => {
 const OVERLAY_BACKGROUND_VIDEOS = [
   {
     id: "global-bg",
-    src: "/global-bg.mp4",
+    src: "/global-bg-browser.webm",
   },
   { id: "global-bg-web", src: "/global-bg-web.mp4" },
   { id: "global-bg-mobile", src: "/global-bg-mobile.mp4" },
