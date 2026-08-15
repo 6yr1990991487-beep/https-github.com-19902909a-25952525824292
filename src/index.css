@@ -3131,6 +3131,7 @@ body,
 @media (max-width: 768px), (pointer: coarse) {
   .floating-dock {
     left: 0;
+    top: 50dvh !important;
     gap: 0.25rem;
   }
 
@@ -3192,8 +3193,8 @@ body,
   }
 
   .theme-dock-panel {
-    left: 118px;
-    width: min(420px, calc(100vw - 134px));
+    left: 126px;
+    width: min(420px, calc(100vw - 142px));
     max-height: calc(100dvh - max(20px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
   }
 }
@@ -3222,6 +3223,7 @@ body,
 
   .floating-dock {
     left: 0.15rem;
+    top: 50dvh !important;
     z-index: 9997;
   }
 
@@ -3260,8 +3262,8 @@ body,
   }
 
   .theme-dock-panel {
-    left: 106px;
-    width: min(420px, calc(100vw - 120px));
+    left: 114px;
+    width: min(420px, calc(100vw - 128px));
     max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(16px, env(safe-area-inset-bottom)));
   }
 
