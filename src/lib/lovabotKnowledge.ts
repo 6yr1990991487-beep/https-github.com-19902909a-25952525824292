@@ -161,7 +161,7 @@ export const SUGGESTIONS = [
 
 export const BOT_GREETINGS: Record<BotId, string> = {
   "lova-bot":
-    "Bonjour ! Je suis Lova-Bot. Pose-moi une question sur les pages, les vidéos, la magasin ou la personnalisation — c'est gratuit.",
+    "Bonjour ! Je suis Lova-Bot. Pose-moi une question sur les pages ou les vidéos.",
   "lova-ai":
     "Lova-AI en ligne. Je t'oriente vers le bon contenu : catalogue, filtres, langues du lecteur, recommandations.",
   "lova-king":

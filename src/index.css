@@ -4265,3 +4265,24 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   }
 }
 
+
+/* Lova-Bot : panneau verre fort + typographie futuriste */
+.lova-font,
+.lova-font input,
+.lova-font button,
+.lova-font h3,
+.lova-font p,
+.lova-font span {
+  font-family: 'Orbitron', var(--font-display, sans-serif);
+  letter-spacing: 0.01em;
+}
+.lova-panel-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 45%),
+    radial-gradient(120% 60% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 70%);
+  mix-blend-mode: screen;
+}

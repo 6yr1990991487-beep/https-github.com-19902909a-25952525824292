@@ -131,7 +131,7 @@ export const Onboarding3D = () => {
         exit={{ opacity: 0, scale: 0.9 }}
         className="dock-popup fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] max-h-[78dvh] overflow-y-auto pointer-events-auto sm:left-5 sm:right-5 md:bottom-6 md:left-auto md:right-6 md:w-[400px] md:max-h-none md:overflow-visible"
       >
-        <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.05)_inset]">
+        <div className="lova-panel-glass lova-font relative rounded-3xl overflow-hidden border border-white/25 bg-white/[0.07] backdrop-blur-2xl backdrop-saturate-150 shadow-[0_24px_70px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.35),inset_0_-18px_40px_rgba(255,255,255,0.06)]">
 
           <button
             onClick={handleClose}
@@ -147,7 +147,7 @@ export const Onboarding3D = () => {
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-col justify-end border-t border-white/10 bg-black/60 p-4 text-center sm:p-5">
+          <div className="relative z-10 flex flex-col justify-end border-t border-white/15 bg-white/[0.05] p-4 text-center sm:p-5">
             <h3 className={`text-xl font-black text-transparent bg-clip-text bg-gradient-to-r ${currentData.color} mb-2 flex items-center justify-center gap-2`}>
               <span className={`text-${currentData.color.split(' ')[1].replace('to-', '')}`}><SparkleIcon className="w-4 h-4" /></span>
               {currentData.name}
