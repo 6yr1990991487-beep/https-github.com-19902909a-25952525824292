@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Float, Sparkles, MeshTransmissionMaterial, ContactShadows } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Shield, Cpu, Bot, Sparkles as SparkleIcon } from 'lucide-react';
+import { X, ArrowRight, Shield, Cpu, Bot, MessagesSquare, Sparkles as SparkleIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { answerQuestion, BOT_GREETINGS, SUGGESTIONS, type BotId } from '@/lib/lovabotKnowledge';
