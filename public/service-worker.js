@@ -1,6 +1,6 @@
-// Service worker minimal : aucun cache, mais un handler fetch actif.
+// Service worker minimal : aucun cache, handler fetch passif.
 // Requis par Chrome/Android pour rendre l'application installable (PWA).
-const SW_VERSION = 'lovanet-sw-v4';
+const SW_VERSION = 'lovanet-sw-v5';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -9,7 +9,6 @@ self.addEventListener('install', () => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // purge d'anciens caches périmés, mais on reste enregistré
       const keys = await caches.keys();
       await Promise.all(keys.map((k) => caches.delete(k)));
       await self.clients.claim();
@@ -17,8 +16,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Passthrough réseau : pas de mise en cache, mais handler présent.
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(fetch(event.request).catch(() => Response.error()));
-});
+// Handler présent mais non intrusif : on laisse le réseau gérer les requêtes
+// (indispensable pour les vidéos/range requests et l'installation PWA).
+self.addEventListener('fetch', () => {});
