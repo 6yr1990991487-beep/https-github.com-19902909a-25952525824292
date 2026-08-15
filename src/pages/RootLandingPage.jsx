@@ -551,7 +551,7 @@ export default function RootLandingPage() {
                   const Icon = card.action.icon;
                   return (
                     <Link key={`${card.testId}-${card.to}-${index}`} to={card.to} className="group block min-w-0" data-testid={card.testId}>
-                      <div className="group relative overflow-hidden rounded-full border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.01))] backdrop-blur-md p-2 sm:p-2.5 flex items-center gap-2.5 transition-all duration-300 hover:bg-white/[0.08] hover:border-white/30 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(34,211,238,0.3)]">
+                      <div className="portal-platform-chip group relative overflow-hidden rounded-full border border-white/15 backdrop-blur-md p-2 sm:p-2.5 flex items-center gap-2.5 transition-all duration-300 hover:border-white/30 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(34,211,238,0.3)]">
                         <motion.div 
                           whileHover={{ rotateY: 180, rotateZ: 10, scale: 1.2 }}
                           transition={{ type: "spring", stiffness: 300, damping: 10 }}

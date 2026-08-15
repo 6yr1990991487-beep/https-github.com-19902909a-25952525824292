@@ -2997,6 +2997,22 @@ body,
   background: rgba(255, 255, 255, 0.14);
 }
 
+/* Boutons plateformes du portail : verre transparent, jamais teintés par le thème */
+.portal-platform-chip,
+.theme-main-content .portal-platform-chip,
+.portal-platform-chip:hover,
+.theme-main-content .portal-platform-chip:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)) !important;
+  background-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.portal-platform-chip:hover,
+.theme-main-content .portal-platform-chip:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
 /* Bulles du dock : verre transparent (identique à la version en ligne) */
 .floating-dock-slot button[aria-label="Apparence des cartes"],
 .floating-dock-slot button[aria-label="Couleurs du menu mobile"],
@@ -3008,8 +3024,11 @@ body,
   color: #ffffff !important;
 }
 
-.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] > span {
-  opacity: 0.35 !important;
+.floating-dock-slot button[aria-label="Couleur des cartes du catalogue"] > span:first-child {
+  background: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  animation: none !important;
+  opacity: 1 !important;
 }
 
 /* Force reload bubble : verre transparent */
