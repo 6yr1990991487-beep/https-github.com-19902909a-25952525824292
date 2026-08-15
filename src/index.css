@@ -2268,8 +2268,6 @@ body[data-hide-decors] [data-animated-bg] {
 
 
 
-  .theme-toast-desc {
-
   .hero-banner-tab {
     display: inline-flex;
     min-height: 42px;
@@ -2376,6 +2374,7 @@ body[data-hide-decors] [data-animated-bg] {
     }
   }
 
+  .theme-toast-desc {
     color: var(--theme-muted) !important;
   }
 
@@ -3407,4 +3406,44 @@ body,
   --nav-theme-accent-2: #22d3ee;
   --nav-theme-accent-3: #10b981;
   --nav-theme-text: #d1fae5;
+}
+
+/* ============================================================
+   REGLES VERROUILLEES — Boutons plateformes & bannière portail
+   Pastilles/boutons en verre transparent clair + texte blanc fort.
+   ============================================================ */
+[data-testid="home-platforms-pill-row"] a > div,
+[data-testid="home-platforms-button"],
+[data-testid="home-platforms-button"] a,
+.hero-banner-tab {
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03)) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+[data-testid="home-platforms-pill-row"] a > div:hover,
+[data-testid="home-platforms-button"]:hover,
+.hero-banner-tab:hover,
+.hero-banner-tab-active {
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)) !important;
+  border-color: rgba(255,255,255,0.38) !important;
+}
+
+[data-testid="home-platforms-pill-row"] a,
+[data-testid="home-platforms-pill-row"] a *,
+[data-testid="home-platforms-button"],
+[data-testid="home-platforms-button"] *,
+.hero-banner-tab,
+.hero-banner-tab * {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.55), 0 0 10px rgba(0,0,0,0.35);
+}
+
+[data-testid="home-platforms-pill-row"] a svg,
+[data-testid="home-platforms-button"] svg,
+.hero-banner-tab svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
 }
