@@ -98,7 +98,7 @@ const preferredRightAnchor = (width: number, selector?: string) => {
   const triggerRect = selector ? getTriggerAnchor(selector) : null;
 
   if (triggerRect) {
-    const gap = 12;
+    const gap = 24;
     const x = triggerRect.right + gap;
     const maxY = Math.max(VIEWPORT_MARGIN, h - 220);
     const rawY = triggerRect.top + (triggerRect.height - 220) / 2;
