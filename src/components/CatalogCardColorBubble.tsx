@@ -355,51 +355,61 @@ export const CatalogCardColorBubble = () => {
 
   return (
     <>
-      {open && (
-        <div
-          ref={panelRef}
-          className="dock-popup detached-bubble-panel detached-bubble-panel--catalog"
-          style={{ boxSizing: "border-box" }}
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
-            <span className="text-[10px] uppercase tracking-[0.24em] text-white/70">Palette</span>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Fermer le panneau couleur des cartes"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-white/90 transition-colors hover:bg-white/15"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-2 p-3 sm:gap-2.5">
-            {SKINS.map((s) => (
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            className="detached-bubble-panel detached-bubble-panel--catalog"
+            style={{
+              boxSizing: "border-box",
+              left: typeof panelPos?.x === "number" ? panelPos.x : undefined,
+              top: typeof panelPos?.y === "number" ? panelPos.y : undefined,
+            }}
+            onPointerDown={onDown}
+            onPointerMove={onMove}
+            onPointerUp={onUp}
+            onPointerCancel={onUp}
+          >
+            <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+              <div className="flex items-center gap-2 text-white/70">
+                <Move className="h-3.5 w-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.24em]">Couleur des cartes</span>
+              </div>
               <button
-                key={s.key}
                 type="button"
-                onClick={() => pick(s)}
-                title={s.label}
-                aria-label={s.label}
-                className={`flex flex-col items-center justify-center gap-1 rounded-xl border border-white/25 bg-white/[0.04] p-1.5 transition-transform hover:scale-105 hover:bg-white/[0.08] ${
-                  active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
-                }`}
+                onClick={() => setOpen(false)}
+                aria-label="Fermer le panneau couleur des cartes"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-white/90 transition-colors hover:bg-white/15"
               >
-                <span
-                  className="h-8 w-8 rounded-full border border-white/35 shadow-sm"
-                  style={{
-                    background: s.swatch,
-                    backgroundSize: s.animated ? "300% 300%" : undefined,
-                    animation: s.animated ? "lovanet-bg-shift 8s ease infinite" : undefined,
-                  }}
-                />
-                <span className="max-w-full truncate text-[9px] leading-tight text-white/80">
-                  {s.label}
-                </span>
+                <X className="h-4 w-4" />
               </button>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5 p-3 sm:gap-2">
+              {SKINS.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => pick(s)}
+                  title={s.label}
+                  aria-label={s.label}
+                  className={`flex items-center justify-center rounded-full p-0.5 transition-transform hover:scale-110 ${
+                    active === s.key ? "ring-2 ring-white ring-offset-2 ring-offset-transparent" : ""
+                  }`}
+                >
+                  <span
+                    className="h-8 w-8 rounded-full border border-white/25 shadow-sm"
+                    style={{
+                      background: s.swatch,
+                      backgroundSize: s.animated ? "300% 300%" : undefined,
+                      animation: s.animated ? "lovanet-bg-shift 8s ease infinite" : undefined,
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
       {/* Orb button stays fixed on right edge, vertically centered */}
       <button
         type="button"
