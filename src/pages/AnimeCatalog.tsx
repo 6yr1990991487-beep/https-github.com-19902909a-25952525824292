@@ -1,4 +1,6 @@
-const CATALOG_TOP_VIDEO = "/catalogue-banner.mp4";
+import catalogTopBanner from "@/assets/short-banner.mp4.asset.json";
+
+const CATALOG_TOP_VIDEO = catalogTopBanner.url;
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
@@ -1140,7 +1142,11 @@ export default function AnimeCatalog() {
                 }}
               />
               <div className="relative grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
-                <div className="relative min-h-[140px] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[rgba(255,255,255,0.015)]" data-testid="catalog-premium-hero-spacer">
+                <div
+                  className="relative w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-black"
+                  style={{ aspectRatio: "854 / 480" }}
+                  data-testid="catalog-premium-hero-spacer"
+                >
                   <video
                     src={CATALOG_TOP_VIDEO}
                     autoPlay
@@ -1148,7 +1154,7 @@ export default function AnimeCatalog() {
                     loop
                     playsInline
                     preload="metadata"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-contain"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute bottom-4 left-6">

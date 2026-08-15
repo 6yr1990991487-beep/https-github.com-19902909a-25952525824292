@@ -8,6 +8,7 @@ import MiniCatalogOrb from "@/components/MiniCatalogOrb";
 import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
+import shortBanner from "@/assets/short-banner.mp4.asset.json";
 
 const ANIME_MOMENTS_CAPTURE_VIDEO = "/catalogue-banner.mp4";
 
@@ -265,6 +266,23 @@ const Index = () => {
         </div>
 
         <div className="relative w-full pt-6 lg:pt-8">
+          <div className="container mx-auto px-4 lg:px-8 mb-4">
+            <div
+              className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-black"
+              style={{ aspectRatio: "854 / 480" }}
+            >
+              <video
+                src={shortBanner.url}
+                className="h-full w-full object-contain"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Bannière vidéo Anime Moments"
+              />
+            </div>
+          </div>
           <div className="relative w-full">
             <HeroCarousel captureVideo={ANIME_MOMENTS_CAPTURE_VIDEO} />
             <div
