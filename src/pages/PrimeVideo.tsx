@@ -579,19 +579,11 @@ const PrimeVideo = () => {
     <PageShell>
       <ManualSyncButton platform="prime" label="Sync Prime" onDone={() => window.location.reload()} />
 
-      <section className="container mx-auto px-4 lg:px-8 py-10 text-center">
-        <p className="text-xs uppercase tracking-[0.25em] text-cyan-300 mb-2">Streaming partenaire</p>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold">
-          <span className="bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">Prime Vidéo</span>
-        </h1>
-      </section>
-
       {selectedPrime && (
         <section className="w-full pb-8 pt-4" data-testid="prime-main-player-section">
           <div className="container mx-auto px-4 lg:px-8 flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-3">
               <div className="px-3 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 text-white text-xs font-bold flex items-center gap-1.5">◆ prime</div>
-              <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">lecteur premium</div>
             </div>
 
             <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -865,8 +857,7 @@ const PrimeVideo = () => {
       {/* QUICK PLAY STRIP */}
       {quickPlayList.length > 0 && (
         <section className="container mx-auto px-4 lg:px-8 pb-8" data-testid="prime-quick-play-section">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="font-display text-xl font-bold text-white">Lecture rapide</h3>
+          <div className="mb-4 flex items-center justify-end gap-3">
             <Button variant="ghost" size="sm" onClick={() => setQuickPlayList(shuffleArray(primeAnime).slice(0, 10))} className="text-xs text-sky-400 hover:text-sky-300">
               Rafraîchir
             </Button>
@@ -958,11 +949,7 @@ const PrimeVideo = () => {
       )}
 
       <section className="container mx-auto px-4 lg:px-8 pb-16" data-testid="prime-anime-library-section">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <h2 className="font-display text-xl font-bold text-white">
-            Animés disponibles sur Prime Video
-            <span className="text-muted-foreground font-normal"> · {filteredPrime.length}/{primeAnime.length} titres</span>
-          </h2>
+        <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {primeLoading && <span className="text-muted-foreground">Synchronisation…</span>}
             <div className="relative min-w-[190px]">
