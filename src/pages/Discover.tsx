@@ -199,23 +199,8 @@ const Discover = () => {
 
           <div className="relative flex flex-col items-center text-center">
             <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-              <span className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] px-3 py-1 rounded-full border border-fuchsia-400/40 text-fuchsia-300 bg-fuchsia-500/10 backdrop-blur mb-6">
-                <Sparkles className="w-3 h-3" /> Univers officiel · 2026
-              </span>
-              <h1
-                className="font-display font-black leading-[0.95] mb-5 text-4xl md:text-6xl lg:text-7xl"
-                style={{
-                  background: "linear-gradient(120deg, #f0abfc 0%, #67e8f9 45%, #fde68a 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 6px 30px rgba(240,171,252,0.35))",
-                }}
-              >
-                Anime.Moments.officiel<br />
-                <span className="text-2xl md:text-3xl lg:text-4xl font-semibold opacity-90">: Lovanet Univers</span>
-              </h1>
-
               <div className="flex flex-wrap justify-center gap-3 mt-6">
+
                 <Link
                   to="/shop"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white border border-white/20 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors"
