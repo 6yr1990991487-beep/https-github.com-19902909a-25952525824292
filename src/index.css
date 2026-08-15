@@ -3023,14 +3023,14 @@ body,
 }
 
 .force-reload-bubble:hover {
-  background: rgba(0, 255, 157, 0.26);
-  box-shadow: 0 0 28px rgba(0, 255, 157, 0.45);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.18);
   transform: scale(0.68) !important;
 }
 
 .force-reload-bubble svg {
   color: #ffffff;
-  filter: drop-shadow(0 0 4px rgba(0, 255, 157, 0.9));
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.7));
 }
 
 
