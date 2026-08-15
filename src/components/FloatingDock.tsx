@@ -11,16 +11,22 @@ export const FloatingDock = ({ children }: { children: ReactNode }) => {
   const [top, setTop] = useState(0.45);
 
   useEffect(() => {
+    let raf = 0;
     const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      // Se déplace entre 22% et 72% de la hauteur de la fenêtre.
-      setTop(0.22 + p * 0.5);
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        // Course courte et réactive : entre 34% et 62% de la hauteur de fenêtre.
+        setTop(0.34 + p * 0.28);
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
