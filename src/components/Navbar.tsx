@@ -227,13 +227,11 @@ export const Navbar = () => {
         whileTap={{ scale: 0.9 }}
         transition={{ type: "spring", stiffness: 200, damping: 10 }}
         className="nav-logo-pin relative inline-flex h-11 w-11 items-center justify-center rounded-full p-[3px] sm:h-12 sm:w-12"
-        style={{ transformStyle: "preserve-3d" }}
       >
         <img
           src="/lovanet-logo-custom.png?v=6"
           alt="Lovanet"
           className="relative z-10 h-full w-full rounded-full object-cover drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
-          style={{ transform: "translateZ(12px)" }}
         />
         <span className="nav-logo-pin-gloss" aria-hidden="true" />
       </motion.span>

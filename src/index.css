@@ -2202,8 +2202,7 @@ body[data-hide-decors] [data-animated-bg] {
     background: linear-gradient(135deg, rgba(255,255,255,0.14), transparent 28%, transparent 72%, rgba(255,255,255,0.08));
     opacity: 0.68;
     mix-blend-mode: screen;
-    transform: translateZ(26px);
-  }
+    }
 
   .hero-banner-video {
     filter: none;
@@ -2239,8 +2238,7 @@ body[data-hide-decors] [data-animated-bg] {
   }
 
   .hero-banner-content > * {
-    transform: translateZ(22px);
-  }
+    }
 
   /* The first portal banner only: constrain the actual desktop landing hero. */
   @media (min-width: 1024px) {
@@ -4109,7 +4107,7 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 }
 /* le logo remplit toute la bulle et se bombe comme sous une lentille */
 .nav-logo-pin > img {
-  transform: translateZ(14px) scale(1.22);
+  transform: scale(1.22);
   border-radius: 999px;
   filter: saturate(1.12) contrast(1.06);
 }
@@ -4125,7 +4123,6 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
     radial-gradient(circle at 50% 122%, rgba(255,255,255,0.18), transparent 34%),
     radial-gradient(circle at 50% 50%, transparent 66%, rgba(255,255,255,0.16) 84%, rgba(255,255,255,0.55) 98%);
   box-shadow: inset 0 0 8px rgba(255,255,255,0.30), inset 0 -6px 10px rgba(0,0,0,0.22);
-  transform: translateZ(22px);
 }
 .nav-logo-pin-gloss {
   position: absolute;
@@ -4138,5 +4135,4 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   pointer-events: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.14) 58%, transparent);
   filter: blur(1px);
-  transform: translateZ(26px);
 }
