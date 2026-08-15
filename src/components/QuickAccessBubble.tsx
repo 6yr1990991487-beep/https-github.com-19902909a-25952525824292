@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
+import { applyPanelTint, isPanelTintOn } from "@/lib/panelTint";
+import { resetPanelPositions } from "@/lib/panelDrag";
 import {
   Compass,
   Film,
@@ -9,6 +11,8 @@ import {
   Mail,
   Music2,
   Play,
+  Palette,
+  Move,
   ShoppingBag,
   Sparkles,
   Trophy,
@@ -59,7 +63,14 @@ const GROUPS: { id: string; label: string; items: Item[] }[] = [
  * dimensionné comme le panneau des thèmes.
  */
 export const QuickAccessBubble = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    try {
+      return localStorage.getItem("lovanet.quickaccess.open") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [tint, setTint] = useState(() => (typeof window === "undefined" ? true : isPanelTintOn()));
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -68,9 +79,14 @@ export const QuickAccessBubble = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Le panneau reste ouvert d'une page à l'autre (mobile, application et PC).
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    try {
+      localStorage.setItem("lovanet.quickaccess.open", open ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, [open]);
 
   return (
     <>
@@ -88,27 +104,47 @@ export const QuickAccessBubble = () => {
       {open && typeof document !== "undefined" &&
         createPortal(
           <div
-            className="detached-bubble-panel detached-bubble-panel--quick-access"
+            className="detached-bubble-panel detached-bubble-panel--quick-access glass3d-panel"
+            data-panel-key="quick-access"
             role="dialog"
             aria-label="Menu accès rapide"
           >
-            <div className="sticky top-0 z-10 flex min-h-11 items-center justify-between gap-3 border-b border-white/10 bg-white/[0.04] px-3 py-2.5 backdrop-blur-xl">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/75">
-                Menu accès rapide
+            <div
+              data-panel-drag-handle
+              className="glass3d-header sticky top-0 z-10 flex min-h-11 cursor-grab items-center justify-between gap-2 px-3 py-2.5 active:cursor-grabbing"
+            >
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80">
+                <Move className="h-3.5 w-3.5 opacity-70" />
+                Accès rapide
               </span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !tint;
+                    setTint(next);
+                    applyPanelTint(next);
+                  }}
+                  aria-pressed={tint}
+                  title={tint ? "Couleurs du thème activées" : "Couleurs du thème désactivées"}
+                  className={`glass3d-btn inline-flex h-8 w-8 items-center justify-center rounded-full ${tint ? "is-active" : ""}`}
+                >
+                  <Palette className="h-4 w-4" />
+                </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Fermer le menu accès rapide"
-                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/[0.08] text-white transition hover:bg-white/15"
+                className="glass3d-btn inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
               >
                 <X className="h-4 w-4" />
               </button>
+              </div>
             </div>
 
             <div className="space-y-3 p-3">
               {GROUPS.map((group) => (
-                <div key={group.id} className="rounded-2xl border border-white/12 bg-white/[0.04] p-2">
+                <div key={group.id} className="glass3d-group rounded-2xl p-2">
                   <p className="px-1 pb-2 text-[9px] font-black uppercase tracking-[0.18em] text-white/60">
                     {group.label}
                   </p>
@@ -120,11 +156,8 @@ export const QuickAccessBubble = () => {
                         <Link
                           key={item.to}
                           to={item.to}
-                          onClick={() => setOpen(false)}
-                          className={`flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center transition-transform hover:scale-[1.03] active:scale-95 ${
-                            active
-                              ? "border-white/40 bg-white/[0.16]"
-                              : "border-white/15 bg-white/[0.06] hover:bg-white/[0.12]"
+                          className={`glass3d-btn flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-center ${
+                            active ? "is-active" : ""
                           }`}
                         >
                           <Icon className="h-4 w-4 text-white" />
@@ -138,16 +171,25 @@ export const QuickAccessBubble = () => {
                 </div>
               ))}
 
-              <button
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                  window.dispatchEvent(new CustomEvent(OPEN_MOBILE_MENU_EVENT));
-                }}
-                className="w-full rounded-xl border border-white/25 bg-white/[0.08] px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-white transition hover:bg-white/15"
-              >
-                Ouvrir le menu complet
-              </button>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    window.dispatchEvent(new CustomEvent(OPEN_MOBILE_MENU_EVENT));
+                  }}
+                  className="glass3d-btn w-full rounded-xl px-3 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-white"
+                >
+                  Ouvrir le menu complet
+                </button>
+                <button
+                  type="button"
+                  onClick={() => resetPanelPositions()}
+                  className="glass3d-btn w-full rounded-xl px-3 py-2 text-[9px] font-bold uppercase tracking-[0.18em] text-white/80"
+                >
+                  Réinitialiser la position des panneaux
+                </button>
+              </div>
             </div>
           </div>,
           document.body,
