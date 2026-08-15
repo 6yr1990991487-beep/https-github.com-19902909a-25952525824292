@@ -115,8 +115,6 @@ export const AiHub = () => {
             playsInline
             muted={isMuted}
             preload="auto"
-            controls
-            controlsList="nodownload noremoteplayback"
             onLoadedMetadata={(event) => {
               const target = event.currentTarget;
               if (target.videoWidth && target.videoHeight) {

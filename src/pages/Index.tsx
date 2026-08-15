@@ -273,7 +273,7 @@ const Index = () => {
             >
               <video
                 src={shortBanner.url}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
                 autoPlay
                 muted
                 loop
