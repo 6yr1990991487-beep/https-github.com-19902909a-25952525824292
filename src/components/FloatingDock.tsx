@@ -45,7 +45,6 @@ export const FloatingDock = ({ children }: { children: ReactNode }) => {
       <div className="floating-dock-panel">
         {children}
       </div>
-      </button>
     </div>
   );
 };
