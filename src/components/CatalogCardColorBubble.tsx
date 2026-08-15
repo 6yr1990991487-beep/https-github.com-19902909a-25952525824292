@@ -397,31 +397,11 @@ export const CatalogCardColorBubble = () => {
       {/* Orb button stays fixed on right edge, vertically centered */}
       <button
         type="button"
-        onClick={() => {
-          setOpen((o) => {
-            const next = !o;
-            if (next) {
-              const width = panelRef.current?.offsetWidth || Math.min(Math.round(window.innerWidth * 0.9), PANEL_W);
-              const base = preferredRightAnchor(width, "[aria-label='Couleur des cartes du catalogue']");
-              const resolved = placePanel(base);
-              setPanelPos(resolved);
-              localStorage.setItem(POSITION_STORAGE, JSON.stringify(resolved));
-            }
-            return next;
-          });
-        }}
+        onClick={() => setOpen((o) => !o)}
         aria-label="Couleur des cartes du catalogue"
         data-floating-trigger="catalog-color"
         className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-white/35 bg-white/10 text-white shadow-[0_0_18px_rgba(255,255,255,0.18)] backdrop-blur-xl transition-all hover:scale-110 hover:bg-white/16 sm:right-3"
       >
-        <span
-          className="absolute inset-0 opacity-80"
-          style={{
-            background: "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
-            backgroundSize: "300% 300%",
-            animation: "lovanet-bg-shift 6s ease infinite",
-          }}
-        />
         <span className="relative z-10 text-white drop-shadow">
           {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
         </span>
