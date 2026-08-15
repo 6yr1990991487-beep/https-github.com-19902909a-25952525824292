@@ -3085,6 +3085,10 @@ body,
   width: min(356px, calc(100vw - clamp(212px, 17vw, 300px)));
   max-height: min(80vh, 640px);
 }
+.detached-bubble-panel--magasin {
+  width: min(320px, calc(100vw - clamp(212px, 17vw, 300px)));
+  max-height: min(74vh, 560px);
+}
 
 /* Le grand sélecteur de thèmes reste à côté du dock, sans le recouvrir. */
 .theme-dock-panel {
