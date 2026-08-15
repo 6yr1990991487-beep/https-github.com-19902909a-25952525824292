@@ -9,6 +9,22 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/lovanet-icon-192.png?v=11">
     <link rel="apple-touch-icon" href="/lovanet-icon-180.png?v=11" />
     <link rel="manifest" href="/manifest.json?v=3" />
+    <script>
+      // Capture l'evenement d'installation avant le montage de React
+      // (sinon Chrome/Edge/Samsung le declenchent trop tot et le bouton disparait).
+      (function () {
+        window.__lovanetInstallEvent = null;
+        window.addEventListener("beforeinstallprompt", function (e) {
+          e.preventDefault();
+          window.__lovanetInstallEvent = e;
+          window.dispatchEvent(new CustomEvent("lovanet:installready"));
+        });
+        window.addEventListener("appinstalled", function () {
+          window.__lovanetInstallEvent = null;
+          window.dispatchEvent(new CustomEvent("lovanet:installed"));
+        });
+      })();
+    </script>
 
     <meta name="theme-color" content="#06120e" />
     <meta name="mobile-web-app-capable" content="yes" />
