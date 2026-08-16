@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import backgroundDecorGif from '@/assets/background-decor.gif.asset.json';
 
 const Leaf = ({ delay, x, duration }) => (
   <motion.div
