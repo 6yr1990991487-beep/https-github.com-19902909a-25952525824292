@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import footerLovanetZoneVideo from "@/assets/footer-lovanet-zone-video.mp4";
+import footerNavBannerVideo from "@/assets/footer-nav-banner.mp4.asset.json";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -29,7 +28,7 @@ export const Footer = () => {
             <div className="theme-footer-video-shell relative overflow-hidden rounded-[1.75rem] border border-[var(--theme-border-soft)]" data-testid="footer-lovanet-video-shell">
               <video
                 className="h-[250px] w-full object-cover object-center scale-[1.01]"
-                src={footerLovanetZoneVideo}
+                src={footerNavBannerVideo.url}
                 autoPlay
                 muted
                 loop
@@ -40,27 +39,11 @@ export const Footer = () => {
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(6,11,24,0.88)] via-[rgba(7,12,24,0.56)] to-[rgba(7,12,24,0.2)]" />
               <div className="pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
-              <div className="relative z-[1] flex h-full flex-col justify-between p-5 sm:p-6">
-                <div className="space-y-4 max-w-[26rem]">
-                  <Link to="/" className="inline-flex items-center gap-3" data-testid="footer-home-link">
-                    <span className="font-display text-2xl font-black tracking-[0.16em] text-white neon-rgb-text-soft">LOVANET</span>
-                  </Link>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild className="btn-neon-rainbow rounded-full text-white" data-testid="footer-primary-button">
-                    <Link to="/anime-moments">
-                      <Film className="h-4 w-4" />
-                      Anime Moments
-                    </Link>
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* Premium unified navigation hub — no duplicates */}
           <div className="flex flex-col gap-3">
-            <p className="text-[11px] uppercase tracking-[0.3em] theme-text-muted px-1">Navigation & Destinations</p>
             <div className="grid grid-cols-2 gap-2">
               {allDestinations.map((item) => (
                 <Link
@@ -88,23 +71,8 @@ export const Footer = () => {
 
         <div className="theme-text-muted flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <span className="neon-rgb-text-mini" data-testid="footer-copyright">
-            © {new Date().getFullYear()} Lovanet — Anime Moments.
+            © {new Date().getFullYear()} Lovanet
           </span>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link to="/legals" className="theme-link-inline transition-colors" data-testid="footer-legals-link">
-              Mentions légales
-            </Link>
-            <span>·</span>
-            <a
-              href="https://www.youtube.com/@animemomentsanimeofficiel"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="theme-link-inline transition-colors"
-              data-testid="footer-youtube-external-link"
-            >
-              YouTube officiel
-            </a>
-          </div>
         </div>
       </div>
     </footer>

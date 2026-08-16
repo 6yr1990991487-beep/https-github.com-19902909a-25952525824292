@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import portalHeroVideo1 from "@/assets/portal-hero-video-1.mp4";
 import portalHeroVideo2 from "@/assets/portal-hero-video-2.mp4";
 import portalHeroVideo3 from "@/assets/portal-hero-video-3.mp4";
+import heroLogoImage from "@/assets/hero-logo.png.asset.json";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
@@ -422,66 +423,14 @@ export default function RootLandingPage() {
               data-testid="root-landing-hero-banner-shell"
             >
               {heroBanner && heroBanner.visible !== false ? (
-                <video
-                  key={`${activeBannerVideoSrc}-${heroVideoIndex}`}
-                  ref={bannerVideoRef}
-                  className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
-                  autoPlay
-                  loop={!showPlaylist}
-                  muted
-                  playsInline
-                  preload="auto"
+                <img
+                  src={heroLogoImage.url}
+                  alt="Lovanet — portail Anime Moments"
+                  className="absolute inset-0 h-full w-full object-contain object-center p-6"
                   decoding="async"
                   fetchPriority="high"
-                  disablePictureInPicture
-                  data-testid="hero-banner-background-video"
-                  data-bg-video
-                  poster="/custom-hero-banner-poster.jpg"
-                  onPause={() => {
-                    const video = bannerVideoRef.current;
-                    if (!video || video.ended) return;
-                    const playPromise = video.play();
-                    if (playPromise && typeof playPromise.catch === "function") {
-                      playPromise.catch(() => {});
-                    }
-                  }}
-                  onWaiting={() => {
-                    const video = bannerVideoRef.current;
-                    if (!video || video.ended) return;
-                    const playPromise = video.play();
-                    if (playPromise && typeof playPromise.catch === "function") {
-                      playPromise.catch(() => {});
-                    }
-                  }}
-                  onEnded={() => {
-                    if (showPlaylist) {
-                      advanceHeroBannerVideo();
-                      return;
-                    }
-                    const video = bannerVideoRef.current;
-                    if (!video) return;
-                    video.currentTime = 0;
-                    const playPromise = video.play();
-                    if (playPromise && typeof playPromise.catch === "function") {
-                      playPromise.catch(() => {});
-                    }
-                  }}
-                  onError={() => {
-                    if (showPlaylist) {
-                      advanceHeroBannerVideo();
-                      return;
-                    }
-                    const video = bannerVideoRef.current;
-                    if (!video) return;
-                    video.load();
-                    const playPromise = video.play();
-                    if (playPromise && typeof playPromise.catch === "function") {
-                      playPromise.catch(() => {});
-                    }
-                  }}
-                >
-                  <source src={activeBannerVideoSrc} type="video/mp4" />
-                </video>
+                  data-testid="hero-banner-logo-image"
+                />
               ) : (
                 <div
                   className="absolute inset-0 h-full w-full bg-cover bg-center bg-black/80"

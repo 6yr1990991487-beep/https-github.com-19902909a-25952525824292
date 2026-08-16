@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import backgroundDecorGif from '@/assets/background-decor.gif.asset.json';
 
 const Leaf = ({ delay, x, duration }) => (
   <motion.div
@@ -130,57 +131,15 @@ export const PremiumBorders = () => {
   // active we avoid rendering the duplicated decorative particles/leaves.
   return (
     <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-testid="global-video-background">
-      {/* Global Background Video */}
-      <video
-        ref={overlayVideoRef}
-        key={activeOverlayVideoId}
-        autoPlay
-        muted={true}
-        playsInline
-        preload="auto"
+      {/* Global animated background (GIF) */}
+      <img
+        src={backgroundDecorGif.url}
+        alt=""
+        aria-hidden="true"
         decoding="async"
-        disablePictureInPicture
         className="absolute inset-0 z-0 h-full w-full object-cover opacity-60"
         style={{ pointerEvents: 'none' }}
-        poster="/global-bg-poster.jpg"
-        data-bg-video
-        src={activeOverlayVideo.src}
-        onCanPlay={() => {
-          const video = overlayVideoRef.current;
-          if (!video) return;
-          video.muted = true;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
-          }
-        }}
-        onEnded={() => {
-          setOverlayQueue((currentQueue) => {
-            const nextQueue = currentQueue.slice(1);
-            if (!nextQueue.length) {
-              setActiveOverlayVideoId(ORDERED_OVERLAY_VIDEO_IDS[0] || OVERLAY_BACKGROUND_VIDEOS[0].id);
-              return ORDERED_OVERLAY_VIDEO_IDS;
-            }
-            setActiveOverlayVideoId(nextQueue[0]);
-            return nextQueue;
-          });
-        }}
-        onPause={() => {
-          const video = overlayVideoRef.current;
-          if (!video || video.ended) return;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
-          }
-        }}
-        onWaiting={() => {
-          const video = overlayVideoRef.current;
-          if (!video || video.ended) return;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
-          }
-        }}
+        data-bg-decor
       />
 
       {/* All animated décors hidden when toggle is active or when custom decors are used elsewhere */}

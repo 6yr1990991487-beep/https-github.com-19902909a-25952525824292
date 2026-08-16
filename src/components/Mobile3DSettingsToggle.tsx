@@ -20,12 +20,16 @@ const DetachedBubblePanel = ({
   return createPortal(
     <div
       id={panelId}
-      className={`detached-bubble-panel detached-bubble-panel--settings ${className ?? ""}`}
+      className={`detached-bubble-panel detached-bubble-panel--settings glass3d-panel glass3d-surface ${className ?? ""}`}
+      data-panel-key="arriere-plans-decors"
       role="dialog"
       aria-modal="false"
       aria-label="Arrière-plans et décors"
     >
-      <div className="flex min-h-11 items-center justify-between gap-3 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+      <div
+        className="flex min-h-11 cursor-move items-center justify-between gap-3 border-b border-white/10 bg-white/[0.03] px-3 py-2.5"
+        data-panel-drag-handle
+      >
         <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/75">Arrière-plans et décors</span>
         <button
           type="button"
