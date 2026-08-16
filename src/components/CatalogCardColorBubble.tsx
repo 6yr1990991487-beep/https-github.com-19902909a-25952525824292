@@ -359,7 +359,7 @@ export const CatalogCardColorBubble = () => {
         createPortal(
           <div
             ref={panelRef}
-            className="detached-bubble-panel detached-bubble-panel--catalog"
+            className="detached-bubble-panel detached-bubble-panel--catalog glass3d-panel glass3d-surface"
             style={{
               boxSizing: "border-box",
               left: typeof panelPos?.x === "number" ? panelPos.x : undefined,
@@ -370,7 +370,7 @@ export const CatalogCardColorBubble = () => {
             onPointerUp={onUp}
             onPointerCancel={onUp}
           >
-            <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5">
+            <div className="flex cursor-move items-center justify-between gap-2 border-b border-white/10 bg-white/[0.03] px-3 py-2.5" data-panel-drag-handle>
               <div className="flex items-center gap-2 text-white/70">
                 <Move className="h-3.5 w-3.5" />
                 <span className="text-[10px] uppercase tracking-[0.24em]">Couleur des cartes</span>
