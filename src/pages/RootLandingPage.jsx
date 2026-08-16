@@ -9,10 +9,6 @@ import { createImageFallbackHandler, siteFallbackImage } from "@/lib/mediaFallba
 import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
-import portalHeroVideo1 from "@/assets/portal-hero-video-1.mp4";
-import portalHeroVideo2 from "@/assets/portal-hero-video-2.mp4";
-import portalHeroVideo3 from "@/assets/portal-hero-video-3.mp4";
-import heroLogoImage from "@/assets/hero-logo.png.asset.json";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
@@ -104,22 +100,14 @@ const catalogRotationIntervalMs = 12000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
 
-const PORTAL_HERO_BANNER_VIDEOS = [
-  "/drive-bg.mp4",
-  portalHeroVideo1,
-  portalHeroVideo2,
-  portalHeroVideo3,
-];
-
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: PORTAL_HERO_BANNER_VIDEOS, label: "Bannière hero (haut)" },
+  { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
   { id: "b2", src: "", label: "Carte du haut" },
   { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
 ];
 const BANNER_STATE_KEY = "lovanet.home.banners.v2";
 const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
-const HERO_BANNER_ROTATE_INTERVAL_MS = 18000;
 
 const loadHomeBanners = () => {
   const byId = Object.fromEntries(DEFAULT_HOME_BANNERS.map((b) => [b.id, b]));
@@ -178,35 +166,6 @@ export default function RootLandingPage() {
 
   const heroBanner = homeBanners[0];
   const cardBanners = [homeBanners[1], homeBanners[2]];
-  const [isMobileScreen, setIsMobileScreen] = useState(false);
-  const [heroVideoIndex, setHeroVideoIndex] = useState(0);
-
-  const heroBannerSources = Array.isArray(heroBanner?.src)
-    ? heroBanner.src.filter(Boolean)
-    : typeof heroBanner?.src === "string" && heroBanner.src
-    ? [heroBanner.src]
-    : [];
-
-  useEffect(() => {
-    setHeroVideoIndex(0);
-  }, [heroBanner?.src, isMobileScreen]);
-
-  const activeBannerVideoSrc = heroBannerSources[heroVideoIndex] ||
-    (isMobileScreen ? "/custom-hero-banner-mobile.mp4" : "/custom-hero-banner-web.mp4");
-
-  const showPlaylist = heroBannerSources.length > 1;
-  const advanceHeroBannerVideo = useCallback(() => {
-    if (heroBannerSources.length <= 1) return;
-    setHeroVideoIndex((current) => (current + 1) % heroBannerSources.length);
-  }, [heroBannerSources.length]);
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 768px)");
-    const sync = () => setIsMobileScreen(media.matches);
-    sync();
-    media.addEventListener?.("change", sync);
-    return () => media.removeEventListener?.("change", sync);
-  }, []);
 
   const persistBanners = (next) => {
     setHomeBanners(next);
@@ -423,14 +382,23 @@ export default function RootLandingPage() {
               data-testid="root-landing-hero-banner-shell"
             >
               {heroBanner && heroBanner.visible !== false ? (
-                <img
-                  src={heroLogoImage.url}
-                  alt="Lovanet — portail Anime Moments"
-                  className="absolute inset-0 h-full w-full object-contain object-center p-6"
+                <video
+                  ref={bannerVideoRef}
+                  className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
                   decoding="async"
                   fetchPriority="high"
-                  data-testid="hero-banner-logo-image"
-                />
+                  disablePictureInPicture
+                  data-testid="hero-banner-background-video"
+                  data-bg-video
+                  poster="/custom-hero-banner-poster.jpg"
+                >
+                  <source src={heroBanner.src || "/custom-hero-banner-web.mp4"} type="video/mp4" />
+                </video>
               ) : (
                 <div
                   className="absolute inset-0 h-full w-full bg-cover bg-center bg-black/80"
