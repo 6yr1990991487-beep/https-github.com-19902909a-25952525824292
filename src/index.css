@@ -2933,6 +2933,35 @@ body,
   transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.floating-dock-move {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 18px;
+  margin-bottom: 0.1rem;
+  border-radius: 0.6rem;
+  color: #ffffff;
+  cursor: grab;
+  touch-action: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+}
+
+.floating-dock-move:active {
+  cursor: grabbing;
+}
+
+.floating-dock-panel [data-dock-slot] {
+  transition: transform 0.14s ease, opacity 0.14s ease;
+}
+
+.floating-dock-panel [data-dock-dragging="true"] {
+  transform: scale(1.12);
+  opacity: 0.85;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+}
+
 .floating-dock-slot:hover,
 .floating-dock-slot:active {
   transform: translateX(2px) scale(1.12);
