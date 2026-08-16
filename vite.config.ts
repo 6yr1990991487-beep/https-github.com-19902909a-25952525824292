@@ -31,8 +31,10 @@ export default defineConfig(({ mode }) => ({
         importScripts: ["/push-sw.js"],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
+        // Pas de navigateFallback precache : les navigations passent par la
+        // regle runtime NetworkFirst ci-dessous, sinon un index.html en cache
+        // peut pointer vers des chunks supprimes (ecran bloque au lancement).
+        navigateFallback: null,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
@@ -42,7 +44,7 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "lovanet-pages",
-              networkTimeoutSeconds: 4,
+              networkTimeoutSeconds: 6,
               expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 14 },
             },
           },
