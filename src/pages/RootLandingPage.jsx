@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import portalHeroVideo1 from "@/assets/portal-hero-video-1.mp4";
 import portalHeroVideo2 from "@/assets/portal-hero-video-2.mp4";
 import portalHeroVideo3 from "@/assets/portal-hero-video-3.mp4";
+import heroLogoImage from "@/assets/hero-logo.png.asset.json";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
