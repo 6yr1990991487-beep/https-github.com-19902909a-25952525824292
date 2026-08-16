@@ -426,7 +426,7 @@ export default function RootLandingPage() {
                 <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
                   <Link to="/anime-catalog">
                     <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                      Catalogue premium
+                      Catalogue
                       <ArrowRight className="h-3.5 w-3.5 neon-rgb-icon" />
                     </span>
                   </Link>

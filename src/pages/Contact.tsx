@@ -44,8 +44,7 @@ const Contact = () => {
           </div>
 
           <div className="mx-auto max-w-xl">
-            <h1 className="font-display text-4xl sm:text-5xl font-extrabold mb-2 text-white">Écris à Lovanet</h1>
-
+            <h1 className="font-display text-4xl sm:text-5xl font-extrabold mb-2 text-white">Contact</h1>
 
             <form
               onSubmit={(e) => {

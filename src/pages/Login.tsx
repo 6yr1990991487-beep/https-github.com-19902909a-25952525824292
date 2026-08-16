@@ -62,10 +62,10 @@ export default function Login() {
       <div className="w-full max-w-md bg-card p-8 rounded-2xl border border-border shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-heading font-bold text-foreground">
-            {isRegister ? "Créer un compte" : "Bon retour"}
+            {isRegister ? "Créer un compte" : "Se connecter"}
           </h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            {isRegister ? "Rejoignez Lovanet aujourd'hui" : "Connectez-vous pour continuer"}
+            {isRegister ? "Rejoignez Lovanet aujourd'hui" : "Accède à ton compte"}
           </p>
         </div>
 

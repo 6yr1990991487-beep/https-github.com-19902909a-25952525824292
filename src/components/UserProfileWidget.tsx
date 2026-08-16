@@ -18,7 +18,7 @@ export function UserProfileWidget() {
         className="rounded-full border-white/10 bg-black/40 text-white/80 hover:bg-white/10 hover:text-white"
       >
         <User className="h-4 w-4 mr-2" />
-        Connexion
+        Se connecter
       </Button>
     );
   }
