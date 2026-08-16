@@ -37,8 +37,11 @@ export function GlobalTranslateWidget() {
   return (
     <div className="fixed bottom-[150px] right-3 z-[100] flex flex-col items-end sm:right-4 md:bottom-[165px] md:right-6 lg:bottom-[96px] lg:right-6">
       {open ? (
-        <div className="dock-popup mb-3 flex flex-col gap-2 rounded-2xl border border-white/10 bg-black/60 p-4 shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5">
-          <div className="flex items-center justify-between mb-2 gap-8">
+        <div
+          className="dock-popup glass3d-panel glass3d-surface mb-3 flex flex-col gap-2 rounded-2xl p-4 animate-in fade-in slide-in-from-bottom-5"
+          data-panel-key="traduire-le-site"
+        >
+          <div className="flex cursor-move items-center justify-between mb-2 gap-8" data-panel-drag-handle>
             <span className="text-xs font-bold uppercase tracking-wider text-white/70 drop-shadow-md">Traduire le site</span>
             <button onClick={() => setOpen(false)} className="text-white/50 hover:text-white"><X className="h-4 w-4" /></button>
           </div>
