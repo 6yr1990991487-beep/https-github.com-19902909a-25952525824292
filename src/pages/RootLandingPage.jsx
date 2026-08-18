@@ -423,8 +423,9 @@ export default function RootLandingPage() {
     event.preventDefault();
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
-    const left = rect.right + 16;
-    const top = Math.max(rect.top, 80);
+    const panelWidth = 320;
+    const left = Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
+    const top = Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
       openInstanceId: instanceId,
@@ -615,11 +616,12 @@ export default function RootLandingPage() {
                               <button
                                 type="button"
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-20 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 p-2 text-white transition hover:bg-white/20"
+                                className="absolute top-2 right-2 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 p-2 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
-                                <Play className="h-4 w-4" />
+                                <span className="absolute inset-0 rounded-full bg-white/5" />
+                                <Play className="relative h-4 w-4" />
                               </button>
                             </div>
                           ))}
@@ -629,8 +631,8 @@ export default function RootLandingPage() {
                   </div>
                   {versionPanelState.openInstanceId && (
                     <div
-                      className="fixed z-30 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, top: versionPanelState.panelTop ?? undefined, minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
+                      className="fixed z-50 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.08)] p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft ? undefined : "1.5rem", top: versionPanelState.panelTop ?? "18rem", minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
