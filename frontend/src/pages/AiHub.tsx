@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import VideoWithFallback from '@/components/VideoWithFallback';
+import CelticPlayer from '@/components/CelticPlayer';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -143,6 +144,8 @@ export const AiHub = () => {
       <div className="max-w-7xl w-full">
         {/* Top video banner added from Drive (requested) */}
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : { minHeight: '24rem' }}>
+          {/* CelticPlayer sits above the video and provides a transparent animated MP3 player */}
+          <CelticPlayer playlistUrl="/audio/celtic/playlist.json" className="pointer-events-auto" />
             <VideoWithFallback
             ref={videoRef}
             data-testid="aihubs-top-banner-video"
