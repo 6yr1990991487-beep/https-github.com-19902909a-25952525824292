@@ -17,6 +17,8 @@ type Props = {
   delay?: number;
   /** Start playing automatically without waiting for hover (default true). */
   autoPlay?: boolean;
+  /** Keep playback active after touch release instead of stopping on touch end. */
+  retainOnTouchRelease?: boolean;
   /** extra overlays rendered above the player (badges, captions...) */
   children?: ReactNode;
   className?: string;
@@ -44,8 +46,11 @@ export const HoverPreview = ({
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
+  const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
+  const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
+  const touchTriggeredRef = useRef(false);
   // Lecture declenchee par un tap (mobile) : la rotation auto est gelee
   // tant que l'utilisateur n'a pas lui-meme arrete la lecture.
   const heldRef = useRef(false);
@@ -104,24 +109,49 @@ export const HoverPreview = ({
       onFocus={start}
       onBlur={stop}
       onClick={(event) => {
-        // PC : un clic sur l'apercu verrouille la lecture (meme regle que le tap mobile).
+        // PC : un clic sur l'apercu ne doit pas arrêter la lecture.
         if (knownUnavailable && knownUnavailable !== "ok") return;
         if (event.detail === 0) return; // clavier : laisse le lien agir
+        if (touchTriggeredRef.current) {
+          touchTriggeredRef.current = false;
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
         if (!heldRef.current) {
-          event.preventDefault();
-          event.stopPropagation();
           setActive(true);
           hold();
         }
       }}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
-        setActive((value) => {
-          const next = !value;
-          if (next) hold();
-          else releaseHold();
-          return next;
-        });
+        touchTriggeredRef.current = true;
+        if (timer.current) window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setActive(true), delay);
+      }}
+      onTouchEnd={() => {
+        if (!heldRef.current) {
+          if (timer.current) {
+            window.clearTimeout(timer.current);
+            timer.current = null;
+          }
+          if (!retainOnTouchRelease) {
+            setActive(false);
+          }
+        }
+        touchTriggeredRef.current = false;
+      }}
+      onTouchCancel={() => {
+        if (!heldRef.current) {
+          if (timer.current) {
+            window.clearTimeout(timer.current);
+            timer.current = null;
+          }
+          if (!retainOnTouchRelease) {
+            setActive(false);
+          }
+        }
+        touchTriggeredRef.current = false;
       }}
     >
       <img
