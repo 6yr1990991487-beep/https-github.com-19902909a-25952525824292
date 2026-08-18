@@ -97,7 +97,7 @@ const secondaryButton =
 const luxuryIcon =
   "flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] text-white";
 const portalRotationIntervalMs = 10000;
-const catalogRotationIntervalMs = 12000;
+const catalogRotationIntervalMs = 60000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
 

@@ -85,6 +85,14 @@ export const HoverPreview = ({
     setActive(false);
   };
 
+  useEffect(() => {
+    if (!active) return undefined;
+    hold();
+    return () => {
+      if (!heldRef.current) releaseHold();
+    };
+  }, [active]);
+
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
   const iframeWrap = vertical ? "absolute inset-0 overflow-hidden pointer-events-none" : "absolute inset-0 pointer-events-none";
 

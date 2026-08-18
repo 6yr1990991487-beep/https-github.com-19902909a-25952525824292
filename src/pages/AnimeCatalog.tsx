@@ -1209,13 +1209,6 @@ export default function AnimeCatalog() {
             )}
 
             <div id="catalog-reader" className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-4 sm:p-5 lg:p-6 scroll-mt-24" data-testid="catalog-giant-player-shell">
-              <div
-                className="pointer-events-none absolute inset-0 opacity-80"
-                style={{
-                  background:
-                    "radial-gradient(circle at 15% 18%, rgba(56,189,248,0.2), transparent 18%), radial-gradient(circle at 84% 20%, rgba(244,114,182,0.14), transparent 20%), radial-gradient(circle at 50% 100%, rgba(139,92,246,0.12), transparent 24%)",
-                }}
-              />
 
               {loading && !items.length ? (
                 <div className="relative space-y-5" data-testid="catalog-player-loading-state">
