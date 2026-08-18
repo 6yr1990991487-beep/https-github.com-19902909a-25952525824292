@@ -218,15 +218,18 @@ export default function AnimeCountdown() {
 
   return (
     <main
-      className="min-h-screen pb-20 relative overflow-hidden transition-colors"
-      style={{ backgroundColor: theme.bg, color: theme.text }}
+      className="min-h-screen pb-20 relative overflow-hidden transition-colors nav-theme-shell"
+      style={{ color: theme.text }}
     >
+      <span className="nav-cloud nav-cloud-1" aria-hidden="true" />
+      <span className="nav-cloud nav-cloud-2" aria-hidden="true" />
+      <span className="nav-cloud nav-cloud-3" aria-hidden="true" />
       <Navbar />
       <div className="h-12" />
 
       {/* Premium Animated Banner with Videos & Decorations */}
       <div 
-        className="relative overflow-hidden"
+        className="relative overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.35)] nav-bar-shell glass3d-panel"
         style={{
           background: `linear-gradient(135deg, ${theme.accentColor}15 0%, ${theme.titleColor}15 100%)`,
           borderBottom: `2px solid ${theme.accentColor}40`,
@@ -274,7 +277,7 @@ export default function AnimeCountdown() {
         </div>
       </div>
 
-      <header className="relative px-4 md:px-10 pt-10 pb-6">
+      <header className="relative px-4 md:px-10 pt-10 pb-6 nav-bar-shell nav-theme-shell glass3d-panel">
         <div className="text-center">
           <motion.h1
             className="text-3xl md:text-5xl font-black tracking-wide"
@@ -313,7 +316,7 @@ export default function AnimeCountdown() {
         </div>
       </header>
 
-      <section className="relative px-4 md:px-10">
+      <section className="relative px-4 md:px-10 nav-bar-shell nav-theme-shell glass3d-panel p-6">
         {loading && <p className="text-center" style={{ color: theme.muted }}>Chargement…</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((m) => {
@@ -326,7 +329,7 @@ export default function AnimeCountdown() {
             return (
               <motion.article
                 key={m.id}
-                className="relative rounded-2xl overflow-hidden transition-all cursor-pointer group"
+                className="relative rounded-[1.75rem] overflow-hidden transition-all cursor-pointer group nav-theme-shell"
                 style={{
                   backgroundColor: theme.surface,
                   border: `1.5px solid ${theme.border}`,
@@ -474,7 +477,7 @@ export default function AnimeCountdown() {
                   {/* Interaction buttons */}
                   <div className="flex gap-2 mb-3">
                     <motion.button
-                      className="flex-1 py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1"
+                      className="flex-1 py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1 nav-theme-chip"
                       style={{
                         backgroundColor: isInteracted ? theme.accentColor : `${theme.accentColor}40`,
                         color: isInteracted ? "#fff" : theme.accentColor,
