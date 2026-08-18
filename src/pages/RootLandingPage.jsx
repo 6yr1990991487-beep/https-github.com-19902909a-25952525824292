@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX, X, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { API_BASE as API } from "@/lib/apiBase";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
 import { HoverPreview } from "@/components/HoverPreview";
@@ -58,8 +59,14 @@ const platformCards = [
   { title: "À venir", testId: "home-platform-card-upcoming", to: "/anime-countdown" },
 ];
 
-
-
+const TRAILER_VERSION_LABEL = {
+  vostfr: "VOSTFR",
+  vf: "VF (Doublage)",
+  vo: "VO (Japonais)",
+  ensub: "English (Sub)",
+  endub: "English Dub",
+};
+const VERSION_ORDER = ["vostfr", "vf", "vo", "ensub", "endub"];
 
 const shuffleArray = (list) => {
   const clone = [...list];
@@ -363,6 +370,100 @@ export default function RootLandingPage() {
     [activeCatalogCards],
   );
 
+  const [versionPanelState, setVersionPanelState] = useState({
+    openInstanceId: null,
+    title: "",
+    trailerId: "",
+    href: "",
+    availableVersions: {},
+    selectedVersion: "vo",
+    loading: false,
+    error: "",
+  });
+
+  const extractLangId = (arr) => {
+    if (Array.isArray(arr) && arr.length > 0) {
+      const first = arr[0];
+      return typeof first === "string" ? first : first?.id;
+    }
+    return undefined;
+  };
+
+  const getVersionLabel = (code) => TRAILER_VERSION_LABEL[code] || code.toUpperCase();
+
+  const buildVersionedHref = (baseHref, versionCode, versions, defaultTrailerId) => {
+    try {
+      const url = new URL(baseHref, window.location.origin);
+      const selectedId = extractLangId(versions[versionCode]) || (versionCode === "vo" ? defaultTrailerId : undefined);
+      if (selectedId) {
+        url.searchParams.set("trailer", selectedId);
+      }
+      return `${url.pathname}${url.search}`;
+    } catch {
+      return baseHref;
+    }
+  };
+
+  const closeVersionPanel = useCallback(() => {
+    setVersionPanelState((prev) => ({
+      ...prev,
+      openInstanceId: null,
+      loading: false,
+      error: "",
+      availableVersions: {},
+    }));
+  }, []);
+
+  const openVersionPanel = useCallback((event, item, instanceId) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setVersionPanelState((prev) => ({
+      ...prev,
+      openInstanceId: instanceId,
+      title: item.title,
+      trailerId: item.trailerId,
+      href: item.href,
+      loading: true,
+      error: "",
+      availableVersions: {},
+      selectedVersion: "vo",
+    }));
+
+    fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(item.title)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const versions = Object.entries(data?.results || {}).reduce((acc, [code, values]) => {
+          if (extractLangId(values)) {
+            acc[code] = values;
+          }
+          return acc;
+        }, {});
+        const firstAvailable = VERSION_ORDER.find((code) => versions[code]) || Object.keys(versions)[0] || "vo";
+        setVersionPanelState((prev) => ({
+          ...prev,
+          loading: false,
+          availableVersions: versions,
+          selectedVersion: firstAvailable,
+          error: Object.keys(versions).length ? "" : "Aucune version multilingue trouvée.",
+        }));
+      })
+      .catch(() => {
+        setVersionPanelState((prev) => ({
+          ...prev,
+          loading: false,
+          availableVersions: {},
+          error: "Impossible de charger les versions pour ce trailer.",
+        }));
+      });
+  }, []);
+
+  const selectPanelVersion = useCallback((versionCode) => {
+    setVersionPanelState((prev) => ({
+      ...prev,
+      selectedVersion: versionCode,
+    }));
+  }, []);
+
   return (
     <PageShell>
       <Helmet>
@@ -465,36 +566,103 @@ export default function RootLandingPage() {
                     <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
                       <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
                         {[...row, ...row].map((item, index) => (
-                          <Link
-                            key={`${item.id}-${rowIndex}-${index}`}
-                            to={item.href}
-                            className="hero-premium-lower-card group flex w-[124px] min-w-[124px] max-w-[124px] flex-none flex-col sm:w-[130px] sm:min-w-[130px] sm:max-w-[130px] lg:w-[108px] lg:min-w-[108px] lg:max-w-[108px] xl:w-[116px] xl:min-w-[116px] xl:max-w-[116px]"
-                            data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}
-                          >
-                            <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
-                              <HoverPreview
-                                videoId={item.trailerId}
-                                title={item.title}
-                                thumbnail={item.image}
-                                vertical
-                                delay={120}
-                                className="h-full w-full"
-                                onImgError={createImageFallbackHandler(item.id, item.image)}
-                              >
-                                <div className="hero-premium-lower-thumb-overlay" />
-                                <div className="absolute inset-x-0 bottom-0 z-10 p-3">
-                                  <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
-                                    <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>
-                                    <p className="line-clamp-2 text-sm font-semibold text-white">{item.title}</p>
+                          <div key={`${item.id}-${rowIndex}-${index}`} className="group relative flex w-[124px] min-w-[124px] max-w-[124px] flex-none flex-col sm:w-[130px] sm:min-w-[130px] sm:max-w-[130px] lg:w-[108px] lg:min-w-[108px] lg:max-w-[108px] xl:w-[116px] xl:min-w-[116px] xl:max-w-[116px]" data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}>
+                            <Link
+                              to={item.href}
+                              className="hero-premium-lower-card group flex flex-col overflow-hidden rounded-[1.2rem] border border-white/15 bg-[rgba(8,12,24,0.72)] shadow-[0_16px_34px_-18px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-0.5"
+                            >
+                              <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
+                                <HoverPreview
+                                  videoId={item.trailerId}
+                                  title={item.title}
+                                  thumbnail={item.image}
+                                  vertical
+                                  delay={120}
+                                  className="h-full w-full"
+                                  onImgError={createImageFallbackHandler(item.id, item.image)}
+                                >
+                                  <div className="hero-premium-lower-thumb-overlay" />
+                                  <div className="absolute inset-x-0 bottom-0 z-10 p-3">
+                                    <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
+                                      <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>
+                                      <p className="line-clamp-2 text-sm font-semibold text-white">{item.title}</p>
+                                    </div>
                                   </div>
+                                </HoverPreview>
+                              </div>
+                              <div className="hero-premium-lower-copy">
+                                <p className="hero-premium-lower-title">{item.title}</p>
+                                <p className="hero-premium-lower-description">{item.genres.join(" • ") || "Catalogue premium"}</p>
+                              </div>
+                            </Link>
+
+                            <button
+                              type="button"
+                              onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
+                              className="absolute top-2 right-2 z-20 inline-flex items-center justify-center rounded-full border border-white/15 bg-black/50 p-2 text-white transition hover:bg-white/10"
+                              aria-label={`Choisir la version du trailer pour ${item.title}`}
+                              data-testid={`home-platforms-version-button-${item.id}`}
+                            >
+                              <Play className="h-4 w-4" />
+                            </button>
+                            {versionPanelState.openInstanceId === `${item.id}-${rowIndex}-${index}` && (
+                              <div className="absolute top-2 right-full z-30 mr-3 w-[18rem] max-w-[calc(100vw-3rem)] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white">
+                                <div className="flex items-start justify-between gap-3">
+                                  <div>
+                                    <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
+                                    <p className="mt-1 text-sm font-semibold leading-5 text-white">{item.title}</p>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={closeVersionPanel}
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
+                                    aria-label="Fermer le panneau de versions"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
                                 </div>
-                              </HoverPreview>
-                            </div>
-                            <div className="hero-premium-lower-copy">
-                              <p className="hero-premium-lower-title">{item.title}</p>
-                              <p className="hero-premium-lower-description">{item.genres.join(" • ") || "Catalogue premium"}</p>
-                            </div>
-                          </Link>
+                                <div className="mt-4 flex flex-col gap-2">
+                                  {versionPanelState.loading ? (
+                                    <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
+                                      <Loader2 className="h-4 w-4 animate-spin" />
+                                      Chargement des versions...
+                                    </div>
+                                  ) : versionPanelState.error ? (
+                                    <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
+                                      {versionPanelState.error}
+                                    </div>
+                                  ) : (
+                                    VERSION_ORDER.filter((code) => versionPanelState.availableVersions[code]).map((code) => (
+                                      <button
+                                        key={code}
+                                        type="button"
+                                        onClick={() => selectPanelVersion(code)}
+                                        className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${versionPanelState.selectedVersion === code ? "bg-white/15 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "bg-black/20 text-white/80 hover:bg-white/10"}`}
+                                      >
+                                        {getVersionLabel(code)}
+                                      </button>
+                                    ))
+                                  )}
+                                </div>
+                                <div className="mt-4 flex items-center justify-between gap-2">
+                                  <Link
+                                    to={buildVersionedHref(item.href, versionPanelState.selectedVersion, versionPanelState.availableVersions, item.trailerId)}
+                                    className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
+                                    onClick={closeVersionPanel}
+                                  >
+                                    Voir cette version
+                                  </Link>
+                                  <button
+                                    type="button"
+                                    onClick={closeVersionPanel}
+                                    className="text-xs uppercase tracking-[0.24em] text-white/60 hover:text-white"
+                                  >
+                                    Fermer
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         ))}
                       </div>
                     </div>
