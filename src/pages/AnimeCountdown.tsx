@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { API_BASE as API } from "@/lib/apiBase";
-import { Palette, ChevronDown, Sparkles, Award, Zap, Heart, Play, Loader2, X } from "lucide-react";
+import { Palette, ChevronDown, Sparkles, Award, Zap, Heart, Play, Loader2, X, Languages } from "lucide-react";
 import { motion } from "framer-motion";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import { Navbar } from "@/components/Navbar";
@@ -92,6 +92,16 @@ export default function AnimeCountdown() {
   const [selectedAnime, setSelectedAnime] = useState<Media | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const [selectedFavoriteId, setSelectedFavoriteId] = useState<number | null>(null);
+  const [expandedPlayback, setExpandedPlayback] = useState<Record<number, boolean>>({});
+  const [translationLang, setTranslationLang] = useState<string>("fr");
+  const [translatedDescriptions, setTranslatedDescriptions] = useState<Record<number, string>>({});
+  const TRANSLATION_OPTIONS = [
+    { code: "fr", label: "Français" },
+    { code: "en", label: "English" },
+    { code: "ja", label: "日本語" },
+    { code: "es", label: "Español" },
+    { code: "de", label: "Deutsch" },
+  ];
   const [versionPanelState, setVersionPanelState] = useState({
     loading: false,
     availableVersions: {} as Record<string, string[]>,
@@ -169,6 +179,36 @@ export default function AnimeCountdown() {
       setVersionPanelState({ loading: false, availableVersions: {}, selectedVersion: "vo", error: "Impossible de charger les versions." });
     }
   }, []);
+
+  const translateText = useCallback(async (text: string, targetLanguage: string) => {
+    if (targetLanguage === "fr" || !text) return text;
+    try {
+      const response = await fetch(`${API}/translate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: [text], target_lang: targetLanguage }),
+      });
+      if (!response.ok) throw new Error(`Translate error: ${response.status}`);
+      const data = await response.json();
+      const translations = data.translations || [];
+      return translations[0]?.translated_text || text;
+    } catch (err) {
+      console.error("Translation failed:", err);
+      return text;
+    }
+  }, []);
+
+  const handleTranslateDescription = useCallback(async (item: Media, lang: string) => {
+    const original = item.description || "";
+    if (!original) return;
+    if (lang === "fr") {
+      setTranslationLang("fr");
+      return;
+    }
+    setTranslationLang(lang);
+    const translated = await translateText(original, lang);
+    setTranslatedDescriptions((prev) => ({ ...prev, [item.id]: translated }));
+  }, [translateText]);
 
   const selectPanelVersion = useCallback((versionCode: string) => {
     setVersionPanelState((prev) => ({ ...prev, selectedVersion: versionCode }));
@@ -734,7 +774,7 @@ export default function AnimeCountdown() {
                       className="w-full inline-flex items-center justify-center gap-1 text-[11px] font-bold uppercase tracking-widest py-1.5 rounded-lg transition-colors"
                       style={{
                         backgroundColor: theme.surface,
-                        color: theme.titleColor,
+                        color: "#ffffff",
                         border: `1px solid ${theme.border}`,
                       }}
                       aria-expanded={!!expanded[m.id]}
@@ -748,54 +788,87 @@ export default function AnimeCountdown() {
 
                     {expanded[m.id] && (
                       <motion.div
-                        className="mt-3 space-y-3 text-[12px] leading-relaxed rounded-lg p-3"
-                        style={{
-                          backgroundColor: theme.surface,
-                          border: `1px solid ${theme.border}`,
-                        }}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 space-y-3 text-[12px] leading-relaxed rounded-lg p-3 text-white"
+                      style={{
+                        backgroundColor: theme.surface,
+                        border: `1px solid ${theme.border}`,
+                      }}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {m.trailer?.id && m.trailer?.site === "youtube" ? (
+                        <div
+                        className="relative w-full aspect-video rounded-lg overflow-hidden bg-black"
+                        onMouseEnter={() => setExpandedPlayback((prev) => ({ ...prev, [m.id]: true }))}
+                        onTouchStart={() => setExpandedPlayback((prev) => ({ ...prev, [m.id]: true }))}
                       >
-                        {m.trailer?.id && m.trailer?.site === "youtube" ? (
-                          <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black">
+                          <img
+                            src={`https://i.ytimg.com/vi/${m.trailer.id}/hqdefault.jpg`}
+                            alt={`Miniature trailer ${m.title.english || m.title.romaji || ""}`}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-semibold text-white ring-1 ring-white/20 backdrop-blur"
+                              onClick={() => setExpandedPlayback((prev) => ({ ...prev, [m.id]: !prev[m.id] }))}
+                            >
+                              <Play className="w-4 h-4" />
+                              {expandedPlayback[m.id] ? "Arrêter" : "Lire le trailer"}
+                            </button>
+                          </div>
+                          {expandedPlayback[m.id] && (
                             <iframe
-                              src={buildYouTubeEmbedUrl(m.trailer.id, { autoplay: false, muted: true, controls: true, playsInline: true })}
+                              src={buildYouTubeEmbedUrl(m.trailer.id, { autoplay: true, muted: true, controls: true, playsInline: true })}
                               title={`Trailer ${m.title.english || m.title.romaji || ""}`}
                               className="absolute inset-0 w-full h-full"
                               loading="lazy"
                               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                               allowFullScreen
                             />
-                            <YoutubeBrandCover />
+                          )}
+                          <YoutubeBrandCover />
+                        </div>
+                      ) : null}
+                      
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="text-xs uppercase tracking-[0.32em] text-white/60">Description</div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Languages className="w-4 h-4 text-white/80" />
+                            {TRANSLATION_OPTIONS.map((lang) => (
+                              <button
+                                key={lang.code}
+                                type="button"
+                                onClick={() => handleTranslateDescription(m, lang.code)}
+                                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${translationLang === lang.code ? "bg-white text-black" : "bg-white/10 text-white/80 hover:bg-white/20"}`}
+                              >
+                                {lang.label}
+                              </button>
+                            ))}
                           </div>
-                        ) : m.bannerImage ? (
-                          <img
-                            src={m.bannerImage}
-                            alt=""
-                            loading="lazy"
-                            className="w-full h-32 object-cover rounded-lg"
-                          />
-                        ) : null}
-                        
+                        </div>
                         {m.description && (
-                          <p className="whitespace-pre-line" style={{ color: theme.text }}>
-                            {stripHtml(m.description)}
+                          <p className="whitespace-pre-line text-white">
+                            {translationLang !== "fr" ? translatedDescriptions[m.id] || stripHtml(m.description) : stripHtml(m.description)}
                           </p>
                         )}
-                        
-                        <div className="grid grid-cols-2 gap-2 text-[10px]">
-                          {m.format && (
-                            <div
-                              style={{
-                                backgroundColor: `${theme.accentColor}20`,
-                                border: `1px solid ${theme.accentColor}40`,
-                                padding: "8px",
-                                borderRadius: "6px"
-                              }}
-                            >
-                              <div style={{ color: theme.muted }}>Format</div>
-                              <div className="font-bold" style={{ color: theme.titleColor }}>{m.format}</div>
-                            </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-[10px]">
+                        {m.format && (
+                          <div
+                            style={{
+                              backgroundColor: `${theme.accentColor}20`,
+                              border: `1px solid ${theme.accentColor}40`,
+                              padding: "8px",
+                              borderRadius: "6px"
+                            }}
+                          >
+                            <div style={{ color: theme.muted }}>Format</div>
+                            <div className="font-bold" style={{ color: theme.titleColor }}>{m.format}</div>
+                          </div>
                           )}
                           {m.episodes && (
                             <div

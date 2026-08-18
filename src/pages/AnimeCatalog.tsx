@@ -25,6 +25,7 @@ import {
   CalendarRange,
   Check,
   Clapperboard,
+  Compass,
   Heart,
   Info,
   Pause,
@@ -1133,20 +1134,21 @@ export default function AnimeCatalog() {
 
         <section className="px-4 pb-5 pt-4 md:px-8 xl:px-10" data-testid="catalog-premium-player-section">
           <div className="mx-auto max-w-[1120px] space-y-6">
-            <header className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-5 sm:p-6 lg:p-8" data-testid="catalog-premium-hero">
-              <div
-                className="pointer-events-none absolute inset-0 opacity-90"
-                style={{
-                  background:
-                    "radial-gradient(circle at 18% 18%, rgba(56,189,248,0.16), transparent 22%), radial-gradient(circle at 82% 16%, rgba(244,114,182,0.12), transparent 24%), linear-gradient(135deg, rgba(255,255,255,0.03), transparent 42%)",
-                }}
-              />
-              <div className="relative grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
-                <div
-                  className="relative w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-black"
-                  style={{ aspectRatio: "854 / 480" }}
-                  data-testid="catalog-premium-hero-spacer"
+            <header className="theme-panel-surface glass3d-panel glass3d-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-5 sm:p-6 lg:p-8" data-testid="catalog-premium-hero">
+              <div className="pointer-events-none absolute inset-0 opacity-90" style={{ background: "radial-gradient(circle at 18% 18%, rgba(56,189,248,0.16), transparent 22%), radial-gradient(circle at 82% 16%, rgba(244,114,182,0.12), transparent 24%), linear-gradient(135deg, rgba(255,255,255,0.03), transparent 42%)" }} />
+              <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowQuickNav(true)}
+                  className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white shadow-[0_14px_35px_rgba(0,0,0,0.24)] transition hover:border-white/25 hover:bg-black/50"
+                  aria-label="Ouvrir la navigation rapide"
+                  data-testid="catalog-quicknav-open-button"
                 >
+                  <Compass className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="relative grid gap-6 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
+                <div className="relative w-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-black" style={{ aspectRatio: "854 / 480" }} data-testid="catalog-premium-hero-spacer">
                   <video
                     src={CATALOG_TOP_VIDEO}
                     autoPlay
@@ -1208,7 +1210,7 @@ export default function AnimeCatalog() {
               </Card>
             )}
 
-            <div id="catalog-reader" className="relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] bg-black/90 p-4 sm:p-5 lg:p-6 scroll-mt-24" data-testid="catalog-giant-player-shell">
+            <div id="catalog-reader" className="relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] bg-black/90 p-4 sm:p-5 lg:p-6 scroll-mt-24 glass3d-panel glass3d-surface" data-testid="catalog-giant-player-shell">
 
               {loading && !items.length ? (
                 <div className="relative space-y-5" data-testid="catalog-player-loading-state">
@@ -1348,7 +1350,7 @@ export default function AnimeCatalog() {
                   </div>
 
                   <div className="grid gap-4 xl:grid-cols-[1fr_.56fr]">
-                    <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] text-white shadow-[0_20px_40px_rgba(6,12,24,0.28)]" data-testid="catalog-player-meta-card">
+                    <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] text-white shadow-[0_20px_40px_rgba(6,12,24,0.28)] glass3d-panel glass3d-surface" data-testid="catalog-player-meta-card">
                       <CardContent className="space-y-4 p-5 sm:p-6">
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge className="rounded-full border border-white/12 bg-white/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/80" data-testid="catalog-player-format-badge">
@@ -1407,7 +1409,7 @@ export default function AnimeCatalog() {
                       </CardContent>
                     </div>
 
-                    <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] text-white shadow-[0_20px_40px_rgba(6,12,24,0.28)]" data-testid="catalog-player-controls-card">
+                    <div className="rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.03)] text-white shadow-[0_20px_40px_rgba(6,12,24,0.28)] glass3d-panel glass3d-surface" data-testid="catalog-player-controls-card">
                       <CardContent className="space-y-5 p-5 sm:p-6">
                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                           <Button type="button" variant="glass" className="min-h-[48px] rounded-2xl text-white" onClick={handlePrevious} disabled={!playerQueue.length} data-testid="catalog-player-prev-button" aria-label="Précédent">
@@ -1878,7 +1880,7 @@ export default function AnimeCatalog() {
         </section>
 
         <Dialog open={!!detailMedia} onOpenChange={(open) => !open && setDetailMedia(null)}>
-          <DialogContent className="max-w-5xl border-[var(--theme-border-soft)] bg-[rgba(10,14,24,0.95)] text-white" data-testid="catalog-detail-dialog">
+          <DialogContent className="max-w-5xl border-[var(--theme-border-soft)] bg-[rgba(10,14,24,0.95)] text-white glass3d-panel glass3d-surface" data-testid="catalog-detail-dialog">
             {detailMedia && (
               <>
                 <DialogHeader>
@@ -1894,17 +1896,17 @@ export default function AnimeCatalog() {
                   <div className="space-y-4">
                     <div className="flex flex-col gap-3">
                       
-                  {Object.keys(detailTrailers).length > 0 && (
+                  {availableCatalogLangs.length > 0 && (
                     <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border-2 border-amber-500/80 bg-amber-500/20 p-3 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
                       <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" /> Changer la langue (Audio/Sous-titres) :
+                        <Sparkles className="w-4 h-4" /> Choisir la version du trailer :
                       </span>
-                      <Select value={activeTrailerLang} onValueChange={setActiveTrailerLang}>
-                        <SelectTrigger className="w-full sm:w-[200px] h-9 bg-black/80 border-amber-500/50 text-white font-bold text-xs">
-                          <SelectValue placeholder="Choisir..." />
+                      <Select value={activeTrailerLang} onValueChange={(val) => { releaseDeepLink(); setActiveTrailerLang(val); setIsPlaying(true); }}>
+                        <SelectTrigger className="w-full sm:w-[220px] h-10 bg-black/80 border-amber-500/50 text-white font-bold text-sm">
+                          <SelectValue placeholder="Changer la version..." />
                         </SelectTrigger>
                         <SelectContent className="bg-black/95 border-amber-500/50 text-white">
-                          {Object.keys(detailTrailers).map(lang => (
+                          {availableCatalogLangs.map((lang) => (
                             <SelectItem key={lang} value={lang} className="focus:bg-amber-500/20 focus:text-amber-400 cursor-pointer">
                               {CATALOG_VERSION_LABELS[lang] || lang.toUpperCase()}
                             </SelectItem>
@@ -1939,15 +1941,15 @@ export default function AnimeCatalog() {
                         )}
                       </div>
                       
-                      {Object.keys(detailTrailers).length > 0 && (
+                      {availableCatalogLangs.length > 0 && (
                         <div className="flex items-center gap-3" data-testid="catalog-detail-language-selector-container">
-                          <span className="text-xs text-white/50 font-bold uppercase tracking-wider">Langue du Trailer:</span>
+                          <span className="text-xs text-white/50 font-bold uppercase tracking-wider">Version du Trailer :</span>
                           <Select value={activeTrailerLang} onValueChange={setActiveTrailerLang}>
                             <SelectTrigger className="w-[140px] h-8 bg-white/5 border-white/10 text-xs" data-testid="catalog-detail-language-selector">
                               <SelectValue placeholder="Choisir..." />
                             </SelectTrigger>
                             <SelectContent data-testid="catalog-detail-language-options">
-                              {Object.keys(detailTrailers).map(lang => (
+                              {availableCatalogLangs.map((lang) => (
                                 <SelectItem key={lang} value={lang} data-testid={`catalog-detail-language-option-${lang}`}>
                                   {CATALOG_VERSION_LABELS[lang] || lang.toUpperCase()}
                                 </SelectItem>

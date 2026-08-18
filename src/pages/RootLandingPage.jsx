@@ -370,6 +370,7 @@ export default function RootLandingPage() {
     [activeCatalogCards],
   );
 
+  const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   const [versionPanelState, setVersionPanelState] = useState({
     openInstanceId: null,
     title: "",
@@ -379,6 +380,8 @@ export default function RootLandingPage() {
     selectedVersion: "vo",
     loading: false,
     error: "",
+    panelLeft: null,
+    panelTop: null,
   });
 
   const extractLangId = (arr) => {
@@ -411,12 +414,17 @@ export default function RootLandingPage() {
       loading: false,
       error: "",
       availableVersions: {},
+      panelLeft: null,
+      panelTop: null,
     }));
   }, []);
 
   const openVersionPanel = useCallback((event, item, instanceId) => {
     event.preventDefault();
     event.stopPropagation();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const left = rect.right + 16;
+    const top = Math.max(rect.top, 80);
     setVersionPanelState((prev) => ({
       ...prev,
       openInstanceId: instanceId,
@@ -427,6 +435,8 @@ export default function RootLandingPage() {
       error: "",
       availableVersions: {},
       selectedVersion: "vo",
+      panelLeft: left,
+      panelTop: top,
     }));
 
     fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(item.title)}`)
@@ -462,6 +472,10 @@ export default function RootLandingPage() {
       ...prev,
       selectedVersion: versionCode,
     }));
+  }, []);
+
+  const togglePreviewSound = useCallback(() => {
+    setPreviewSoundEnabled((value) => !value);
   }, []);
 
   return (
@@ -578,7 +592,7 @@ export default function RootLandingPage() {
                                     title={item.title}
                                     thumbnail={item.image}
                                     vertical
-                                    muted={false}
+                                    muted={!previewSoundEnabled}
                                     delay={120}
                                     className="h-full w-full"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
@@ -614,20 +628,33 @@ export default function RootLandingPage() {
                     ))}
                   </div>
                   {versionPanelState.openInstanceId && (
-                    <div className="absolute right-4 top-16 z-30 hidden xl:block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white glass3d-panel glass3d-surface">
-                      <div className="flex items-start justify-between gap-3">
+                    <div
+                      className="fixed z-30 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, top: versionPanelState.panelTop ?? undefined, minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
+                    >
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
                           <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
                           <p className="mt-1 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
                         </div>
-                        <button
-                          type="button"
-                          onClick={closeVersionPanel}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
-                          aria-label="Fermer le panneau de versions"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={togglePreviewSound}
+                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-3 text-xs uppercase tracking-[0.24em] text-white/80 hover:text-white"
+                            aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+                          >
+                            {previewSoundEnabled ? "Son ON" : "Son OFF"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closeVersionPanel}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
+                            aria-label="Fermer le panneau de versions"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                       <div className="mt-4 flex flex-col gap-2">
                         {versionPanelState.loading ? (
