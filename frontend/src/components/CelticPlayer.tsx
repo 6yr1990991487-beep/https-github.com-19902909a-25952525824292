@@ -18,34 +18,44 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
       const tried = new Set<string>();
       const candidates = [
         playlistUrl,
-        // try Vite base URL + relative path
         `${import.meta.env.BASE_URL || '/'}${playlistUrl.replace(/^\//, '')}`,
-        // try relative path without leading slash
         playlistUrl.replace(/^\//, ''),
-        // try origin-prefixed absolute
         `${window.location.origin}${playlistUrl}`
       ];
+      const triedArr: string[] = [];
+      const errors: Record<string, string> = {};
       for (const url of candidates) {
         if (!url || tried.has(url)) continue;
         tried.add(url);
+        triedArr.push(url);
         try {
           const resp = await fetch(url);
-          if (!resp.ok) continue;
+          if (!resp.ok) {
+            errors[url] = `HTTP ${resp.status}`;
+            continue;
+          }
           const j = await resp.json();
           if (cancelled) return;
           if (Array.isArray(j)) {
             const list = j.map((u: string) => ({ url: u, title: decodeURIComponent((u as string).split('/').pop() || u) }));
             setPlaylist(list);
+            // expose debug info if enabled
+            setDebugInfo({ tried: triedArr, errors });
             return;
           }
-        } catch (e) {
-          // try next candidate
+        } catch (e: any) {
+          errors[url] = e?.message || String(e);
         }
       }
-      // nothing found; leave playlist empty
+      setDebugInfo({ tried: triedArr, errors });
     })();
     return () => { cancelled = true; };
   }, [playlistUrl]);
+
+  // Debug UI state
+  const [debugInfo, setDebugInfo] = useState<{ tried: string[]; errors: Record<string, string> }>({ tried: [], errors: {} });
+  const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const debugEnabled = params.get('celticDebug') === '1';
 
   useEffect(() => {
     const a = audioRef.current;
@@ -108,6 +118,19 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
           ))}
         </div>
       </div>
+      {debugEnabled && (
+        <div className="fixed left-4 bottom-4 z-50 w-80 max-h-64 overflow-y-auto bg-black/80 text-xs text-white border border-white/20 rounded-md p-2">
+          <div className="flex items-center justify-between mb-2">
+            <strong>Debug CelticPlayer</strong>
+            <button onClick={() => { window.location.search = window.location.search.replace('celticDebug=1', ''); }} className="text-[10px] px-2 py-1 bg-white/5 rounded">Close</button>
+          </div>
+          <div className="mb-2">Tried URLs:</div>
+          {debugInfo.tried.map((u) => (
+            <div key={u} className="break-words mb-1">{u} {debugInfo.errors[u] ? <span className="text-rose-400"> — {debugInfo.errors[u]}</span> : null}</div>
+          ))}
+          <div className="mt-2 text-slate-400">Open console for more details.</div>
+        </div>
+      )}
     </div>
   );
 };
