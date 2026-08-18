@@ -14,13 +14,36 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
 
   useEffect(() => {
     let cancelled = false;
-    fetch(playlistUrl).then(r => r.json()).then((j: string[]) => {
-      if (cancelled) return;
-      const list = j.map(u => ({ url: u, title: decodeURIComponent(u.split('/').pop() || u) }));
-      setPlaylist(list);
-    }).catch(() => {
-      // fallback: empty
-    });
+    (async () => {
+      const tried = new Set<string>();
+      const candidates = [
+        playlistUrl,
+        // try Vite base URL + relative path
+        `${import.meta.env.BASE_URL || '/'}${playlistUrl.replace(/^\//, '')}`,
+        // try relative path without leading slash
+        playlistUrl.replace(/^\//, ''),
+        // try origin-prefixed absolute
+        `${window.location.origin}${playlistUrl}`
+      ];
+      for (const url of candidates) {
+        if (!url || tried.has(url)) continue;
+        tried.add(url);
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) continue;
+          const j = await resp.json();
+          if (cancelled) return;
+          if (Array.isArray(j)) {
+            const list = j.map((u: string) => ({ url: u, title: decodeURIComponent((u as string).split('/').pop() || u) }));
+            setPlaylist(list);
+            return;
+          }
+        } catch (e) {
+          // try next candidate
+        }
+      }
+      // nothing found; leave playlist empty
+    })();
     return () => { cancelled = true; };
   }, [playlistUrl]);
 
@@ -53,7 +76,7 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
   return (
     <div className={`relative z-10 pointer-events-auto ${className || ''}`}> 
       <div className="w-full mx-auto max-w-3xl">
-        <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-3 flex items-center gap-4">
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 flex items-center gap-4">
           <div className="flex-1">
             <canvas ref={canvasRef as any} className="w-full h-20 rounded-md" />
             <div className="mt-2 text-sm text-slate-200">{playlist[current]?.title || 'Aucune piste chargée'}</div>
