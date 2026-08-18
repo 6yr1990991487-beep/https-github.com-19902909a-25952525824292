@@ -1195,7 +1195,7 @@ const PrimeVideo = () => {
           </div>
         )}
       </section>
-      <MangaUniverseBanner />
+      <MangaUniverseBanner showText={false} />
     </PageShell>
   );
 };

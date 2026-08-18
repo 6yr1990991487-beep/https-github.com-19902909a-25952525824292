@@ -7,7 +7,7 @@ import { ResilientVideoFrame } from "@/components/ResilientVideoFrame";
 type BgMode = "image" | "color" | "media" | "video";
 const DEFAULT_MANGA_UNIVERSE_VIDEO = "/manga-universe-banner.mp4";
 
-export const MangaUniverseBanner = ({ videoIds }: { videoIds?: string[] } = {}) => {
+export const MangaUniverseBanner = ({ videoIds, showText = true }: { videoIds?: string[]; showText?: boolean } = {}) => {
   const hasVideos = !!videoIds && videoIds.length > 0;
   const [bgMode, setBgMode] = useState<BgMode>("video");
   const [bgColor, setBgColor] = useState("#0b0b16");
@@ -143,38 +143,40 @@ export const MangaUniverseBanner = ({ videoIds }: { videoIds?: string[] } = {}) 
           </button>
         ))}
 
-        {/* Content overlay + CTA link */}
-        <Link
-          to="/chaine-youtube/manga"
-          aria-label="Découvrir l'Univers Manga & Anime"
-          className="absolute inset-0 flex flex-col md:flex-row items-center justify-between gap-4 p-6 sm:p-10 z-10 focus:outline-none focus:ring-4 focus:ring-primary/60 rounded-3xl"
-        >
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center">
-              <BookOpen className="w-7 h-7 text-white" />
-            </div>
-            <div className="text-white">
-              <p className="text-[11px] uppercase tracking-[0.3em] text-white/70 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3" /> Section dédiée
-              </p>
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
-                Univers Manga &amp; Anime
-              </h2>
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-2 text-white/70">
-            <Film className="w-5 h-5" />
-            <span className="text-xs uppercase tracking-widest">Image · Vidéo</span>
-          </div>
-
-          <span
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1"
-            style={{ background: "var(--gradient-magenta)" }}
+        {/* Content overlay + CTA link (optional) */}
+        {showText && (
+          <Link
+            to="/chaine-youtube/manga"
+            aria-label="Découvrir l'Univers Manga & Anime"
+            className="absolute inset-0 flex flex-col md:flex-row items-center justify-between gap-4 p-6 sm:p-10 z-10 focus:outline-none focus:ring-4 focus:ring-primary/60 rounded-3xl"
           >
-            Entrer dans l'univers <ArrowRight className="w-4 h-4" />
-          </span>
-        </Link>
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center">
+                <BookOpen className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-white">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-white/70 flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3" /> Section dédiée
+                </p>
+                <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
+                  Univers Manga &amp; Anime
+                </h2>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2 text-white/70">
+              <Film className="w-5 h-5" />
+              <span className="text-xs uppercase tracking-widest">Image · Vidéo</span>
+            </div>
+
+            <span
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white shadow-lg transition-transform group-hover:translate-x-1"
+              style={{ background: "var(--gradient-magenta)" }}
+            >
+              Entrer dans l'univers <ArrowRight className="w-4 h-4" />
+            </span>
+          </Link>
+        )}
 
         {/* Background customization panel */}
         <div className="absolute bottom-3 right-3 z-30 flex flex-col items-end gap-2">
