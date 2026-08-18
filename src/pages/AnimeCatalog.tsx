@@ -1208,7 +1208,7 @@ export default function AnimeCatalog() {
               </Card>
             )}
 
-            <div id="catalog-reader" className="theme-panel-surface relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] p-4 sm:p-5 lg:p-6 scroll-mt-24" data-testid="catalog-giant-player-shell">
+            <div id="catalog-reader" className="relative overflow-hidden rounded-[2rem] border border-[var(--theme-border-soft)] bg-black/90 p-4 sm:p-5 lg:p-6 scroll-mt-24" data-testid="catalog-giant-player-shell">
 
               {loading && !items.length ? (
                 <div className="relative space-y-5" data-testid="catalog-player-loading-state">
@@ -1223,7 +1223,7 @@ export default function AnimeCatalog() {
                 <div className="relative space-y-5">
                   
                   {availableCatalogLangs.length > 1 && (
-                    <div className="mb-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 rounded-xl border-2 border-amber-500/80 bg-amber-500/20 p-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] z-20 relative backdrop-blur-md">
+                    <div className="mb-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 rounded-xl border-2 border-amber-500/80 bg-amber-500/20 p-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] z-20 relative">
                       <span className="text-sm sm:text-base font-black uppercase tracking-widest text-amber-400 flex items-center gap-2">
                         <Sparkles className="w-5 h-5" /> Choisir la langue / Sous-titres du Trailer :
                       </span>
