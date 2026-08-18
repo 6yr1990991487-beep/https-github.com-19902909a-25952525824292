@@ -599,69 +599,81 @@ export default function RootLandingPage() {
                             <button
                               type="button"
                               onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                              className="absolute top-2 right-2 z-20 inline-flex items-center justify-center rounded-full border border-white/15 bg-black/50 p-2 text-white transition hover:bg-white/10"
+                              className="absolute top-2 right-2 z-20 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 p-2 text-white transition hover:bg-white/20"
                               aria-label={`Choisir la version du trailer pour ${item.title}`}
                               data-testid={`home-platforms-version-button-${item.id}`}
                             >
                               <Play className="h-4 w-4" />
                             </button>
-                            {versionPanelState.openInstanceId === `${item.id}-${rowIndex}-${index}` && (
-                              <div className="absolute top-2 right-full z-30 mr-3 w-[18rem] max-w-[calc(100vw-3rem)] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white">
-                                <div className="flex items-start justify-between gap-3">
-                                  <div>
-                                    <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
-                                    <p className="mt-1 text-sm font-semibold leading-5 text-white">{item.title}</p>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={closeVersionPanel}
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
-                                    aria-label="Fermer le panneau de versions"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </button>
-                                </div>
-                                <div className="mt-4 flex flex-col gap-2">
-                                  {versionPanelState.loading ? (
-                                    <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
-                                      <Loader2 className="h-4 w-4 animate-spin" />
-                                      Chargement des versions...
-                                    </div>
-                                  ) : versionPanelState.error ? (
-                                    <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
-                                      {versionPanelState.error}
-                                    </div>
-                                  ) : (
-                                    VERSION_ORDER.filter((code) => versionPanelState.availableVersions[code]).map((code) => (
-                                      <button
-                                        key={code}
-                                        type="button"
-                                        onClick={() => selectPanelVersion(code)}
-                                        className={`w-full rounded-2xl px-3 py-2 text-left text-sm transition ${versionPanelState.selectedVersion === code ? "bg-white/15 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "bg-black/20 text-white/80 hover:bg-white/10"}`}
-                                      >
-                                        {getVersionLabel(code)}
-                                      </button>
-                                    ))
-                                  )}
-                                </div>
-                                <div className="mt-4 flex items-center justify-between gap-2">
-                                  <Link
-                                    to={buildVersionedHref(item.href, versionPanelState.selectedVersion, versionPanelState.availableVersions, item.trailerId)}
-                                    className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
-                                    onClick={closeVersionPanel}
-                                  >
-                                    Voir cette version
-                                  </Link>
-                                  <button
-                                    type="button"
-                                    onClick={closeVersionPanel}
-                                    className="text-xs uppercase tracking-[0.24em] text-white/60 hover:text-white"
-                                  >
-                                    Fermer
-                                  </button>
-                                </div>
-                              </div>
-                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {versionPanelState.openInstanceId && (
+                  <div className="absolute right-4 top-16 z-30 hidden xl:block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/15 bg-white/10 p-4 shadow-[0_32px_120px_-60px_rgba(0,0,0,0.7)] backdrop-blur-2xl text-white glass3d-panel glass3d-surface">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
+                        <p className="mt-1 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={closeVersionPanel}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
+                        aria-label="Fermer le panneau de versions"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="mt-4 flex flex-col gap-2">
+                      {versionPanelState.loading ? (
+                        <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-white/70">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Chargement des versions...
+                        </div>
+                      ) : versionPanelState.error ? (
+                        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-3 text-sm text-rose-100">
+                          {versionPanelState.error}
+                        </div>
+                      ) : VERSION_ORDER.filter((code) => versionPanelState.availableVersions[code]).map((code) => (
+                        <button
+                          key={code}
+                          type="button"
+                          onClick={() => selectPanelVersion(code)}
+                          className={`w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition ${versionPanelState.selectedVersion === code ? "bg-white/15 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "bg-black/20 text-white/80 hover:bg-white/10"}`}
+                        >
+                          {getVersionLabel(code)}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-2">
+                      <Link
+                        to={buildVersionedHref(versionPanelState.href, versionPanelState.selectedVersion, versionPanelState.availableVersions, versionPanelState.trailerId)}
+                        className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
+                        onClick={closeVersionPanel}
+                      >
+                        Voir cette version
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={closeVersionPanel}
+                        className="text-xs uppercase tracking-[0.24em] text-white/60 hover:text-white"
+                      >
+                        Fermer
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+  </div>
                           </div>
                         ))}
                       </div>

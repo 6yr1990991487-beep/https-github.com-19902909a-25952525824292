@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
-import { Palette, ChevronDown, Sparkles, Award, Zap, Heart, Play } from "lucide-react";
+import { API_BASE as API } from "@/lib/apiBase";
+import { Palette, ChevronDown, Sparkles, Award, Zap, Heart, Play, Loader2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import NeonFooterBar from "@/components/NeonFooterBar";
 import { Navbar } from "@/components/Navbar";
@@ -48,6 +49,15 @@ query ($page: Int, $perPage: Int) {
   }
 }`;
 
+const TRAILER_VERSION_LABEL = {
+  vostfr: "VOSTFR",
+  vf: "VF (Doublage)",
+  vo: "VO (Japonais)",
+  ensub: "English (Sub)",
+  endub: "English Dub",
+};
+const VERSION_ORDER = ["vostfr", "vf", "vo", "ensub", "endub"];
+
 function formatCountdown(seconds: number) {
   if (seconds <= 0) return "En diffusion";
   const d = Math.floor(seconds / 86400);
@@ -80,6 +90,14 @@ export default function AnimeCountdown() {
   const [aiPresenterShown, setAiPresenterShown] = useState(false);
   const [interactedItems, setInteractedItems] = useState<Set<number>>(new Set());
   const [selectedAnime, setSelectedAnime] = useState<Media | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const [selectedFavoriteId, setSelectedFavoriteId] = useState<number | null>(null);
+  const [versionPanelState, setVersionPanelState] = useState({
+    loading: false,
+    availableVersions: {} as Record<string, string[]>,
+    selectedVersion: "vo",
+    error: "",
+  });
 
   const stripHtml = (s?: string) =>
     (s || "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").trim();
@@ -113,6 +131,66 @@ export default function AnimeCountdown() {
       setAiPresenterShown(true);
     }
   };
+
+  const favoriteItems = useMemo(() => items.filter((item) => favoriteIds.includes(item.id)), [items, favoriteIds]);
+
+  const saveFavoriteIds = useCallback((updater: (prev: number[]) => number[]) => {
+    setFavoriteIds((prev) => {
+      const next = updater(prev);
+      try {
+        localStorage.setItem("lovanet.countdown.favorites", JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleFavorite = useCallback((id: number) => {
+    saveFavoriteIds((prev) => (prev.includes(id) ? prev.filter((existing) => existing !== id) : [...prev, id]));
+  }, [saveFavoriteIds]);
+
+  const getVersionLabel = useCallback((code: string) => TRAILER_VERSION_LABEL[code] || code.toUpperCase(), []);
+
+  const fetchFavoriteVersions = useCallback(async (item: Media) => {
+    setVersionPanelState({ loading: true, availableVersions: {}, selectedVersion: "vo", error: "" });
+    try {
+      const response = await fetch(`${API}/prime/multilingual-trailers?q=${encodeURIComponent(item.title.english || item.title.romaji || "")}`);
+      const data = await response.json();
+      const versions = Object.entries(data?.results || {}).reduce((acc, [code, values]) => {
+        if (Array.isArray(values) && values.length > 0) {
+          acc[code] = values.map((value) => (typeof value === "string" ? value : value?.id)).filter(Boolean) as string[];
+        }
+        return acc;
+      }, {} as Record<string, string[]>);
+      const firstAvailable = VERSION_ORDER.find((code) => versions[code]) || Object.keys(versions)[0] || "vo";
+      setVersionPanelState({ loading: false, availableVersions: versions, selectedVersion: firstAvailable, error: Object.keys(versions).length ? "" : "Aucune version disponible." });
+    } catch (error) {
+      setVersionPanelState({ loading: false, availableVersions: {}, selectedVersion: "vo", error: "Impossible de charger les versions." });
+    }
+  }, []);
+
+  const selectPanelVersion = useCallback((versionCode: string) => {
+    setVersionPanelState((prev) => ({ ...prev, selectedVersion: versionCode }));
+  }, []);
+
+  const buildTrailerUrl = useCallback((versionCode: string, item: Media) => {
+    const id = versionPanelState.availableVersions[versionCode]?.[0] || item.trailer?.id;
+    return id ? `https://youtu.be/${id}` : "#";
+  }, [versionPanelState.availableVersions]);
+
+  const selectFavorite = useCallback((id: number) => {
+    setSelectedFavoriteId(id);
+    const item = items.find((m) => m.id === id);
+    if (item) fetchFavoriteVersions(item);
+  }, [items, fetchFavoriteVersions]);
+
+  const selectedFavorite = useMemo(
+    () => items.find((item) => item.id === selectedFavoriteId) || (favoriteItems.length ? favoriteItems[0] : null),
+    [items, selectedFavoriteId, favoriteItems],
+  );
+
+  const isFavorite = useCallback((id: number) => favoriteIds.includes(id), [favoriteIds]);
 
   const fetchData = async () => {
     try {
@@ -172,6 +250,14 @@ export default function AnimeCountdown() {
       if (c) { setItems(JSON.parse(c)); setLoading(false); }
     } catch {
       // ignore cache read failure
+    }
+    try {
+      const storedFavorites = localStorage.getItem("lovanet.countdown.favorites");
+      if (storedFavorites) {
+        setFavoriteIds(JSON.parse(storedFavorites));
+      }
+    } catch {
+      // ignore
     }
     try {
       const e = localStorage.getItem("lovanet.cache.countdown.expanded");
@@ -277,17 +363,154 @@ export default function AnimeCountdown() {
         </div>
       </div>
 
+      <section className="relative px-4 md:px-10 mt-6">
+        <div className="glass3d-panel nav-bar-shell nav-theme-shell rounded-[2rem] border border-white/10 p-6 overflow-hidden">
+          <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.32em] text-white/60">Favoris suivis</p>
+              <h2 className="text-3xl font-black text-white">Suivi des séries</h2>
+              <p className="max-w-2xl text-sm text-white/70">Retrouvez vos animés favoris, leur prochain épisode, et choisissez la version du trailer avant lecture.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {favoriteItems.length > 0 ? (
+                <button
+                  type="button"
+                  className="nav-theme-chip inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold"
+                  onClick={() => selectFavorite(favoriteItems[0].id)}
+                >
+                  Voir dernier favori
+                </button>
+              ) : (
+                <div className="rounded-full border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/70">Aucun favori suivi</div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-[1.2fr_0.95fr]">
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {favoriteItems.length ? favoriteItems.map((item) => {
+                  const airingAt = item.nextAiringEpisode?.airingAt ?? 0;
+                  const remaining = airingAt ? formatCountdown(Math.max(0, airingAt - now)) : "Date inconnue";
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => selectFavorite(item.id)}
+                      className={`group rounded-[1.5rem] border border-white/15 bg-white/10 p-4 text-left transition-all duration-300 hover:border-white/30 hover:shadow-[0_26px_60px_-32px_rgba(255,255,255,0.95)] ${selectedFavoriteId === item.id ? "ring-2 ring-fuchsia-400/50" : ""}`}
+                    >
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <span className="text-xs uppercase tracking-[0.3em] text-white/50">Suivi</span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
+                          className="rounded-full border border-white/15 bg-black/30 p-2 text-white/80 hover:text-white"
+                          aria-label={isFavorite(item.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+                        >
+                          {isFavorite(item.id) ? "❤️" : "🤍"}
+                        </button>
+                      </div>
+                      <p className="text-sm font-semibold text-white line-clamp-2">{item.title.english || item.title.romaji}</p>
+                      <p className="mt-2 text-[11px] text-white/60">Épisode {item.nextAiringEpisode?.episode ?? "?"} • {remaining}</p>
+                    </button>
+                  );
+                }) : (
+                  <div className="rounded-[1.5rem] border border-white/15 bg-white/5 p-4 text-sm text-white/70">
+                    Ajoutez des animés à vos favoris depuis les cartes pour les suivre ici.
+                  </div>
+                )}
+              </div>
+
+              {selectedFavorite ? (
+                <div className="rounded-[2rem] border border-white/15 bg-white/10 p-5 shadow-[0_28px_80px_-40px_rgba(0,0,0,0.75)]">
+                  <div className="flex flex-col gap-5 xl:flex-row xl:items-center">
+                    <div className="space-y-3 xl:flex-1">
+                      <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.32em] text-white/60">
+                        <span>Favori sélectionné</span>
+                        <span className="inline-flex h-2.5 w-2.5 rounded-full bg-fuchsia-400" />
+                      </div>
+                      <h3 className="text-2xl font-black text-white">{selectedFavorite.title.english || selectedFavorite.title.romaji}</h3>
+                      <p className="text-sm text-white/70">Prochain épisode dans <span className="font-semibold text-white">{selectedFavorite.nextAiringEpisode ? formatCountdown(Math.max(0, selectedFavorite.nextAiringEpisode.airingAt - now)) : "N/A"}</span></p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <span className="rounded-2xl border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/80">Genre: {(selectedFavorite.genres || []).slice(0, 2).join(" • ") || "N/A"}</span>
+                        <span className="rounded-2xl border border-white/15 bg-black/30 px-3 py-2 text-sm text-white/80">Studio: {selectedFavorite.studios?.nodes?.[0]?.name || "N/A"}</span>
+                      </div>
+                    </div>
+                    <div className="relative w-full max-w-[240px] overflow-hidden rounded-[2rem] border border-white/15 bg-black/50 shadow-[0_24px_80px_-34px_rgba(0,0,0,0.75)]">
+                      {selectedFavorite.trailer?.id ? (
+                        <iframe
+                          src={buildYouTubeEmbedUrl(selectedFavorite.trailer.id, { autoplay: false, muted: false, controls: 1, playsInline: true })}
+                          title={`Trailer ${selectedFavorite.title.english || selectedFavorite.title.romaji || ""}`}
+                          className="h-[420px] w-full object-cover"
+                          loading="lazy"
+                          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                        />
+                      ) : (
+                        <img
+                          src={selectedFavorite.coverImage.extraLarge}
+                          alt={selectedFavorite.title.english || selectedFavorite.title.romaji}
+                          className="h-[420px] w-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-3 md:grid-cols-2">
+                    <div className="rounded-[1.75rem] border border-white/15 bg-black/30 p-4">
+                      <p className="text-xs uppercase tracking-[0.32em] text-white/60">Versions disponibles</p>
+                      <div className="mt-3 grid gap-2">
+                        {versionPanelState.loading ? (
+                          <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-white/70">
+                            <Loader2 className="h-4 w-4 animate-spin" /> Chargement...
+                          </div>
+                        ) : versionPanelState.error ? (
+                          <p className="rounded-2xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-sm text-rose-100">{versionPanelState.error}</p>
+                        ) : VERSION_ORDER.filter((code) => versionPanelState.availableVersions[code]).map((code) => (
+                          <button
+                            key={code}
+                            type="button"
+                            onClick={() => selectPanelVersion(code)}
+                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition ${versionPanelState.selectedVersion === code ? "bg-fuchsia-500 text-white shadow-[0_0_24px_rgba(255,255,255,0.14)]" : "bg-white/10 text-white/80 hover:bg-white/15"}`}
+                          >
+                            {getVersionLabel(code)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-[1.75rem] border border-white/15 bg-black/30 p-4">
+                      <p className="text-xs uppercase tracking-[0.32em] text-white/60">Lecture</p>
+                      <a
+                        href={buildTrailerUrl(versionPanelState.selectedVersion, selectedFavorite)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-3 inline-flex w-full items-center justify-center rounded-2xl bg-fuchsia-500 px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
+                      >
+                        Lire la version {getVersionLabel(versionPanelState.selectedVersion)}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-[1.75rem] border border-white/15 bg-black/20 p-5 text-white/70">
+                  Sélectionnez un favori pour afficher sa fiche, sa miniature verticale et les versions disponibles.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <header className="relative px-4 md:px-10 pt-10 pb-6 nav-bar-shell nav-theme-shell glass3d-panel">
         <div className="text-center">
           <motion.h1
             className="text-3xl md:text-5xl font-black tracking-wide"
-            style={{ color: theme.titleColor }}
+            style={{ color: "#ffffff" }}
             animate={{ scale: [1, 1.02, 1] }}
             transition={{ duration: 4, repeat: Infinity }}
           >
             Animés à venir
           </motion.h1>
-          <p className="text-sm mt-2" style={{ color: theme.muted }}>
+          <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.85)" }}>
             Explorez les prochains épisodes et gagnez des récompenses 🎁
           </p>
         </div>
@@ -317,7 +540,7 @@ export default function AnimeCountdown() {
       </header>
 
       <section className="relative px-4 md:px-10 nav-bar-shell nav-theme-shell glass3d-panel p-6">
-        {loading && <p className="text-center" style={{ color: theme.muted }}>Chargement…</p>}
+        {loading && <p className="text-center" style={{ color: "rgba(255,255,255,0.85)" }}>Chargement…</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {items.map((m) => {
             const airingAt = m.nextAiringEpisode!.airingAt;
@@ -397,14 +620,14 @@ export default function AnimeCountdown() {
                 {/* Premium content section */}
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
-                    <div className="text-xs" style={{ color: theme.muted }}>
+                    <div className="text-xs" style={{ color: "rgba(255,255,255,0.75)" }}>
                       Épisode {m.nextAiringEpisode!.episode}
                       {m.episodes ? ` / ${m.episodes}` : ""}
                     </div>
                     {isInteracted && <Sparkles className="w-4 h-4" style={{ color: theme.accentColor }} />}
                   </div>
                   
-                  <h2 className="text-base font-bold line-clamp-2 mb-3" style={{ color: theme.text }}>
+                  <h2 className="text-base font-bold line-clamp-2 mb-3" style={{ color: "#ffffff" }}>
                     {m.title.english || m.title.romaji}
                   </h2>
                   
@@ -422,7 +645,7 @@ export default function AnimeCountdown() {
                     {formatCountdown(remaining)}
                   </motion.div>
                   
-                  <div className="text-center text-[11px] mb-3" style={{ color: theme.muted }}>
+                  <div className="text-center text-[11px] mb-3" style={{ color: "rgba(255,255,255,0.72)" }}>
                     {new Date(airingAt * 1000).toLocaleString("fr-FR")}
                   </div>
                   
