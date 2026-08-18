@@ -27,7 +27,7 @@ export const Footer = () => {
           <div className="space-y-5">
             <div className="theme-footer-video-shell relative overflow-hidden rounded-[1.75rem] border border-[var(--theme-border-soft)]" data-testid="footer-lovanet-video-shell">
               <video
-                className="h-[250px] w-full object-cover object-center scale-[1.01]"
+                className="h-[250px] w-full bg-black/70 object-contain object-center"
                 src={footerNavBannerVideo.url}
                 autoPlay
                 muted
