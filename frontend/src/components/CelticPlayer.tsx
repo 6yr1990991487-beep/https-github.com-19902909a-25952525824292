@@ -51,7 +51,7 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
   };
 
   return (
-    <div className={`relative ${className || ''}`}>
+    <div className={`absolute inset-0 z-50 pointer-events-none ${className || ''}`}>
       <div className="absolute inset-x-0 top-4 mx-auto w-full max-w-3xl pointer-events-auto">
         <div className="bg-black/30 backdrop-blur-sm border border-white/10 rounded-2xl p-3 flex items-center gap-4">
           <div className="flex-1">
