@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import backgroundDecorGif from '@/assets/background-decor.gif.asset.json';
+import backgroundDecorVideo from '@/assets/background-decor-video.mp4.asset.json';
 
 const Leaf = ({ delay, x, duration }) => (
   <motion.div
@@ -131,15 +131,21 @@ export const PremiumBorders = () => {
   // active we avoid rendering the duplicated decorative particles/leaves.
   return (
     <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-testid="global-video-background">
-      {/* Global animated background (GIF) */}
-      <img
-        src={backgroundDecorGif.url}
-        alt=""
+      {/* Global animated background (video) */}
+      <video
+        src={backgroundDecorVideo.url}
         aria-hidden="true"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
         decoding="async"
+        disablePictureInPicture
         className="absolute inset-0 z-0 h-full w-full object-cover opacity-60"
         style={{ pointerEvents: 'none' }}
         data-bg-decor
+        data-bg-video
       />
 
       {/* All animated décors hidden when toggle is active or when custom decors are used elsewhere */}

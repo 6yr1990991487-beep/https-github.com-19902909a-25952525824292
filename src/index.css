@@ -4440,3 +4440,30 @@ body[data-panel-tint="on"] .page-nav-glass [role="combobox"] {
   .page-nav-glass button:hover,
   .page-nav-glass [role="tab"]:hover { transform: none; }
 }
+
+/* --- Bannière hero portail : ouverture verticale puis rotation horizontale --- */
+@keyframes hero-banner-open {
+  0%   { transform: perspective(1400px) rotateY(0deg) scaleY(0.02); opacity: 0; filter: brightness(2.2) blur(6px); }
+  28%  { transform: perspective(1400px) rotateY(0deg) scaleY(0.06); opacity: 1; filter: brightness(1.8) blur(4px); }
+  55%  { transform: perspective(1400px) rotateY(0deg) scaleY(1); opacity: 1; filter: brightness(1.15) blur(0); }
+  72%  { transform: perspective(1400px) rotateY(-78deg) scaleY(1); }
+  100% { transform: perspective(1400px) rotateY(0deg) scaleY(1); filter: none; }
+}
+@keyframes hero-banner-autoframe {
+  0%   { transform: scale(1.16) translate3d(0, 1.5%, 0); }
+  50%  { transform: scale(1.03) translate3d(0, -1%, 0); }
+  100% { transform: scale(1.16) translate3d(0, 1.5%, 0); }
+}
+.hero-banner-reveal {
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  animation: hero-banner-open 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-banner-autoframe {
+  animation: hero-banner-autoframe 18s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner-reveal, .hero-banner-autoframe { animation: none; }
+}
+

@@ -10,6 +10,7 @@ import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import heroTopBannerVideo from "@/assets/hero-top-banner.mp4.asset.json";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
 import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
@@ -102,11 +103,11 @@ const catalogRowSize = 6;
 
 // Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
 const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: "/custom-hero-banner-web.mp4", label: "Bannière hero (haut)" },
+  { id: "b1", src: heroTopBannerVideo.url, label: "Bannière hero (haut)" },
   { id: "b2", src: "", label: "Carte du haut" },
   { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
 ];
-const BANNER_STATE_KEY = "lovanet.home.banners.v2";
+const BANNER_STATE_KEY = "lovanet.home.banners.v3";
 const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
 
 const loadHomeBanners = () => {
@@ -378,13 +379,13 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
             <div
               ref={bannerShellRef}
-              className="hero-banner-3d root-hero-banner relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] w-full"
+              className="hero-banner-3d root-hero-banner hero-banner-reveal relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] w-full"
               data-testid="root-landing-hero-banner-shell"
             >
               {heroBanner && heroBanner.visible !== false ? (
                 <video
                   ref={bannerVideoRef}
-                  className="hero-banner-video absolute inset-0 h-full w-full object-cover object-center"
+                  className="hero-banner-video hero-banner-autoframe absolute inset-0 h-full w-full object-cover object-center"
                   autoPlay
                   loop
                   muted
@@ -395,9 +396,8 @@ export default function RootLandingPage() {
                   disablePictureInPicture
                   data-testid="hero-banner-background-video"
                   data-bg-video
-                  poster="/custom-hero-banner-poster.jpg"
                 >
-                  <source src={heroBanner.src || "/custom-hero-banner-web.mp4"} type="video/mp4" />
+                  <source src={heroBanner.src || heroTopBannerVideo.url} type="video/mp4" />
                 </video>
               ) : (
                 <div
