@@ -57,3 +57,5 @@ frontend/node_modules/.cache/default-development/32.pack
 src/assets/video_banner_original.mp4
 public/videos/ai-hub-drive-2.mp4
 public/videos/ai-hub-drive.mp4
+dist/videos/ai-hub-drive.mp4
+dist/videos/ai-hub-drive-2.mp4
