@@ -144,8 +144,6 @@ export const AiHub = () => {
       <div className="max-w-7xl w-full">
         {/* Top video banner added from Drive (requested) */}
         <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : { minHeight: '24rem' }}>
-          {/* CelticPlayer sits above the video and provides a transparent animated MP3 player */}
-          <CelticPlayer playlistUrl="/audio/celtic/playlist.json" className="pointer-events-auto" />
             <VideoWithFallback
             ref={videoRef}
             data-testid="aihubs-top-banner-video"
@@ -182,6 +180,10 @@ export const AiHub = () => {
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             {isMuted ? 'Activer le son' : 'Couper le son'}
           </button>
+        </div>
+        {/* Place CelticPlayer below the top banner video */}
+        <div className="w-full mb-6 flex justify-center">
+          <CelticPlayer playlistUrl="/audio/celtic/playlist.json" className="mx-auto max-w-3xl mt-4" />
         </div>
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
