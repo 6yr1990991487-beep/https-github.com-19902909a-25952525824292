@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
-import footerNavBannerVideo from "@/assets/footer-nav-banner.mp4.asset.json";
+import footerNavBannerVideo from "@/assets/footer-logo-banner.mp4.asset.json";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
