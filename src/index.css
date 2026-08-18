@@ -4378,6 +4378,22 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease;
 }
 
+.page-nav-glass [data-no-glass] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: inherit !important;
+}
+
+.page-nav-glass [data-no-glass]:hover,
+.page-nav-glass [data-no-glass]:active {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
 body[data-panel-tint="on"] .page-nav-glass button:not([data-panel-drag-handle]):not(.glass3d-plain):not([data-no-glass]),
 body[data-panel-tint="on"] .page-nav-glass input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
 body[data-panel-tint="on"] .page-nav-glass [role="combobox"] {

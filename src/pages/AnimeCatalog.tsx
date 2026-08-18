@@ -1288,17 +1288,21 @@ export default function AnimeCatalog() {
                             onExhausted={handleCatalogTrailerUnavailable}
                           />
                           {!soundUnlocked && (
-                            <div className="absolute bottom-4 left-4 z-10 max-w-sm rounded-2xl border border-white/10 bg-[rgba(8,12,24,0.6)] px-4 py-3 text-sm text-white/78 backdrop-blur-md" data-testid="catalog-player-sound-hint">
-                              Lecture auto activée en muet. Cliquez sur Lecture, Son, une carte ou le grand écran pour activer le son.
-                            </div>
+                            <>
+                              <div className="absolute bottom-4 left-4 z-10 max-w-sm rounded-2xl border border-white/10 bg-[rgba(8,12,24,0.6)] px-4 py-3 text-sm text-white/78 backdrop-blur-md" data-testid="catalog-player-sound-hint">
+                                Lecture auto activée en muet. Cliquez sur Lecture, Son, une carte ou le grand écran pour activer le son.
+                              </div>
+                              <button
+                                type="button"
+                                onClick={unlockSound}
+                                className="absolute inset-0 z-[1] bg-transparent"
+                                style={{ background: "transparent", border: "none", boxShadow: "none" }}
+                                data-no-glass
+                                aria-label="Activer le son du lecteur vidéo"
+                                data-testid="catalog-player-activate-sound-overlay"
+                              />
+                            </>
                           )}
-                          <button
-                            type="button"
-                            onClick={unlockSound}
-                            className="absolute inset-0 z-[1] bg-transparent"
-                            aria-label="Activer le son du lecteur vidéo"
-                            data-testid="catalog-player-activate-sound-overlay"
-                          />
 
                         </div>
                       ) : (
