@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
@@ -69,15 +69,8 @@ export const AiHub = () => {
 
   return (
     <PageShell className="page-nav-glass ai-hub-page">
-      <video
-        src={aiHubLongBanner.url}
-        className="ai-hub-bg-video"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-      />
+      {/** Background video with runtime availability check; fallback shown if asset missing */}
+      <BackgroundVideo src={aiHubLongBanner.url} />
 
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 pb-12 pt-4">
         <div className="mb-8 flex justify-center">
@@ -129,6 +122,47 @@ export const AiHub = () => {
         </div>
       </div>
     </PageShell>
+  );
+};
+
+const BackgroundVideo: React.FC<{ src: string }> = ({ src }) => {
+  const [available, setAvailable] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    (async () => {
+      try {
+        const res = await fetch(src, { method: 'HEAD', signal: controller.signal });
+        if (!mounted) return;
+        setAvailable(res.ok);
+      } catch (e) {
+        if (!mounted) return;
+        setAvailable(false);
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [src]);
+
+  if (available === null) {
+    return <div className="ai-hub-bg-loading" aria-hidden />;
+  }
+
+  if (available === false) {
+    return <div className="ai-hub-bg-fallback" aria-hidden />;
+  }
+
+  return (
+    <video src={src} className="ai-hub-bg-video" autoPlay muted loop playsInline preload="auto" />
   );
 };
 
