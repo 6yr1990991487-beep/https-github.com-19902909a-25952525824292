@@ -119,7 +119,7 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
         const grad = ctx2d.createLinearGradient(0, h / 2 - bh, 0, h / 2 + bh);
         grad.addColorStop(0, "rgba(0,255,157,0.95)");
         grad.addColorStop(0.5, "rgba(34,211,238,0.9)");
-        grad.addColorStop(1, "rgba(244,114,182,0.85)");
+        grad.addColorStop(1, "rgba(16,185,129,0.85)");
         ctx2d.fillStyle = grad;
         ctx2d.shadowColor = "rgba(0,255,157,0.55)";
         ctx2d.shadowBlur = 14 * dpr * (0.3 + norm);
@@ -256,7 +256,7 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
         ))}
       </div>
 
-      <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/15 bg-black/30 audio-visual">
+      <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/12 bg-black/20 audio-visual">
         <canvas ref={canvasRef} className="block h-32 w-full sm:h-40" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/45 to-transparent" />
         <div className="absolute inset-x-4 bottom-3 flex items-end justify-between text-[11px] font-bold text-white/85">
