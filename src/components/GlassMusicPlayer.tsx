@@ -16,7 +16,7 @@ function formatTime(sec: number) {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-export default function GlassMusicPlayer() {
+export default function GlassMusicPlayer({ className = "" }: { className?: string }) {
   const isAdmin = useIsAdmin();
   const { toast } = useToast();
 
@@ -215,7 +215,7 @@ export default function GlassMusicPlayer() {
     <section
       ref={shellRef}
       data-testid="aihub-glass-music-player"
-      className="glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7"
+      className={`glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7 ${className}`}
     >
       <div className="pointer-events-none absolute inset-0 audio-shell-glow" aria-hidden />
 
