@@ -1139,7 +1139,7 @@ export default function AnimeCatalog() {
               <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowQuickNav(true)}
+                  onClick={() => window.dispatchEvent(new Event(OPEN_QUICKNAV_EVENT))}
                   className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white shadow-[0_14px_35px_rgba(0,0,0,0.24)] transition hover:border-white/25 hover:bg-black/50"
                   aria-label="Ouvrir la navigation rapide"
                   data-testid="catalog-quicknav-open-button"
