@@ -343,102 +343,102 @@ body[data-hide-decors] [data-animated-bg] {
 
 @layer base {
   :root {
-    /* Dark deep-space theme (Anime Moments) */
-    --background: 220 30% 8%;
-    --foreground: 210 40% 98%;
+    /* Default: Menthe Vibrant Cypher (mint #00ff9d, cyan #22d3ee, emerald #10b981) */
+    --background: 150 45% 4%;
+    --foreground: 150 30% 96%;
 
-    --card: 220 25% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 150 35% 7%;
+    --card-foreground: 150 30% 96%;
 
-    --popover: 220 25% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 150 35% 7%;
+    --popover-foreground: 150 30% 96%;
 
-    --primary: 211 100% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 156 100% 50%;
+    --primary-foreground: 150 45% 4%;
 
-    --secondary: 220 20% 16%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 150 20% 14%;
+    --secondary-foreground: 150 30% 96%;
 
-    --muted: 220 20% 16%;
-    --muted-foreground: 215 20% 70%;
+    --muted: 150 18% 14%;
+    --muted-foreground: 150 20% 70%;
 
-    --accent: 211 100% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 191 84% 53%;
+    --accent-foreground: 150 45% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 211 100% 55%;
+    --border: 150 20% 18%;
+    --input: 150 20% 18%;
+    --ring: 156 100% 50%;
 
     --radius: 1rem;
 
-    --neon-cyan: 211 100% 55%;
-    --neon-magenta: 328 86% 60%;
-    --neon-purple: 260 85% 65%;
-    --surface: 220 25% 11%;
-    --surface-elevated: 220 22% 14%;
-    --pill: 220 20% 16%;
+    --neon-cyan: 156 100% 50%;
+    --neon-magenta: 191 84% 53%;
+    --neon-purple: 160 84% 40%;
+    --surface: 150 35% 7%;
+    --surface-elevated: 150 30% 10%;
+    --pill: 150 18% 14%;
 
     /* Gradients */
-    --gradient-neon: linear-gradient(135deg, hsl(328 86% 65%) 0%, hsl(280 100% 70%) 50%, hsl(211 100% 60%) 100%);
-    --gradient-magenta: linear-gradient(135deg, hsl(328 86% 60%), hsl(280 100% 65%));
-    --gradient-surface: linear-gradient(180deg, hsl(220 30% 8%), hsl(220 25% 11%));
-    --gradient-hero: linear-gradient(135deg, hsl(220 35% 6%) 0%, hsl(220 30% 10%) 50%, hsl(220 25% 14%) 100%);
+    --gradient-neon: linear-gradient(135deg, hsl(156 100% 50%) 0%, hsl(191 84% 53%) 50%, hsl(160 84% 40%) 100%);
+    --gradient-magenta: linear-gradient(135deg, hsl(156 100% 50%), hsl(160 84% 40%));
+    --gradient-surface: linear-gradient(180deg, hsl(150 45% 4%), hsl(150 35% 7%));
+    --gradient-hero: linear-gradient(135deg, hsl(150 45% 3%) 0%, hsl(150 35% 6%) 50%, hsl(150 30% 10%) 100%);
 
-    --glow-cyan: 0 8px 30px hsl(211 100% 55% / 0.35);
-    --glow-magenta: 0 8px 30px hsl(328 86% 60% / 0.3);
+    --glow-cyan: 0 8px 30px hsl(156 100% 50% / 0.35);
+    --glow-magenta: 0 8px 30px hsl(191 84% 53% / 0.3);
     --glow-subtle: 0 4px 20px hsl(0 0% 0% / 0.4);
 
     --font-display: 'Orbitron', sans-serif;
     --font-body: 'Inter', sans-serif;
 
-    --sidebar-background: 220 25% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 211 100% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 16%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 20% 18%;
-    --sidebar-ring: 211 100% 55%;
+    --sidebar-background: 150 35% 7%;
+    --sidebar-foreground: 150 30% 96%;
+    --sidebar-primary: 156 100% 50%;
+    --sidebar-primary-foreground: 150 45% 4%;
+    --sidebar-accent: 150 20% 14%;
+    --sidebar-accent-foreground: 150 30% 96%;
+    --sidebar-border: 150 20% 18%;
+    --sidebar-ring: 156 100% 50%;
 
-    --theme-bg: #0a1020;
-    --theme-card: #10182c;
-    --theme-card-2: #162038;
-    --theme-border: rgba(255, 255, 255, 0.16);
-    --theme-border-soft: rgba(255, 255, 255, 0.12);
-    --theme-border-strong: rgba(255, 255, 255, 0.24);
-    --theme-overlay: rgba(9, 12, 24, 0.76);
-    --theme-overlay-strong: rgba(9, 12, 24, 0.86);
-    --theme-fg-on-bg: #f7faff;
-    --theme-fg-on-card: #f7faff;
-    --theme-fg-on-overlay: #f7faff;
-    --theme-muted: rgba(226, 232, 240, 0.72);
-    --theme-link: #38bdf8;
-    --theme-link-hover: #f472b6;
-    --theme-glow: 0 0 18px rgba(56, 189, 248, 0.3), 0 0 44px rgba(244, 114, 182, 0.2);
-    --theme-glow-2: 0 0 12px rgba(56, 189, 248, 0.18), 0 0 28px rgba(168, 85, 247, 0.16);
-    --theme-ring: #8ad7ff;
-    --theme-neon-a: #38bdf8;
-    --theme-neon-b: #f472b6;
-    --theme-neon-c: #8b5cf6;
+    --theme-bg: #06120d;
+    --theme-card: #0a1f15;
+    --theme-card-2: #0f2a1d;
+    --theme-border: rgba(0, 255, 157, 0.4);
+    --theme-border-soft: rgba(0, 255, 157, 0.2);
+    --theme-border-strong: rgba(0, 255, 157, 0.6);
+    --theme-overlay: rgba(6, 18, 13, 0.85);
+    --theme-overlay-strong: rgba(6, 18, 13, 0.95);
+    --theme-fg-on-bg: #d1fae5;
+    --theme-fg-on-card: #a7f3d0;
+    --theme-fg-on-overlay: #d1fae5;
+    --theme-muted: rgba(167, 243, 208, 0.72);
+    --theme-link: #00ff9d;
+    --theme-link-hover: #22d3ee;
+    --theme-glow: 0 0 18px rgba(0, 255, 157, 0.4), 0 0 44px rgba(34, 211, 238, 0.3);
+    --theme-glow-2: 0 0 12px rgba(0, 255, 157, 0.2), 0 0 28px rgba(16, 185, 129, 0.2);
+    --theme-ring: #00ff9d;
+    --theme-neon-a: #00ff9d;
+    --theme-neon-b: #22d3ee;
+    --theme-neon-c: #10b981;
     --theme-noise-opacity: 0.028;
-    --site-tint: linear-gradient(160deg, #020617 0%, #0f172a 55%, #020617 100%);
-    --bubble-h: 210;
-    --bubble-s: 92%;
-    --bubble-l: 58%;
-    --bubble-a: #38bdf8;
-    --bubble-b: #f472b6;
-    --bubble-c: #8b5cf6;
-    --nav-theme-bg: rgba(10, 14, 24, 0.72);
-    --nav-theme-surface: rgba(10, 14, 24, 0.86);
-    --nav-theme-border: rgba(255, 255, 255, 0.18);
-    --nav-theme-accent: var(--bubble-a);
-    --nav-theme-accent-2: var(--bubble-b);
-    --nav-theme-accent-3: var(--bubble-c);
-    --nav-theme-text: #f7faff;
-    --nav-theme-muted: rgba(226, 232, 240, 0.7);
+    --site-tint: radial-gradient(circle at 18% 18%, rgba(0, 255, 157, 0.16) 0%, transparent 24%), radial-gradient(circle at 84% 18%, rgba(34, 211, 238, 0.15) 0%, transparent 22%), linear-gradient(160deg, #06120d 0%, #0a1f15 55%, #031008 100%);
+    --bubble-h: 156;
+    --bubble-s: 100%;
+    --bubble-l: 50%;
+    --bubble-a: #00ff9d;
+    --bubble-b: #22d3ee;
+    --bubble-c: #10b981;
+    --nav-theme-bg: rgba(6, 18, 13, 0.72);
+    --nav-theme-surface: rgba(6, 18, 13, 0.86);
+    --nav-theme-border: rgba(0, 255, 157, 0.18);
+    --nav-theme-accent: #00ff9d;
+    --nav-theme-accent-2: #22d3ee;
+    --nav-theme-accent-3: #10b981;
+    --nav-theme-text: #d1fae5;
+    --nav-theme-muted: rgba(167, 243, 208, 0.7);
     --nav-theme-shadow: 0 18px 54px -28px rgba(0, 0, 0, 0.58);
   }
 
