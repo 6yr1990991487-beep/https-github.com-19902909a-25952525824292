@@ -2,7 +2,7 @@
   "meta": {
     "name": "33",
     "package": "@ws-sy5kzr35jy4czgsth0ok/32caf520-24c5-48d7-b1dd-2f29c09b7ada",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -27,7 +27,9 @@
       ".lovable-sync-test.txt": "35974b2b1a591bade78d1df50b42afd3",
       ".lovable/lovable.toml": "18b9d39152413edfd17c81dc313504dc",
       ".lovable/mcp/manifest.json": "99f33c11f2c9715eecac0925aa4b3429",
+      ".lovable/meta.yaml": "954a981e8847ec1692669dbb04ae9ae9",
       ".lovable/plan.md": "c231095f958ac2c74a586a32570cea04",
+      ".lovable/sources.yaml": "85650baf848ef209adbcf704cd10bef1",
       ".lovable/sync-target.env": "72c4917f88d9d994e701f5a94dd84e0e",
       "DEPLOY_MARKER_LOVABLE.txt": "ac514b31485b4ed44d7ad18cd10f4af6",
       "GOOGLE_SEARCH_CONSOLE_SETUP.md": "563c245f030935528b93303ad6d41b26",
