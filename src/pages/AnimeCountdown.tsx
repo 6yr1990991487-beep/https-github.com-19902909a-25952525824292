@@ -479,7 +479,7 @@ export default function AnimeCountdown() {
                     <div className="relative w-full max-w-[240px] overflow-hidden rounded-[2rem] border border-white/15 bg-black/50 shadow-[0_24px_80px_-34px_rgba(0,0,0,0.75)]">
                       {selectedFavorite.trailer?.id ? (
                         <iframe
-                          src={buildYouTubeEmbedUrl(selectedFavorite.trailer.id, { autoplay: false, muted: false, controls: 1, playsInline: true })}
+                          src={buildYouTubeEmbedUrl(selectedFavorite.trailer.id, { autoplay: false, muted: false, controls: true, playsInline: true })}
                           title={`Trailer ${selectedFavorite.title.english || selectedFavorite.title.romaji || ""}`}
                           className="h-[420px] w-full object-cover"
                           loading="lazy"
