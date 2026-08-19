@@ -1,48 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock, Volume2, VolumeX } from 'lucide-react';
+import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
+import { PageShell } from '@/components/PageShell';
+import GlassMusicPlayer from '@/components/GlassMusicPlayer';
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
-  const [isMuted, setIsMuted] = useState(true);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoDimensions, setVideoDimensions] = useState<{ width: number; height: number } | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = isMuted;
-    const playPromise = v.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
-  }, [isMuted]);
-
-  const toggleMute = () => {
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = nextMuted;
-    const playPromise = v.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
-  };
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v) {
-      const p = v.play();
-      if (p && typeof p.then === 'function') p.catch(() => {});
-    }
-  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -99,47 +67,23 @@ export const AiHub = () => {
     );
   };
 
-  const videoContainerStyle = videoDimensions ? { aspectRatio: `${videoDimensions.width} / ${videoDimensions.height}` } : undefined;
-
   return (
-    <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
-      <div className="max-w-7xl w-full">
-        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20" style={videoContainerStyle ?? { aspectRatio: '16 / 9' }}>
-          <video
-            ref={videoRef}
-            data-testid="aihubs-top-banner-video"
-            className="w-full h-full object-contain bg-black"
-            src={aiHubLongBanner.url}
-            autoPlay
-            loop
-            playsInline
-            muted={isMuted}
-            preload="auto"
-            onLoadedMetadata={(event) => {
-              const target = event.currentTarget;
-              if (target.videoWidth && target.videoHeight) {
-                setVideoDimensions({ width: target.videoWidth, height: target.videoHeight });
-              }
-            }}
-            onLoadedData={() => {
-              setVideoLoaded(true);
-              const v = videoRef.current;
-              if (!v) return;
-              const p = v.play();
-              if (p && typeof p.then === 'function') p.catch(() => {});
-            }}
-          />
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
-          >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            {isMuted ? 'Activer le son' : 'Couper le son'}
-          </button>
+    <PageShell className="page-nav-glass ai-hub-page">
+      <video
+        src={aiHubLongBanner.url}
+        className="ai-hub-bg-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
+
+      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 pb-12 pt-4">
+        <div className="mb-8 flex justify-center">
+          <GlassMusicPlayer className="w-full max-w-3xl" />
         </div>
 
-        {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveTab('lova-bot')}
@@ -184,7 +128,7 @@ export const AiHub = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

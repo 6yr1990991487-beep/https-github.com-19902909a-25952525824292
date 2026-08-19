@@ -806,7 +806,10 @@ function Actualites() {
   }, [heroPool, heroIndex, sideHero]);
   const autoReaderItems = useMemo(() => buildAutoReaderItems(home, listing), [home, listing]);
   const totalPages = listing ? Math.max(1, Math.ceil((listing.total || 0) / PAGE_SIZE)) : 1;
-  const sourceOptions = home?.sources || [];
+  const sourceOptions = useMemo(
+    () => Array.from(new Map((home?.sources || []).map((source) => [source.id, source])).values()),
+    [home?.sources],
+  );
   const categoryOptions = listing?.categories || [
     { id: "anime", label: "Anime" },
     { id: "manga", label: "Manga" },

@@ -215,7 +215,7 @@ const Discover = () => {
             <HubEmbedFrame
               src="/hub/ferry"
               title="Hub Ferry"
-              heightClassName="h-[620px] md:h-[760px] lg:h-[840px] w-full"
+              heightClassName="h-[620px] md:h-[760px] lg:h-[calc(100vh-16rem)] w-full"
               testId="discover-ferry-hub"
             />
           </div>

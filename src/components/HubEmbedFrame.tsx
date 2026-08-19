@@ -18,10 +18,10 @@ export const HubEmbedFrame = ({
 
   return (
     <div
-      className="rounded-[32px] border border-white/12 bg-black/20 backdrop-blur-xl shadow-[0_30px_90px_-40px_rgba(20,20,40,0.75)] overflow-hidden"
+      className="overflow-hidden bg-transparent shadow-none"
       data-testid={testId}
     >
-      <div className={cn("relative w-full bg-slate-950", heightClassName)}>
+      <div className={cn("relative w-full bg-transparent", heightClassName)}>
         {!loaded && (
           <div
             className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_top,rgba(232,121,249,0.18),transparent_45%),linear-gradient(180deg,rgba(8,12,24,0.98),rgba(8,12,24,0.9))]"
