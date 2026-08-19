@@ -149,6 +149,48 @@ export type Database = {
         }
         Relationships: []
       }
+      music_tracks: {
+        Row: {
+          artist: string | null
+          created_at: string
+          duration_sec: number
+          genre: string
+          id: string
+          is_published: boolean
+          source: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          artist?: string | null
+          created_at?: string
+          duration_sec?: number
+          genre?: string
+          id?: string
+          is_published?: boolean
+          source?: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          artist?: string | null
+          created_at?: string
+          duration_sec?: number
+          genre?: string
+          id?: string
+          is_published?: boolean
+          source?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       news_cache: {
         Row: {
           key: string
