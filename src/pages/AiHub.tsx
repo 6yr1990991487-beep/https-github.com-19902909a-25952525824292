@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PageShell } from '@/components/PageShell';
 import GlassMusicPlayer from '@/components/GlassMusicPlayer';
+import FerryBackground from '@/components/FerryBackground';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,19 +77,19 @@ export const AiHub = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button 
             onClick={() => setActiveTab('lova-bot')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'bg-gradient-to-r from-green-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-bot' ? 'is-active' : ''}`}
           >
             <Bot className="w-5 h-5" /> Lova-Bot
           </button>
           <button 
             onClick={() => setActiveTab('lova-ai')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-ai' ? 'is-active' : ''}`}
           >
             <Cpu className="w-5 h-5" /> Lova-AI
           </button>
           <button 
             onClick={() => setActiveTab('lova-king')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'bg-gradient-to-r from-amber-400 to-red-600 text-white shadow-lg shadow-red-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-king' ? 'is-active' : ''}`}
           >
             <Shield className="w-5 h-5" /> Lova King AI
           </button>
@@ -96,7 +97,7 @@ export const AiHub = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
           {/* UI Feature Panel */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md overflow-y-auto">
+          <div className="glass3d-panel rounded-3xl p-6 overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -112,8 +113,8 @@ export const AiHub = () => {
           </div>
 
           {/* 3D Model Panel */}
-          <div className="bg-black/20 border border-white/5 rounded-3xl overflow-hidden relative">
-            <div className="absolute top-4 left-4 z-10 bg-black/50 px-4 py-1 rounded-full text-xs font-mono text-white/50 border border-white/10">
+          <div className="glass3d-panel rounded-3xl overflow-hidden relative">
+            <div className="glass3d-btn absolute top-4 left-4 z-10 px-4 py-1 rounded-full text-xs font-mono text-white/70">
               LIVE RENDER
             </div>
             {render3D()}
@@ -121,8 +122,30 @@ export const AiHub = () => {
         </div>
 
       </div>
+
+      {/* Hub Ferry pleine largeur, sans cadre */}
+      <FerryHubSection />
       </div>
     </PageShell>
+  );
+};
+
+const FerryHubSection = () => {
+  useEffect(() => {
+    const stop = () => (window as any).stopFerryAutoCameraSequence?.();
+    stop();
+    const id = window.setInterval(stop, 1500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <section
+      className="relative w-screen left-1/2 -translate-x-1/2 h-[88vh] overflow-hidden [&_.fixed]:!absolute"
+      data-testid="aihub-ferry-hub"
+      aria-label="Hub Ferry"
+    >
+      <FerryBackground />
+    </section>
   );
 };
 
