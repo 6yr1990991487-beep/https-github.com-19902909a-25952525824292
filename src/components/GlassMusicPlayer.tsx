@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, VolumeX,
@@ -49,7 +48,6 @@ export default function GlassMusicPlayer() {
   const tracks = useMemo(() => [...local, ...cloud, ...remote], [local, cloud, remote]);
   const track = tracks[index];
 
-  // Chargement du catalogue libre de droits
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -64,7 +62,6 @@ export default function GlassMusicPlayer() {
 
   useEffect(() => { fetchCloudTracks().then(setCloud).catch(() => {}); }, []);
 
-  // Graphe audio (analyseur pour la synchronisation des animations)
   const ensureGraph = useCallback(() => {
     const el = audioRef.current;
     if (!el || analyserRef.current) return;
@@ -80,10 +77,11 @@ export default function GlassMusicPlayer() {
       analyser.connect(ctx.destination);
       ctxRef.current = ctx;
       analyserRef.current = analyser;
-    } catch { /* graphe indisponible : lecture normale */ }
+    } catch {
+      // graphe indisponible : lecture normale
+    }
   }, []);
 
-  // Boucle de rendu du visualiseur + vibration 3D du panneau
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -245,7 +243,6 @@ export default function GlassMusicPlayer() {
         </div>
       </header>
 
-      {/* Genres */}
       <div className="relative mt-5 flex flex-wrap gap-2">
         {MUSIC_GENRES.map((g) => (
           <button
@@ -259,7 +256,6 @@ export default function GlassMusicPlayer() {
         ))}
       </div>
 
-      {/* Visualiseur */}
       <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/15 bg-black/30 audio-visual">
         <canvas ref={canvasRef} className="block h-32 w-full sm:h-40" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/45 to-transparent" />
@@ -270,7 +266,6 @@ export default function GlassMusicPlayer() {
         </div>
       </div>
 
-      {/* Barre de progression */}
       <div
         className="audio-seek relative mt-4 h-3 w-full cursor-pointer overflow-hidden rounded-full"
         onClick={(e) => {
@@ -283,7 +278,6 @@ export default function GlassMusicPlayer() {
         <div className="audio-seek-fill h-full" style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Commandes */}
       <div className="relative mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
         <button type="button" onClick={() => setShuffle((v) => !v)} aria-label="Lecture aléatoire" className={`glass3d-btn h-11 w-11 rounded-full text-white ${shuffle ? "is-active" : ""}`}><Shuffle className="mx-auto h-4 w-4" /></button>
         <button type="button" onClick={goPrev} aria-label="Précédent" className="glass3d-btn h-12 w-12 rounded-full text-white"><SkipBack className="mx-auto h-5 w-5" /></button>
@@ -297,223 +291,18 @@ export default function GlassMusicPlayer() {
             {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
           <input
-            type="range" min={0} max={1} step={0.01} value={muted ? 0 : volume}
-            onChange={(e) => { setMuted(false); setVolume(Number(e.target.value)); }}
-            className="audio-range h-1 w-24" aria-label="Volume"
-=======
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Pause, Play, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
-import useAudioVisualizer from "@/hooks/useAudioVisualizer";
-
-type Track = {
-  url: string;
-  title: string;
-};
-
-const DEFAULT_PLAYLIST = [
-  "/audio/celtic/JamesMorrisonTheGirlthatBrokeMyHeartConnemaraStockings/James_Morrison__The_Girl_that_Broke_My_Heart_Connemara_Stockings_64kb.mp3",
-  "/audio/celtic/LeoRowsomeBoyintheBoatTheMorningDew/Leo_Rowsome__Boy_in_the_Boat_The_Old_Woman_of_the_House_64kb.mp3",
-  "/audio/celtic/LiamWalshTheFriezeBritches/Liam_WalshThe_Frieze_Britches_64kb.mp3",
-  "/audio/celtic/PaddyKilloranDrowsyMaggieTosstheFeathers/Paddy_Killoran__Drowsy_Maggie_Toss_the_Feathers_64kb.mp3",
-];
-
-const formatTrackTitle = (url: string) => {
-  const file = url.split("/").filter(Boolean).pop() || "Piste audio";
-  return decodeURIComponent(file)
-    .replace(/\.[a-z0-9]+$/i, "")
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-const formatTime = (seconds: number) => {
-  if (!Number.isFinite(seconds) || seconds <= 0) return "0:00";
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-};
-
-export default function GlassMusicPlayer({ playlistUrl = "/audio/celtic/playlist.json", className = "" }: { playlistUrl?: string; className?: string }) {
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.7);
-  const [muted, setMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useAudioVisualizer(audioRef.current, canvasRef.current);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadPlaylist = async () => {
-      try {
-        const response = await fetch(playlistUrl, { cache: "no-store" });
-        if (!response.ok) throw new Error("Playlist unavailable");
-        const payload = await response.json();
-        if (cancelled) return;
-
-        const resolved: Track[] = Array.isArray(payload)
-          ? payload.map((url) => ({ url: String(url), title: formatTrackTitle(String(url)) }))
-          : DEFAULT_PLAYLIST.map((url) => ({ url, title: formatTrackTitle(url) }));
-
-        setTracks(resolved.length ? resolved : DEFAULT_PLAYLIST.map((url) => ({ url, title: formatTrackTitle(url) })));
-      } catch {
-        if (!cancelled) {
-          setTracks(DEFAULT_PLAYLIST.map((url) => ({ url, title: formatTrackTitle(url) })));
-        }
-      }
-    };
-
-    loadPlaylist();
-    return () => {
-      cancelled = true;
-    };
-  }, [playlistUrl]);
-
-  const activeTrack = useMemo(() => tracks[currentIndex] || tracks[0], [tracks, currentIndex]);
-
-  useEffect(() => {
-    const audioEl = audioRef.current;
-    if (!audioEl || !activeTrack) return;
-
-    audioEl.src = activeTrack.url;
-    audioEl.load();
-
-    if (isPlaying) {
-      const playPromise = audioEl.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => setIsPlaying(false));
-      }
-    }
-  }, [activeTrack, isPlaying]);
-
-  useEffect(() => {
-    const audioEl = audioRef.current;
-    if (!audioEl) return;
-    audioEl.volume = muted ? 0 : volume;
-    audioEl.muted = muted;
-  }, [muted, volume]);
-
-  useEffect(() => {
-    const audioEl = audioRef.current;
-    if (!audioEl) return;
-
-    const onTimeUpdate = () => setCurrentTime(audioEl.currentTime || 0);
-    const onLoaded = () => setDuration(Number.isFinite(audioEl.duration) ? audioEl.duration : 0);
-    const onEnded = () => {
-      const nextIndex = tracks.length ? (currentIndex + 1) % tracks.length : 0;
-      setCurrentIndex(nextIndex);
-    };
-
-    audioEl.addEventListener("timeupdate", onTimeUpdate);
-    audioEl.addEventListener("loadedmetadata", onLoaded);
-    audioEl.addEventListener("ended", onEnded);
-
-    return () => {
-      audioEl.removeEventListener("timeupdate", onTimeUpdate);
-      audioEl.removeEventListener("loadedmetadata", onLoaded);
-      audioEl.removeEventListener("ended", onEnded);
-    };
-  }, [currentIndex, tracks.length]);
-
-  const energy = Math.min(1, Math.max(0.2, (Math.abs(currentTime - duration * 0.35) / Math.max(duration, 1)) + 0.38));
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-
-  const togglePlay = async () => {
-    const audioEl = audioRef.current;
-    if (!audioEl) return;
-
-    if (isPlaying) {
-      audioEl.pause();
-      setIsPlaying(false);
-      return;
-    }
-
-    const playPromise = audioEl.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => setIsPlaying(false));
-    }
-    setIsPlaying(true);
-  };
-
-  const changeTrack = (direction: number) => {
-    if (!tracks.length) return;
-    const nextIndex = (currentIndex + direction + tracks.length) % tracks.length;
-    setCurrentIndex(nextIndex);
-    setCurrentTime(0);
-    setDuration(0);
-  };
-
-  const handleSeek = (value: number) => {
-    const audioEl = audioRef.current;
-    if (!audioEl || !Number.isFinite(duration) || duration <= 0) return;
-    const nextTime = (value / 100) * duration;
-    audioEl.currentTime = nextTime;
-    setCurrentTime(nextTime);
-  };
-
-  return (
-    <div className={`audio-shell-glow ${className}`}>
-      <div className="audio-shell" style={{ ["--audio-energy" as string]: String(energy) }}>
-        <div className="audio-orb">
-          <div className="audio-visual">
-            <canvas ref={canvasRef} className="audio-eq" />
-          </div>
-        </div>
-
-        <div className="audio-meta">
-          <span>Lova Radio</span>
-          <strong>{activeTrack?.title || "Chargement…"}</strong>
-        </div>
-
-        <div className="audio-seek" aria-label="Progression du morceau">
-          <div className="audio-seek-fill" style={{ width: `${progress}%` }} />
-        </div>
-
-        <div className="audio-controls">
-          <button type="button" className="audio-play" aria-label="Précédent" onClick={() => changeTrack(-1)}>
-            <SkipBack size={17} />
-          </button>
-          <button type="button" className="audio-play primary" aria-label={isPlaying ? "Pause" : "Lecture"} onClick={togglePlay}>
-            {isPlaying ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
-          </button>
-          <button type="button" className="audio-play" aria-label="Suivant" onClick={() => changeTrack(1)}>
-            <SkipForward size={17} />
-          </button>
-        </div>
-
-        <div className="audio-timeline">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-
-        <div className="audio-volume-row">
-          <button type="button" className="audio-play small" aria-label={muted ? "Réactiver le son" : "Couper le son"} onClick={() => setMuted((v) => !v)}>
-            {muted ? <VolumeX size={15} /> : <Volume2 size={15} />}
-          </button>
-          <input
             type="range"
             min={0}
-            max={100}
-            value={muted ? 0 : volume * 100}
-            onChange={(event) => {
-              const nextVolume = Number(event.target.value) / 100;
-              setMuted(nextVolume === 0);
-              setVolume(nextVolume);
-            }}
+            max={1}
+            step={0.01}
+            value={muted ? 0 : volume}
+            onChange={(e) => { setMuted(false); setVolume(Number(e.target.value)); }}
+            className="audio-range h-1 w-24"
             aria-label="Volume"
-            className="audio-range"
->>>>>>> 37f1d400 (feat: finish Lovable AI Hub glass shell and discovery polish)
           />
         </div>
       </div>
 
-<<<<<<< HEAD
-      {/* Recherche + playlist */}
       <div className="relative mt-5 flex items-center gap-2">
         <div className="glass3d-btn flex flex-1 items-center gap-2 rounded-full px-4 py-2">
           <Search className="h-4 w-4 text-white/80" />
@@ -568,9 +357,3 @@ export default function GlassMusicPlayer({ playlistUrl = "/audio/celtic/playlist
     </section>
   );
 }
-=======
-      <audio ref={audioRef} preload="auto" />
-    </div>
-  );
-}
->>>>>>> 37f1d400 (feat: finish Lovable AI Hub glass shell and discovery polish)
