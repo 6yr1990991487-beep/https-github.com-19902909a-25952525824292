@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { PageShell } from '@/components/PageShell';
-import GlassMusicPlayer from '@/components/GlassMusicPlayer';
-import FerryBackground from '@/components/FerryBackground';
+import React, { useState, useEffect } from 'react';
+import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
+import { PageShell } from '@/components/PageShell';
+import GlassMusicPlayer from '@/components/GlassMusicPlayer';
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
+
   const renderContent = () => {
     switch (activeTab) {
       case 'lova-bot':
@@ -67,37 +68,38 @@ export const AiHub = () => {
   };
 
   return (
-    <PageShell>
-      <div className="px-4 pb-12 flex flex-col items-center">
-      <div className="max-w-7xl w-full">
-        <div className="mb-8">
-          <GlassMusicPlayer />
+    <PageShell className="page-nav-glass ai-hub-page">
+      {/** Background video with runtime availability check; fallback shown if asset missing */}
+      <BackgroundVideo src={aiHubLongBanner.url} />
+
+      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 pb-12 pt-4">
+        <div className="mb-8 flex justify-center">
+          <GlassMusicPlayer className="w-full max-w-3xl" />
         </div>
-        {/* Header Tabs */}
+
         <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button 
+          <button
             onClick={() => setActiveTab('lova-bot')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-bot' ? 'is-active' : ''}`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'bg-gradient-to-r from-green-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <Bot className="w-5 h-5" /> Lova-Bot
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('lova-ai')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-ai' ? 'is-active' : ''}`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <Cpu className="w-5 h-5" /> Lova-AI
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('lova-king')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold text-white ${activeTab === 'lova-king' ? 'is-active' : ''}`}
+            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'bg-gradient-to-r from-amber-400 to-red-600 text-white shadow-lg shadow-red-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <Shield className="w-5 h-5" /> Lova King AI
           </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
-          {/* UI Feature Panel */}
-          <div className="glass3d-panel rounded-3xl p-6 overflow-y-auto">
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -111,45 +113,58 @@ export const AiHub = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-
-          {/* 3D Model Panel */}
-          <div className="glass3d-panel rounded-3xl overflow-hidden relative">
-            <div className="glass3d-btn absolute top-4 left-4 z-10 px-4 py-1 rounded-full text-xs font-mono text-white/70">
+          <div className="bg-black/20 border border-white/5 rounded-3xl overflow-hidden relative">
+            <div className="absolute top-4 left-4 z-10 bg-black/50 px-4 py-1 rounded-full text-xs font-mono text-white/50 border border-white/10">
               LIVE RENDER
             </div>
             {render3D()}
           </div>
         </div>
-
-      </div>
-
-      {/* Hub Ferry pleine largeur, sans cadre */}
-      <FerryHubSection />
       </div>
     </PageShell>
   );
 };
 
-const FerryHubSection = () => {
+const BackgroundVideo: React.FC<{ src: string }> = ({ src }) => {
+  const [available, setAvailable] = useState<boolean | null>(null);
+
   useEffect(() => {
-    const stop = () => (window as any).stopFerryAutoCameraSequence?.();
-    stop();
-    const id = window.setInterval(stop, 1500);
-    return () => window.clearInterval(id);
-  }, []);
+    let mounted = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    (async () => {
+      try {
+        const res = await fetch(src, { method: 'HEAD', signal: controller.signal });
+        if (!mounted) return;
+        setAvailable(res.ok);
+      } catch (e) {
+        if (!mounted) return;
+        setAvailable(false);
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
+  }, [src]);
+
+  if (available === null) {
+    return <div className="ai-hub-bg-loading" aria-hidden />;
+  }
+
+  if (available === false) {
+    return <div className="ai-hub-bg-fallback" aria-hidden />;
+  }
 
   return (
-    <section
-      className="relative w-screen left-1/2 -translate-x-1/2 h-[88vh] overflow-hidden [&_.fixed]:!absolute"
-      data-testid="aihub-ferry-hub"
-      aria-label="Hub Ferry"
-    >
-      <FerryBackground />
-    </section>
+    <video src={src} className="ai-hub-bg-video" autoPlay muted loop playsInline preload="auto" />
   );
 };
-
-// --- Sub Components for Features ---
 
 const TreasureHuntFeature = () => {
   const [hunted, setHunted] = useState(false);
@@ -167,7 +182,6 @@ const TreasureHuntFeature = () => {
     <div className="flex flex-col h-full">
       <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">Chasse aux Trésors</h2>
       <p className="text-slate-400 mb-8">Lova-Bot a caché des récompenses sur le site aujourd'hui !</p>
-      
       <div className="flex-1 flex flex-col justify-center items-center">
         {!hunted ? (
           <div className="bg-emerald-950/30 border border-emerald-500/20 p-6 rounded-2xl text-center max-w-sm w-full">
@@ -176,12 +190,8 @@ const TreasureHuntFeature = () => {
             </div>
             <h3 className="text-lg font-bold text-white mb-2">L'énigme du jour</h3>
             <p className="text-emerald-200/70 italic mb-6">"Je brille dans la nuit, mais je ne suis pas une étoile. Que suis-je ?"</p>
-            <Button 
-              onClick={handleHunt} 
-              disabled={loading}
-              className="w-full rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all"
-            >
-              {loading ? "Recherche en cours..." : "Fouiller la zone"}
+            <Button onClick={handleHunt} disabled={loading} className="w-full rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all">
+              {loading ? 'Recherche en cours...' : 'Fouiller la zone'}
             </Button>
           </div>
         ) : (
@@ -206,7 +216,6 @@ const PlaylistFeature = () => {
   const generate = (mood: string) => {
     setLoading(true);
     setPlaylist([]);
-    // Mock generation
     setTimeout(() => {
       setLoading(false);
       if (mood === 'epic') setPlaylist(['Attack on Titan', 'Jujutsu Kaisen', 'Demon Slayer']);
@@ -219,13 +228,11 @@ const PlaylistFeature = () => {
     <div className="flex flex-col h-full">
       <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 mb-2">Playlist par Humeur</h2>
       <p className="text-slate-400 mb-8">Lova-AI génère une sélection parfaite basée sur ton état d'esprit.</p>
-      
       <div className="grid grid-cols-3 gap-3 mb-8">
         <Button onClick={() => generate('epic')} className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30">🔥 Épique</Button>
         <Button onClick={() => generate('chill')} className="bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30">😌 Détente</Button>
         <Button onClick={() => generate('sad')} className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30">😢 Émotion</Button>
       </div>
-
       <div className="flex-1 bg-black/20 rounded-2xl p-4 border border-white/5">
         {loading && <div className="h-full flex items-center justify-center text-sky-400 animate-pulse">Lova-AI analyse tes goûts...</div>}
         {!loading && playlist.length === 0 && <div className="h-full flex items-center justify-center text-slate-600">Sélectionne une humeur pour commencer.</div>}
@@ -251,7 +258,7 @@ const FortressVIPFeature = () => {
   const placeBid = () => {
     setBid(prev => prev + 100);
     setIsHighest(true);
-    setTimeout(() => setIsHighest(false), 5000); // Someone else bids after 5s
+    setTimeout(() => setIsHighest(false), 5000);
   };
 
   return (
@@ -263,9 +270,7 @@ const FortressVIPFeature = () => {
         </div>
       </div>
       <p className="text-slate-400 mb-6">Lova King AI gère les accès exclusifs et les enchères secrètes.</p>
-      
       <div className="space-y-6">
-        {/* Quests */}
         <div className="bg-red-950/20 border border-red-500/20 p-5 rounded-2xl">
           <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-amber-500" /> Défis Exclusifs
@@ -278,33 +283,25 @@ const FortressVIPFeature = () => {
             <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden">
               <div className="bg-gradient-to-r from-amber-500 to-red-500 w-2/5 h-full" />
             </div>
-            
             <div className="flex justify-between items-center text-sm pt-2">
               <span className="text-slate-300 line-through">Connecter son compte Discord</span>
               <CheckCircle2 className="w-5 h-5 text-green-500" />
             </div>
           </div>
         </div>
-
-        {/* Auctions */}
         <div className="bg-amber-950/20 border border-amber-500/20 p-5 rounded-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-lg">LIVE</div>
           <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
             <Gavel className="w-5 h-5 text-amber-500" /> Enchère Secrète
           </h3>
-          <p className="text-sm text-slate-400 mb-4">Figurine Holographique Lova King (Édition Limitée 1/10)</p>
-          
+          <p className="text-sm text-slate-400 mb-4">Figurine Holographique Lova King AI (Édition Limitée 1/10)</p>
           <div className="flex justify-between items-end">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Enchère Actuelle</p>
               <p className="text-3xl font-black text-amber-400 font-mono">{bid} <span className="text-sm text-amber-500/50">LC</span></p>
             </div>
-            <Button 
-              onClick={placeBid} 
-              disabled={isHighest}
-              className={`rounded-full font-bold transition-all ${isHighest ? 'bg-green-500/20 text-green-400 border-none hover:bg-green-500/20' : 'bg-gradient-to-r from-amber-500 to-red-600 text-white hover:scale-105'}`}
-            >
-              {isHighest ? "Meilleur Enchérisseur" : `Enchérir ${bid + 100} LC`}
+            <Button onClick={placeBid} disabled={isHighest} className={`rounded-full font-bold transition-all ${isHighest ? 'bg-green-500/20 text-green-400 border-none hover:bg-green-500/20' : 'bg-gradient-to-r from-amber-500 to-red-600 text-white hover:scale-105'}`}>
+              {isHighest ? 'Meilleur Enchérisseur' : `Enchérir ${bid + 100} LC`}
             </Button>
           </div>
         </div>
