@@ -3,9 +3,6 @@ const SW_URL = "/sw.js";
 
 const isRefusedContext = () => {
   if (typeof window === "undefined") return true;
-  // Allow explicit test override: ?sw=on will force registration even on preview
-  const swParam = new URLSearchParams(window.location.search).get("sw");
-  if (swParam === "on") return false;
   if (!import.meta.env.PROD) return true;
   if (window.self !== window.top) return true;
   const host = window.location.hostname;
@@ -22,7 +19,7 @@ const isRefusedContext = () => {
   ) {
     return true;
   }
-  return swParam === "off";
+  return new URLSearchParams(window.location.search).get("sw") === "off";
 };
 
 const unregisterAppWorkers = async () => {
@@ -45,16 +42,6 @@ export function registerServiceWorker() {
     return;
   }
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register(SW_URL, { scope: "/" })
-      .then((reg) => {
-        // Helpful logging for debugging PWA install problems during QA
-        // eslint-disable-next-line no-console
-        console.info("Service worker registered:", reg);
-      })
-      .catch((err) => {
-        // eslint-disable-next-line no-console
-        console.error("Service worker registration failed:", err);
-      });
+    navigator.serviceWorker.register(SW_URL, { scope: "/" }).catch(() => {});
   });
 }

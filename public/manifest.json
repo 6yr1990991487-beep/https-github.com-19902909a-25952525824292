@@ -37,16 +37,18 @@
   ],
   "screenshots": [
     {
-      "src": "/lovanet-icon-512.png?v=14",
-      "sizes": "512x512",
+      "src": "/lovanet-screenshot-wide.png",
+      "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "purpose": "any"
     },
     {
-      "src": "/lovanet-icon-512.png?v=14",
-      "sizes": "512x512",
+      "src": "/lovanet-screenshot-narrow.png",
+      "sizes": "540x720",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "purpose": "any"
     }
   ]
 }
