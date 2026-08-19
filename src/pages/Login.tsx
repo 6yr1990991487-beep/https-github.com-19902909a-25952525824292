@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -75,8 +76,8 @@ export default function Login() {
         src="/global-bg-web.mp4"
       />
 
-      <div className={`fixed right-6 top-16 z-50 transform-gpu transition-all duration-500 ${compact ? 'translate-y-0 scale-95' : ''}`}>
-        <div className={`w-full max-w-md ${compact ? 'w-48' : 'w-full max-w-md'} bg-card/80 backdrop-blur-md p-4 ${compact ? 'py-2 px-3' : 'p-8'} rounded-2xl border border-white/10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]`} style={{ perspective: 1200 }}>
+      <motion.div initial={{ opacity: 0, y: -8, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.36 }} className={`fixed right-6 top-16 z-50 transform-gpu transition-all duration-500 ${compact ? 'translate-y-0 scale-95' : ''}`}>
+        <motion.div whileHover={{ translateY: -4 }} className={`w-full max-w-md ${compact ? 'w-48' : 'w-full max-w-md'} bg-card/80 backdrop-blur-md p-4 ${compact ? 'py-2 px-3' : 'p-8'} rounded-2xl border border-white/10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]`} style={{ perspective: 1200 }}>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-cyan-400 flex items-center justify-center shadow-[inset_0_2px_6px_rgba(255,255,255,0.06),0_12px_30px_-6px_rgba(34,211,238,0.12)]">
@@ -88,7 +89,10 @@ export default function Login() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setCompact((c) => !c)} className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-black/20 hover:bg-black/30 text-white/90">
+              <button title="Aide" onClick={() => alert('Besoin d\'aide pour vous connecter ? Contactez support@lovanet.fr')} className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-black/10 hover:bg-black/20 text-white/90" aria-label="Aide connexion">
+                <span className="text-sm font-bold">?</span>
+              </button>
+              <button onClick={() => setCompact((c) => !c)} className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-black/20 hover:bg-black/30 text-white/90" aria-label="Réduire/ouvrir panneau">
                 {compact ? '+' : '—'}
               </button>
             </div>
