@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Compass, Film, Newspaper, Play, ShoppingBag, Star, Volume2, VolumeX, X, Loader2 } from "lucide-react";
+import { ArrowRight, Compass, Film, Newspaper, Play, Pause, ShoppingBag, Star, Volume2, VolumeX, X, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { API_BASE as API } from "@/lib/apiBase";
 import { SEO_NEWS } from "@/data/seoNews";
@@ -372,6 +372,7 @@ export default function RootLandingPage() {
 
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   const [selectedTrailerIdMap, setSelectedTrailerIdMap] = useState({});
+  const [pausedPreviewMap, setPausedPreviewMap] = useState({});
   const [versionPanelState, setVersionPanelState] = useState({
     openInstanceId: null,
     title: "",
@@ -485,6 +486,10 @@ export default function RootLandingPage() {
     }));
     closeVersionPanel();
   }, [versionPanelState, closeVersionPanel]);
+
+  const togglePausePreview = useCallback((instanceId) => {
+    setPausedPreviewMap((prev) => ({ ...prev, [instanceId]: !prev[instanceId] }));
+  }, []);
 
   const togglePreviewSound = useCallback(() => {
     setPreviewSoundEnabled((value) => !value);
@@ -600,7 +605,7 @@ export default function RootLandingPage() {
                               >
                                 <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
                                   <HoverPreview
-                                    videoId={selectedTrailerIdMap[`${item.id}-${rowIndex}-${index}`] || item.trailerId}
+                                    videoId={pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? "" : (selectedTrailerIdMap[`${item.id}-${rowIndex}-${index}`] || item.trailerId)}
                                     title={item.title}
                                     thumbnail={item.image}
                                     vertical
@@ -623,6 +628,16 @@ export default function RootLandingPage() {
                                   <p className="hero-premium-lower-description">{item.genres.join(" • ") || "Catalogue premium"}</p>
                                 </div>
                               </Link>
+
+                              <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
+                                className="absolute top-2 left-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
+                                aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
+                                data-testid={`home-platforms-pause-button-${item.id}`}
+                              >
+                                {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4"/> : <Pause className="relative h-4 w-4" />}
+                              </button>
 
                               <button
                                 type="button"
