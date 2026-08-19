@@ -80,19 +80,19 @@ export const AiHub = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveTab('lova-bot')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'bg-gradient-to-r from-green-400 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
             <Bot className="w-5 h-5" /> Lova-Bot
           </button>
           <button
             onClick={() => setActiveTab('lova-ai')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'bg-gradient-to-r from-sky-400 to-indigo-500 text-white shadow-lg shadow-indigo-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
             <Cpu className="w-5 h-5" /> Lova-AI
           </button>
           <button
             onClick={() => setActiveTab('lova-king')}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'bg-gradient-to-r from-amber-400 to-red-600 text-white shadow-lg shadow-red-500/20 scale-105' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
             <Shield className="w-5 h-5" /> Lova King AI
           </button>
