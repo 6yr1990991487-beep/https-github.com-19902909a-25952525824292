@@ -1,3 +1,4 @@
+import { OPEN_QUICKNAV_EVENT } from "@/components/QuickNavCarousel";
 import catalogTopBanner from "@/assets/short-banner.mp4.asset.json";
 
 const CATALOG_TOP_VIDEO = catalogTopBanner.url;
