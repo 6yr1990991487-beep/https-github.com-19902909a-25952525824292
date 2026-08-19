@@ -162,7 +162,26 @@ const BackgroundVideo: React.FC<{ src: string }> = ({ src }) => {
   }
 
   return (
-    <video src={src} className="ai-hub-bg-video" autoPlay muted loop playsInline preload="auto" />
+    <video
+      ref={(el) => {
+        if (el && el.paused) {
+          const p = el.play();
+          if (p && typeof p.catch === 'function') p.catch(() => {});
+        }
+      }}
+      src={src}
+      className="ai-hub-bg-video"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      onLoadedData={(e) => {
+        const v = e.currentTarget;
+        const p = v.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      }}
+    />
   );
 };
 
