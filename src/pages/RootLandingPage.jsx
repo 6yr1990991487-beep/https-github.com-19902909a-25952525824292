@@ -371,6 +371,7 @@ export default function RootLandingPage() {
   );
 
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
+  const [selectedTrailerIdMap, setSelectedTrailerIdMap] = useState({});
   const [versionPanelState, setVersionPanelState] = useState({
     openInstanceId: null,
     title: "",
@@ -474,6 +475,16 @@ export default function RootLandingPage() {
       selectedVersion: versionCode,
     }));
   }, []);
+
+  const applyVersionToTrailer = useCallback(() => {
+    if (!versionPanelState.openInstanceId) return;
+    const selectedId = extractLangId(versionPanelState.availableVersions[versionPanelState.selectedVersion]) || versionPanelState.trailerId;
+    setSelectedTrailerIdMap((prev) => ({
+      ...prev,
+      [versionPanelState.openInstanceId]: selectedId,
+    }));
+    closeVersionPanel();
+  }, [versionPanelState, closeVersionPanel]);
 
   const togglePreviewSound = useCallback(() => {
     setPreviewSoundEnabled((value) => !value);
@@ -589,7 +600,7 @@ export default function RootLandingPage() {
                               >
                                 <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
                                   <HoverPreview
-                                    videoId={item.trailerId}
+                                    videoId={selectedTrailerIdMap[`${item.id}-${rowIndex}-${index}`] || item.trailerId}
                                     title={item.title}
                                     thumbnail={item.image}
                                     vertical
@@ -680,13 +691,13 @@ export default function RootLandingPage() {
                         ))}
                       </div>
                       <div className="mt-4 flex items-center justify-between gap-2">
-                        <Link
-                          to={buildVersionedHref(versionPanelState.href, versionPanelState.selectedVersion, versionPanelState.availableVersions, versionPanelState.trailerId)}
+                        <button
+                          type="button"
+                          onClick={applyVersionToTrailer}
                           className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
-                          onClick={closeVersionPanel}
                         >
                           Voir cette version
-                        </Link>
+                        </button>
                         <button
                           type="button"
                           onClick={closeVersionPanel}
