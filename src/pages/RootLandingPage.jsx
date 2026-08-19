@@ -627,12 +627,11 @@ export default function RootLandingPage() {
                               <button
                                 type="button"
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-30 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 p-2 text-white transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="absolute top-2 right-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
-                                <span className="absolute inset-0 rounded-full bg-white/5" />
-                                <Play className="relative h-4 w-4" />
+                                <Film className="relative h-4 w-4 opacity-95" />
                               </button>
                             </div>
                           ))}
