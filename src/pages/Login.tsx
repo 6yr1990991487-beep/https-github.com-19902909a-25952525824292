@@ -77,7 +77,9 @@ export default function Login() {
       />
 
       <motion.div initial={{ opacity: 0, y: -8, scale: 0.99 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.36 }} className={`fixed right-6 top-16 z-50 transform-gpu transition-all duration-500 ${compact ? 'translate-y-0 scale-95' : ''}`}>
-        <motion.div whileHover={{ translateY: -4 }} className={`w-full max-w-md ${compact ? 'w-48' : 'w-full max-w-md'} bg-card/80 backdrop-blur-md p-4 ${compact ? 'py-2 px-3' : 'p-8'} rounded-2xl border border-white/10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]`} style={{ perspective: 1200 }}>
+        <motion.div whileHover={{ translateY: -4 }} className={`w-full max-w-md ${compact ? 'w-48' : 'w-full max-w-md'} glass-panel p-4 ${compact ? 'py-2 px-3' : 'p-8'} rounded-2xl shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]`} style={{ perspective: 1200 }}>
+          <div className="login-deco one animate" />
+          <div className="login-deco two animate" />
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-cyan-400 flex items-center justify-center shadow-[inset_0_2px_6px_rgba(255,255,255,0.06),0_12px_30px_-6px_rgba(34,211,238,0.12)]">
@@ -122,7 +124,7 @@ export default function Login() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    className="w-full glass-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="votre@email.com"
                   />
                 </div>
@@ -133,7 +135,7 @@ export default function Login() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    className="w-full glass-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="••••••••"
                   />
                 </div>
@@ -141,7 +143,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="col-span-2 w-full bg-primary hover:bg-primary/80 text-primary-foreground font-medium py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
+                  className="col-span-2 w-full glass-btn text-primary-foreground font-medium py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
                   data-testid="submit-auth-btn"
                 >
                   {isLoading ? "Patientez..." : isRegister ? "S'inscrire" : "Se connecter"}
@@ -156,7 +158,7 @@ export default function Login() {
             </div>
 
             <div className="mt-4 flex items-center gap-3">
-              <button onClick={() => googleLogin()} className="flex items-center gap-3 w-full justify-center rounded-lg border border-border px-4 py-2 bg-white/6 hover:bg-white/8 transition-all">
+              <button onClick={() => googleLogin()} className="flex items-center gap-3 w-full justify-center glass-btn glass-btn-ghost transition-all">
                 <img src="/icons/invite_192.png" alt="Google" className="h-6 w-6 rounded-md" />
                 <span className="text-sm font-medium">Continuer avec Google</span>
               </button>
