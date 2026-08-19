@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const API = (import.meta.env.VITE_BACKEND_URL ?? "") + "/api";
 
@@ -11,6 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [compact, setCompact] = useState(false);
   const { login } = useAuth();
 
   const handleGoogleSuccess = async (response: any) => {
@@ -30,6 +31,12 @@ export default function Login() {
       toast.error(e.message || "Erreur de connexion Google");
     }
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => toast.error("La connexion Google a échoué."),
+    flow: "implicit",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,92 +65,112 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md bg-card p-8 rounded-2xl border border-border shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-heading font-bold text-foreground">
-            {isRegister ? "Créer un compte" : "Se connecter"}
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
-            {isRegister ? "Rejoignez Lovanet aujourd'hui" : "Accède à ton compte"}
-          </p>
-        </div>
+    <div className="min-h-screen relative bg-background">
+      <video
+        className="fixed inset-0 w-full h-full object-cover pointer-events-none opacity-20"
+        autoPlay
+        loop
+        muted
+        playsInline
+        src="/global-bg-web.mp4"
+      />
 
-        <form onSubmit={handleSubmit} className="space-y-4" data-testid="auth-form">
-          {isRegister && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Nom complet</label>
-              <input
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                placeholder="John Doe"
-              />
+      <div className={`fixed right-6 top-16 z-50 transform-gpu transition-all duration-500 ${compact ? 'translate-y-0 scale-95' : ''}`}>
+        <div className={`w-full max-w-md ${compact ? 'w-48' : 'w-full max-w-md'} bg-card/80 backdrop-blur-md p-4 ${compact ? 'py-2 px-3' : 'p-8'} rounded-2xl border border-white/10 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.6)]`} style={{ perspective: 1200 }}>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-cyan-400 flex items-center justify-center shadow-[inset_0_2px_6px_rgba(255,255,255,0.06),0_12px_30px_-6px_rgba(34,211,238,0.12)]">
+                <img src="/lovanet-icon-32.png?v=16" alt="Lovanet" className="h-6 w-6" />
+              </div>
+              <div className="leading-tight">
+                <div className="text-sm font-semibold text-foreground">{compact ? 'Lovanet' : (isRegister ? "Créer un compte" : "Se connecter")}</div>
+                {!compact && <div className="text-xs text-muted-foreground">Accède à ton compte sans quitter la page</div>}
+              </div>
             </div>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setCompact((c) => !c)} className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-black/20 hover:bg-black/30 text-white/90">
+                {compact ? '+' : '—'}
+              </button>
+            </div>
+          </div>
+
+          {!compact && (
+          <div className="mt-4">
+            <form onSubmit={handleSubmit} className="space-y-4" data-testid="auth-form">
+              {isRegister && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Nom complet</label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    placeholder="John Doe"
+                  />
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-foreground">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    placeholder="votre@email.com"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-foreground">Mot de passe</label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    placeholder="••••••••"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="col-span-2 w-full bg-primary hover:bg-primary/80 text-primary-foreground font-medium py-3 rounded-lg transition-colors mt-2 disabled:opacity-50"
+                  data-testid="submit-auth-btn"
+                >
+                  {isLoading ? "Patientez..." : isRegister ? "S'inscrire" : "Se connecter"}
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-4 flex items-center justify-between">
+              <span className="w-1/5 border-b border-border"></span>
+              <span className="text-xs text-muted-foreground uppercase">Ou continuer avec</span>
+              <span className="w-1/5 border-b border-border"></span>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3">
+              <button onClick={() => googleLogin()} className="flex items-center gap-3 w-full justify-center rounded-lg border border-border px-4 py-2 bg-white/6 hover:bg-white/8 transition-all">
+                <img src="/icons/invite_192.png" alt="Google" className="h-6 w-6 rounded-md" />
+                <span className="text-sm font-medium">Continuer avec Google</span>
+              </button>
+            </div>
+
+            <p className="mt-4 text-center text-xs text-secondary-foreground">
+              {isRegister ? "Déjà un compte ?" : "Pas encore de compte ?"}
+              <button
+                type="button"
+                onClick={() => setIsRegister(!isRegister)}
+                className="ml-2 text-primary font-medium hover:underline"
+              >
+                {isRegister ? "Se connecter" : "S'inscrire"}
+              </button>
+            </p>
+          </div>
           )}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-              placeholder="votre@email.com"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Mot de passe</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-medium py-3 rounded-lg transition-colors mt-6 disabled:opacity-50"
-            data-testid="submit-auth-btn"
-          >
-            {isLoading ? "Patientez..." : isRegister ? "S'inscrire" : "Se connecter"}
-          </button>
-        </form>
-
-        <div className="mt-6 flex items-center justify-between">
-          <span className="w-1/5 border-b border-border"></span>
-          <span className="text-xs text-muted-foreground uppercase">Ou continuer avec</span>
-          <span className="w-1/5 border-b border-border"></span>
         </div>
-
-        <div className="mt-6 flex justify-center w-full">
-            <div className="w-full relative [&>div]:!w-full [&>div>div]:!w-full">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => {
-                  toast.error("La connexion Google a échoué.");
-                }}
-                useOneTap
-              />
-            </div>
-        </div>
-
-        <p className="mt-8 text-center text-sm text-secondary-foreground">
-          {isRegister ? "Déjà un compte ?" : "Pas encore de compte ?"}
-          <button
-            type="button"
-            onClick={() => setIsRegister(!isRegister)}
-            className="ml-2 text-primary font-medium hover:underline"
-          >
-            {isRegister ? "Se connecter" : "S'inscrire"}
-          </button>
-        </p>
       </div>
     </div>
   );
