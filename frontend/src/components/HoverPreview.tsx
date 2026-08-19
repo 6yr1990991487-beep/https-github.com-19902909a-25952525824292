@@ -16,6 +16,10 @@ type Props = {
   delay?: number;
   /** Start playing automatically without waiting for hover (default true). */
   autoPlay?: boolean;
+  /** Force the preview active state from parent (controlled). */
+  forceActive?: boolean;
+  /** Notified when a parent requests toggling the forced active state. */
+  onForceToggle?: (next: boolean) => void;
   /** extra overlays rendered above the player (badges, captions...) */
   children?: ReactNode;
   className?: string;
@@ -37,22 +41,27 @@ export const HoverPreview = ({
   muted = true,
   delay = 0,
   autoPlay = false,
+  forceActive,
+  onForceToggle,
   children,
   className = "",
   onImgLoad,
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
+  const controlled = typeof forceActive === "boolean";
+  const activeState = controlled ? forceActive : active;
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
     if (knownUnavailable && knownUnavailable !== "ok") {
-      setActive(false);
+      // always force inactive when unavailable
+      if (!controlled) setActive(false);
       return;
     }
-    if (autoPlay) setActive(true);
-  }, [autoPlay, videoId, knownUnavailable]);
+    if (!controlled && autoPlay) setActive(true);
+  }, [autoPlay, videoId, knownUnavailable, controlled]);
 
   const start = () => {
     if (knownUnavailable && knownUnavailable !== "ok") return;
@@ -64,7 +73,7 @@ export const HoverPreview = ({
       window.clearTimeout(timer.current);
       timer.current = null;
     }
-    setActive(false);
+    if (!controlled) setActive(false);
   };
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
@@ -79,6 +88,10 @@ export const HoverPreview = ({
       onBlur={stop}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
+        if (controlled && typeof onForceToggle === "function") {
+          onForceToggle(!forceActive);
+          return;
+        }
         setActive((value) => !value);
       }}
     >
@@ -89,10 +102,10 @@ export const HoverPreview = ({
         decoding="async"
         onLoad={onImgLoad}
         onError={onImgError}
-        className={`w-full h-full object-cover transition-transform duration-500 ${active ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
+        className={`w-full h-full object-cover transition-transform duration-500 ${activeState ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
       />
 
-      {active && (
+      {activeState && (
         <div className={iframeWrap}>
           {vertical ? (
             <iframe
@@ -112,7 +125,7 @@ export const HoverPreview = ({
         </div>
       )}
 
-      {!active && (
+        {!activeState && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.6)]">
             <Play className="w-6 h-6 text-primary-foreground fill-current" />
@@ -128,7 +141,7 @@ export const HoverPreview = ({
         </div>
       )}
 
-      {active && (
+      {activeState && (
         <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 backdrop-blur text-white text-[10px] font-bold uppercase tracking-wider pointer-events-none">
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> Preview
         </span>

@@ -1,16 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   Clock3,
   Gem,
-  Move,
   Palette,
   RefreshCcw,
   Search,
   Shuffle,
   Sparkles,
   Star,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -103,159 +101,7 @@ const STORAGE_KEY = "lovanet:theme-v2";
 const FAVORITES_KEY = "lovanet:theme-favorites";
 const RECENTS_KEY = "lovanet:theme-recents";
 const NAV_MODE_KEY = "lovanet:nav-theme-mode";
-const FLOATING_KEY = "lovanet:theme-panel-floating";
-// v3 key forces refresh from old overlapping positions
-const FLOATING_POSITION_KEY = "lovanet:theme-panel-pos-v4";
-const DEFAULT_THEME_ID = "mint-vibrant-cyber";
-
-const THEME_PANEL_W = 480;
-const VIEWPORT_MARGIN = 16;
-const SIDE_SAFE_OFFSET = 112;
-
-const getTriggerAnchor = (selector: string) => {
-  if (typeof document === "undefined") return null;
-  const trigger = document.querySelector(selector) as HTMLElement | null;
-  if (!trigger) return null;
-  return trigger.getBoundingClientRect();
-};
-
-const preferredRightAnchor = (width: number, selector?: string) => {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const panelW = Math.min(width, Math.min(Math.round(w * 0.94), THEME_PANEL_W));
-  const panelH = Math.min(Math.round(h * 0.82), 620);
-  const triggerRect = selector ? getTriggerAnchor(selector) : null;
-
-  if (triggerRect) {
-    const gap = 14;
-    const preferLeft = triggerRect.left > w * 0.55;
-    const x = preferLeft ? triggerRect.left - panelW - gap : triggerRect.right + gap;
-    const maxY = Math.max(VIEWPORT_MARGIN, h - panelH - VIEWPORT_MARGIN);
-    const rawY = triggerRect.top + (triggerRect.height - panelH) / 2;
-
-    return {
-      x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, w - panelW - VIEWPORT_MARGIN)),
-      y: Math.min(Math.max(rawY, VIEWPORT_MARGIN), maxY),
-    };
-  }
-
-  const rightInset = w >= 1024 ? SIDE_SAFE_OFFSET : w < 600 ? 12 : 18;
-  return {
-    x: Math.max(VIEWPORT_MARGIN, w - panelW - rightInset),
-    y: w < 600 ? 20 : Math.max(VIEWPORT_MARGIN, Math.round(h * 0.05)),
-  };
-};
-
-const safeDefaultThemePos = () => preferredRightAnchor(THEME_PANEL_W, "[data-testid='theme-bubble-toggle']");
-
-const clampThemePos = (x: number, y: number) => ({
-  x: Math.min(Math.max(x, VIEWPORT_MARGIN), Math.max(VIEWPORT_MARGIN, window.innerWidth - Math.min(window.innerWidth * 0.94, THEME_PANEL_W) - VIEWPORT_MARGIN)),
-  y: Math.min(Math.max(y, VIEWPORT_MARGIN), window.innerHeight - (window.innerWidth >= 1024 ? 160 : 220)),
-});
-
-type PanelRect = { x: number; y: number; w: number; h: number };
-const REGISTRY_KEY = "__lovanetOpenBubblePanels";
-const REGISTRY_EVENT = "lovanet:bubble-registry-change";
-const PANEL_ID = "theme";
-const PANEL_PRIORITY: Record<string, number> = {
-  theme: 3,
-  "catalog-color": 2,
-  "card-skin": 1,
-};
-
-const getPriority = (id: string) => PANEL_PRIORITY[id] ?? 0;
-
-const getRegistry = (): Record<string, PanelRect> => {
-  const host = window as unknown as { [REGISTRY_KEY]?: Record<string, PanelRect> };
-  if (!host[REGISTRY_KEY]) host[REGISTRY_KEY] = {};
-  return host[REGISTRY_KEY] as Record<string, PanelRect>;
-};
-
-const notifyRegistryChange = (source: string) => {
-  window.dispatchEvent(new CustomEvent(REGISTRY_EVENT, { detail: { source } }));
-};
-
-const overlaps = (a: PanelRect, b: PanelRect) =>
-  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-
-const getSettingsPanelRect = (): PanelRect => {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const panelW = Math.min(Math.round(w * 0.92), 320);
-  const panelH = Math.min(Math.round(h * 0.78), 620);
-  const panelBottom = w >= 1024 ? 170 : 220;
-  const x = Math.round((w - panelW) / 2);
-  const y = h - panelBottom - panelH;
-  const sidePad = w >= 1024 ? 36 : 48;
-  const topPad = w >= 1024 ? 44 : 64;
-  const bottomPad = w >= 1024 ? 26 : 38;
-  return {
-    x: Math.max(0, x - sidePad),
-    y: Math.max(0, y - topPad),
-    w: Math.min(w, panelW + sidePad * 2),
-    h: Math.min(h, panelH + topPad + bottomPad),
-  };
-};
-
-const getBottomBarRect = (): PanelRect => {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const reserved = w >= 1024 ? 120 : 170;
-  return { x: 0, y: h - reserved, w, h: reserved };
-};
-
-const clampInsideViewport = (x: number, y: number, w: number, h: number) => {
-  const minX = VIEWPORT_MARGIN;
-  const minY = VIEWPORT_MARGIN;
-  const maxX = Math.max(minX, window.innerWidth - w - minX);
-  const maxY = Math.max(minY, window.innerHeight - h - minY);
-
-  return {
-    x: Math.min(Math.max(x, minX), maxX),
-    y: Math.min(Math.max(y, minY), maxY),
-  };
-};
-
-const resolveNonOverlapping = (id: string, x: number, y: number, w: number, h: number) => {
-  const gap = 12;
-  const blockers: PanelRect[] = [
-    getSettingsPanelRect(),
-    getBottomBarRect(),
-    ...Object.entries(getRegistry())
-      .filter(([key]) => key !== id && getPriority(key) >= getPriority(id))
-      .sort(([left], [right]) => getPriority(right) - getPriority(left))
-      .map(([, rect]) => rect),
-  ];
-
-  let rect = { x, y, w, h };
-  rect = { ...rect, ...clampInsideViewport(rect.x, rect.y, rect.w, rect.h) };
-
-  for (let i = 0; i < 12; i += 1) {
-    const hit = blockers.find((b) => overlaps(rect, b));
-    if (!hit) break;
-
-    const candidates = [
-      { x: hit.x + hit.w + gap, y: rect.y },
-      { x: hit.x - rect.w - gap, y: rect.y },
-      { x: rect.x, y: hit.y + hit.h + gap },
-      { x: rect.x, y: hit.y - rect.h - gap },
-      { x: Math.max(VIEWPORT_MARGIN, window.innerWidth - rect.w - VIEWPORT_MARGIN), y: rect.y },
-      { x: VIEWPORT_MARGIN, y: rect.y },
-      { x: rect.x, y: Math.max(VIEWPORT_MARGIN, window.innerHeight - rect.h - VIEWPORT_MARGIN) },
-      { x: rect.x, y: VIEWPORT_MARGIN },
-    ].map((candidate) => {
-      const clamped = clampInsideViewport(candidate.x, candidate.y, rect.w, rect.h);
-      return { x: clamped.x, y: clamped.y, w: rect.w, h: rect.h };
-    });
-
-    const fallback = clampInsideViewport(rect.x, rect.y, rect.w, rect.h);
-    const nextRect = candidates.find((candidate) => !blockers.some((blocker) => overlaps(candidate, blocker)))
-      ?? { x: fallback.x, y: fallback.y, w: rect.w, h: rect.h };
-    rect = { ...rect, x: nextRect.x, y: nextRect.y };
-  }
-
-  return { x: rect.x, y: rect.y };
-};
+const DEFAULT_THEME_ID = "cobalt-deep-velvet";
 const RECENT_LIMIT = 18;
 const BRIGHT_TEXT = "#f7faff";
 const DARK_TEXT = "#0b1020";
@@ -602,8 +448,8 @@ const applyNavTheme = (theme: ThemeOption, mode: NavPreviewMode) => {
   const accent3 = mode === "contrast" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.14) : mode === "intense" ? mixHex(theme.tertiaryHex, BRIGHT_TEXT, 0.08) : theme.tertiaryHex;
   const navBg = mode === "intense" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.34), 0.74) : mode === "contrast" ? alphaHex(mixHex(theme.backgroundHex, DARK_TEXT, 0.52), 0.82) : alphaHex(mixHex(theme.backgroundHex, theme.cardHex, 0.46), 0.72);
   const navSurface = mode === "intense" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.18), 0.9) : mode === "contrast" ? alphaHex(mixHex(theme.cardHex, DARK_TEXT, 0.32), 0.94) : alphaHex(mixHex(theme.cardHex, theme.card2Hex, 0.28), 0.86);
-  const navText = BRIGHT_TEXT;
-  const navMuted = alphaHex(BRIGHT_TEXT, 0.74);
+  const navText = pickReadableTextColor(mode === "contrast" ? mixHex(theme.cardHex, DARK_TEXT, 0.32) : theme.cardHex, 5);
+  const navMuted = alphaHex(navText, navText === DARK_TEXT ? 0.66 : 0.74);
   const navBorder = mode === "contrast" ? alphaHex(accent, 0.28) : alphaHex(BRIGHT_TEXT, 0.18);
 
   styles.setProperty("--bubble-h", String(parseInt(theme.primaryHsl.split(" ")[0], 10) || 210));
@@ -685,9 +531,8 @@ const applyTheme = (theme: ThemeOption, navMode: NavPreviewMode = "derived") => 
   root.dataset.themeId = theme.id;
   root.dataset.themeMood = theme.mood;
   root.style.colorScheme = "dark";
-  /* Don't tint body background — video must show without theme coloring */
-  document.body.style.background = "";
-  document.body.style.backgroundAttachment = "";
+  document.body.style.background = theme.pageTint;
+  document.body.style.backgroundAttachment = "fixed";
   document.body.style.color = theme.foregroundHex;
 };
 
@@ -712,8 +557,8 @@ const AnimatedThemeGlyph = ({ open }: { open: boolean }) => {
 
   return (
     <div className="relative z-10 flex h-10 w-10 items-center justify-center md:h-11 md:w-11" data-testid="theme-bubble-glyph">
-      <span className="absolute inset-0 rounded-full border border-white/30 bg-white/[0.08] backdrop-blur-2xl" style={{ boxShadow: open ? "0 0 24px rgba(56,189,248,0.38), 0 0 48px rgba(232,121,249,0.32), inset 0 1px 0 rgba(255,255,255,0.22)" : "0 0 18px rgba(56,189,248,0.28), 0 0 34px rgba(232,121,249,0.22), inset 0 1px 0 rgba(255,255,255,0.18)" }} />
-      <span className="absolute inset-[3px] rounded-full opacity-95" style={{ background: "conic-gradient(from 0deg,var(--theme-neon-a),var(--theme-neon-b),var(--theme-neon-c),var(--theme-neon-a))", filter: "blur(8px)", animation: "lovanet-glyph-spin 8s linear infinite" }} />
+      <span className="absolute inset-0 rounded-full border border-white/30 bg-transparent backdrop-blur-2xl" style={{ boxShadow: open ? "0 0 12px rgba(0,0,0,0.18)" : "0 0 8px rgba(0,0,0,0.12)" }} />
+      <span className="absolute inset-[3px] rounded-full opacity-0" style={{ background: "transparent" }} />
       <span className="absolute inset-[6px] rounded-full border border-white/10 bg-[rgba(8,10,20,0.84)]" />
       {SHAPES.map((shape, index) => (
         <svg
@@ -760,24 +605,6 @@ export const ThemeBubble = () => {
   const [recents, setRecents] = useState<string[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   const [navMode, setNavMode] = useState<NavPreviewMode>("derived");
-  const [floating, setFloating] = useState(true);
-  const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
-
-  const estimatePanelSize = () => ({
-    w: Math.min(Math.round(window.innerWidth * 0.94), THEME_PANEL_W),
-    h: Math.min(Math.round(window.innerHeight * 0.88), 760),
-  });
-
-  const placePanel = (base: { x: number; y: number }) => {
-    const size = panelRef.current
-      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
-      : estimatePanelSize();
-    const clamped = clampThemePos(base.x, base.y);
-    return resolveNonOverlapping(PANEL_ID, clamped.x, clamped.y, size.w, size.h);
-  };
 
   const activeTheme = useMemo(
     () => THEME_CATALOG.find((theme) => theme.id === activeThemeId) ?? THEME_CATALOG[0],
@@ -794,10 +621,9 @@ export const ThemeBubble = () => {
   }, []);
 
   useEffect(() => {
-    const savedTheme = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
+    if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+    const savedTheme = null;
     const savedNavMode = typeof window !== "undefined" ? window.localStorage.getItem(NAV_MODE_KEY) : null;
-    const savedFloating = typeof window !== "undefined" ? window.localStorage.getItem(FLOATING_KEY) : null;
-    const savedPosition = typeof window !== "undefined" ? window.localStorage.getItem(FLOATING_POSITION_KEY) : null;
     const mode = NAV_PREVIEW_MODES.some((item) => item.id === savedNavMode) ? (savedNavMode as NavPreviewMode) : "derived";
     const theme = THEME_CATALOG.find((item) => item.id === savedTheme) ?? THEME_CATALOG.find((item) => item.id === DEFAULT_THEME_ID) ?? THEME_CATALOG[0];
     applyTheme(theme, mode);
@@ -805,62 +631,7 @@ export const ThemeBubble = () => {
     setNavMode(mode);
     setFavorites(readStoredArray(FAVORITES_KEY));
     setRecents(readStoredArray(RECENTS_KEY));
-
-    // Persist off-state only; default is floating=true
-    if (savedFloating === "0") {
-      setFloating(false);
-    }
-
-    if (savedPosition) {
-      try {
-        const parsed = JSON.parse(savedPosition) as { x?: number; y?: number };
-        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
-          setPanelPosition(placePanel({ x: parsed.x, y: parsed.y }));
-        } else {
-          setPanelPosition(placePanel(safeDefaultThemePos()));
-        }
-      } catch {
-        setPanelPosition(placePanel(safeDefaultThemePos()));
-      }
-    } else {
-      setPanelPosition(placePanel(safeDefaultThemePos()));
-    }
   }, []);
-
-  useEffect(() => {
-    if (!floating || !open || !panelPosition) return;
-    const size = panelRef.current
-      ? { w: panelRef.current.offsetWidth, h: panelRef.current.offsetHeight }
-      : estimatePanelSize();
-    getRegistry()[PANEL_ID] = { x: panelPosition.x, y: panelPosition.y, w: size.w, h: size.h };
-    notifyRegistryChange(PANEL_ID);
-    return () => {
-      delete getRegistry()[PANEL_ID];
-      notifyRegistryChange(PANEL_ID);
-    };
-  }, [floating, open, panelPosition]);
-
-  useEffect(() => {
-    if (!floating || !open || !panelPosition) return;
-    const handleRegistryChange = (event: Event) => {
-      const source = (event as CustomEvent<{ source?: string }>).detail?.source;
-      if (source === PANEL_ID || !panelRef.current) return;
-      const resolved = resolveNonOverlapping(
-        PANEL_ID,
-        panelPosition.x,
-        panelPosition.y,
-        panelRef.current.offsetWidth,
-        panelRef.current.offsetHeight,
-      );
-      if (resolved.x === panelPosition.x && resolved.y === panelPosition.y) return;
-      setPanelPosition(resolved);
-    };
-
-    window.addEventListener(REGISTRY_EVENT, handleRegistryChange as EventListener);
-    return () => {
-      window.removeEventListener(REGISTRY_EVENT, handleRegistryChange as EventListener);
-    };
-  }, [floating, open, panelPosition]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -877,16 +648,6 @@ export const ThemeBubble = () => {
     window.localStorage.setItem(NAV_MODE_KEY, navMode);
     applyNavTheme(activeTheme, navMode);
   }, [activeTheme, navMode]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(FLOATING_KEY, floating ? "1" : "0");
-  }, [floating]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(FLOATING_POSITION_KEY, JSON.stringify(panelPosition));
-  }, [panelPosition]);
 
   const filteredByTab = useMemo(() => {
     if (tab === "favorites") {
@@ -958,91 +719,13 @@ export const ThemeBubble = () => {
     };
   }, [activeTheme, navMode, open]);
 
-  const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!floating || !panelRef.current) return;
-    const rect = panelRef.current.getBoundingClientRect();
-    dragOffsetRef.current = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    };
-    setIsDragging(true);
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!floating || !isDragging || !dragOffsetRef.current || !panelRef.current) return;
-    const margin = 8;
-    const nextX = event.clientX - dragOffsetRef.current.x;
-    const nextY = event.clientY - dragOffsetRef.current.y;
-    const maxX = Math.max(margin, window.innerWidth - panelRef.current.offsetWidth - margin);
-    const maxY = Math.max(margin, window.innerHeight - panelRef.current.offsetHeight - margin);
-    const resolved = resolveNonOverlapping(
-      PANEL_ID,
-      Math.min(Math.max(nextX, margin), maxX),
-      Math.min(Math.max(nextY, margin), maxY),
-      panelRef.current.offsetWidth,
-      panelRef.current.offsetHeight,
-    );
-    setPanelPosition(resolved);
-  };
-
-  const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-    setIsDragging(false);
-    dragOffsetRef.current = null;
-  };
-
   const panelBody = (
-    <div
-      ref={panelRef}
-      className={cn(
-        "flex flex-col overflow-hidden text-white",
-        floating ? "fixed z-[10050] h-auto w-[min(94vw,480px)] max-w-[calc(100vw-24px)] max-h-[88vh] rounded-[30px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.76),rgba(15,23,42,0.9))] shadow-[0_32px_90px_rgba(15,23,42,0.58)] ring-1 ring-white/10 backdrop-blur-2xl" : "h-full rounded-[26px] border border-white/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.72),rgba(15,23,42,0.86))] shadow-[0_20px_60px_rgba(15,23,42,0.32)]"
-      )}
-      style={floating && panelPosition ? { left: `${panelPosition.x}px`, top: `${panelPosition.y}px`, boxSizing: "border-box" } : { boxSizing: "border-box" }}
-      data-testid="theme-bubble-panel"
-    >
-      <div className="relative flex h-full flex-col before:absolute before:inset-x-4 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/50 before:to-transparent">
-        <div className="border-b border-white/10 bg-white/[0.02] px-4 pb-3 pt-4 md:px-5">
-          <div
-            className={cn("mb-2 flex select-none items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-2.5 py-2", floating && "cursor-grab")}
-            onPointerDown={(e) => { if (!(e.target as Element).closest("button")) handleDragStart(e); }}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
-          >
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.24em] text-white/75">
-              <Move className="h-3.5 w-3.5" />
-              Panneau thèmes
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setFloating((value) => !value)}
-                aria-label={floating ? "Désactiver le mode flottant" : "Activer le mode flottant"}
-                className={cn(
-                  "inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
-                  floating
-                    ? "border-white/20 bg-white/10 text-white"
-                    : "border-white/15 bg-white/5 text-white/80 hover:bg-white/15"
-                )}
-              >
-                <Move className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Fermer le panneau des thèmes"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/90 transition-colors hover:bg-white/20"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+    <div className="theme-orb-panel flex h-full flex-col overflow-hidden bg-black/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] rounded-[2rem]" data-testid="theme-bubble-panel">
+      <div className="theme-orb-panel-highlight" aria-hidden="true" />
+      <div className="relative flex h-full flex-col">
+        <div className="border-b border-white/5 px-4 pb-3 pt-4 md:px-5">
           <div className="mb-3 flex items-start justify-between gap-3">
-            <div className="inline-flex h-8 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 text-[11px] font-medium text-white/90">
+            <div className="inline-flex h-8 items-center gap-2 rounded-full px-3 text-[11px] font-medium text-white/90 bg-white/10 border border-white/20">
               <Sparkles className="h-3.5 w-3.5" style={{ color: activeTheme.primaryHex }} />
               <span data-testid="theme-active-label" className="max-w-[120px] truncate">{activeTheme.label}</span>
             </div>
@@ -1063,7 +746,7 @@ export const ThemeBubble = () => {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Rechercher un style..."
-              className="h-10 rounded-xl border border-white/10 bg-white/5 pl-9 pr-4 text-[13px] text-white placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-white/20"
+              className="theme-search-input h-10 rounded-xl bg-white/5 border-white/10 pl-9 pr-4 text-[13px] text-white placeholder:text-white/30 focus-visible:ring-1 focus-visible:ring-white/20"
               data-testid="theme-search-input"
             />
           </div>
@@ -1099,8 +782,7 @@ export const ThemeBubble = () => {
               <TabsTrigger value="recent" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50">Récents</TabsTrigger>
             </TabsList>
 
-            <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
-              <div className="mb-2 h-1.5 w-full rounded-full" style={navPreviewStyles} aria-hidden="true" />
+            <div className="mb-3 rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 {NAV_PREVIEW_MODES.map((mode) => (
                   <button
@@ -1113,7 +795,7 @@ export const ThemeBubble = () => {
                     className={cn(
                       "whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[10px] font-medium transition-colors border",
                       navMode === mode.id 
-                        ? "bg-white/14 text-white border-white/32" 
+                        ? "bg-white/10 text-white border-white/20" 
                         : "bg-transparent text-white/50 border-transparent hover:bg-white/5 hover:text-white/80"
                     )}
                   >
@@ -1159,12 +841,7 @@ export const ThemeBubble = () => {
                             <div className="flex flex-1 flex-col gap-1.5 p-3">
                               <h4 className="text-[13px] font-bold text-white line-clamp-1 flex items-center justify-between">
                                 {theme.label}
-                                {isActive && (
-                                  <span className="inline-flex items-center gap-1 rounded-full border border-white/30 bg-white/15 px-1.5 py-0.5 text-[10px] text-white">
-                                    <Check className="h-3 w-3 text-white" />
-                                    Actif
-                                  </span>
-                                )}
+                                {isActive && <Check className="h-3 w-3 text-green-400" />}
                               </h4>
                               <p className="text-[10px] uppercase tracking-widest text-white/50">
                                 {theme.family}
@@ -1193,16 +870,9 @@ export const ThemeBubble = () => {
     <>
       <Button
         type="button"
-        onClick={() => {
-          const width = panelRef.current?.offsetWidth || Math.min(Math.round(window.innerWidth * 0.94), THEME_PANEL_W);
-          const base = preferredRightAnchor(width, "[data-testid='theme-bubble-toggle']");
-          const resolved = placePanel(base);
-          setPanelPosition(resolved);
-          setOpen(true);
-        }}
+        onClick={() => setOpen(true)}
         aria-label="Ouvrir le sélecteur de thèmes"
         data-testid="theme-bubble-toggle"
-        data-floating-trigger="theme"
         className="theme-orb-button fixed bottom-4 left-3 z-[9999] h-[52px] w-[52px] rounded-full p-0 shadow-[0_0_20px_rgba(var(--theme-primary-rgb),0.4)] sm:left-4 md:bottom-6 md:left-6 md:h-16 md:w-16"
       >
         <span className="theme-orb-halo" aria-hidden="true" />
@@ -1210,10 +880,7 @@ export const ThemeBubble = () => {
         <AnimatedThemeGlyph open={open} />
       </Button>
 
-      {floating ? (
-        // Direct render when floating — no Sheet/Drawer backdrop
-        open && panelBody
-      ) : !isMobile ? (
+      {!isMobile ? (
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetContent side="right" className="w-full max-w-[480px] border-none bg-transparent p-3 shadow-none sm:max-w-[480px]" data-testid="theme-desktop-sheet">
             <SheetHeader className="sr-only">
@@ -1225,7 +892,7 @@ export const ThemeBubble = () => {
         </Sheet>
       ) : (
         <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerContent className="max-h-[90vh] border-none bg-transparent px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-none" data-testid="theme-mobile-drawer">
+          <DrawerContent className="max-h-[85vh] border-none bg-transparent px-2 pb-2 shadow-none" data-testid="theme-mobile-drawer">
             <DrawerHeader className="sr-only">
               <DrawerTitle>Catalogue des thèmes</DrawerTitle>
               <DrawerDescription>Sélection de thèmes premium Lovanet.</DrawerDescription>

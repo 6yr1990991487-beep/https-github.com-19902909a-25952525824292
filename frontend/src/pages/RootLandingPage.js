@@ -155,6 +155,9 @@ export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
+  // Controlled preview/play state per item (orb-triggered)
+  const [forcedActiveMap, setForcedActiveMap] = useState({});
+  const [openVersionPanelId, setOpenVersionPanelId] = useState(null);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
   const bannerVideoRef = useRef(null);
   const bannerShellRef = useRef(null);
@@ -533,9 +536,49 @@ export default function RootLandingPage() {
                                 delay={120}
                                 className="h-full w-full"
                                 onImgError={createImageFallbackHandler(item.id, item.image)}
+                                // Controlled playback from the floating orb/panel when set
+                                forceActive={Boolean(forcedActiveMap[item.id])}
+                                onForceToggle={(next) => setForcedActiveMap((prev) => ({ ...prev, [item.id]: Boolean(next) }))}
                               >
                                 <div className="hero-premium-lower-thumb-overlay" />
                                 <div className="hero-premium-lower-badge">bande-annonce</div>
+                                {/* Floating orb to open version panel / control preview (works on desktop & mobile) */}
+                                <div className="absolute top-2 right-2 z-20">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setOpenVersionPanelId((cur) => (cur === item.id ? null : item.id));
+                                      // ensure preview is activated when opening panel
+                                      setForcedActiveMap((prev) => ({ ...prev, [item.id]: true }));
+                                    }}
+                                    aria-label="Ouvrir le panneau versions"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-transparent text-white/90 hover:bg-white/6"
+                                  >
+                                    <Play className="h-4 w-4" />
+                                  </button>
+                                  {openVersionPanelId === item.id && (
+                                    <div className="absolute right-0 mt-2 w-40 rounded-lg border border-white/10 bg-[rgba(6,10,20,0.9)] p-2 shadow-lg">
+                                      {['vostfr','vf','vo','ensub','endub'].map((v) => (
+                                        <button
+                                          key={v}
+                                          type="button"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            // select version (UI only) and start preview
+                                            setForcedActiveMap((prev) => ({ ...prev, [item.id]: true }));
+                                            setOpenVersionPanelId(null);
+                                          }}
+                                          className="w-full text-left px-2 py-1 rounded hover:bg-white/6 text-sm"
+                                        >
+                                          {v}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                                 <div className="absolute inset-x-0 bottom-0 z-10 p-3">
                                   <div className="rounded-2xl border border-white/12 bg-[rgba(4,10,22,0.48)] px-3 py-2 backdrop-blur-xl">
                                     <p className="line-clamp-1 text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</p>

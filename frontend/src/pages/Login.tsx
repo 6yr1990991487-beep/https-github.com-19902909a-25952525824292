@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "sonner";
 import { GoogleLogin } from "@react-oauth/google";
+import { Navbar } from "../components/Navbar";
 
 const API = process.env.REACT_APP_BACKEND_URL + "/api";
 
@@ -12,6 +13,22 @@ export default function Login() {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+
+  useEffect(() => {
+    try {
+      const prev = localStorage.getItem('lovanet.nav.style');
+      (window as any).__lovanet_prev_nav_style = prev;
+      window.dispatchEvent(new CustomEvent('navstyle:change', { detail: null }));
+    } catch {}
+    return () => {
+      try {
+        const prev = (window as any).__lovanet_prev_nav_style;
+        if (prev !== undefined && prev !== null) {
+          window.dispatchEvent(new CustomEvent('navstyle:change', { detail: prev }));
+        }
+      } catch {}
+    };
+  }, []);
 
   const handleGoogleSuccess = async (response: any) => {
     try {
@@ -58,7 +75,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <>
+      <Navbar />
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 pt-20 sm:pt-24">
       <div className="w-full max-w-md bg-card p-8 rounded-2xl border border-border shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-heading font-bold text-foreground">
@@ -145,6 +164,7 @@ export default function Login() {
           </button>
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

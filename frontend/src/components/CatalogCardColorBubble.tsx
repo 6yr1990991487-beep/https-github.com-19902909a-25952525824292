@@ -426,16 +426,9 @@ export const CatalogCardColorBubble = () => {
         }}
         aria-label="Couleur des cartes du catalogue"
         data-floating-trigger="catalog-color"
-        className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-border shadow-[0_10px_30px_hsl(var(--primary)/0.45)] backdrop-blur-xl transition-all hover:scale-110 sm:right-3"
+        className="fixed right-2 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full border border-border shadow-[0_10px_30px_hsl(var(--primary)/0.12)] backdrop-blur-xl transition-all hover:scale-110 sm:right-3 bg-transparent"
       >
-        <span
-          className="absolute inset-0 opacity-80"
-          style={{
-            background: "conic-gradient(from 0deg,#00ffff,#ff00d4,#ffd700,#39ff14,#00ffff)",
-            backgroundSize: "300% 300%",
-            animation: "lovanet-bg-shift 6s ease infinite",
-          }}
-        />
+        <span className="absolute inset-0 opacity-0" />
         <span className="relative z-10 text-white drop-shadow">
           {open ? <X className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}
         </span>

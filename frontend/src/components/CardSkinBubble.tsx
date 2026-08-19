@@ -395,7 +395,7 @@ export const CardSkinBubble = () => {
         }}
         aria-label="Apparence des cartes"
         data-floating-trigger="card-skin"
-        className="fixed bottom-5 left-4 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/90 shadow-[0_10px_30px_hsl(var(--primary)/0.45)] backdrop-blur-xl transition-all hover:scale-110 sm:left-5"
+        className="fixed bottom-5 left-4 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-border bg-transparent shadow-[0_10px_30px_hsl(var(--primary)/0.12)] backdrop-blur-xl transition-all hover:scale-110 sm:left-5"
       >
         {open ? <X className="h-5 w-5" /> : <Layers className="h-5 w-5" />}
       </button>
