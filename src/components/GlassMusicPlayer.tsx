@@ -256,7 +256,7 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
         ))}
       </div>
 
-      <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/15 bg-black/30 audio-visual">
+      <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/12 bg-black/18 audio-visual">
         <canvas ref={canvasRef} className="block h-32 w-full sm:h-40" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/45 to-transparent" />
         <div className="absolute inset-x-4 bottom-3 flex items-end justify-between text-[11px] font-bold text-white/85">
