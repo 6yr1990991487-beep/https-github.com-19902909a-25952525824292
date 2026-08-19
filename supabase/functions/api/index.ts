@@ -994,8 +994,15 @@ Deno.serve(async (req) => {
   const route = path.replace(/^\/?api\b/, "").replace(/^\//, "").replace(/^api\//, "");
 
   try {
-    if (route === "translate" && req.method === "POST") return await handleTranslate(req);
-    if (route === "prime/multilingual-trailers") return await handleMultilingualTrailers(url);
+    // Protect expensive endpoints: require SYNC_SECRET or limit usage
+    if (route === "translate" && req.method === "POST") {
+      if (!(await requireSyncSecret(req))) return json({ error: "unauthorized" }, 401);
+      return await handleTranslate(req);
+    }
+    if (route === "prime/multilingual-trailers") {
+      if (!(await requireSyncSecret(req))) return json({ error: "unauthorized" }, 401);
+      return await handleMultilingualTrailers(url);
+    }
     if (route === "prime/catalog") return await handlePrimeCatalog(url);
     if (route === "news/home") return await handleNewsHome();
     if (route === "news/image-proxy") return await handleImageProxy(url);
