@@ -119,7 +119,7 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
         const grad = ctx2d.createLinearGradient(0, h / 2 - bh, 0, h / 2 + bh);
         grad.addColorStop(0, "rgba(0,255,157,0.95)");
         grad.addColorStop(0.5, "rgba(34,211,238,0.9)");
-        grad.addColorStop(1, "rgba(244,114,182,0.85)");
+        grad.addColorStop(1, "rgba(16,185,129,0.85)");
         ctx2d.fillStyle = grad;
         ctx2d.shadowColor = "rgba(0,255,157,0.55)";
         ctx2d.shadowBlur = 14 * dpr * (0.3 + norm);
