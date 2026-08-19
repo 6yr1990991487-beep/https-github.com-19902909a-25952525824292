@@ -1,329 +1,359 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Volume2, Upload, Loader2, Music4 } from "lucide-react";
 import {
-  MUSIC_GENRES,
-  fetchGenreTracks,
-  fetchCloudTracks,
-  uploadCloudTrack,
-  makeLocalTrack,
-  type MusicTrack,
-} from "@/lib/musicLibrary";
+  Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Volume2, VolumeX,
+  Search, Upload, Loader2, ListMusic, Music4,
+} from "lucide-react";
 import { useIsAdmin } from "@/hooks/use-is-admin";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import {
+  MUSIC_GENRES, MusicTrack, fetchGenreTracks, fetchCloudTracks, makeLocalTrack, uploadCloudTrack,
+} from "@/lib/musicLibrary";
 
-const fmt = (s: number) => {
-  if (!Number.isFinite(s)) return "0:00";
-  const m = Math.floor(s / 60);
-  const r = Math.floor(s % 60);
-  return `${m}:${String(r).padStart(2, "0")}`;
-};
+function formatTime(sec: number) {
+  if (!Number.isFinite(sec) || sec <= 0) return "00:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
 
-export default function GlassMusicPlayer() {
+export default function GlassMusicPlayer({ className = "" }: { className?: string }) {
   const isAdmin = useIsAdmin();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const { toast } = useToast();
 
   const [genre, setGenre] = useState(MUSIC_GENRES[0].id);
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [tracks, setTracks] = useState<MusicTrack[]>([]);
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [remote, setRemote] = useState<MusicTrack[]>([]);
+  const [cloud, setCloud] = useState<MusicTrack[]>([]);
+  const [local, setLocal] = useState<MusicTrack[]>([]);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [shuffle, setShuffle] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [repeat, setRepeat] = useState(false);
+  const [volume, setVolume] = useState(0.85);
+  const [muted, setMuted] = useState(false);
+  const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.8);
-  const [uploading, setUploading] = useState(false);
 
-  const current = tracks[index];
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const rafRef = useRef<number | null>(null);
 
-  const load = useCallback(
-    async (g: string, p: number, q: string, append: boolean) => {
-      setLoading(true);
-      try {
-        const [remote, cloud] = await Promise.all([
-          fetchGenreTracks(g, p, q),
-          p === 1 && !q ? fetchCloudTracks() : Promise.resolve([] as MusicTrack[]),
-        ]);
-        const next = [...cloud, ...remote];
-        setTracks((prev) => {
-          const base = append ? prev : [];
-          const seen = new Set(base.map((t) => t.id));
-          return [...base, ...next.filter((t) => !seen.has(t.id))];
-        });
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const tracks = useMemo(() => [...local, ...cloud, ...remote], [local, cloud, remote]);
+  const track = tracks[index];
 
   useEffect(() => {
-    setPage(1);
-    setIndex(0);
-    load(genre, 1, search, false);
-  }, [genre, load]);
+    let cancelled = false;
+    setLoading(true);
+    fetchGenreTracks(genre, page, query)
+      .then((list) => {
+        if (cancelled) return;
+        setRemote((prev) => (page === 1 ? list : [...prev, ...list.filter((t) => !prev.some((p) => p.id === t.id))]));
+      })
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
+  }, [genre, page, query]);
 
-  // Web Audio analyser -> vibration 3D
-  useEffect(() => {
+  useEffect(() => { fetchCloudTracks().then(setCloud).catch(() => {}); }, []);
+
+  const ensureGraph = useCallback(() => {
     const el = audioRef.current;
     if (!el || analyserRef.current) return;
+    const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+    if (!AC) return;
     try {
-      const Ctor = (window as any).AudioContext || (window as any).webkitAudioContext;
-      if (!Ctor) return;
-      const ctx = new Ctor();
+      const ctx: AudioContext = new AC();
       const src = ctx.createMediaElementSource(el);
       const analyser = ctx.createAnalyser();
-      analyser.fftSize = 128;
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.82;
       src.connect(analyser);
       analyser.connect(ctx.destination);
+      ctxRef.current = ctx;
       analyserRef.current = analyser;
-      const data = new Uint8Array(analyser.frequencyBinCount);
-      const draw = () => {
-        rafRef.current = requestAnimationFrame(draw);
-        analyser.getByteFrequencyData(data);
-        const canvas = canvasRef.current;
-        const energy = data.reduce((a, b) => a + b, 0) / (data.length * 255);
-        wrapRef.current?.style.setProperty("--audio-energy", energy.toFixed(3));
-        if (!canvas) return;
-        const c = canvas.getContext("2d");
-        if (!c) return;
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.getBoundingClientRect();
-        if (canvas.width !== Math.floor(rect.width * dpr)) {
-          canvas.width = Math.floor(rect.width * dpr);
-          canvas.height = Math.floor(rect.height * dpr);
-        }
-        const w = canvas.width;
-        const h = canvas.height;
-        c.clearRect(0, 0, w, h);
-        const bars = data.length;
-        const bw = w / bars;
-        for (let i = 0; i < bars; i++) {
-          const v = data[i] / 255;
-          const bh = Math.max(2, v * h);
-          const grad = c.createLinearGradient(0, h, 0, h - bh);
-          grad.addColorStop(0, "rgba(0,255,157,0.95)");
-          grad.addColorStop(1, "rgba(167,139,250,0.85)");
-          c.fillStyle = grad;
-          c.fillRect(i * bw + bw * 0.15, h - bh, bw * 0.7, bh);
-        }
-      };
-      draw();
     } catch {
-      /* analyser indisponible (CORS) : le lecteur reste fonctionnel */
+      // graphe indisponible : lecture normale
     }
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
   }, []);
 
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
-  }, [volume]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      rafRef.current = requestAnimationFrame(draw);
+      const ctx2d = canvas.getContext("2d");
+      if (!ctx2d) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== Math.floor(rect.width * dpr)) {
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+      }
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx2d.clearRect(0, 0, w, h);
+      const analyser = analyserRef.current;
+      const bins = analyser ? analyser.frequencyBinCount : 128;
+      const data = new Uint8Array(bins);
+      if (analyser) analyser.getByteFrequencyData(data);
+      else for (let i = 0; i < bins; i++) data[i] = 0;
 
-  const playIndex = (i: number) => {
-    setIndex(i);
-    setPlaying(true);
-    requestAnimationFrame(() => audioRef.current?.play().catch(() => {}));
-  };
+      let sum = 0;
+      const bars = 72;
+      const step = Math.max(1, Math.floor(bins / bars));
+      const barW = w / bars;
+      for (let i = 0; i < bars; i++) {
+        let v = 0;
+        for (let k = 0; k < step; k++) v = Math.max(v, data[i * step + k] || 0);
+        sum += v;
+        const norm = v / 255;
+        const bh = Math.max(2 * dpr, norm * h * 0.46);
+        const x = i * barW + barW * 0.18;
+        const bw = barW * 0.64;
+        const grad = ctx2d.createLinearGradient(0, h / 2 - bh, 0, h / 2 + bh);
+        grad.addColorStop(0, "rgba(0,255,157,0.95)");
+        grad.addColorStop(0.5, "rgba(34,211,238,0.9)");
+        grad.addColorStop(1, "rgba(244,114,182,0.85)");
+        ctx2d.fillStyle = grad;
+        ctx2d.shadowColor = "rgba(0,255,157,0.55)";
+        ctx2d.shadowBlur = 14 * dpr * (0.3 + norm);
+        const r = Math.min(bw / 2, 4 * dpr);
+        ctx2d.beginPath();
+        ctx2d.roundRect(x, h / 2 - bh, bw, bh * 2, r);
+        ctx2d.fill();
+      }
+      ctx2d.shadowBlur = 0;
+      ctx2d.strokeStyle = "rgba(255,255,255,0.16)";
+      ctx2d.lineWidth = 1 * dpr;
+      ctx2d.beginPath();
+      ctx2d.moveTo(0, h / 2);
+      ctx2d.lineTo(w, h / 2);
+      ctx2d.stroke();
 
-  const toggle = () => {
+      const energy = sum / (bars * 255);
+      const shell = shellRef.current;
+      if (shell) {
+        shell.style.setProperty("--audio-energy", energy.toFixed(3));
+      }
+    };
+    draw();
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  useEffect(() => {
     const el = audioRef.current;
-    if (!el || !current) return;
-    if (el.paused) {
-      el.play().catch(() => {});
-      setPlaying(true);
-    } else {
-      el.pause();
-      setPlaying(false);
-    }
-  };
+    if (!el) return;
+    el.volume = muted ? 0 : volume;
+  }, [volume, muted]);
 
-  const next = () => {
+  const playTrack = useCallback(async (i: number) => {
+    const el = audioRef.current;
+    const next = tracks[i];
+    if (!el || !next) return;
+    ensureGraph();
+    if (ctxRef.current?.state === "suspended") { try { await ctxRef.current.resume(); } catch { /* ignore */ } }
+    setIndex(i);
+    el.src = next.url;
+    try { await el.play(); setPlaying(true); } catch { setPlaying(false); }
+  }, [ensureGraph, tracks]);
+
+  const toggle = useCallback(async () => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (!el.src && tracks.length) { await playTrack(index); return; }
+    ensureGraph();
+    if (ctxRef.current?.state === "suspended") { try { await ctxRef.current.resume(); } catch { /* ignore */ } }
+    if (el.paused) { try { await el.play(); setPlaying(true); } catch { /* ignore */ } }
+    else { el.pause(); setPlaying(false); }
+  }, [ensureGraph, index, playTrack, tracks.length]);
+
+  const goNext = useCallback(() => {
     if (!tracks.length) return;
-    playIndex(shuffle ? Math.floor(Math.random() * tracks.length) : (index + 1) % tracks.length);
-  };
-  const prev = () => {
+    const i = shuffle ? Math.floor(Math.random() * tracks.length) : (index + 1) % tracks.length;
+    playTrack(i);
+  }, [index, playTrack, shuffle, tracks.length]);
+
+  const goPrev = useCallback(() => {
     if (!tracks.length) return;
-    playIndex((index - 1 + tracks.length) % tracks.length);
-  };
+    playTrack((index - 1 + tracks.length) % tracks.length);
+  }, [index, playTrack, tracks.length]);
 
   const onVisitorFiles = (files: FileList | null) => {
     if (!files?.length) return;
-    const locals = Array.from(files).map(makeLocalTrack);
-    setTracks((prev) => [...locals, ...prev]);
-    setIndex(0);
-    toast({ title: "Ajouté au lecteur", description: `${locals.length} titre(s) en lecture locale.` });
+    const added = Array.from(files).filter((f) => f.type.startsWith("audio/")).map(makeLocalTrack);
+    if (!added.length) return;
+    setLocal((prev) => [...added.filter((a) => !prev.some((p) => p.id === a.id)), ...prev]);
+    toast({ title: "Ajouté à votre lecture", description: `${added.length} fichier(s) prêt(s) — lecture locale uniquement.` });
   };
 
   const onAdminFiles = async (files: FileList | null) => {
     if (!files?.length) return;
     setUploading(true);
     try {
-      for (const f of Array.from(files)) await uploadCloudTrack(f, genre, "Bibliothèque Lovanet");
-      toast({ title: "Envoyé", description: "Les titres rejoignent la bibliothèque du site." });
-      load(genre, 1, "", false);
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith("audio/")) continue;
+        await uploadCloudTrack(file, genre, "Bibliothèque Lovanet");
+      }
+      setCloud(await fetchCloudTracks());
+      toast({ title: "Musiques publiées", description: "Les titres sont disponibles pour tous les visiteurs." });
     } catch (e: any) {
-      toast({ title: "Envoi impossible", description: e?.message ?? "Erreur inconnue", variant: "destructive" });
+      toast({ title: "Envoi impossible", description: e?.message || "Réessayez.", variant: "destructive" });
     } finally {
       setUploading(false);
     }
   };
 
-  const pct = useMemo(() => (duration ? (progress / duration) * 100 : 0), [progress, duration]);
+  const progress = duration ? (current / duration) * 100 : 0;
 
   return (
-    <div ref={wrapRef} className="glass3d-panel audio-shell rounded-3xl p-5 md:p-6" data-testid="glass-music-player">
-      <div className="flex items-center gap-3 mb-4">
-        <Music4 className="w-5 h-5 text-[#00ff9d]" />
-        <h2 className="text-white font-bold tracking-wide">Lecteur ambiance Lovanet</h2>
-      </div>
+    <section
+      ref={shellRef}
+      data-testid="aihub-glass-music-player"
+      className={`glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7 ${className}`}
+    >
+      <div className="pointer-events-none absolute inset-0 audio-shell-glow" aria-hidden />
 
-      {/* Genres */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <header className="relative flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="audio-orb inline-flex h-12 w-12 items-center justify-center rounded-2xl">
+            <Music4 className="h-6 w-6 text-white" />
+          </span>
+          <div>
+            <h2 className="text-lg font-black tracking-wide text-white">Lecteur ambiance 3D</h2>
+            <p className="text-xs font-semibold text-white/70">Catalogue libre de droits · {tracks.length} titres chargés</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="glass3d-btn inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white">
+            <Upload className="h-4 w-4" /> Ajouter mes musiques
+            <input type="file" accept="audio/*" multiple hidden onChange={(e) => onVisitorFiles(e.target.files)} />
+          </label>
+          {isAdmin && (
+            <label className="glass3d-btn inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white">
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Publier (admin)
+              <input type="file" accept="audio/*" multiple hidden onChange={(e) => onAdminFiles(e.target.files)} />
+            </label>
+          )}
+        </div>
+      </header>
+
+      <div className="relative mt-5 flex flex-wrap gap-2">
         {MUSIC_GENRES.map((g) => (
           <button
             key={g.id}
-            onClick={() => setGenre(g.id)}
-            data-testid={`music-genre-${g.id}`}
-            className={`glass3d-btn px-3 py-1.5 rounded-full text-xs font-semibold text-white ${genre === g.id ? "is-active" : ""}`}
+            type="button"
+            onClick={() => { setGenre(g.id); setPage(1); setQuery(""); setSearch(""); }}
+            className={`glass3d-btn rounded-full px-4 py-2 text-xs font-bold text-white ${genre === g.id ? "is-active" : ""}`}
           >
             {g.label}
           </button>
         ))}
       </div>
 
-      {/* Visualiseur */}
-      <div className="audio-visual rounded-2xl overflow-hidden border border-white/15 bg-black/25 mb-4">
-        <canvas ref={canvasRef} className="audio-eq" />
+      <div className="relative mt-5 overflow-hidden rounded-[1.6rem] border border-white/15 bg-black/30 audio-visual">
+        <canvas ref={canvasRef} className="block h-32 w-full sm:h-40" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/45 to-transparent" />
+        <div className="absolute inset-x-4 bottom-3 flex items-end justify-between text-[11px] font-bold text-white/85">
+          <span>{formatTime(current)}</span>
+          <span className="truncate px-3 text-center text-white">{track?.title || "Aucune piste"}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
       </div>
 
-      <div className="audio-meta mb-2">
-        <strong>{current ? `${current.title} — ${current.artist}` : "Sélectionne un titre"}</strong>
-        <span>{fmt(progress)} / {fmt(duration)}</span>
-      </div>
-
-      <button
-        type="button"
-        className="audio-seek mb-4"
+      <div
+        className="audio-seek relative mt-4 h-3 w-full cursor-pointer overflow-hidden rounded-full"
         onClick={(e) => {
           const el = audioRef.current;
           if (!el || !duration) return;
           const rect = e.currentTarget.getBoundingClientRect();
           el.currentTime = ((e.clientX - rect.left) / rect.width) * duration;
         }}
-        aria-label="Position de lecture"
       >
-        <span className="audio-seek-fill" style={{ width: `${pct}%` }} />
-      </button>
+        <div className="audio-seek-fill h-full" style={{ width: `${progress}%` }} />
+      </div>
 
-      <div className="audio-controls mb-4">
-        <button className="glass3d-btn audio-play" onClick={prev} aria-label="Précédent"><SkipBack className="w-4 h-4" /></button>
-        <button className="glass3d-btn is-active audio-play primary" onClick={toggle} aria-label="Lecture" data-testid="music-play">
-          {playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+      <div className="relative mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        <button type="button" onClick={() => setShuffle((v) => !v)} aria-label="Lecture aléatoire" className={`glass3d-btn h-11 w-11 rounded-full text-white ${shuffle ? "is-active" : ""}`}><Shuffle className="mx-auto h-4 w-4" /></button>
+        <button type="button" onClick={goPrev} aria-label="Précédent" className="glass3d-btn h-12 w-12 rounded-full text-white"><SkipBack className="mx-auto h-5 w-5" /></button>
+        <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Lecture"} className="glass3d-btn audio-play h-16 w-16 rounded-full text-white">
+          {playing ? <Pause className="mx-auto h-7 w-7" /> : <Play className="mx-auto h-7 w-7" />}
         </button>
-        <button className="glass3d-btn audio-play" onClick={next} aria-label="Suivant"><SkipForward className="w-4 h-4" /></button>
-        <button
-          className={`glass3d-btn audio-play ${shuffle ? "is-active" : ""}`}
-          onClick={() => setShuffle((s) => !s)}
-          aria-label="Aléatoire"
-        >
-          <Shuffle className="w-4 h-4" />
-        </button>
-        <div className="flex items-center gap-2 ml-2">
-          <Volume2 className="w-4 h-4 text-white/70" />
+        <button type="button" onClick={goNext} aria-label="Suivant" className="glass3d-btn h-12 w-12 rounded-full text-white"><SkipForward className="mx-auto h-5 w-5" /></button>
+        <button type="button" onClick={() => setRepeat((v) => !v)} aria-label="Répéter" className={`glass3d-btn h-11 w-11 rounded-full text-white ${repeat ? "is-active" : ""}`}><Repeat className="mx-auto h-4 w-4" /></button>
+        <div className="glass3d-btn ml-1 flex items-center gap-2 rounded-full px-3 py-2">
+          <button type="button" onClick={() => setMuted((v) => !v)} aria-label="Son" className="text-white">
+            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
           <input
-            className="audio-range"
             type="range"
             min={0}
             max={1}
-            step={0.02}
-            value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            step={0.01}
+            value={muted ? 0 : volume}
+            onChange={(e) => { setMuted(false); setVolume(Number(e.target.value)); }}
+            className="audio-range h-1 w-24"
             aria-label="Volume"
           />
         </div>
       </div>
 
-      {/* Recherche + envois */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setPage(1);
-              load(genre, 1, search, false);
-            }
-          }}
-          placeholder="Rechercher un titre libre de droits…"
-          className="glass3d-btn flex-1 min-w-[12rem] rounded-full px-4 py-2 text-sm text-white placeholder:text-white/60 outline-none"
-        />
-        <label className="glass3d-btn cursor-pointer inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white">
-          <Upload className="w-4 h-4" /> Ma musique
-          <input type="file" accept="audio/*" multiple hidden onChange={(e) => onVisitorFiles(e.target.files)} />
-        </label>
-        {isAdmin && (
-          <label className="glass3d-btn is-active cursor-pointer inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white">
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Publier (admin)
-            <input type="file" accept="audio/*" multiple hidden onChange={(e) => onAdminFiles(e.target.files)} />
-          </label>
-        )}
+      <div className="relative mt-5 flex items-center gap-2">
+        <div className="glass3d-btn flex flex-1 items-center gap-2 rounded-full px-4 py-2">
+          <Search className="h-4 w-4 text-white/80" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { setPage(1); setQuery(search); } }}
+            placeholder="Rechercher un titre, un artiste, une ambiance…"
+            className="w-full bg-transparent text-sm font-semibold text-white placeholder:text-white/50 focus:outline-none"
+          />
+        </div>
+        <button type="button" onClick={() => { setPage(1); setQuery(search); }} className="glass3d-btn rounded-full px-4 py-2 text-xs font-bold text-white">Chercher</button>
       </div>
 
-      {/* Playlist */}
-      <div className="max-h-72 overflow-y-auto rounded-2xl border border-white/15 bg-black/20 divide-y divide-white/10">
+      <div className="relative mt-4 max-h-80 overflow-y-auto rounded-[1.4rem] border border-white/12 bg-black/25 p-2">
+        <div className="mb-2 flex items-center gap-2 px-2 text-[11px] font-bold uppercase tracking-wide text-white/70">
+          <ListMusic className="h-4 w-4" /> Playlist ambiance
+        </div>
         {tracks.map((t, i) => (
           <button
             key={t.id}
-            onClick={() => playIndex(i)}
-            className={`w-full text-left px-4 py-2.5 text-sm transition ${
-              i === index ? "bg-[#00ff9d]/15 text-white" : "text-white/80 hover:bg-white/10"
-            }`}
+            type="button"
+            onClick={() => playTrack(i)}
+            className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left transition ${i === index ? "bg-white/15" : "hover:bg-white/8"}`}
           >
-            <span className="block truncate font-medium">{t.title}</span>
-            <span className="block truncate text-xs text-white/55">{t.artist}</span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-bold text-white">{t.title}</span>
+              <span className="block truncate text-[11px] font-semibold text-white/65">{t.artist} · {t.source === "local" ? "mon fichier" : t.source === "cloud" ? "bibliothèque" : t.genre}</span>
+            </span>
+            {i === index && playing && <span className="audio-eq" aria-hidden><i /><i /><i /></span>}
           </button>
         ))}
-        {!tracks.length && !loading && (
-          <div className="px-4 py-6 text-center text-white/60 text-sm">Aucun titre pour ce filtre.</div>
-        )}
-        {loading && (
-          <div className="px-4 py-6 flex items-center justify-center text-white/70 text-sm gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" /> Chargement du catalogue…
-          </div>
-        )}
-      </div>
-
-      <div className="mt-3 flex justify-center">
-        <button
-          onClick={() => {
-            const p = page + 1;
-            setPage(p);
-            load(genre, p, search, true);
-          }}
-          disabled={loading}
-          className="glass3d-btn rounded-full px-5 py-2 text-sm text-white disabled:opacity-50"
-        >
-          Charger plus de titres
-        </button>
+        {!tracks.length && !loading && <p className="p-4 text-sm font-semibold text-white/70">Aucun titre pour cette recherche.</p>}
+        <div className="mt-2 flex justify-center">
+          <button type="button" onClick={() => setPage((p) => p + 1)} disabled={loading} className="glass3d-btn rounded-full px-5 py-2 text-xs font-bold text-white">
+            {loading ? <span className="inline-flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Chargement…</span> : "Charger plus de titres"}
+          </button>
+        </div>
       </div>
 
       <audio
         ref={audioRef}
-        src={current?.url}
         crossOrigin="anonymous"
-        onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onEnded={next}
+        preload="metadata"
+        onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+        onEnded={() => { if (repeat) { playTrack(index); } else { goNext(); } }}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        hidden
       />
-    </div>
+    </section>
   );
 }
