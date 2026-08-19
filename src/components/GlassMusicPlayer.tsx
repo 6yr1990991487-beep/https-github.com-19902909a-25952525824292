@@ -191,11 +191,7 @@ export default function GlassMusicPlayer() {
             key={g.id}
             onClick={() => setGenre(g.id)}
             data-testid={`music-genre-${g.id}`}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
-              genre === g.id
-                ? "bg-[#00ff9d]/20 border-[#00ff9d]/60 text-white"
-                : "bg-white/8 border-white/25 text-white/80 hover:bg-white/15"
-            }`}
+            className={`glass3d-btn px-3 py-1.5 rounded-full text-xs font-semibold text-white ${genre === g.id ? "is-active" : ""}`}
           >
             {g.label}
           </button>
@@ -227,13 +223,13 @@ export default function GlassMusicPlayer() {
       </button>
 
       <div className="audio-controls mb-4">
-        <button className="audio-play" onClick={prev} aria-label="Précédent"><SkipBack className="w-4 h-4" /></button>
-        <button className="audio-play primary" onClick={toggle} aria-label="Lecture" data-testid="music-play">
+        <button className="glass3d-btn audio-play" onClick={prev} aria-label="Précédent"><SkipBack className="w-4 h-4" /></button>
+        <button className="glass3d-btn is-active audio-play primary" onClick={toggle} aria-label="Lecture" data-testid="music-play">
           {playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
         </button>
-        <button className="audio-play" onClick={next} aria-label="Suivant"><SkipForward className="w-4 h-4" /></button>
+        <button className="glass3d-btn audio-play" onClick={next} aria-label="Suivant"><SkipForward className="w-4 h-4" /></button>
         <button
-          className={`audio-play ${shuffle ? "text-[#00ff9d]" : ""}`}
+          className={`glass3d-btn audio-play ${shuffle ? "is-active" : ""}`}
           onClick={() => setShuffle((s) => !s)}
           aria-label="Aléatoire"
         >
@@ -266,14 +262,14 @@ export default function GlassMusicPlayer() {
             }
           }}
           placeholder="Rechercher un titre libre de droits…"
-          className="flex-1 min-w-[12rem] rounded-full bg-white/10 border border-white/25 px-4 py-2 text-sm text-white placeholder:text-white/50 outline-none focus:border-[#00ff9d]/60"
+          className="glass3d-btn flex-1 min-w-[12rem] rounded-full px-4 py-2 text-sm text-white placeholder:text-white/60 outline-none"
         />
-        <label className="cursor-pointer inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 px-4 py-2 text-sm text-white hover:bg-white/20">
+        <label className="glass3d-btn cursor-pointer inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white">
           <Upload className="w-4 h-4" /> Ma musique
           <input type="file" accept="audio/*" multiple hidden onChange={(e) => onVisitorFiles(e.target.files)} />
         </label>
         {isAdmin && (
-          <label className="cursor-pointer inline-flex items-center gap-2 rounded-full bg-[#00ff9d]/20 border border-[#00ff9d]/50 px-4 py-2 text-sm text-white hover:bg-[#00ff9d]/30">
+          <label className="glass3d-btn is-active cursor-pointer inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm text-white">
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />} Publier (admin)
             <input type="file" accept="audio/*" multiple hidden onChange={(e) => onAdminFiles(e.target.files)} />
           </label>
@@ -312,7 +308,7 @@ export default function GlassMusicPlayer() {
             load(genre, p, search, true);
           }}
           disabled={loading}
-          className="rounded-full bg-white/10 border border-white/25 px-5 py-2 text-sm text-white hover:bg-white/20 disabled:opacity-50"
+          className="glass3d-btn rounded-full px-5 py-2 text-sm text-white disabled:opacity-50"
         >
           Charger plus de titres
         </button>
