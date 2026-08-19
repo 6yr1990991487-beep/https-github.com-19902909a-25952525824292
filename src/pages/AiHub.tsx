@@ -1,48 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-// Use the requested Drive video for the AiHub banner (fallback to local asset if needed)
-const aiHubBannerVideo = "https://drive.google.com/uc?export=download&id=1utYWlV1PCrvXWIYJuCCR11o-Hov53tIO";
+import React, { useState } from 'react';
+import { PageShell } from '@/components/PageShell';
+import GlassMusicPlayer from '@/components/GlassMusicPlayer';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock, Volume2, VolumeX } from 'lucide-react';
+import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
 
 export const AiHub = () => {
   const [activeTab, setActiveTab] = useState('lova-bot');
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = isMuted;
-    const playPromise = v.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
-  }, [isMuted]);
-
-  const toggleMute = () => {
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = nextMuted;
-    const playPromise = v.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
-    }
-  };
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (v) {
-      const p = v.play();
-      if (p && typeof p.then === 'function') p.catch(() => {});
-    }
-  }, []);
-
   const renderContent = () => {
     switch (activeTab) {
       case 'lova-bot':
@@ -99,32 +66,12 @@ export const AiHub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 pt-20 px-4 pb-12 flex flex-col items-center">
+    <PageShell>
+      <div className="px-4 pb-12 flex flex-col items-center">
       <div className="max-w-7xl w-full">
-        {/* Video Banner */}
-        <div className="w-full mb-6 relative overflow-hidden rounded-2xl shadow-2xl shadow-black/20">
-          <video
-            ref={videoRef}
-            src={aiHubBannerVideo}
-            className="w-full h-72 md:h-96 object-cover"
-            autoPlay
-            loop
-            playsInline
-            muted={isMuted}
-            controls
-            preload="metadata"
-            controlsList="nodownload noremoteplayback"
-          />
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
-          >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            {isMuted ? 'Activer le son' : 'Couper le son'}
-          </button>
+        <div className="mb-8">
+          <GlassMusicPlayer />
         </div>
-
         {/* Header Tabs */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button 
@@ -174,7 +121,8 @@ export const AiHub = () => {
         </div>
 
       </div>
-    </div>
+      </div>
+    </PageShell>
   );
 };
 
