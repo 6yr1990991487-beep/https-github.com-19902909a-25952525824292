@@ -118,13 +118,13 @@ export const HoverPreview = ({
         }
         event.preventDefault();
         event.stopPropagation();
-        if (!heldRef.current) {
-          setActive(true);
-          hold();
-        } else if (retainAfterInteraction && active) {
-          releaseHold();
-          setActive(false);
+        // Le clic ne coupe jamais la lecture : il la démarre / la maintient.
+        if (timer.current) {
+          window.clearTimeout(timer.current);
+          timer.current = null;
         }
+        setActive(true);
+        hold();
       }}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
