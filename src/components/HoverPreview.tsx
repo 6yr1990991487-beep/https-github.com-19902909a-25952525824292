@@ -26,6 +26,8 @@ type Props = {
   autoPlay?: boolean;
   /** Keep playback active after touch release instead of stopping on touch end. */
   retainOnTouchRelease?: boolean;
+  /** "cover" (default) crops the video, "contain" shows the full frame inside a transparent inner frame. */
+  fit?: "cover" | "contain";
   /** extra overlays rendered above the player (badges, captions...) */
   children?: ReactNode;
   className?: string;
@@ -47,6 +49,7 @@ export const HoverPreview = ({
   muted = true,
   delay = 0,
   autoPlay = true,
+  fit = "cover",
   children,
   className = "",
   onImgLoad,
@@ -137,7 +140,12 @@ export const HoverPreview = ({
     // reset le fondu quand l'apercu s'arrete
     queueMicrotask(() => setFrameReady(false));
   }
-  const iframeWrap = vertical ? "absolute inset-0 overflow-hidden pointer-events-none" : "absolute inset-0 pointer-events-none";
+  const contain = fit === "contain";
+  const iframeWrap = contain
+    ? "absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none p-[5%]"
+    : vertical
+      ? "absolute inset-0 overflow-hidden pointer-events-none"
+      : "absolute inset-0 pointer-events-none";
 
   return (
     <div
@@ -206,7 +214,18 @@ export const HoverPreview = ({
 
       {playing && (
         <div className={`${iframeWrap} bg-transparent transition-opacity duration-700 ${frameReady ? "opacity-100" : "opacity-0"}`}>
-          {vertical ? (
+          {contain ? (
+            <div className="relative w-full overflow-hidden rounded-[0.9rem] border border-white/12 bg-transparent aspect-video">
+              <iframe
+                src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
+                title={title}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                onLoad={() => window.setTimeout(() => setFrameReady(true), 1200)}
+                className="absolute inset-0 h-full w-full border-0"
+              />
+              <span className="pointer-events-none absolute bottom-0 right-0 h-6 w-16 rounded-md bg-white/[0.06] backdrop-blur-md" aria-hidden />
+            </div>
+          ) : vertical ? (
             <iframe
               src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
