@@ -421,14 +421,25 @@ export default function RootLandingPage() {
             <div className="relative">
               <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                 <div className="h-10 w-36 rounded-full border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)] backdrop-blur-md" data-testid="home-platforms-heading-placeholder" />
-                <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
-                  <Link to="/anime-catalog">
-                    <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                      Catalogue
-                      <ArrowRight className="h-3.5 w-3.5 neon-rgb-icon" />
-                    </span>
-                  </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
+                    <Link to="/anime-catalog">
+                      <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
+                        Catalogue
+                        <ArrowRight className="h-3.5 w-3.5 neon-rgb-icon" />
+                      </span>
+                    </Link>
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={togglePreviewSound}
+                    aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+                    className="glass3d-btn inline-flex h-8 w-8 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    data-testid="home-platforms-sound-toggle"
+                  >
+                    {previewSoundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
 
@@ -460,15 +471,6 @@ export default function RootLandingPage() {
                     data-locked-layout={TRAILER_BANNER_LAYOUT}
                     data-testid="home-platforms-dynamic-banner-grid"
                   >
-                    <button
-                      type="button"
-                      onClick={togglePreviewSound}
-                      aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
-                      className="absolute right-3 top-3 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white shadow-[0_14px_32px_-14px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
-                      data-testid="home-platforms-sound-toggle"
-                    >
-                      {previewSoundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
-                    </button>
                     {catalogPreviewRows.map((row, rowIndex) => (
                       <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
                         <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
