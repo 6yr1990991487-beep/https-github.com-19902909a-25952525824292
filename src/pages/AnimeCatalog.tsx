@@ -575,7 +575,25 @@ export default function AnimeCatalog() {
     return list;
   }, [debouncedSearch, filterGenre, filterStatus, gridItems, minScore, minYear, sortBy]);
 
-  const videoSuggestionItems = useMemo(() => filteredSorted.filter((media) => hasPlayableVideo(media)).slice(0, 10), [filteredSorted]);
+  // Historique des titres déjà suggérés/joués : la sélection ne doit jamais
+  // reproposer les mêmes favoris tant que le catalogue en propose d'autres.
+  const suggestedHistoryRef = useRef<Set<number>>(new Set());
+  const playedQueueRef = useRef<Set<number>>(new Set());
+
+  const videoSuggestionItems = useMemo(() => {
+    const playable = filteredSorted.filter((media) => hasPlayableVideo(media));
+    const seen = new Set<number>();
+    const unique = playable.filter((media) => {
+      if (seen.has(media.id)) return false;
+      seen.add(media.id);
+      return true;
+    });
+    const fresh = unique.filter(
+      (media) => !favoriteIds.includes(media.id) && !suggestedHistoryRef.current.has(media.id),
+    );
+    const pool = fresh.length ? fresh : unique.filter((media) => !favoriteIds.includes(media.id));
+    return (pool.length ? pool : unique).slice(0, 10);
+  }, [favoriteIds, filteredSorted]);
   const promptPreviewItems = useMemo(() => {
     const source = videoSuggestionItems.length ? videoSuggestionItems : allMedia.filter((media) => hasPlayableVideo(media));
     return source.slice(0, 10);
@@ -638,7 +656,14 @@ export default function AnimeCatalog() {
     return favoriteIds.map((id) => map.get(id)).filter(Boolean) as Media[];
   }, [allMedia, favoriteIds]);
 
-  const playerQueue = useMemo(() => favoriteItems.filter((media) => hasTrailer(media)), [favoriteItems]);
+  const playerQueue = useMemo(() => {
+    const seen = new Set<number>();
+    return favoriteItems.filter((media) => {
+      if (!hasTrailer(media) || seen.has(media.id)) return false;
+      seen.add(media.id);
+      return true;
+    });
+  }, [favoriteItems]);
 
   const activePlayer = useMemo(() => {
     if (activePlayerId == null) return null;
@@ -848,20 +873,42 @@ export default function AnimeCatalog() {
   // toggleFavorite is now defined at line 137 using authToggleFavorite from useAuth context
   // Removed duplicate declaration to fix compilation error
 
+  // Sélectionne le prochain favori jamais joué durant ce cycle ; quand tous
+  // ont été vus, le cycle repart proprement à zéro (pas de doublon consécutif).
+  const pickNextUnplayed = (currentId: number | null): Media | null => {
+    if (!playerQueue.length) return null;
+    const currentIndex = playerQueue.findIndex((media) => media.id === currentId);
+    const ordered = playerQueue
+      .slice(currentIndex + 1)
+      .concat(playerQueue.slice(0, Math.max(currentIndex, 0)));
+    const candidates = ordered.length ? ordered : playerQueue;
+    const next = candidates.find(
+      (media) => media.id !== currentId && !playedQueueRef.current.has(media.id),
+    );
+    if (next) return next;
+    playedQueueRef.current = new Set(currentId != null ? [currentId] : []);
+    return candidates.find((media) => media.id !== currentId) ?? candidates[0] ?? null;
+  };
+
+  const goToQueueItem = (media: Media | null) => {
+    if (!media) return;
+    playedQueueRef.current.add(media.id);
+    suggestedHistoryRef.current.add(media.id);
+    activatePlayer(media, { unlockSound: true });
+  };
+
   const handlePrevious = () => {
     unlockSound();
     if (!playerQueue.length) return;
     const currentIndex = playerQueue.findIndex((media) => media.id === activePlayerId);
     const nextIndex = currentIndex <= 0 ? playerQueue.length - 1 : currentIndex - 1;
-    activatePlayer(playerQueue[nextIndex], { unlockSound: true });
+    goToQueueItem(playerQueue[nextIndex]);
   };
 
   const handleNext = () => {
     unlockSound();
     if (!playerQueue.length) return;
-    const currentIndex = playerQueue.findIndex((media) => media.id === activePlayerId);
-    const nextIndex = currentIndex === -1 || currentIndex === playerQueue.length - 1 ? 0 : currentIndex + 1;
-    activatePlayer(playerQueue[nextIndex], { unlockSound: true });
+    goToQueueItem(pickNextUnplayed(activePlayerId));
   };
 
   const togglePlayback = () => {
@@ -905,6 +952,7 @@ export default function AnimeCatalog() {
     const ids = videoSuggestionItems.map((media) => media.id);
     // Add each ID to favorites if not already present
     ids.forEach(id => {
+      suggestedHistoryRef.current.add(id);
       if (!favoriteIds.includes(id)) {
         authToggleFavorite(id);
       }
@@ -1281,9 +1329,12 @@ export default function AnimeCatalog() {
                               if (state === 0) {
                                 setIsPlaying(false);
                                 if (playerQueue.length > 1) {
-                                  const currentIndex = playerQueue.findIndex((media) => media.id === activePlayer.id);
-                                  const nextIndex = currentIndex === -1 || currentIndex === playerQueue.length - 1 ? 0 : currentIndex + 1;
-                                  activatePlayer(playerQueue[nextIndex], { unlockSound: soundUnlocked });
+                                  const next = pickNextUnplayed(activePlayer.id);
+                                  if (next) {
+                                    playedQueueRef.current.add(next.id);
+                                    suggestedHistoryRef.current.add(next.id);
+                                    activatePlayer(next, { unlockSound: soundUnlocked });
+                                  }
                                 }
                               }
                             }}
