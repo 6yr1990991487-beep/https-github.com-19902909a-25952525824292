@@ -616,6 +616,19 @@ export default function RootLandingPage() {
         </section>
 
       </div>
+
+      {typeof document !== "undefined" &&
+        createPortal(
+          <button
+            type="button"
+            onClick={togglePreviewSound}
+            aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+            className="glass3d-btn fixed bottom-24 right-4 z-[9998] inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-transform hover:scale-105 sm:bottom-28 sm:right-6"
+          >
+            {previewSoundEnabled ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
+          </button>,
+          document.body,
+        )}
     </PageShell>
   );
 }
