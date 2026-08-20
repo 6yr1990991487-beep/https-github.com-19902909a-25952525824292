@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
-import footerNavBannerVideo from "@/assets/footer-portal-banner.mp4.asset.json";
-import footerBackdropVideo from "@/assets/portal-footer-video-3.mp4.asset.json";
+import footerNavBannerVideo from "@/assets/footer-logo-banner.mp4.asset.json";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -23,30 +22,12 @@ const footerPanel =
 export const Footer = () => {
   return (
     <footer className="mt-24 px-4 pb-10 sm:px-6 lg:px-8">
-      <div className={`relative mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
-        <video
-          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-100"
-          src={footerBackdropVideo.url}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-          data-testid="footer-backdrop-video"
-          data-bg-video
-        />
-        <div className="pointer-events-none absolute inset-0 z-0 bg-[rgba(6,12,22,0.42)] backdrop-blur-[4px]" />
-        <div className="relative z-10 grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
+      <div className={`mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
+        <div className="grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
           <div className="space-y-5">
-            <div
-              className="theme-footer-video-shell glass3d-panel relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden rounded-[1.75rem] border border-white/25"
-              style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(22px)" }}
-              data-testid="footer-lovanet-video-shell"
-            >
-              <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.28)] backdrop-blur-[2px]" />
+            <div className="theme-footer-video-shell relative overflow-hidden rounded-[1.75rem] border border-[var(--theme-border-soft)]" data-testid="footer-lovanet-video-shell">
               <video
-                className="relative z-10 h-full w-full bg-transparent object-contain object-center"
+                className="h-[250px] w-full bg-black/70 object-contain object-center"
                 src={footerNavBannerVideo.url}
                 autoPlay
                 muted
@@ -56,7 +37,8 @@ export const Footer = () => {
                 data-testid="footer-lovanet-video"
                 data-bg-video
               />
-              <div className="pointer-events-none absolute inset-0 opacity-20 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(6,11,24,0.88)] via-[rgba(7,12,24,0.56)] to-[rgba(7,12,24,0.2)]" />
+              <div className="pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
             </div>
           </div>
 
@@ -67,20 +49,27 @@ export const Footer = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="glass3d-btn group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-bold text-white transition-all hover:scale-[1.02]"
+                  className="group flex items-center gap-2.5 rounded-xl border border-white/8 px-3 py-2.5 text-sm font-medium transition-all hover:border-white/20 hover:scale-[1.02]"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    backdropFilter: "blur(10px)",
+                  }}
                   data-testid={`footer-nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                 >
-                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/25 bg-white/10 text-white shadow-inner">
+                  <span
+                    className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: `${item.color}25`, color: item.color }}
+                  >
                     <item.icon className="h-3.5 w-3.5" />
                   </span>
-                  <span className="text-xs font-bold text-white drop-shadow-sm">{item.label}</span>
+                  <span className="theme-text-main text-xs font-semibold leading-tight">{item.label}</span>
                 </Link>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="theme-text-muted relative z-10 flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+        <div className="theme-text-muted flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <span className="neon-rgb-text-mini" data-testid="footer-copyright">
             © {new Date().getFullYear()} Lovanet
           </span>

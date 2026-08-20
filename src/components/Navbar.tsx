@@ -515,10 +515,10 @@ export const Navbar = () => {
                         key={`mobile-quick-${item.to}`}
                         to={item.to}
                         onClick={() => setOpen(false)}
-                        className="mnav-section nav-theme-chip nav-3d group relative flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all hover:scale-105 active:scale-95"
+                        className="mnav-section group relative flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all hover:scale-105 active:scale-95"
                         data-testid={`mobile-nav-quick-action-${index + 1}`}
                       >
-                        <motion.div className="nav-emoji-3d" whileHover={{ rotate: 360, scale: 1.2 }} transition={{ duration: 0.5 }}>
+                        <motion.div whileHover={{ rotate: 360, scale: 1.2 }} transition={{ duration: 0.5 }}>
                            <Icon className="mnav-text h-6 w-6 drop-shadow-[0_0_8px_rgba(0,0,0,0.45)]" />
                         </motion.div>
                         <span className="mnav-text text-[11px] font-black uppercase tracking-wider text-center line-clamp-1">{item.label}</span>
@@ -569,13 +569,11 @@ export const Navbar = () => {
                                 onClick={() => setOpen(false)}
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                  "mnav-item mnav-text nav-theme-chip nav-3d flex min-w-[104px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
-                                  active ? "mnav-item-active nav-theme-chip-active" : "",
+                                  "mnav-item mnav-text flex min-w-[104px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
+                                  active ? "mnav-item-active" : "",
                                 )}
                               >
-                                <span className="nav-emoji-3d">
-                                  <item.icon className="mnav-text h-5 w-5" />
-                                </span>
+                                <item.icon className="mnav-text h-5 w-5" />
                                 <span className="mnav-text line-clamp-2 text-[11px] font-bold">{item.label}</span>
                               </Link>
                             );
@@ -610,14 +608,14 @@ export const Navbar = () => {
                                   aria-current={active ? "page" : undefined}
                                   className={cn(
                                     "group relative flex min-h-[50px] items-center justify-between rounded-xl px-4 py-3 text-sm transition-all hover:scale-[1.02] border",
-                                    "mnav-item mnav-text nav-theme-chip nav-3d",
-                                    active ? "mnav-item-active nav-theme-chip-active" : ""
+                                    "mnav-item mnav-text",
+                                    active ? "mnav-item-active" : ""
                                   )}
                                   data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
                                 >
                                   <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity rounded-xl bg-gradient-to-r", group.gradient)} />
                                   <span className="inline-flex items-center gap-3 relative z-10">
-                                    <motion.div className="nav-emoji-3d" whileHover={{ rotate: 15, scale: 1.2 }}>
+                                    <motion.div whileHover={{ rotate: 15, scale: 1.2 }}>
                                         <item.icon className={cn("mnav-text h-5 w-5", active ? "" : "opacity-80 group-hover:opacity-100")} />
                                     </motion.div>
                                     <span className="mnav-text font-bold">{item.label}</span>

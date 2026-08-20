@@ -17,8 +17,6 @@ type Props = {
   delay?: number;
   /** Start playing automatically without waiting for hover (default true). */
   autoPlay?: boolean;
-  /** Keep playback active after hover/touch leaves the preview. */
-  retainAfterInteraction?: boolean;
   /** Keep playback active after touch release instead of stopping on touch end. */
   retainOnTouchRelease?: boolean;
   /** extra overlays rendered above the player (badges, captions...) */
@@ -42,13 +40,14 @@ export const HoverPreview = ({
   muted = true,
   delay = 0,
   autoPlay = false,
-  retainAfterInteraction = false,
   children,
   className = "",
   onImgLoad,
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
+  const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
+  const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
   const touchTriggeredRef = useRef(false);
@@ -81,7 +80,6 @@ export const HoverPreview = ({
     if (knownUnavailable && knownUnavailable !== "ok") return;
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setActive(true), delay);
-    if (retainAfterInteraction) hold();
   };
   const stop = () => {
     if (heldRef.current) return; // lecture verrouillee par un tap
@@ -92,10 +90,12 @@ export const HoverPreview = ({
     setActive(false);
   };
 
-  // La lecture automatique ne verrouille pas la rotation globale :
-  // seul un clic / tap utilisateur pose le verrou (voir onClick / onTouch).
   useEffect(() => {
-    if (!active && heldRef.current) releaseHold();
+    if (!active) return undefined;
+    hold();
+    return () => {
+      if (!heldRef.current) releaseHold();
+    };
   }, [active]);
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
@@ -118,36 +118,39 @@ export const HoverPreview = ({
         }
         event.preventDefault();
         event.stopPropagation();
-        // Le clic ne coupe jamais la lecture : il la démarre / la maintient.
-        if (timer.current) {
-          window.clearTimeout(timer.current);
-          timer.current = null;
+        if (!heldRef.current) {
+          setActive(true);
+          hold();
         }
-        setActive(true);
-        hold();
       }}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         touchTriggeredRef.current = true;
-        // Tap = bascule lecture : on verrouille pour que le trailer aille au bout.
-        if (heldRef.current && active) {
-          releaseHold();
+        if (timer.current) window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setActive(true), delay);
+      }}
+      onTouchEnd={() => {
+        if (!heldRef.current) {
           if (timer.current) {
             window.clearTimeout(timer.current);
             timer.current = null;
           }
-          setActive(false);
-          return;
+          if (!retainOnTouchRelease) {
+            setActive(false);
+          }
         }
-        if (timer.current) window.clearTimeout(timer.current);
-        setActive(true);
-        hold();
-      }}
-      onTouchEnd={() => {
-        // La lecture continue apres le relachement du doigt.
         touchTriggeredRef.current = false;
       }}
       onTouchCancel={() => {
+        if (!heldRef.current) {
+          if (timer.current) {
+            window.clearTimeout(timer.current);
+            timer.current = null;
+          }
+          if (!retainOnTouchRelease) {
+            setActive(false);
+          }
+        }
         touchTriggeredRef.current = false;
       }}
     >
@@ -178,9 +181,6 @@ export const HoverPreview = ({
               className="w-full h-full border-0"
             />
           )}
-          {/* Masque fort du logo / titre YouTube */}
-          <span className="absolute bottom-0 right-0 h-[18%] w-[36%] bg-[rgba(6,10,18,0.98)] backdrop-blur-md" />
-          <span className="absolute top-0 left-0 h-[16%] w-full bg-gradient-to-b from-[rgba(6,10,18,0.98)] via-[rgba(6,10,18,0.75)] to-transparent" />
         </div>
       )}
 

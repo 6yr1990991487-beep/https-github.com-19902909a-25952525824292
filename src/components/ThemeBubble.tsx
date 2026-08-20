@@ -21,8 +21,6 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import NavBarStudio from "@/components/NavBarStudio";
-import { reapplyNavSkin } from "@/lib/navSkins";
 
 type ThemeMood = "all" | "neon" | "glass" | "cyber" | "glacier" | "pearl" | "prism" | "mono";
 
@@ -876,7 +874,6 @@ export const ThemeBubble = () => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(NAV_MODE_KEY, navMode);
     applyNavTheme(activeTheme, navMode);
-    reapplyNavSkin();
   }, [activeTheme, navMode]);
 
   useEffect(() => {
@@ -1108,14 +1105,13 @@ export const ThemeBubble = () => {
 
         <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3 md:px-5">
           <Tabs value={tab} onValueChange={setTab} className="flex min-h-0 flex-1 flex-col" data-testid="theme-tabs-root">
-            <TabsList className="grid h-10 grid-cols-4 rounded-xl bg-white/5 p-1 mb-3">
+            <TabsList className="grid h-10 grid-cols-3 rounded-xl bg-white/5 p-1 mb-3">
               <TabsTrigger value="all" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50">Tous</TabsTrigger>
               <TabsTrigger value="favorites" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50">Favoris</TabsTrigger>
               <TabsTrigger value="recent" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50">Récents</TabsTrigger>
-              <TabsTrigger value="navbar" className="rounded-lg text-xs data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50" data-testid="theme-tab-navbar">Barre</TabsTrigger>
             </TabsList>
 
-            <div className={cn("mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5", tab === "navbar" && "hidden")}>
+            <div className="mb-3 rounded-xl border border-white/10 bg-white/[0.04] p-2.5">
               <div className="mb-2 h-1.5 w-full rounded-full" style={navPreviewStyles} aria-hidden="true" />
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 {NAV_PREVIEW_MODES.map((mode) => (
@@ -1138,10 +1134,6 @@ export const ThemeBubble = () => {
                 ))}
               </div>
             </div>
-
-            <TabsContent value="navbar" className="mt-0 flex min-h-0 flex-1 flex-col">
-              <NavBarStudio />
-            </TabsContent>
 
             {(["all", "favorites", "recent"] as const).map((currentTab) => (
               <TabsContent key={currentTab} value={currentTab} className="mt-0 min-h-0 flex-1">
