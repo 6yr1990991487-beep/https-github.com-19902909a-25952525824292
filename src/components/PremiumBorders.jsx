@@ -149,15 +149,18 @@ export const PremiumBorders = () => {
     <div className="fixed inset-0 pointer-events-none z-[0] overflow-hidden" data-testid="global-video-background">
       {/* Global animated background (video) */}
       <video
-        src={backgroundDecorVideo.url}
+        ref={bgVideoRef}
+        key={BACKGROUND_VIDEO_PLAYLIST[bgIndex]}
+        src={BACKGROUND_VIDEO_PLAYLIST[bgIndex]}
         aria-hidden="true"
         autoPlay
-        loop
         muted
         playsInline
         preload="auto"
         decoding="async"
         disablePictureInPicture
+        onEnded={() => setBgIndex((i) => (i + 1) % BACKGROUND_VIDEO_PLAYLIST.length)}
+        onError={() => setBgIndex((i) => (i + 1) % BACKGROUND_VIDEO_PLAYLIST.length)}
         className="absolute inset-0 z-0 h-full w-full object-cover opacity-60"
         style={{ pointerEvents: 'none' }}
         data-bg-decor
