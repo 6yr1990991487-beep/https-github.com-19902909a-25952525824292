@@ -5,6 +5,12 @@ import { siteFallbackImage } from "@/lib/mediaFallback";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { acquireTrailerLock, releaseTrailerLock } from "@/lib/trailerPlaybackLock";
 import { claimAudioFocus, getAudioFocusOwner, releaseAudioFocus, subscribeAudioFocus } from "@/lib/trailerAudioFocus";
+import {
+  claimActivePreview,
+  getActivePreviewOwner,
+  releaseActivePreview,
+  subscribeActivePreview,
+} from "@/lib/trailerActiveFocus";
 
 type Props = {
   videoId: string;
@@ -50,13 +56,20 @@ export const HoverPreview = ({
   const [frameReady, setFrameReady] = useState(false);
   const audioId = useId();
   const audioOwner = useSyncExternalStore(subscribeAudioFocus, getAudioFocusOwner, () => null);
+  const previewOwner = useSyncExternalStore(subscribeActivePreview, getActivePreviewOwner, () => null);
+  // Un autre lecteur est selectionne : celui-ci doit rester en pause.
+  const preempted = previewOwner !== null && previewOwner !== audioId;
   // Securite : le son n'est autorise que sur le lecteur explicitement selectionne.
   const effectiveMuted = muted || audioOwner !== audioId;
   const selectAudio = () => {
+    claimActivePreview(audioId);
     if (muted) return;
     claimAudioFocus(audioId);
   };
-  useEffect(() => () => releaseAudioFocus(audioId), [audioId]);
+  useEffect(() => () => {
+    releaseAudioFocus(audioId);
+    releaseActivePreview(audioId);
+  }, [audioId]);
   useEffect(() => {
     if (muted) releaseAudioFocus(audioId);
   }, [muted, audioId]);
@@ -101,6 +114,7 @@ export const HoverPreview = ({
   };
   const stop = () => {
     releaseAudioFocus(audioId);
+    releaseActivePreview(audioId);
     if (heldRef.current) return; // lecture verrouillee par un tap
     if (timer.current) {
       window.clearTimeout(timer.current);
@@ -118,7 +132,8 @@ export const HoverPreview = ({
   }, [active]);
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
-  if (!active && frameReady) {
+  const playing = active && !preempted;
+  if (!playing && frameReady) {
     // reset le fondu quand l'apercu s'arrete
     queueMicrotask(() => setFrameReady(false));
   }
@@ -186,17 +201,17 @@ export const HoverPreview = ({
         decoding="async"
         onLoad={onImgLoad}
         onError={onImgError}
-        className={`w-full h-full object-cover transition-all duration-500 ${active && frameReady ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
+        className={`w-full h-full object-cover transition-all duration-500 ${playing && frameReady ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
       />
 
-      {active && (
+      {playing && (
         <div className={`${iframeWrap} bg-transparent transition-opacity duration-700 ${frameReady ? "opacity-100" : "opacity-0"}`}>
           {vertical ? (
             <iframe
               src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
-              onLoad={() => setFrameReady(true)}
+              onLoad={() => window.setTimeout(() => setFrameReady(true), 1200)}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-[178%] border-0"
             />
           ) : (
@@ -204,14 +219,16 @@ export const HoverPreview = ({
               src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
-              onLoad={() => setFrameReady(true)}
+              onLoad={() => window.setTimeout(() => setFrameReady(true), 1200)}
               className="w-full h-full border-0"
             />
           )}
+          {/* masque la marque YouTube en bas a droite */}
+          <span className="pointer-events-none absolute bottom-1 right-1 h-7 w-20 rounded-md bg-white/[0.06] backdrop-blur-md" aria-hidden />
         </div>
       )}
 
-      {!active && (
+      {!playing && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center shadow-[0_0_30px_hsl(var(--primary)/0.6)]">
             <Play className="w-6 h-6 text-primary-foreground fill-current" />
