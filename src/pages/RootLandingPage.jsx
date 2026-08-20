@@ -263,15 +263,6 @@ export default function RootLandingPage() {
     return () => window.clearInterval(id);
   }, [catalogPreviewPool.length, trailerLocked]);
 
-  useEffect(() => {
-    const video = bannerVideoRef.current;
-    if (!video) return;
-
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {});
-    }
-  }, [heroBanner?.id, heroBanner?.visible]);
 
   useEffect(() => {
     document.body.removeAttribute("data-hide-videos");
