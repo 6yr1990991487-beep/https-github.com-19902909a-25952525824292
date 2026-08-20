@@ -103,7 +103,7 @@ export const HoverPreview = ({
 
   return (
     <div
-      className={`soft-frame relative overflow-hidden bg-white/95 ${ratio} ${className}`}
+      className={`soft-frame relative overflow-hidden bg-white/[0.04] backdrop-blur-[2px] ${ratio} ${className}`}
       onMouseEnter={start}
       onMouseLeave={stop}
       onFocus={start}
@@ -165,12 +165,13 @@ export const HoverPreview = ({
       />
 
       {active && (
-        <div className={iframeWrap}>
+        <div className={`${iframeWrap} bg-transparent transition-opacity duration-700 ${frameReady ? "opacity-100" : "opacity-0"}`}>
           {vertical ? (
             <iframe
               src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
+              onLoad={() => setFrameReady(true)}
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-[178%] border-0"
             />
           ) : (
@@ -178,6 +179,7 @@ export const HoverPreview = ({
               src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
+              onLoad={() => setFrameReady(true)}
               className="w-full h-full border-0"
             />
           )}
