@@ -510,48 +510,6 @@ export default function RootLandingPage() {
       <div className="relative overflow-hidden" data-testid="root-landing-page">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_20%)]" />
 
-        <section className="root-hero-section mx-auto w-[95%] md:w-[50%] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
-          <div className={`${luxurySection} p-2 sm:p-3 lg:p-4`}>
-            <div className={luxuryGlowLeft} />
-            <div className={luxuryGlowRight} />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div
-              ref={bannerShellRef}
-              className="hero-banner-3d root-hero-banner hero-banner-reveal relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] w-full"
-              data-testid="root-landing-hero-banner-shell"
-            >
-              {heroBanner && heroBanner.visible !== false ? (
-                <video
-                  ref={bannerVideoRef}
-                  className="hero-banner-video hero-banner-autoframe absolute inset-0 h-full w-full object-cover object-center"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  decoding="async"
-                  fetchPriority="high"
-                  disablePictureInPicture
-                  data-testid="hero-banner-background-video"
-                  data-bg-video
-                >
-                  <source src={heroBanner.src || heroTopBannerVideo.url} type="video/mp4" />
-                </video>
-              ) : (
-                <div
-                  className="absolute inset-0 h-full w-full bg-cover bg-center bg-black/80"
-                  data-testid="hero-banner-hidden-placeholder"
-                />
-              )}
-              <div className="hero-banner-darken pointer-events-none absolute inset-0" />
-              <div className="hero-banner-specular pointer-events-none absolute inset-0" />
-              <div className="hero-banner-color-bloom pointer-events-none absolute inset-0" />
-
-              <div className="hero-banner-content root-hero-content relative flex min-h-[350px] sm:min-h-[440px] flex-col justify-end p-4 sm:p-6 z-30 pointer-events-none">
-              </div>
-            </div>
-          </div>
-        </section>
 
 
 
