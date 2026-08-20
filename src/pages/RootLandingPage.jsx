@@ -529,6 +529,7 @@ export default function RootLandingPage() {
                                     vertical
                                     muted={!previewSoundEnabled}
                                     autoPlay
+                                    fit="contain"
                                     delay={120}
                                     className="h-full w-full trailer-no-theme"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
@@ -598,7 +599,7 @@ export default function RootLandingPage() {
                         style={{ touchAction: "none" }}
                       >
                         <div className="min-w-0">
-                          <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
+                          <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version</p>
                           <p className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
