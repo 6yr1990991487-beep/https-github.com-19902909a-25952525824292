@@ -467,6 +467,38 @@ export default function RootLandingPage() {
                 })}
               </div>
 
+              {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus */}
+              <div
+                className="glass3d-panel relative mb-4 h-32 w-full overflow-hidden rounded-[1.5rem] border border-white/20 sm:h-40 lg:h-44"
+                data-testid="home-platforms-glass-video-zone"
+              >
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35"
+                  src={portalGlassVideo2.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-2"
+                  data-bg-video
+                />
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-screen"
+                  src={portalGlassVideo1.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-1"
+                  data-bg-video
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.18)] backdrop-blur-[3px]" />
+              </div>
+
               {catalogPreviewRows.some((row) => row.length > 0) && (
                 <>
                   <div
