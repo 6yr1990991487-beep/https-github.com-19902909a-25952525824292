@@ -876,6 +876,7 @@ export const ThemeBubble = () => {
     if (typeof window === "undefined") return;
     window.localStorage.setItem(NAV_MODE_KEY, navMode);
     applyNavTheme(activeTheme, navMode);
+    reapplyNavSkin();
   }, [activeTheme, navMode]);
 
   useEffect(() => {
