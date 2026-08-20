@@ -508,7 +508,7 @@ export default function RootLandingPage() {
               {catalogPreviewRows.some((row) => row.length > 0) && (
                 <>
                   <div
-                    className="hero-premium-lower-marquee relative mt-6"
+                    className="hero-premium-lower-marquee relative mt-24 pt-8 sm:mt-28"
                     data-locked-layout={TRAILER_BANNER_LAYOUT}
                     data-testid="home-platforms-dynamic-banner-grid"
                   >
@@ -519,7 +519,7 @@ export default function RootLandingPage() {
                             <div key={`${item.id}-${rowIndex}-${index}`} className="group relative flex w-[124px] min-w-[124px] max-w-[124px] flex-none flex-col sm:w-[130px] sm:min-w-[130px] sm:max-w-[130px] lg:w-[108px] lg:min-w-[108px] lg:max-w-[108px] xl:w-[116px] xl:min-w-[116px] xl:max-w-[116px]" data-testid={`home-platforms-dynamic-card-${rowIndex + 1}-${index + 1}`}>
                               <Link
                                 to={item.href}
-                                className="hero-premium-lower-card group flex flex-col overflow-hidden rounded-[1.2rem] border border-white/15 bg-[rgba(8,12,24,0.72)] shadow-[0_16px_34px_-18px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-0.5"
+                                className="hero-premium-lower-card group flex flex-col overflow-hidden rounded-[1.2rem] border border-white/15 bg-[rgba(255,255,255,0.06)] backdrop-blur-md shadow-[0_16px_34px_-18px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:-translate-y-0.5"
                               >
                                 <div className="hero-premium-lower-thumb-shell hero-premium-lower-thumb-shell-vertical aspect-[3/4] w-full overflow-hidden">
                                   <HoverPreview
@@ -528,6 +528,7 @@ export default function RootLandingPage() {
                                     thumbnail={item.image}
                                     vertical
                                     muted={!previewSoundEnabled}
+                                    autoPlay
                                     delay={120}
                                     className="h-full w-full"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
