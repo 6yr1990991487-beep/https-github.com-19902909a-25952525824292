@@ -238,5 +238,6 @@ export const InstallAppPrompt = () => {
     </div>,
     document.body,
   );
+};
 
 export default InstallAppPrompt;
