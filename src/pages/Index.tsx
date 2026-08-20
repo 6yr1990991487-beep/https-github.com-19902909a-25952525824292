@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Play, ShoppingBag, Youtube, Music2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,8 +14,6 @@ import MangaNeonBar from "@/components/MangaNeonBar";
 import TabletTrailerPlayer from "@/components/TabletTrailerPlayer";
 
 import { Button } from "@/components/ui/button";
-import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
-import { ProductArtwork } from "@/components/ProductArtwork";
 import { MiniPreviewPlayer } from "@/components/MiniPreviewPlayer";
 import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 
