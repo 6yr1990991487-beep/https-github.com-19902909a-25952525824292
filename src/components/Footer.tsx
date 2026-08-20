@@ -52,20 +52,13 @@ export const Footer = () => {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="group flex items-center gap-2.5 rounded-xl border border-white/8 px-3 py-2.5 text-sm font-medium transition-all hover:border-white/20 hover:scale-[1.02]"
-                  style={{
-                    background: "rgba(255,255,255,0.04)",
-                    backdropFilter: "blur(10px)",
-                  }}
+                  className="glass3d-btn group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-bold text-white transition-all hover:scale-[1.02]"
                   data-testid={`footer-nav-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
                 >
-                  <span
-                    className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${item.color}25`, color: item.color }}
-                  >
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/25 bg-white/10 text-white shadow-inner">
                     <item.icon className="h-3.5 w-3.5" />
                   </span>
-                  <span className="theme-text-main text-xs font-semibold leading-tight">{item.label}</span>
+                  <span className="text-xs font-bold text-white drop-shadow-sm">{item.label}</span>
                 </Link>
               ))}
             </div>
