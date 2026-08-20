@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import backgroundDecorVideo from '@/assets/background-decor-video.mp4.asset.json';
+import bgLoop1 from '@/assets/bg-loop-1.mp4.asset.json';
+import bgLoop2 from '@/assets/bg-loop-2.mp4.asset.json';
+import bgLoop3 from '@/assets/bg-loop-3.mp4.asset.json';
+import bgLoop4 from '@/assets/bg-loop-4.mp4.asset.json';
+
+const BACKGROUND_VIDEO_PLAYLIST = [bgLoop1.url, bgLoop2.url, bgLoop3.url, bgLoop4.url];
 
 const Leaf = ({ delay, x, duration }) => (
   <motion.div
@@ -72,6 +77,17 @@ export const PremiumBorders = () => {
   const [overlayQueue, setOverlayQueue] = useState([]);
   const [activeOverlayVideoId, setActiveOverlayVideoId] = useState(OVERLAY_BACKGROUND_VIDEOS[0]?.id || "");
   const overlayVideoRef = useRef(null);
+  const [bgIndex, setBgIndex] = useState(0);
+  const bgVideoRef = useRef(null);
+
+  useEffect(() => {
+    const video = bgVideoRef.current;
+    if (!video) return undefined;
+    video.muted = true;
+    const p = video.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+    return undefined;
+  }, [bgIndex]);
 
   const activeOverlayVideo = OVERLAY_BACKGROUND_VIDEOS.find((video) => video.id === activeOverlayVideoId) || OVERLAY_BACKGROUND_VIDEOS[0];
 
