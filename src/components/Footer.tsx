@@ -23,26 +23,27 @@ const footerPanel =
 export const Footer = () => {
   return (
     <footer className="mt-24 px-4 pb-10 sm:px-6 lg:px-8">
-      <div className={`mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
-        <div className="grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
+      <div className={`relative mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
+        <video
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-35"
+          src={footerBackdropVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          data-testid="footer-backdrop-video"
+          data-bg-video
+        />
+        <div className="pointer-events-none absolute inset-0 z-0 bg-[rgba(6,12,22,0.42)] backdrop-blur-[4px]" />
+        <div className="relative z-10 grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
           <div className="space-y-5">
             <div
               className="theme-footer-video-shell glass3d-panel relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden rounded-[1.75rem] border border-white/25"
               style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(22px)" }}
               data-testid="footer-lovanet-video-shell"
             >
-              <video
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
-                src={footerBackdropVideo.url}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                aria-hidden="true"
-                data-testid="footer-backdrop-video"
-                data-bg-video
-              />
               <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.28)] backdrop-blur-[2px]" />
               <video
                 className="relative z-10 h-full w-full bg-transparent object-contain object-center"
