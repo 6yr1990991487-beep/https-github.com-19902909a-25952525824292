@@ -548,11 +548,12 @@ export default function RootLandingPage() {
                                 </div>
                               </Link>
 
+                              <div className="pointer-events-none absolute inset-x-0 top-2 z-50 flex items-center justify-center gap-6">
                               <button
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="glass3d-btn absolute top-2 right-12 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="glass3d-btn pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
@@ -563,12 +564,13 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="glass3d-btn absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="glass3d-btn pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
                                 {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]"/> : <Pause className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]" />}
                               </button>
+                              </div>
                             </div>
                           ))}
                         </div>
