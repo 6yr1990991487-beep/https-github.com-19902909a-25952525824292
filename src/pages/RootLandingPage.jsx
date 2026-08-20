@@ -291,64 +291,6 @@ export default function RootLandingPage() {
     });
   }, []);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncReduced = () => setReducedMotion(media.matches);
-    syncReduced();
-    media.addEventListener?.("change", syncReduced);
-
-    const shell = bannerShellRef.current;
-    if (!shell || media.matches) {
-      return () => media.removeEventListener?.("change", syncReduced);
-    }
-
-    let pointerX = 0;
-    let pointerY = 0;
-    let frame = 0;
-    let drift = 0;
-    let running = true;
-
-    const update = () => {
-      if (!running) return;
-      drift += 0.018;
-      const droneX = Math.sin(drift) * 10;
-      const droneY = Math.cos(drift * 0.75) * 8;
-      const tiltX = (-pointerY * 7) + Math.cos(drift * 0.6) * 2.5;
-      const tiltY = (pointerX * 10) + Math.sin(drift * 0.9) * 3;
-      shell.style.setProperty("--banner-rotate-x", `${tiltX.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-rotate-y", `${tiltY.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-shift-x", `${droneX.toFixed(2)}px`);
-      shell.style.setProperty("--banner-shift-y", `${droneY.toFixed(2)}px`);
-      shell.style.setProperty("--banner-glow-x", `${50 + pointerX * 18}%`);
-      shell.style.setProperty("--banner-glow-y", `${42 + pointerY * 16}%`);
-      frame = window.requestAnimationFrame(update);
-    };
-
-    const onPointerMove = (event) => {
-      const rect = shell.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      pointerX = (x - 0.5) * 2;
-      pointerY = (y - 0.5) * 2;
-    };
-
-    const onPointerLeave = () => {
-      pointerX = 0;
-      pointerY = 0;
-    };
-
-    shell.addEventListener("pointermove", onPointerMove);
-    shell.addEventListener("pointerleave", onPointerLeave);
-    frame = window.requestAnimationFrame(update);
-
-    return () => {
-      running = false;
-      shell.removeEventListener("pointermove", onPointerMove);
-      shell.removeEventListener("pointerleave", onPointerLeave);
-      window.cancelAnimationFrame(frame);
-      media.removeEventListener?.("change", syncReduced);
-    };
-  }, []);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
