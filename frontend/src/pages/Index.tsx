@@ -137,16 +137,16 @@ const Index = () => {
     try {
       const cached = localStorage.getItem("lovanet.cache.ytIds");
       if (cached) setYtIds(JSON.parse(cached));
-    } catch {
-      // ignore cache read failure
+    } catch (error) {
+      console.error("Index cache read failed: ytIds", error);
     }
     (async () => {
       const data = IMPORTED_VIDEOS.filter((v) => v.source === "youtube" && !v.title.toLowerCase().includes("ruri")).sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime()).slice(0, 24);
       if (cancelled || !data) return;
       const ids = data.map((r: any) => r.external_id).filter(Boolean);
       setYtIds(ids);
-      try { localStorage.setItem("lovanet.cache.ytIds", JSON.stringify(ids)); } catch {
-        // ignore cache write failure
+      try { localStorage.setItem("lovanet.cache.ytIds", JSON.stringify(ids)); } catch (error) {
+        console.error("Index cache write failed: ytIds", error);
       }
     })();
     return () => { cancelled = true; };
@@ -159,8 +159,8 @@ const Index = () => {
       const p = localStorage.getItem("lovanet.cache.animePosters");
       if (t) setAnimeTrailers(JSON.parse(t));
       if (p) setAnimePosters(JSON.parse(p));
-    } catch {
-      // ignore cache read failure
+    } catch (error) {
+      console.error("Index cache read failed: anime trailers/posters", error);
     }
     (async () => {
       try {
@@ -208,8 +208,8 @@ const Index = () => {
         try {
           localStorage.setItem("lovanet.cache.animeTrailers", JSON.stringify(nextTrailers));
           localStorage.setItem("lovanet.cache.animePosters", JSON.stringify(nextPosters));
-        } catch {
-          // ignore cache write failure
+        } catch (error) {
+          console.error("Index cache write failed: anime trailers/posters", error);
         }
       } catch (e) {
         console.error("AniList trailer fetch", e);

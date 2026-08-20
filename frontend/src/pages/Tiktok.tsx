@@ -55,7 +55,8 @@ const Tiktok = () => {
           }));
         setList(filtered);
         setIdx(0);
-      } catch {
+      } catch (error) {
+        console.error("TikTok feed load failed", error);
         if (!cancelled) setList([]);
       } finally {
         if (!cancelled) setLoading(false);
