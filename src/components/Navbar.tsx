@@ -450,14 +450,14 @@ export const Navbar = () => {
       </header>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="mobile-sheet-panel w-[min(100vw,420px)] border-none bg-transparent p-2 shadow-none sm:p-3 overflow-hidden" data-testid="mobile-nav-sheet">
+        <SheetContent side="right" className="mobile-sheet-panel mnav-slim w-[min(78vw,292px)] border-none bg-transparent p-1.5 shadow-none sm:p-2 overflow-hidden" data-testid="mobile-nav-sheet">
           <div className="mnav-backdrop absolute inset-0 -z-10" />
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation mobile Lovanet</SheetTitle>
             <SheetDescription>Navigation principale, accès rapides et liens utiles.</SheetDescription>
           </SheetHeader>
-          <div className="mnav-shell nav-theme-shell glass3d-panel glass3d-surface flex h-full flex-col overflow-hidden rounded-[1.75rem] relative z-10">
-            <div className="mnav-section flex items-center justify-between gap-3 px-4 py-4">
+          <div className="mnav-shell mnav-glass-slim flex h-full flex-col overflow-hidden rounded-[1.5rem] relative z-10">
+            <div className="mnav-section flex items-center justify-between gap-2 px-3 py-3">
               {renderLogo()}
               <div className="flex items-center gap-2">
                 <Badge className="rounded-full border border-white/20 bg-primary/20 px-3 py-1 text-[11px] font-black text-primary animate-pulse">
