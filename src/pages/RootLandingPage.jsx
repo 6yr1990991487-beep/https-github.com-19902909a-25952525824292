@@ -547,7 +547,7 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="glass3d-btn absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="glass3d-btn absolute top-2 right-12 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
@@ -558,7 +558,7 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="glass3d-btn absolute top-12 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="glass3d-btn absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
