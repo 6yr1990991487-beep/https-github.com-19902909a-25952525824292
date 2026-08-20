@@ -166,48 +166,50 @@ export const InstallAppPrompt = () => {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10050] flex items-end sm:items-center justify-center bg-black/45 backdrop-blur-sm p-3 sm:p-4"
+      className="fixed inset-0 z-[10050] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm p-3 sm:p-4"
       role="dialog"
       aria-modal="true"
       onClick={dismiss}
     >
       <div
-        className="relative w-full max-w-sm rounded-[1.75rem] bg-white text-slate-900 shadow-2xl px-5 pb-6 pt-6 text-center animate-in fade-in zoom-in-95 duration-300 sm:rounded-3xl sm:p-7"
+        className="glass3d-panel relative w-full max-w-sm px-5 pb-6 pt-6 text-center animate-in fade-in zoom-in-95 duration-300 sm:max-w-md"
         style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0px))" }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={dismiss}
           aria-label="Fermer"
-          className="absolute right-3 top-3 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+          className="glass3d-btn absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full p-0 text-white"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <img
-          src="/lovanet-icon-512.png?v=14"
-          alt="Logo Lovanet"
-          width={160}
-          height={160}
-          className="mx-auto h-24 w-24 rounded-[1.5rem] object-contain shadow-xl sm:h-32 sm:w-32"
-        />
+        <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-[1.5rem] border border-white/30 bg-white/10 shadow-xl backdrop-blur-md sm:h-32 sm:w-32">
+          <img
+            src="/lovanet-icon-512.png?v=14"
+            alt="Logo Lovanet"
+            width={160}
+            height={160}
+            className="h-20 w-20 object-contain sm:h-28 sm:w-28"
+          />
+        </div>
 
-        <h2 className="mt-4 text-xl font-bold tracking-tight sm:text-2xl">Installer Lovanet</h2>
-        <p className="mt-2 text-[13px] leading-relaxed text-slate-600 sm:text-sm">
+        <h2 className="mt-4 text-xl font-bold tracking-tight text-white drop-shadow sm:text-2xl">Installer Lovanet</h2>
+        <p className="mt-2 text-[13px] leading-relaxed text-white/90 sm:text-sm">
           Lovanet Portail anime, manga, gaming, pop culture japonaise
         </p>
 
         {canDirectInstall && !iosLike ? (
           <button
             onClick={install}
-            className="mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="glass3d-btn mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white"
           >
             <Download className="h-4 w-4" />
             Installer l'application
           </button>
         ) : (
-          <p className="mt-5 flex items-start gap-2 rounded-2xl bg-slate-100 px-4 py-3 text-left text-sm text-slate-700">
-            {iosLike ? <Share className="mt-0.5 h-4 w-4 shrink-0" /> : <MoreVertical className="mt-0.5 h-4 w-4 shrink-0" />}
+          <p className="glass3d-group mt-5 flex items-start gap-2 rounded-2xl px-4 py-3 text-left text-sm text-white/95">
+            {iosLike ? <Share className="mt-0.5 h-4 w-4 shrink-0 text-white" /> : <MoreVertical className="mt-0.5 h-4 w-4 shrink-0 text-white" />}
             <span>{INSTRUCTIONS[browser]}</span>
           </p>
         )}
@@ -216,16 +218,20 @@ export const InstallAppPrompt = () => {
           <button
             onClick={enableNotifications}
             disabled={notifState === "granted"}
-            className="mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:opacity-60"
+            className="glass3d-btn mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
           >
             {notifState === "granted" ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
             {notifState === "granted" ? "Alertes activées" : "Activer les alertes"}
           </button>
         )}
 
-        {notice && <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-[12px] text-amber-800">{notice}</p>}
+        {notice && (
+          <p className="mt-3 rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-[12px] text-white/95 backdrop-blur-sm">
+            {notice}
+          </p>
+        )}
 
-        <button onClick={dismiss} className="mt-3 w-full text-xs font-medium text-slate-400 hover:text-slate-600">
+        <button onClick={dismiss} className="mt-3 w-full text-xs font-medium text-white/70 hover:text-white">
           Plus tard
         </button>
       </div>
