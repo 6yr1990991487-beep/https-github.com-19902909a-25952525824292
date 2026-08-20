@@ -477,8 +477,7 @@ export default function RootLandingPage() {
                                     vertical
                                     muted={!previewSoundEnabled}
                                     delay={120}
-                                    autoPlay
-                                    retainOnTouchRelease
+                                    autoPlay={false}
                                     className="h-full w-full"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
                                   >
