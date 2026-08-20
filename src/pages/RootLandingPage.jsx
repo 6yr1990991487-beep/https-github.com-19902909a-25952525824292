@@ -12,7 +12,7 @@ import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import heroTopBannerVideo from "@/assets/hero-top-banner.mp4.asset.json";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
 import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
@@ -109,31 +109,6 @@ const catalogRotationIntervalMs = 60000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
 
-// Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
-const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: heroTopBannerVideo.url, label: "Bannière hero (haut)" },
-  { id: "b2", src: "", label: "Carte du haut" },
-  { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
-];
-const BANNER_STATE_KEY = "lovanet.home.banners.v3";
-const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
-
-const loadHomeBanners = () => {
-  const byId = Object.fromEntries(DEFAULT_HOME_BANNERS.map((b) => [b.id, b]));
-  try {
-    const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) || "null");
-    if (
-      Array.isArray(saved) &&
-      saved.length === DEFAULT_HOME_BANNERS.length &&
-      saved.every((s) => s && byId[s.id])
-    ) {
-      return saved.map((s) => ({ ...byId[s.id], visible: s.visible !== false }));
-    }
-  } catch (e) {
-    /* ignore */
-  }
-  return DEFAULT_HOME_BANNERS.map((b) => ({ ...b, visible: true }));
-};
 
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
@@ -162,48 +137,10 @@ const resolveCatalogImage = (item, index) => {
 
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  
   const trailerLocked = useTrailerPlaybackLock();
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
-  const bannerVideoRef = useRef(null);
-  const bannerShellRef = useRef(null);
-  const portalAudio = usePortalAudio({ storageKey: "lovanet.portal.audio.enabled" });
-
-  const [homeBanners, setHomeBanners] = useState(loadHomeBanners);
-  const dragIndexRef = useRef(null);
-
-  const heroBanner = homeBanners[0];
-  const cardBanners = [homeBanners[1], homeBanners[2]];
-
-  const persistBanners = (next) => {
-    setHomeBanners(next);
-    try {
-      localStorage.setItem(
-        BANNER_STATE_KEY,
-        JSON.stringify(next.map((b) => ({ id: b.id, visible: b.visible !== false })))
-      );
-    } catch (e) {
-      /* ignore */
-    }
-  };
-  const handleBannerDragStart = (i) => {
-    dragIndexRef.current = i;
-  };
-  const handleBannerDrop = (i) => {
-    const from = dragIndexRef.current;
-    dragIndexRef.current = null;
-    if (from === null || from === i) return;
-    const next = [...homeBanners];
-    const [moved] = next.splice(from, 1);
-    next.splice(i, 0, moved);
-    persistBanners(next);
-  };
-  const toggleBannerVisible = (id) => {
-    persistBanners(
-      homeBanners.map((b) => (b.id === id ? { ...b, visible: !(b.visible !== false) } : b))
-    );
-  };
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -263,15 +200,6 @@ export default function RootLandingPage() {
     return () => window.clearInterval(id);
   }, [catalogPreviewPool.length, trailerLocked]);
 
-  useEffect(() => {
-    const video = bannerVideoRef.current;
-    if (!video) return;
-
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {});
-    }
-  }, [heroBanner?.id, heroBanner?.visible]);
 
   useEffect(() => {
     document.body.removeAttribute("data-hide-videos");
@@ -291,64 +219,6 @@ export default function RootLandingPage() {
     });
   }, []);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncReduced = () => setReducedMotion(media.matches);
-    syncReduced();
-    media.addEventListener?.("change", syncReduced);
-
-    const shell = bannerShellRef.current;
-    if (!shell || media.matches) {
-      return () => media.removeEventListener?.("change", syncReduced);
-    }
-
-    let pointerX = 0;
-    let pointerY = 0;
-    let frame = 0;
-    let drift = 0;
-    let running = true;
-
-    const update = () => {
-      if (!running) return;
-      drift += 0.018;
-      const droneX = Math.sin(drift) * 10;
-      const droneY = Math.cos(drift * 0.75) * 8;
-      const tiltX = (-pointerY * 7) + Math.cos(drift * 0.6) * 2.5;
-      const tiltY = (pointerX * 10) + Math.sin(drift * 0.9) * 3;
-      shell.style.setProperty("--banner-rotate-x", `${tiltX.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-rotate-y", `${tiltY.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-shift-x", `${droneX.toFixed(2)}px`);
-      shell.style.setProperty("--banner-shift-y", `${droneY.toFixed(2)}px`);
-      shell.style.setProperty("--banner-glow-x", `${50 + pointerX * 18}%`);
-      shell.style.setProperty("--banner-glow-y", `${42 + pointerY * 16}%`);
-      frame = window.requestAnimationFrame(update);
-    };
-
-    const onPointerMove = (event) => {
-      const rect = shell.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      pointerX = (x - 0.5) * 2;
-      pointerY = (y - 0.5) * 2;
-    };
-
-    const onPointerLeave = () => {
-      pointerX = 0;
-      pointerY = 0;
-    };
-
-    shell.addEventListener("pointermove", onPointerMove);
-    shell.addEventListener("pointerleave", onPointerLeave);
-    frame = window.requestAnimationFrame(update);
-
-    return () => {
-      running = false;
-      shell.removeEventListener("pointermove", onPointerMove);
-      shell.removeEventListener("pointerleave", onPointerLeave);
-      window.cancelAnimationFrame(frame);
-      media.removeEventListener?.("change", syncReduced);
-    };
-  }, []);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
@@ -510,48 +380,6 @@ export default function RootLandingPage() {
       <div className="relative overflow-hidden" data-testid="root-landing-page">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_20%)]" />
 
-        <section className="root-hero-section mx-auto w-[95%] md:w-[50%] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
-          <div className={`${luxurySection} p-2 sm:p-3 lg:p-4`}>
-            <div className={luxuryGlowLeft} />
-            <div className={luxuryGlowRight} />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div
-              ref={bannerShellRef}
-              className="hero-banner-3d root-hero-banner hero-banner-reveal relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] w-full"
-              data-testid="root-landing-hero-banner-shell"
-            >
-              {heroBanner && heroBanner.visible !== false ? (
-                <video
-                  ref={bannerVideoRef}
-                  className="hero-banner-video hero-banner-autoframe absolute inset-0 h-full w-full object-cover object-center"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  decoding="async"
-                  fetchPriority="high"
-                  disablePictureInPicture
-                  data-testid="hero-banner-background-video"
-                  data-bg-video
-                >
-                  <source src={heroBanner.src || heroTopBannerVideo.url} type="video/mp4" />
-                </video>
-              ) : (
-                <div
-                  className="absolute inset-0 h-full w-full bg-cover bg-center bg-black/80"
-                  data-testid="hero-banner-hidden-placeholder"
-                />
-              )}
-              <div className="hero-banner-darken pointer-events-none absolute inset-0" />
-              <div className="hero-banner-specular pointer-events-none absolute inset-0" />
-              <div className="hero-banner-color-bloom pointer-events-none absolute inset-0" />
-
-              <div className="hero-banner-content root-hero-content relative flex min-h-[350px] sm:min-h-[440px] flex-col justify-end p-4 sm:p-6 z-30 pointer-events-none">
-              </div>
-            </div>
-          </div>
-        </section>
 
 
 
