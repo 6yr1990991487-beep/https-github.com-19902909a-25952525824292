@@ -25,7 +25,7 @@ export const Footer = () => {
     <footer className="mt-24 px-4 pb-10 sm:px-6 lg:px-8">
       <div className={`relative mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
         <video
-          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-35"
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-100"
           src={footerBackdropVideo.url}
           autoPlay
           muted
