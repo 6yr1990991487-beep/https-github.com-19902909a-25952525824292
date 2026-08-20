@@ -46,8 +46,6 @@ export const HoverPreview = ({
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
-  const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
-  const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
   const touchTriggeredRef = useRef(false);
@@ -124,31 +122,25 @@ export const HoverPreview = ({
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         touchTriggeredRef.current = true;
-        if (timer.current) window.clearTimeout(timer.current);
-        timer.current = window.setTimeout(() => setActive(true), delay);
-      }}
-      onTouchEnd={() => {
-        if (!heldRef.current) {
+        // Tap = bascule lecture : on verrouille pour que le trailer aille au bout.
+        if (heldRef.current) {
+          releaseHold();
           if (timer.current) {
             window.clearTimeout(timer.current);
             timer.current = null;
           }
-          if (!retainOnTouchRelease) {
-            setActive(false);
-          }
+          setActive(false);
+          return;
         }
+        if (timer.current) window.clearTimeout(timer.current);
+        setActive(true);
+        hold();
+      }}
+      onTouchEnd={() => {
+        // La lecture continue apres le relachement du doigt.
         touchTriggeredRef.current = false;
       }}
       onTouchCancel={() => {
-        if (!heldRef.current) {
-          if (timer.current) {
-            window.clearTimeout(timer.current);
-            timer.current = null;
-          }
-          if (!retainOnTouchRelease) {
-            setActive(false);
-          }
-        }
         touchTriggeredRef.current = false;
       }}
     >
