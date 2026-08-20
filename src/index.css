@@ -2243,11 +2243,11 @@ body[data-hide-decors] [data-animated-bg] {
     box-shadow: var(--theme-glow-2);
   }
 
-  .theme-main-content [class*="bg-white/"] {
+  .theme-main-content [class*="bg-white/"]:not(.trailer-no-theme):not(.trailer-no-theme *) {
     background-color: color-mix(in srgb, var(--theme-card) 76%, transparent) !important;
   }
 
-  .theme-main-content [class*="border-white/"] {
+  .theme-main-content [class*="border-white/"]:not(.trailer-no-theme):not(.trailer-no-theme *) {
     border-color: var(--theme-border-soft) !important;
   }
 
