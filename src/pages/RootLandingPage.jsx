@@ -302,7 +302,7 @@ export default function RootLandingPage() {
       ? Math.max(12, (window.innerWidth - panelWidth) / 2)
       : Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
     const top = isNarrow
-      ? Math.max(72, Math.min(rect.bottom + 12, window.innerHeight - 320))
+      ? Math.max(72, Math.min(rect.bottom + 12, Math.max(72, window.innerHeight - 420)))
       : Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
