@@ -46,8 +46,6 @@ export const HoverPreview = ({
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
-  const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
-  const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
   const timer = useRef<number | null>(null);
   const touchTriggeredRef = useRef(false);
