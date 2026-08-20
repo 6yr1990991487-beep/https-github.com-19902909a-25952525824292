@@ -246,7 +246,7 @@ export default function RootLandingPage() {
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   // Variation d'effet 3D (panorama / flexion / tilt / vague / balancier) tiree
   // au hasard a chaque arrivee sur la page Portail.
-  const [heroFxVariant] = useState(() => 1 + Math.floor(Math.random() * 5));
+
   const [selectedTrailerIdMap, setSelectedTrailerIdMap] = useState({});
   const [pausedPreviewMap, setPausedPreviewMap] = useState({});
   const [versionPanelState, setVersionPanelState] = useState({
@@ -428,7 +428,7 @@ export default function RootLandingPage() {
               {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus — placée AU-DESSUS des boutons */}
               <div className="portal-hero-coffre mx-auto mb-6 w-[36%] max-w-sm" data-testid="home-platforms-glass-coffre">
               <div
-                className={`glass3d-panel portal-hero-stage portal-hero-fx-${heroFxVariant} relative w-full overflow-hidden rounded-[1.25rem] border border-white/20 aspect-video`}
+                className={`glass3d-panel portal-hero-stage relative w-full overflow-hidden rounded-[1.25rem] border border-white/20 aspect-video`}
                 data-testid="home-platforms-glass-video-zone"
               >
                 <video
