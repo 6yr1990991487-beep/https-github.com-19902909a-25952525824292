@@ -124,6 +124,56 @@ const mobileGroups = [
   },
 ];
 
+const ytThumb = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+/** Miniature de contenu associée à chaque page (affichée à côté du bouton). */
+const ROUTE_THUMBS: Record<string, string> = {
+  "/": ytThumb("bGFUthZjGd4"),
+  "/anime-moments": ytThumb("5Fr9M1GBDBo"),
+  "/tiktok": ytThumb("i0Pz8tmOy8o"),
+  "/chaine-youtube": ytThumb("E6X7VsKuMsM"),
+  "/chaine-youtube/manga": ytThumb("DtEDLCrliHs"),
+  "/prime-video": ytThumb("S0BmS2xG8tg"),
+  "/lecteurs-video": ytThumb("bGFUthZjGd4"),
+  "/anime-countdown": ytThumb("i0Pz8tmOy8o"),
+  "/anime-catalog": ytThumb("E6X7VsKuMsM"),
+  "/ai-hub": ytThumb("5Fr9M1GBDBo"),
+  "/shop": "/products/am-004.svg",
+  "/decouvrir": ytThumb("DtEDLCrliHs"),
+  "/actualites": ytThumb("S0BmS2xG8tg"),
+  "/profile": "/products/am-012.svg",
+  "/contact": "/products/am-020.svg",
+  "/legals": "/products/am-030.svg",
+  "/leaderboard": "/products/am-008.svg",
+};
+
+const legacyMobileGroups = [
+  {
+    id: "priority",
+    label: "Accès Rapide",
+    items: megaSections.filter((item) => ["/prime-video", "/anime-catalog", "/anime-countdown", "/shop", "/ai-hub"].includes(item.to)),
+    color: "text-amber-400",
+    gradient: "from-amber-500/20 to-orange-600/20",
+    border: "border-amber-500/50",
+  },
+  {
+    id: "watch",
+    label: "Vidéos & Plateformes",
+    items: megaSections.filter((item) => ["/chaine-youtube", "/chaine-youtube/manga", "/tiktok", "/lecteurs-video", "/anime-moments"].includes(item.to)),
+    color: "text-purple-400",
+    gradient: "from-purple-500/20 to-pink-600/20",
+    border: "border-purple-500/30",
+  },
+  {
+    id: "explore",
+    label: "Explorer & Plus",
+    items: megaSections.filter((item) => ["/", "/decouvrir", "/actualites", "/leaderboard", "/profile", "/contact", "/legals"].includes(item.to)),
+    color: "text-sky-400",
+    gradient: "from-sky-500/20 to-blue-600/20",
+    border: "border-sky-500/30",
+  },
+];
+
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState<boolean>(() => {
