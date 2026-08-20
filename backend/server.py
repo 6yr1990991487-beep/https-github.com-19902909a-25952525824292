@@ -2328,6 +2328,7 @@ async def seo_export():
     backup_path = PUBLIC_DIR / "seo-backup.json"
     if not backup_path.exists():
         raise HTTPException(status_code=404, detail="SEO backup not generated yet.")
+    backup: Dict[str, Any] = {}
     try:
         backup = json.loads(backup_path.read_text(encoding="utf-8"))
     except Exception as exc:

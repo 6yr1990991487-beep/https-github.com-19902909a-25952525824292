@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { RefreshCw, CheckCircle2, XCircle, Clock, Users, Trash2, Shield, Activity, HardDrive, Edit, EyeOff, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -52,7 +51,7 @@ export default function SyncDashboard() {
     }
   }, [user, navigate]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const [statsRes, usersRes, syncRes, overridesRes] = await Promise.all([
@@ -71,11 +70,11 @@ export default function SyncDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (user) fetchDashboardData();
-  }, [user]);
+  }, [user, fetchDashboardData]);
 
   const handleRoleUpdate = async (userId: string, newRole: string) => {
     try {
