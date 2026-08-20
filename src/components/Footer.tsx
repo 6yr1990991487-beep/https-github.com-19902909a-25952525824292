@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
 import footerNavBannerVideo from "@/assets/footer-portal-banner.mp4.asset.json";
+import footerBackdropVideo from "@/assets/portal-footer-video-3.mp4.asset.json";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -31,7 +32,20 @@ export const Footer = () => {
               data-testid="footer-lovanet-video-shell"
             >
               <video
-                className="h-full w-full bg-transparent object-contain object-center"
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
+                src={footerBackdropVideo.url}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                aria-hidden="true"
+                data-testid="footer-backdrop-video"
+                data-bg-video
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.28)] backdrop-blur-[2px]" />
+              <video
+                className="relative z-10 h-full w-full bg-transparent object-contain object-center"
                 src={footerNavBannerVideo.url}
                 autoPlay
                 muted
