@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Ban, Play } from "lucide-react";
 import { getVideoStatusSync } from "@/lib/videoAvailability";
 import { siteFallbackImage } from "@/lib/mediaFallback";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { acquireTrailerLock, releaseTrailerLock } from "@/lib/trailerPlaybackLock";
+import { claimAudioFocus, getAudioFocusOwner, releaseAudioFocus, subscribeAudioFocus } from "@/lib/trailerAudioFocus";
 
 type Props = {
   videoId: string;
@@ -47,6 +48,21 @@ export const HoverPreview = ({
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
   const [frameReady, setFrameReady] = useState(false);
+  const audioId = useId();
+  const audioOwner = useSyncExternalStore(subscribeAudioFocus, getAudioFocusOwner, () => null);
+  // Securite : le son n'est autorise que sur le lecteur explicitement selectionne.
+  const effectiveMuted = muted || audioOwner !== audioId;
+  const selectAudio = () => {
+    if (muted) return;
+    claimAudioFocus(audioId);
+  };
+  useEffect(() => () => releaseAudioFocus(audioId), [audioId]);
+  useEffect(() => {
+    if (muted) releaseAudioFocus(audioId);
+  }, [muted, audioId]);
+  useEffect(() => {
+    if (!active) releaseAudioFocus(audioId);
+  }, [active, audioId]);
   const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
   const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
@@ -79,10 +95,12 @@ export const HoverPreview = ({
 
   const start = () => {
     if (knownUnavailable && knownUnavailable !== "ok") return;
+    selectAudio();
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setActive(true), delay);
   };
   const stop = () => {
+    releaseAudioFocus(audioId);
     if (heldRef.current) return; // lecture verrouillee par un tap
     if (timer.current) {
       window.clearTimeout(timer.current);
@@ -123,6 +141,7 @@ export const HoverPreview = ({
         }
         event.preventDefault();
         event.stopPropagation();
+        selectAudio();
         if (!heldRef.current) {
           setActive(true);
           hold();
@@ -131,6 +150,7 @@ export const HoverPreview = ({
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         touchTriggeredRef.current = true;
+        selectAudio();
         if (timer.current) window.clearTimeout(timer.current);
         timer.current = window.setTimeout(() => setActive(true), delay);
       }}
@@ -173,7 +193,7 @@ export const HoverPreview = ({
         <div className={`${iframeWrap} bg-transparent transition-opacity duration-700 ${frameReady ? "opacity-100" : "opacity-0"}`}>
           {vertical ? (
             <iframe
-              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
+              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
               onLoad={() => setFrameReady(true)}
@@ -181,7 +201,7 @@ export const HoverPreview = ({
             />
           ) : (
             <iframe
-              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
+              src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
               title={title}
               allow="autoplay; encrypted-media; picture-in-picture"
               onLoad={() => setFrameReady(true)}
