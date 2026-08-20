@@ -3893,7 +3893,7 @@ body,
 
 [data-testid="home-platforms-pill-row"] a > div:hover,
 [data-testid="home-platforms-button"]:hover {
-  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10)) !important;
   background-image: none !important;
   border-color: rgba(255,255,255,0.4) !important;
 }
