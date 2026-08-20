@@ -109,31 +109,6 @@ const catalogRotationIntervalMs = 60000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
 
-// Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
-const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: heroTopBannerVideo.url, label: "Bannière hero (haut)" },
-  { id: "b2", src: "", label: "Carte du haut" },
-  { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
-];
-const BANNER_STATE_KEY = "lovanet.home.banners.v3";
-const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
-
-const loadHomeBanners = () => {
-  const byId = Object.fromEntries(DEFAULT_HOME_BANNERS.map((b) => [b.id, b]));
-  try {
-    const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) || "null");
-    if (
-      Array.isArray(saved) &&
-      saved.length === DEFAULT_HOME_BANNERS.length &&
-      saved.every((s) => s && byId[s.id])
-    ) {
-      return saved.map((s) => ({ ...byId[s.id], visible: s.visible !== false }));
-    }
-  } catch (e) {
-    /* ignore */
-  }
-  return DEFAULT_HOME_BANNERS.map((b) => ({ ...b, visible: true }));
-};
 
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
