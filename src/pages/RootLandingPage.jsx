@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, Pause, ShoppingBag, Star, Volume2, VolumeX, X, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { API_BASE as API } from "@/lib/apiBase";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
@@ -11,11 +12,13 @@ import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import heroTopBannerVideo from "@/assets/hero-top-banner.mp4.asset.json";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
 import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
 import { motion } from "framer-motion";
+import portalGlassVideo1 from "@/assets/portal-glass-video-1.mp4.asset.json";
+import portalGlassVideo2 from "@/assets/portal-glass-video-2.mp4.asset.json";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -108,31 +111,6 @@ const catalogRotationIntervalMs = 60000;
 const catalogBatchSize = 12;
 const catalogRowSize = 6;
 
-// Home banners: index 0 -> Hero, index 1 -> Portal card 1, index 2 -> Portal card 2.
-const DEFAULT_HOME_BANNERS = [
-  { id: "b1", src: heroTopBannerVideo.url, label: "Bannière hero (haut)" },
-  { id: "b2", src: "", label: "Carte du haut" },
-  { id: "b3", src: "", label: "Carte Prime & vidéos (bas)" },
-];
-const BANNER_STATE_KEY = "lovanet.home.banners.v3";
-const BANNER_SLOT_LABELS = ["Emplacement 1 · Hero", "Emplacement 2 · Carte", "Emplacement 3 · Carte"];
-
-const loadHomeBanners = () => {
-  const byId = Object.fromEntries(DEFAULT_HOME_BANNERS.map((b) => [b.id, b]));
-  try {
-    const saved = JSON.parse(localStorage.getItem(BANNER_STATE_KEY) || "null");
-    if (
-      Array.isArray(saved) &&
-      saved.length === DEFAULT_HOME_BANNERS.length &&
-      saved.every((s) => s && byId[s.id])
-    ) {
-      return saved.map((s) => ({ ...byId[s.id], visible: s.visible !== false }));
-    }
-  } catch (e) {
-    /* ignore */
-  }
-  return DEFAULT_HOME_BANNERS.map((b) => ({ ...b, visible: true }));
-};
 
 
 const getPortalDestination = (slotIndex, rotationIndex) =>
@@ -161,48 +139,10 @@ const resolveCatalogImage = (item, index) => {
 
 export default function RootLandingPage() {
   const [rotationIndex, setRotationIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  
   const trailerLocked = useTrailerPlaybackLock();
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
-  const bannerVideoRef = useRef(null);
-  const bannerShellRef = useRef(null);
-  const portalAudio = usePortalAudio({ storageKey: "lovanet.portal.audio.enabled" });
-
-  const [homeBanners, setHomeBanners] = useState(loadHomeBanners);
-  const dragIndexRef = useRef(null);
-
-  const heroBanner = homeBanners[0];
-  const cardBanners = [homeBanners[1], homeBanners[2]];
-
-  const persistBanners = (next) => {
-    setHomeBanners(next);
-    try {
-      localStorage.setItem(
-        BANNER_STATE_KEY,
-        JSON.stringify(next.map((b) => ({ id: b.id, visible: b.visible !== false })))
-      );
-    } catch (e) {
-      /* ignore */
-    }
-  };
-  const handleBannerDragStart = (i) => {
-    dragIndexRef.current = i;
-  };
-  const handleBannerDrop = (i) => {
-    const from = dragIndexRef.current;
-    dragIndexRef.current = null;
-    if (from === null || from === i) return;
-    const next = [...homeBanners];
-    const [moved] = next.splice(from, 1);
-    next.splice(i, 0, moved);
-    persistBanners(next);
-  };
-  const toggleBannerVisible = (id) => {
-    persistBanners(
-      homeBanners.map((b) => (b.id === id ? { ...b, visible: !(b.visible !== false) } : b))
-    );
-  };
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -262,15 +202,6 @@ export default function RootLandingPage() {
     return () => window.clearInterval(id);
   }, [catalogPreviewPool.length, trailerLocked]);
 
-  useEffect(() => {
-    const video = bannerVideoRef.current;
-    if (!video) return;
-
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {});
-    }
-  }, [heroBanner?.id, heroBanner?.visible]);
 
   useEffect(() => {
     document.body.removeAttribute("data-hide-videos");
@@ -290,64 +221,6 @@ export default function RootLandingPage() {
     });
   }, []);
 
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncReduced = () => setReducedMotion(media.matches);
-    syncReduced();
-    media.addEventListener?.("change", syncReduced);
-
-    const shell = bannerShellRef.current;
-    if (!shell || media.matches) {
-      return () => media.removeEventListener?.("change", syncReduced);
-    }
-
-    let pointerX = 0;
-    let pointerY = 0;
-    let frame = 0;
-    let drift = 0;
-    let running = true;
-
-    const update = () => {
-      if (!running) return;
-      drift += 0.018;
-      const droneX = Math.sin(drift) * 10;
-      const droneY = Math.cos(drift * 0.75) * 8;
-      const tiltX = (-pointerY * 7) + Math.cos(drift * 0.6) * 2.5;
-      const tiltY = (pointerX * 10) + Math.sin(drift * 0.9) * 3;
-      shell.style.setProperty("--banner-rotate-x", `${tiltX.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-rotate-y", `${tiltY.toFixed(2)}deg`);
-      shell.style.setProperty("--banner-shift-x", `${droneX.toFixed(2)}px`);
-      shell.style.setProperty("--banner-shift-y", `${droneY.toFixed(2)}px`);
-      shell.style.setProperty("--banner-glow-x", `${50 + pointerX * 18}%`);
-      shell.style.setProperty("--banner-glow-y", `${42 + pointerY * 16}%`);
-      frame = window.requestAnimationFrame(update);
-    };
-
-    const onPointerMove = (event) => {
-      const rect = shell.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
-      pointerX = (x - 0.5) * 2;
-      pointerY = (y - 0.5) * 2;
-    };
-
-    const onPointerLeave = () => {
-      pointerX = 0;
-      pointerY = 0;
-    };
-
-    shell.addEventListener("pointermove", onPointerMove);
-    shell.addEventListener("pointerleave", onPointerLeave);
-    frame = window.requestAnimationFrame(update);
-
-    return () => {
-      running = false;
-      shell.removeEventListener("pointermove", onPointerMove);
-      shell.removeEventListener("pointerleave", onPointerLeave);
-      window.cancelAnimationFrame(frame);
-      media.removeEventListener?.("change", syncReduced);
-    };
-  }, []);
 
   const heroPrimary = useMemo(() => getPortalDestination(0, rotationIndex), [rotationIndex]);
   const heroSecondary = useMemo(() => getPortalDestination(1, rotationIndex), [rotationIndex]);
@@ -425,9 +298,14 @@ export default function RootLandingPage() {
     event.preventDefault();
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
-    const panelWidth = 320;
-    const left = Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
-    const top = Math.max(rect.top, 96);
+    const isNarrow = window.innerWidth < 640;
+    const panelWidth = isNarrow ? Math.min(340, window.innerWidth - 24) : 320;
+    const left = isNarrow
+      ? Math.max(12, (window.innerWidth - panelWidth) / 2)
+      : Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
+    const top = isNarrow
+      ? Math.max(72, Math.min(rect.bottom + 12, Math.max(72, window.innerHeight - 420)))
+      : Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
       openInstanceId: instanceId,
@@ -491,6 +369,38 @@ export default function RootLandingPage() {
     setPausedPreviewMap((prev) => ({ ...prev, [instanceId]: !prev[instanceId] }));
   }, []);
 
+  const panelDragRef = useRef(null);
+  const startPanelDrag = useCallback((event) => {
+    if (event.target.closest("button")) return;
+    const panel = event.currentTarget.closest("[data-version-panel]");
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    panelDragRef.current = {
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* noop */ }
+  }, []);
+  const movePanelDrag = useCallback((event) => {
+    const drag = panelDragRef.current;
+    if (!drag) return;
+    event.preventDefault();
+    const left = Math.min(
+      Math.max(8, event.clientX - drag.offsetX),
+      Math.max(8, window.innerWidth - drag.width - 8),
+    );
+    const top = Math.min(
+      Math.max(8, event.clientY - drag.offsetY),
+      Math.max(8, window.innerHeight - Math.min(drag.height, window.innerHeight - 16) - 8),
+    );
+    setVersionPanelState((prev) => ({ ...prev, panelLeft: left, panelTop: top }));
+  }, []);
+  const endPanelDrag = useCallback(() => {
+    panelDragRef.current = null;
+  }, []);
+
   const togglePreviewSound = useCallback(() => {
     setPreviewSoundEnabled((value) => !value);
   }, []);
@@ -504,67 +414,45 @@ export default function RootLandingPage() {
       <div className="relative overflow-hidden" data-testid="root-landing-page">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[42rem] bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.18),transparent_24%),radial-gradient(circle_at_top_right,rgba(34,211,238,0.16),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.05),transparent_20%)]" />
 
-        <section className="root-hero-section mx-auto w-[95%] md:w-[50%] px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-12">
-          <div className={`${luxurySection} p-2 sm:p-3 lg:p-4`}>
-            <div className={luxuryGlowLeft} />
-            <div className={luxuryGlowRight} />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%,transparent_65%,rgba(255,255,255,0.03))]" />
-            <div
-              ref={bannerShellRef}
-              className="hero-banner-3d root-hero-banner hero-banner-reveal relative overflow-hidden rounded-[1.25rem] min-h-[350px] sm:min-h-[440px] w-full"
-              data-testid="root-landing-hero-banner-shell"
-            >
-              {heroBanner && heroBanner.visible !== false ? (
-                <video
-                  ref={bannerVideoRef}
-                  className="hero-banner-video hero-banner-autoframe absolute inset-0 h-full w-full object-cover object-center"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  decoding="async"
-                  fetchPriority="high"
-                  disablePictureInPicture
-                  data-testid="hero-banner-background-video"
-                  data-bg-video
-                >
-                  <source src={heroBanner.src || heroTopBannerVideo.url} type="video/mp4" />
-                </video>
-              ) : (
-                <div
-                  className="absolute inset-0 h-full w-full bg-cover bg-center bg-black/80"
-                  data-testid="hero-banner-hidden-placeholder"
-                />
-              )}
-              <div className="hero-banner-darken pointer-events-none absolute inset-0" />
-              <div className="hero-banner-specular pointer-events-none absolute inset-0" />
-              <div className="hero-banner-color-bloom pointer-events-none absolute inset-0" />
-
-              <div className="hero-banner-content root-hero-content relative flex min-h-[350px] sm:min-h-[440px] flex-col justify-end p-4 sm:p-6 z-30 pointer-events-none">
-              </div>
-            </div>
-          </div>
-        </section>
 
 
 
         <section className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12 relative" data-testid="home-platforms-section">
           <div className={`${luxurySection} home-platforms-neutral-shell p-4 sm:p-6 lg:p-8 relative overflow-hidden ring-1 ring-white/10 z-20`}>
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,14,26,0.1)_0%,rgba(6,14,26,0.85)_100%)]" />
+            <div className="pointer-events-none absolute inset-0 z-0 border border-white/10 bg-[rgba(6,12,22,0.34)] backdrop-blur-[6px]" />
             <div className="relative">
-              <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div className="h-10 w-36 rounded-full border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)] backdrop-blur-md" data-testid="home-platforms-heading-placeholder" />
-                <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
-                  <Link to="/anime-catalog">
-                    <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                      Catalogue
-                      <ArrowRight className="h-3.5 w-3.5 neon-rgb-icon" />
-                    </span>
-                  </Link>
-                </Button>
+              {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus — placée AU-DESSUS des boutons */}
+              <div
+                className="glass3d-panel relative mx-auto mb-6 w-full max-w-3xl overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video"
+                data-testid="home-platforms-glass-video-zone"
+              >
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-60"
+                  src={portalGlassVideo2.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-2"
+                  data-bg-video
+                />
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-85 mix-blend-screen"
+                  src={portalGlassVideo1.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-1"
+                  data-bg-video
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.10)] backdrop-blur-[1px]" />
               </div>
-
 
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="home-platforms-pill-row">
                 {platformEntries.map((card, index) => {
@@ -587,10 +475,35 @@ export default function RootLandingPage() {
                 })}
               </div>
 
+              {/* Séparateur épais + boutons Catalogue & Son centrés en dessous */}
+              <div className="mt-5 flex flex-col items-center gap-5">
+                <div className="h-1.5 w-full max-w-md rounded-full bg-[linear-gradient(90deg,transparent,var(--theme-accent,#00ff9d),transparent)] opacity-60" />
+                <div className="flex items-center justify-center gap-3">
+                  <Button asChild variant="glass" size="sm" className="h-11 rounded-full px-6 text-sm font-semibold text-white backdrop-blur-md border border-white/20 bg-white/[0.06] hover:bg-white/[0.12]" data-testid="home-platforms-button">
+                    <Link to="/anime-catalog">
+                      <span className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                        Catalogue
+                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                      </span>
+                    </Link>
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={togglePreviewSound}
+                    aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+                    className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    data-testid="home-platforms-sound-toggle"
+                  >
+                    {previewSoundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+
               {catalogPreviewRows.some((row) => row.length > 0) && (
                 <>
                   <div
-                    className="hero-premium-lower-marquee mt-6"
+                    className="hero-premium-lower-marquee relative mt-6"
                     data-locked-layout={TRAILER_BANNER_LAYOUT}
                     data-testid="home-platforms-dynamic-banner-grid"
                   >
@@ -631,22 +544,24 @@ export default function RootLandingPage() {
 
                               <button
                                 type="button"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="absolute top-2 left-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
-                                aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
-                                data-testid={`home-platforms-pause-button-${item.id}`}
+                                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
+                                className="glass3d-btn absolute top-2 right-12 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                aria-label={`Choisir la version du trailer pour ${item.title}`}
+                                data-testid={`home-platforms-version-button-${item.id}`}
                               >
-                                {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4"/> : <Pause className="relative h-4 w-4" />}
+                                <Film className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]" />
                               </button>
 
                               <button
                                 type="button"
-                                onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
-                                aria-label={`Choisir la version du trailer pour ${item.title}`}
-                                data-testid={`home-platforms-version-button-${item.id}`}
+                                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
+                                className="glass3d-btn absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
+                                data-testid={`home-platforms-pause-button-${item.id}`}
                               >
-                                <Film className="relative h-4 w-4 opacity-95" />
+                                {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]"/> : <Pause className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]" />}
                               </button>
                             </div>
                           ))}
@@ -654,21 +569,35 @@ export default function RootLandingPage() {
                       </div>
                     ))}
                   </div>
-                  {versionPanelState.openInstanceId && (
+                  {versionPanelState.openInstanceId && typeof document !== "undefined" && createPortal(
+                    <>
                     <div
-                      className="fixed z-50 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.08)] p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft ? undefined : "1.5rem", top: versionPanelState.panelTop ?? "18rem", minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
+                      className="fixed inset-0 z-[998] bg-black/40 backdrop-blur-[2px]"
+                      onClick={closeVersionPanel}
+                      aria-hidden="true"
+                    />
+                    <div
+                      data-version-panel="true"
+                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[min(80vh,32rem)] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem", touchAction: "none" }}
                     >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
+                      <div
+                        className="flex cursor-grab select-none flex-row items-start justify-between gap-3 active:cursor-grabbing"
+                        onPointerDown={startPanelDrag}
+                        onPointerMove={movePanelDrag}
+                        onPointerUp={endPanelDrag}
+                        onPointerCancel={endPanelDrag}
+                        style={{ touchAction: "none" }}
+                      >
+                        <div className="min-w-0">
                           <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
-                          <p className="mt-1 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
+                          <p className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-2">
                           <button
                             type="button"
                             onClick={togglePreviewSound}
-                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-3 text-xs uppercase tracking-[0.24em] text-white/80 hover:text-white"
+                            className="glass3d-btn inline-flex h-9 items-center justify-center rounded-2xl px-3 text-[10px] uppercase tracking-[0.18em] text-white/90 hover:scale-105"
                             aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
                           >
                             {previewSoundEnabled ? "Son ON" : "Son OFF"}
@@ -676,7 +605,7 @@ export default function RootLandingPage() {
                           <button
                             type="button"
                             onClick={closeVersionPanel}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
+                            className="glass3d-btn inline-flex h-9 w-9 items-center justify-center rounded-2xl text-white/90 hover:scale-105"
                             aria-label="Fermer le panneau de versions"
                           >
                             <X className="h-4 w-4" />
@@ -698,7 +627,7 @@ export default function RootLandingPage() {
                             key={code}
                             type="button"
                             onClick={() => selectPanelVersion(code)}
-                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition ${versionPanelState.selectedVersion === code ? "bg-white/15 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "bg-black/20 text-white/80 hover:bg-white/10"}`}
+                            className={`glass3d-btn w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition hover:scale-[1.01] ${versionPanelState.selectedVersion === code ? "bg-white/20 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "text-white/80 hover:text-white"}`}
                           >
                             {getVersionLabel(code)}
                           </button>
@@ -708,19 +637,21 @@ export default function RootLandingPage() {
                         <button
                           type="button"
                           onClick={applyVersionToTrailer}
-                          className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
+                          className="glass3d-btn inline-flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold text-white hover:scale-105"
                         >
                           Voir cette version
                         </button>
                         <button
                           type="button"
                           onClick={closeVersionPanel}
-                          className="text-xs uppercase tracking-[0.24em] text-white/60 hover:text-white"
+                          className="glass3d-btn text-xs uppercase tracking-[0.24em] text-white/70 hover:text-white"
                         >
                           Fermer
                         </button>
                       </div>
                     </div>
+                    </>,
+                    document.body,
                   )}
                 </>
               )}
@@ -729,6 +660,7 @@ export default function RootLandingPage() {
         </section>
 
       </div>
+
     </PageShell>
   );
 }

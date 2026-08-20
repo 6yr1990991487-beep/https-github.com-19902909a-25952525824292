@@ -4747,3 +4747,254 @@ body[data-panel-tint="on"] .page-nav-glass [role="combobox"] {
   .hero-banner-reveal, .hero-banner-autoframe { animation: none; }
 }
 
+
+/* ============================================================
+   Personnalisation de la barre de navigation (panneau Thème > Barre)
+   Variables: --nav-skin-accent(-2/-3), --nav-fx-speed, --nav-fx-intensity
+   Attributs sur <html>: data-nav-bar / data-nav-neon / data-nav-btn / data-nav-carousel
+   ============================================================ */
+:root {
+  --nav-fx-speed: 1;
+  --nav-fx-intensity: 0.62;
+}
+
+/* ---- Fond de barre ---- */
+html[data-nav-bar="glass"] .nav-theme-shell {
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.05)) !important;
+  border: 1px solid rgba(255,255,255,0.35) !important;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
+html[data-nav-bar="frost"] .nav-theme-shell {
+  background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1)) !important;
+  border: 1px solid rgba(255,255,255,0.5) !important;
+  backdrop-filter: blur(28px) saturate(1.7) brightness(1.15);
+  -webkit-backdrop-filter: blur(28px) saturate(1.7) brightness(1.15);
+}
+html[data-nav-bar="solid"] .nav-theme-shell {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 16%, rgba(6,10,16,0.92)),
+    rgba(4,7,12,0.94)) !important;
+  border: 1px solid color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 34%, transparent) !important;
+}
+html[data-nav-bar="outline"] .nav-theme-shell {
+  background: rgba(4,7,12,0.32) !important;
+  border: 1.5px solid color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 62%, transparent) !important;
+  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 55%, transparent);
+}
+html[data-nav-bar="holo"] .nav-theme-shell {
+  background:
+    linear-gradient(115deg,
+      color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 20%, transparent) 0%,
+      color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 16%, transparent) 45%,
+      color-mix(in srgb, var(--nav-skin-accent-3, #10b981) 20%, transparent) 100%),
+    rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.4) !important;
+  backdrop-filter: blur(22px) saturate(1.8);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+}
+
+/* ---- Néons animés (barre + survol des boutons) ---- */
+html[data-nav-neon="none"] .nav-theme-shell::after { display: none; }
+html[data-nav-neon="wave"] .nav-theme-shell::after {
+  animation-duration: calc(6.5s / var(--nav-fx-speed, 1));
+  opacity: calc(0.35 + var(--nav-fx-intensity, 0.62) * 0.65);
+}
+html[data-nav-neon="pulse"] .nav-theme-shell::after {
+  background: radial-gradient(120% 80% at 50% 120%,
+    color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 55%, transparent), transparent 70%);
+  animation: nav-fx-pulse calc(2.6s / var(--nav-fx-speed, 1)) ease-in-out infinite;
+}
+html[data-nav-neon="chase"] .nav-theme-shell::after {
+  background: linear-gradient(90deg, transparent 0%,
+    color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 80%, white 10%) 12%,
+    color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 80%, white 10%) 20%, transparent 34%);
+  animation: nav-fx-chase calc(3.4s / var(--nav-fx-speed, 1)) linear infinite;
+}
+html[data-nav-neon="scan"] .nav-theme-shell::after {
+  background: linear-gradient(180deg, transparent 0%,
+    color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 70%, transparent) 50%, transparent 100%);
+  animation: nav-fx-scan calc(4s / var(--nav-fx-speed, 1)) ease-in-out infinite;
+}
+html[data-nav-neon="underline"] .nav-theme-shell::after {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 70%, transparent),
+    color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 70%, transparent));
+  inset: auto 0 0 0;
+  height: 2px;
+  filter: none;
+  animation: nav-fx-pulse calc(3s / var(--nav-fx-speed, 1)) ease-in-out infinite;
+}
+html[data-nav-neon="aura"] .nav-theme-shell::after {
+  background: radial-gradient(60% 140% at 20% 50%,
+      color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 42%, transparent), transparent 72%),
+    radial-gradient(60% 140% at 80% 50%,
+      color-mix(in srgb, var(--nav-skin-accent-3, #10b981) 42%, transparent), transparent 72%);
+  animation: nav-fx-aura calc(7s / var(--nav-fx-speed, 1)) ease-in-out infinite alternate;
+}
+
+@keyframes nav-fx-pulse {
+  0%, 100% { opacity: calc(0.2 + var(--nav-fx-intensity, 0.62) * 0.35); }
+  50% { opacity: calc(0.45 + var(--nav-fx-intensity, 0.62) * 0.55); }
+}
+@keyframes nav-fx-chase {
+  0% { transform: translateX(-40%); }
+  100% { transform: translateX(110%); }
+}
+@keyframes nav-fx-scan {
+  0%, 100% { transform: translateY(-60%); opacity: 0.25; }
+  50% { transform: translateY(60%); opacity: calc(0.4 + var(--nav-fx-intensity, 0.62) * 0.6); }
+}
+@keyframes nav-fx-aura {
+  0% { transform: scale(1); opacity: calc(0.25 + var(--nav-fx-intensity, 0.62) * 0.4); }
+  100% { transform: scale(1.12); opacity: calc(0.45 + var(--nav-fx-intensity, 0.62) * 0.5); }
+}
+
+/* ---- Boutons de page dans la barre ---- */
+html[data-nav-btn] .nav-theme-shell .nav-theme-chip {
+  transition: box-shadow 0.25s ease, background 0.25s ease, transform 0.2s ease;
+}
+html[data-nav-btn="pill"] .nav-theme-shell .nav-theme-chip { border-radius: 9999px !important; }
+html[data-nav-btn="cut"] .nav-theme-shell .nav-theme-chip {
+  border-radius: 0.35rem !important;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+html[data-nav-btn="solid"] .nav-theme-shell .nav-theme-chip {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 26%, rgba(8,12,18,0.8)),
+    rgba(6,10,16,0.85)) !important;
+}
+html[data-nav-btn="outline"] .nav-theme-shell .nav-theme-chip {
+  background: transparent !important;
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 58%, transparent) !important;
+}
+html[data-nav-btn="neon"] .nav-theme-shell .nav-theme-chip {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 60%, transparent),
+    0 0 calc(14px * (0.5 + var(--nav-fx-intensity, 0.62))) color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 55%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.22) !important;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 60%, transparent);
+}
+html[data-nav-btn] .nav-theme-shell .nav-theme-chip:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 72%, transparent),
+    0 0 calc(26px * (0.5 + var(--nav-fx-intensity, 0.62))) color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 60%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.28) !important;
+}
+
+/* ---- Carrousels de défilement (navigation rapide) ---- */
+html[data-nav-carousel="neon"] .quicknav-floating a {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 62%, transparent),
+    0 0 24px -6px color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 70%, transparent);
+}
+html[data-nav-carousel="minimal"] .quicknav-floating a {
+  box-shadow: none;
+  ring-width: 0;
+  background: rgba(255,255,255,0.04);
+}
+html[data-nav-carousel="frame"] .quicknav-floating a {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 55%, transparent);
+}
+html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
+  content: "";
+  position: absolute;
+  inset: -30% 40% 60% -30%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 45%, transparent), transparent);
+  filter: blur(18px);
+  pointer-events: none;
+}
+html[data-nav-carousel] .quicknav-floating a:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 70%, transparent),
+    0 12px 32px -12px color-mix(in srgb, var(--nav-skin-accent-2, #22d3ee) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-nav-neon] .nav-theme-shell::after { animation: none !important; }
+}
+
+/* ================================================================
+   Parité mobile : boutons 3D + néon sous les boutons identiques PC
+   ================================================================ */
+.nav-theme-chip {
+  position: relative;
+}
+.nav-theme-chip::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -5px;
+  height: 3px;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 90%, white 10%),
+    color-mix(in srgb, var(--nav-skin-accent-2, var(--nav-theme-accent-2, #22d3ee)) 90%, white 10%),
+    transparent);
+  filter: blur(0.4px)
+    drop-shadow(0 0 8px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 75%, transparent));
+}
+.nav-theme-chip:hover::after,
+.nav-theme-chip:focus-visible::after,
+.nav-theme-chip:active::after,
+.nav-theme-chip-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+  animation: nav-chip-neon 2.2s ease-in-out infinite;
+}
+@keyframes nav-chip-neon {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Les éléments du menu mobile reçoivent le même verre 3D épais que le PC */
+@media (max-width: 768px), (pointer: coarse) {
+  .mnav-item,
+  a.mnav-section,
+  .quicknav-floating a {
+    transform-style: preserve-3d;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 30%, transparent),
+      0 0 16px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 22%, transparent),
+      0 14px 30px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  }
+  .mnav-item:active,
+  a.mnav-section:active,
+  .quicknav-floating a:active,
+  .mnav-item-active {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 58%, transparent),
+      0 0 26px color-mix(in srgb, var(--nav-skin-accent-2, var(--nav-theme-accent-2, #22d3ee)) 45%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+  }
+}
+
+/* Emoji / icônes 3D animés */
+.nav-emoji-3d {
+  display: inline-flex;
+  transform-style: preserve-3d;
+  animation: nav-emoji-spin 6s ease-in-out infinite;
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 60%, transparent));
+  will-change: transform;
+}
+@keyframes nav-emoji-spin {
+  0%   { transform: perspective(500px) rotateY(0deg) translateZ(0) scale(1); }
+  35%  { transform: perspective(500px) rotateY(180deg) translateZ(8px) scale(1.12); }
+  70%  { transform: perspective(500px) rotateY(360deg) translateZ(0) scale(1); }
+  85%  { transform: perspective(500px) rotateY(360deg) rotateX(14deg) scale(1.06); }
+  100% { transform: perspective(500px) rotateY(360deg) rotateX(0deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-emoji-3d { animation: none; }
+  .nav-theme-chip::after { animation: none !important; }
+}

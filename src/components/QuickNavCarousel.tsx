@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { Move, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const OPEN_QUICKNAV_EVENT = "lovanet:open-quicknav";
 const OPEN_KEY = "lovanet.quicknav.open";
@@ -25,8 +26,22 @@ const DEFAULT_ITEMS: QuickNavItem[] = [
   { id: "leader", title: "Classement", to: "/leaderboard", color: "linear-gradient(45deg, #e879f9, #e11d48)" },
 ];
 
+const LOGIN_ITEM: QuickNavItem = {
+  id: "login",
+  title: "Se connecter",
+  to: "/login",
+  color: "linear-gradient(45deg, #00ff9d, #10b981)",
+};
+const PROFILE_ITEM: QuickNavItem = {
+  id: "profile",
+  title: "Mon profil",
+  to: "/profile",
+  color: "linear-gradient(45deg, #00ff9d, #22d3ee)",
+};
+
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
   const [open, setOpen] = useState(() => {
     try {
       return localStorage.getItem(OPEN_KEY) === "1";
@@ -40,6 +55,20 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     window.addEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
     return () => window.removeEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
   }, []);
+
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (alive) setSignedIn(Boolean(data.session));
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(Boolean(session)));
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  const navItems = [...items, signedIn ? PROFILE_ITEM : LOGIN_ITEM];
 
   // Reste ouvert d'une page à l'autre (mobile, application et PC).
   useEffect(() => {
@@ -124,7 +153,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
           style={{ touchAction: "pan-x", scrollbarWidth: "none", cursor: "grab" }}
           aria-label="Carrousel de navigation rapide"
         >
-          {items.map((item) => (
+          {navItems.map((item) => (
             <Link key={item.id} to={item.to} className="relative h-40 w-56 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white ring-1 ring-white/10 transition-transform duration-300 hover:scale-105 focus:scale-105" aria-label={item.title} draggable={false}>
               <div className="absolute inset-0 rounded-2xl backdrop-blur-md" style={{ background: "var(--nav-card-overlay, linear-gradient(135deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)))" }} />
               <div className="relative flex h-full w-full flex-col justify-end rounded-xl p-3">

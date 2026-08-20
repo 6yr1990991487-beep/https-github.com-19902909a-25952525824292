@@ -3,9 +3,11 @@ import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import "./index.css";
 import { initTilt3D } from "./lib/tilt3d";
+import { initNavSkin } from "./lib/navSkins";
 import { initInteractivity } from "./lib/interactivity";
 import { registerServiceWorker } from "./lib/registerServiceWorker";
 
+initNavSkin();
 initTilt3D();
 initInteractivity();
 
