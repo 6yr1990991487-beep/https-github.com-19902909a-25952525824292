@@ -426,8 +426,9 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 z-0 border border-white/10 bg-[rgba(6,12,22,0.34)] backdrop-blur-[6px]" />
             <div className="relative">
               {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus — placée AU-DESSUS des boutons */}
+              <div className="portal-hero-coffre mx-auto mb-6 w-[36%] max-w-sm" data-testid="home-platforms-glass-coffre">
               <div
-                className={`glass3d-panel portal-hero-fx portal-hero-fx-${heroFxVariant} relative mx-auto mb-6 w-[60%] max-w-xl overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video`}
+                className={`glass3d-panel portal-hero-stage portal-hero-fx-${heroFxVariant} relative w-full overflow-hidden rounded-[1.25rem] border border-white/20 aspect-video`}
                 data-testid="home-platforms-glass-video-zone"
               >
                 <video
@@ -455,6 +456,7 @@ export default function RootLandingPage() {
                   data-bg-video
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.10)] backdrop-blur-[1px]" />
+              </div>
               </div>
 
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="home-platforms-pill-row">
