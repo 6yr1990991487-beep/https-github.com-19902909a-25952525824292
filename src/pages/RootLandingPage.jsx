@@ -499,7 +499,8 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="absolute top-2 left-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="absolute top-2 left-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
+                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
@@ -510,7 +511,8 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
+                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
