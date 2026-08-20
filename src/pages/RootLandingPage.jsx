@@ -530,7 +530,7 @@ export default function RootLandingPage() {
                                     muted={!previewSoundEnabled}
                                     autoPlay
                                     delay={120}
-                                    className="h-full w-full"
+                                    className="h-full w-full trailer-no-theme"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
                                   >
                                     <div className="hero-premium-lower-thumb-overlay" />

@@ -5108,3 +5108,38 @@ html[data-nav-carousel] .quicknav-floating a:hover {
 @media (prefers-reduced-motion: reduce) {
   .portal-hero-stage { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
+
+/* Exclusion du thème sur les lecteurs de trailers (page portail) :
+   aucun reflet, halo ou teinte issus de la couleur de thème. */
+.trailer-no-theme,
+.trailer-no-theme * {
+  --site-tint: none;
+  --theme-glow: none;
+  --theme-glow-2: none;
+}
+
+.trailer-no-theme {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 30px -18px rgba(0, 0, 0, 0.8) !important;
+  filter: none !important;
+}
+
+.trailer-no-theme::before,
+.trailer-no-theme::after {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.trailer-no-theme iframe,
+.trailer-no-theme img,
+.trailer-no-theme video {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+.hero-premium-lower-thumb-shell:has(.trailer-no-theme)::after {
+  background: linear-gradient(118deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 12%, rgba(255,255,255,0) 26%) !important;
+}
