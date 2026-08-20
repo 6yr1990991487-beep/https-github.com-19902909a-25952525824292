@@ -8,7 +8,7 @@ import MiniCatalogOrb from "@/components/MiniCatalogOrb";
 import AnimeMomentsPresentation from "@/components/AnimeMomentsPresentation";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import crystalCity from "@/assets/crystal-city.jpg.asset.json";
-import shortBanner from "@/assets/short-banner.mp4.asset.json";
+import animeMomentsTop from "@/assets/anime-moments-top-v15.mp4.asset.json";
 
 const ANIME_MOMENTS_CAPTURE_VIDEO = "/catalogue-banner.mp4";
 
@@ -268,11 +268,11 @@ const Index = () => {
         <div className="relative w-full pt-6 lg:pt-8">
           <div className="container mx-auto px-4 lg:px-8 mb-4">
             <div
-              className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-black"
+              className="mx-auto max-w-[854px] overflow-hidden rounded-[1.5rem] border border-white/10 bg-black"
               style={{ aspectRatio: "854 / 480" }}
             >
               <video
-                src={shortBanner.url}
+                src={animeMomentsTop.url}
                 className="h-full w-full object-cover"
                 autoPlay
                 muted
@@ -282,27 +282,6 @@ const Index = () => {
                 aria-label="Bannière vidéo Anime Moments"
               />
             </div>
-          </div>
-          <div className="relative w-full">
-            <HeroCarousel captureVideo={ANIME_MOMENTS_CAPTURE_VIDEO} />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0"
-              style={{
-                border: "1px solid hsl(0 0% 100% / 0.28)",
-                boxShadow:
-                  "inset 0 1px 0 hsl(0 0% 100% / 0.45), inset 0 -1px 0 hsl(0 0% 0% / 0.45), 0 18px 50px -20px hsl(240 20% 5% / 0.55)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-0 h-[2px]"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.75) 50%, transparent 100%)",
-                mixBlendMode: "screen",
-              }}
-            />
           </div>
           <TabletTrailerPlayer />
           <div className="container mx-auto px-4 lg:px-8 mt-3">
