@@ -98,7 +98,6 @@ const megaSections: MegaItem[] = [
 ];
 
 const mobileGroups = [
-  ] as unknown as never;
   {
     id: "priority",
     label: "Accès Rapide",
