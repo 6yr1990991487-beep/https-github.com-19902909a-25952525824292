@@ -530,19 +530,27 @@ export default function RootLandingPage() {
                       aria-hidden="true"
                     />
                     <div
-                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[80vh] overflow-y-auto rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem" }}
+                      data-version-panel="true"
+                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[min(80vh,32rem)] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem", touchAction: "none" }}
                     >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
+                      <div
+                        className="flex cursor-grab select-none flex-row items-start justify-between gap-3 active:cursor-grabbing"
+                        onPointerDown={startPanelDrag}
+                        onPointerMove={movePanelDrag}
+                        onPointerUp={endPanelDrag}
+                        onPointerCancel={endPanelDrag}
+                        style={{ touchAction: "none" }}
+                      >
+                        <div className="min-w-0">
                           <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
-                          <p className="mt-1 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
+                          <p className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-2">
                           <button
                             type="button"
                             onClick={togglePreviewSound}
-                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-3 text-xs uppercase tracking-[0.24em] text-white/80 hover:text-white"
+                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-2 text-[10px] uppercase tracking-[0.18em] text-white/80 hover:text-white"
                             aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
                           >
                             {previewSoundEnabled ? "Son ON" : "Son OFF"}
