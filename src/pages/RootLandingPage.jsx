@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowRight, Compass, Film, Newspaper, Play, Pause, ShoppingBag, Star, Volume2, VolumeX, X, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { API_BASE as API } from "@/lib/apiBase";
 import { SEO_NEWS } from "@/data/seoNews";
 import { PageShell } from "@/components/PageShell";
@@ -425,9 +426,14 @@ export default function RootLandingPage() {
     event.preventDefault();
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
-    const panelWidth = 320;
-    const left = Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
-    const top = Math.max(rect.top, 96);
+    const isNarrow = window.innerWidth < 640;
+    const panelWidth = isNarrow ? Math.min(340, window.innerWidth - 24) : 320;
+    const left = isNarrow
+      ? Math.max(12, (window.innerWidth - panelWidth) / 2)
+      : Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
+    const top = isNarrow
+      ? Math.max(72, Math.min(rect.bottom + 12, window.innerHeight - 320))
+      : Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
       openInstanceId: instanceId,
@@ -631,22 +637,24 @@ export default function RootLandingPage() {
 
                               <button
                                 type="button"
+                                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="absolute top-2 left-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
+                                className="absolute top-2 left-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
-                                {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4"/> : <Pause className="relative h-4 w-4" />}
+                                {pausedPreviewMap[`${item.id}-${rowIndex}-${index}`] ? <Play className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]"/> : <Pause className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]" />}
                               </button>
 
                               <button
                                 type="button"
+                                onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-transparent p-2 text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/20 lg:inline-flex"
+                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
-                                <Film className="relative h-4 w-4 opacity-95" />
+                                <Film className="relative h-4 w-4 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.55)]" />
                               </button>
                             </div>
                           ))}
@@ -654,10 +662,16 @@ export default function RootLandingPage() {
                       </div>
                     ))}
                   </div>
-                  {versionPanelState.openInstanceId && (
+                  {versionPanelState.openInstanceId && typeof document !== "undefined" && createPortal(
+                    <>
                     <div
-                      className="fixed z-50 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.08)] p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft ? undefined : "1.5rem", top: versionPanelState.panelTop ?? "18rem", minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
+                      className="fixed inset-0 z-[998] bg-black/40 backdrop-blur-[2px]"
+                      onClick={closeVersionPanel}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[80vh] overflow-y-auto rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem" }}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
@@ -721,6 +735,8 @@ export default function RootLandingPage() {
                         </button>
                       </div>
                     </div>
+                    </>,
+                    document.body,
                   )}
                 </>
               )}
