@@ -83,7 +83,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "prebuild": "bash ../scripts/write-env-from-secrets.sh && npm run seo:all",
+    "prebuild": "node scripts/prebuild.mjs",
     "build": "DISABLE_ESLINT_PLUGIN=true ESLINT_NO_DEV_ERRORS=true craco build",
     "test": "craco test",
     "seo:generate": "node scripts/seo-generate-feeds.mjs",
