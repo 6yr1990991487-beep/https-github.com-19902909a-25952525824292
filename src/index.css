@@ -4914,3 +4914,87 @@ html[data-nav-carousel] .quicknav-floating a:hover {
 @media (prefers-reduced-motion: reduce) {
   html[data-nav-neon] .nav-theme-shell::after { animation: none !important; }
 }
+
+/* ================================================================
+   Parité mobile : boutons 3D + néon sous les boutons identiques PC
+   ================================================================ */
+.nav-theme-chip {
+  position: relative;
+}
+.nav-theme-chip::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -5px;
+  height: 3px;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  background: linear-gradient(90deg,
+    transparent,
+    color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 90%, white 10%),
+    color-mix(in srgb, var(--nav-skin-accent-2, var(--nav-theme-accent-2, #22d3ee)) 90%, white 10%),
+    transparent);
+  filter: blur(0.4px)
+    drop-shadow(0 0 8px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 75%, transparent));
+}
+.nav-theme-chip:hover::after,
+.nav-theme-chip:focus-visible::after,
+.nav-theme-chip:active::after,
+.nav-theme-chip-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+  animation: nav-chip-neon 2.2s ease-in-out infinite;
+}
+@keyframes nav-chip-neon {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Les éléments du menu mobile reçoivent le même verre 3D épais que le PC */
+@media (max-width: 768px), (pointer: coarse) {
+  .mnav-item,
+  a.mnav-section,
+  .quicknav-floating a {
+    transform-style: preserve-3d;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 30%, transparent),
+      0 0 16px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 22%, transparent),
+      0 14px 30px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  }
+  .mnav-item:active,
+  a.mnav-section:active,
+  .quicknav-floating a:active,
+  .mnav-item-active {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 58%, transparent),
+      0 0 26px color-mix(in srgb, var(--nav-skin-accent-2, var(--nav-theme-accent-2, #22d3ee)) 45%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+  }
+}
+
+/* Emoji / icônes 3D animés */
+.nav-emoji-3d {
+  display: inline-flex;
+  transform-style: preserve-3d;
+  animation: nav-emoji-spin 6s ease-in-out infinite;
+  filter:
+    drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--nav-skin-accent, var(--nav-theme-accent, #00ff9d)) 60%, transparent));
+  will-change: transform;
+}
+@keyframes nav-emoji-spin {
+  0%   { transform: perspective(500px) rotateY(0deg) translateZ(0) scale(1); }
+  35%  { transform: perspective(500px) rotateY(180deg) translateZ(8px) scale(1.12); }
+  70%  { transform: perspective(500px) rotateY(360deg) translateZ(0) scale(1); }
+  85%  { transform: perspective(500px) rotateY(360deg) rotateX(14deg) scale(1.06); }
+  100% { transform: perspective(500px) rotateY(360deg) rotateX(0deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-emoji-3d { animation: none; }
+  .nav-theme-chip::after { animation: none !important; }
+}
