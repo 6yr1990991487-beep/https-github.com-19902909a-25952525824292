@@ -367,6 +367,38 @@ export default function RootLandingPage() {
     setPausedPreviewMap((prev) => ({ ...prev, [instanceId]: !prev[instanceId] }));
   }, []);
 
+  const panelDragRef = useRef(null);
+  const startPanelDrag = useCallback((event) => {
+    if (event.target.closest("button")) return;
+    const panel = event.currentTarget.closest("[data-version-panel]");
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    panelDragRef.current = {
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* noop */ }
+  }, []);
+  const movePanelDrag = useCallback((event) => {
+    const drag = panelDragRef.current;
+    if (!drag) return;
+    event.preventDefault();
+    const left = Math.min(
+      Math.max(8, event.clientX - drag.offsetX),
+      Math.max(8, window.innerWidth - drag.width - 8),
+    );
+    const top = Math.min(
+      Math.max(8, event.clientY - drag.offsetY),
+      Math.max(8, window.innerHeight - Math.min(drag.height, window.innerHeight - 16) - 8),
+    );
+    setVersionPanelState((prev) => ({ ...prev, panelLeft: left, panelTop: top }));
+  }, []);
+  const endPanelDrag = useCallback(() => {
+    panelDragRef.current = null;
+  }, []);
+
   const togglePreviewSound = useCallback(() => {
     setPreviewSoundEnabled((value) => !value);
   }, []);
