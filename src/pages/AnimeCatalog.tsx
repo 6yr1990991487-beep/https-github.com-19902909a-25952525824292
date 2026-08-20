@@ -873,20 +873,42 @@ export default function AnimeCatalog() {
   // toggleFavorite is now defined at line 137 using authToggleFavorite from useAuth context
   // Removed duplicate declaration to fix compilation error
 
+  // Sélectionne le prochain favori jamais joué durant ce cycle ; quand tous
+  // ont été vus, le cycle repart proprement à zéro (pas de doublon consécutif).
+  const pickNextUnplayed = (currentId: number | null): Media | null => {
+    if (!playerQueue.length) return null;
+    const currentIndex = playerQueue.findIndex((media) => media.id === currentId);
+    const ordered = playerQueue
+      .slice(currentIndex + 1)
+      .concat(playerQueue.slice(0, Math.max(currentIndex, 0)));
+    const candidates = ordered.length ? ordered : playerQueue;
+    const next = candidates.find(
+      (media) => media.id !== currentId && !playedQueueRef.current.has(media.id),
+    );
+    if (next) return next;
+    playedQueueRef.current = new Set(currentId != null ? [currentId] : []);
+    return candidates.find((media) => media.id !== currentId) ?? candidates[0] ?? null;
+  };
+
+  const goToQueueItem = (media: Media | null) => {
+    if (!media) return;
+    playedQueueRef.current.add(media.id);
+    suggestedHistoryRef.current.add(media.id);
+    activatePlayer(media, { unlockSound: true });
+  };
+
   const handlePrevious = () => {
     unlockSound();
     if (!playerQueue.length) return;
     const currentIndex = playerQueue.findIndex((media) => media.id === activePlayerId);
     const nextIndex = currentIndex <= 0 ? playerQueue.length - 1 : currentIndex - 1;
-    activatePlayer(playerQueue[nextIndex], { unlockSound: true });
+    goToQueueItem(playerQueue[nextIndex]);
   };
 
   const handleNext = () => {
     unlockSound();
     if (!playerQueue.length) return;
-    const currentIndex = playerQueue.findIndex((media) => media.id === activePlayerId);
-    const nextIndex = currentIndex === -1 || currentIndex === playerQueue.length - 1 ? 0 : currentIndex + 1;
-    activatePlayer(playerQueue[nextIndex], { unlockSound: true });
+    goToQueueItem(pickNextUnplayed(activePlayerId));
   };
 
   const togglePlayback = () => {
