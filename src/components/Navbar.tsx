@@ -28,7 +28,6 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -473,7 +472,7 @@ export const Navbar = () => {
       </header>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="mobile-sheet-panel mnav-slim w-[min(78vw,292px)] border-none bg-transparent p-1.5 shadow-none sm:p-2 overflow-hidden" data-testid="mobile-nav-sheet">
+        <SheetContent side="right" className="mobile-sheet-panel mnav-slim mnav-drawer w-[min(88vw,368px)] border-none bg-transparent p-1.5 shadow-none sm:p-2 overflow-hidden" data-testid="mobile-nav-sheet">
           <div className="mnav-backdrop absolute inset-0 -z-10" />
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation mobile Lovanet</SheetTitle>
