@@ -456,10 +456,19 @@ export default function RootLandingPage() {
               {catalogPreviewRows.some((row) => row.length > 0) && (
                 <>
                   <div
-                    className="hero-premium-lower-marquee mt-6"
+                    className="hero-premium-lower-marquee relative mt-6"
                     data-locked-layout={TRAILER_BANNER_LAYOUT}
                     data-testid="home-platforms-dynamic-banner-grid"
                   >
+                    <button
+                      type="button"
+                      onClick={togglePreviewSound}
+                      aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+                      className="absolute right-3 top-3 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white shadow-[0_14px_32px_-14px_rgba(0,0,0,0.7)] backdrop-blur-xl transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                      data-testid="home-platforms-sound-toggle"
+                    >
+                      {previewSoundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                    </button>
                     {catalogPreviewRows.map((row, rowIndex) => (
                       <div key={`catalog-row-${rowIndex}`} className="hero-premium-lower-row">
                         <div className={`hero-premium-lower-track ${rowIndex % 2 === 1 ? "hero-premium-lower-track-reverse" : ""}`}>
@@ -617,18 +626,6 @@ export default function RootLandingPage() {
 
       </div>
 
-      {typeof document !== "undefined" &&
-        createPortal(
-          <button
-            type="button"
-            onClick={togglePreviewSound}
-            aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
-            className="glass3d-btn fixed bottom-24 right-4 z-[9998] inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/35 bg-white/10 text-white shadow-[0_18px_40px_-18px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-transform hover:scale-105 sm:bottom-28 sm:right-6"
-          >
-            {previewSoundEnabled ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
-          </button>,
-          document.body,
-        )}
     </PageShell>
   );
 }
