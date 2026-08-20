@@ -422,54 +422,9 @@ export default function RootLandingPage() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,14,26,0.1)_0%,rgba(6,14,26,0.85)_100%)]" />
             <div className="pointer-events-none absolute inset-0 z-0 border border-white/10 bg-[rgba(6,12,22,0.34)] backdrop-blur-[6px]" />
             <div className="relative">
-              <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div className="h-10 w-36 rounded-full border border-white/10 bg-white/[0.04] shadow-[0_0_24px_rgba(34,211,238,0.1)] backdrop-blur-md" data-testid="home-platforms-heading-placeholder" />
-                <div className="flex items-center gap-2">
-                  <Button asChild variant="glass" size="sm" className="h-10 rounded-full px-4 text-xs font-semibold text-white backdrop-blur-md border border-white/20 bg-black/30 hover:bg-black/40" data-testid="home-platforms-button">
-                    <Link to="/anime-catalog">
-                      <span className="inline-flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-500">
-                        Catalogue
-                        <ArrowRight className="h-3.5 w-3.5 neon-rgb-icon" />
-                      </span>
-                    </Link>
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={togglePreviewSound}
-                    aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
-                    className="glass3d-btn inline-flex h-8 w-8 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
-                    data-testid="home-platforms-sound-toggle"
-                  >
-                    {previewSoundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-
-              <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="home-platforms-pill-row">
-                {platformEntries.map((card, index) => {
-                  const Icon = card.action.icon;
-                  return (
-                    <Link key={`${card.testId}-${card.to}-${index}`} to={card.to} className="group block min-w-0" data-testid={card.testId}>
-                      <div className="portal-platform-chip group relative overflow-hidden rounded-full border border-white/15 backdrop-blur-md p-2 sm:p-2.5 flex items-center gap-2.5 transition-all duration-300 hover:border-white/30 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(34,211,238,0.3)]">
-                        <motion.div 
-                          whileHover={{ rotateY: 180, rotateZ: 10, scale: 1.2 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 10 }}
-                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/40"
-                          style={{ perspective: "500px", transformStyle: "preserve-3d" }}
-                        >
-                          <Icon className="h-3.5 w-3.5 text-white group-hover:text-fuchsia-300 transition-colors drop-shadow-[0_0_5px_currentColor]" />
-                        </motion.div>
-                        {card.title && <p className="text-[11px] sm:text-xs font-semibold text-white truncate">{card.title}</p>}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus */}
+              {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus — placée AU-DESSUS des boutons */}
               <div
-                className="glass3d-panel relative mb-4 w-full overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video"
+                className="glass3d-panel relative mx-auto mb-6 w-full max-w-3xl overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video"
                 data-testid="home-platforms-glass-video-zone"
               >
                 <video
@@ -498,6 +453,52 @@ export default function RootLandingPage() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.10)] backdrop-blur-[1px]" />
               </div>
+
+              <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="home-platforms-pill-row">
+                {platformEntries.map((card, index) => {
+                  const Icon = card.action.icon;
+                  return (
+                    <Link key={`${card.testId}-${card.to}-${index}`} to={card.to} className="group block min-w-0" data-testid={card.testId}>
+                      <div className="portal-platform-chip group relative overflow-hidden rounded-full border border-white/15 backdrop-blur-md p-2 sm:p-2.5 flex items-center gap-2.5 transition-all duration-300 hover:border-white/30 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-12px_rgba(34,211,238,0.3)]">
+                        <motion.div 
+                          whileHover={{ rotateY: 180, rotateZ: 10, scale: 1.2 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/40"
+                          style={{ perspective: "500px", transformStyle: "preserve-3d" }}
+                        >
+                          <Icon className="h-3.5 w-3.5 text-white group-hover:text-fuchsia-300 transition-colors drop-shadow-[0_0_5px_currentColor]" />
+                        </motion.div>
+                        {card.title && <p className="text-[11px] sm:text-xs font-semibold text-white truncate">{card.title}</p>}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* Séparateur épais + boutons Catalogue & Son centrés en dessous */}
+              <div className="mt-5 flex flex-col items-center gap-5">
+                <div className="h-1.5 w-full max-w-md rounded-full bg-[linear-gradient(90deg,transparent,var(--theme-accent,#00ff9d),transparent)] opacity-60" />
+                <div className="flex items-center justify-center gap-3">
+                  <Button asChild variant="glass" size="sm" className="h-11 rounded-full px-6 text-sm font-semibold text-white backdrop-blur-md border border-white/20 bg-white/[0.06] hover:bg-white/[0.12]" data-testid="home-platforms-button">
+                    <Link to="/anime-catalog">
+                      <span className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
+                        Catalogue
+                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                      </span>
+                    </Link>
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={togglePreviewSound}
+                    aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
+                    className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    data-testid="home-platforms-sound-toggle"
+                  >
+                    {previewSoundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
 
               {catalogPreviewRows.some((row) => row.length > 0) && (
                 <>
