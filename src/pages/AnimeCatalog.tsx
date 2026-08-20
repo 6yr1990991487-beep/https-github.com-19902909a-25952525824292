@@ -575,7 +575,25 @@ export default function AnimeCatalog() {
     return list;
   }, [debouncedSearch, filterGenre, filterStatus, gridItems, minScore, minYear, sortBy]);
 
-  const videoSuggestionItems = useMemo(() => filteredSorted.filter((media) => hasPlayableVideo(media)).slice(0, 10), [filteredSorted]);
+  // Historique des titres déjà suggérés/joués : la sélection ne doit jamais
+  // reproposer les mêmes favoris tant que le catalogue en propose d'autres.
+  const suggestedHistoryRef = useRef<Set<number>>(new Set());
+  const playedQueueRef = useRef<Set<number>>(new Set());
+
+  const videoSuggestionItems = useMemo(() => {
+    const playable = filteredSorted.filter((media) => hasPlayableVideo(media));
+    const seen = new Set<number>();
+    const unique = playable.filter((media) => {
+      if (seen.has(media.id)) return false;
+      seen.add(media.id);
+      return true;
+    });
+    const fresh = unique.filter(
+      (media) => !favoriteIds.includes(media.id) && !suggestedHistoryRef.current.has(media.id),
+    );
+    const pool = fresh.length ? fresh : unique.filter((media) => !favoriteIds.includes(media.id));
+    return (pool.length ? pool : unique).slice(0, 10);
+  }, [favoriteIds, filteredSorted]);
   const promptPreviewItems = useMemo(() => {
     const source = videoSuggestionItems.length ? videoSuggestionItems : allMedia.filter((media) => hasPlayableVideo(media));
     return source.slice(0, 10);
