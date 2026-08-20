@@ -100,6 +100,10 @@ export const HoverPreview = ({
   }, [active]);
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
+  if (!active && frameReady) {
+    // reset le fondu quand l'apercu s'arrete
+    queueMicrotask(() => setFrameReady(false));
+  }
   const iframeWrap = vertical ? "absolute inset-0 overflow-hidden pointer-events-none" : "absolute inset-0 pointer-events-none";
 
   return (
