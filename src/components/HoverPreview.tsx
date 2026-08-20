@@ -124,31 +124,25 @@ export const HoverPreview = ({
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         touchTriggeredRef.current = true;
-        if (timer.current) window.clearTimeout(timer.current);
-        timer.current = window.setTimeout(() => setActive(true), delay);
-      }}
-      onTouchEnd={() => {
-        if (!heldRef.current) {
+        // Tap = bascule lecture : on verrouille pour que le trailer aille au bout.
+        if (heldRef.current) {
+          releaseHold();
           if (timer.current) {
             window.clearTimeout(timer.current);
             timer.current = null;
           }
-          if (!retainOnTouchRelease) {
-            setActive(false);
-          }
+          setActive(false);
+          return;
         }
+        if (timer.current) window.clearTimeout(timer.current);
+        setActive(true);
+        hold();
+      }}
+      onTouchEnd={() => {
+        // La lecture continue apres le relachement du doigt.
         touchTriggeredRef.current = false;
       }}
       onTouchCancel={() => {
-        if (!heldRef.current) {
-          if (timer.current) {
-            window.clearTimeout(timer.current);
-            timer.current = null;
-          }
-          if (!retainOnTouchRelease) {
-            setActive(false);
-          }
-        }
         touchTriggeredRef.current = false;
       }}
     >
