@@ -80,7 +80,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="theme-text-muted flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+        <div className="theme-text-muted relative z-10 flex flex-col gap-3 px-5 py-4 text-xs sm:px-7 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <span className="neon-rgb-text-mini" data-testid="footer-copyright">
             © {new Date().getFullYear()} Lovanet
           </span>
