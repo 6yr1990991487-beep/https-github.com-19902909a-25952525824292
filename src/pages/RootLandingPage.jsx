@@ -426,9 +426,14 @@ export default function RootLandingPage() {
     event.preventDefault();
     event.stopPropagation();
     const rect = event.currentTarget.getBoundingClientRect();
-    const panelWidth = 320;
-    const left = Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
-    const top = Math.max(rect.top, 96);
+    const isNarrow = window.innerWidth < 640;
+    const panelWidth = isNarrow ? Math.min(340, window.innerWidth - 24) : 320;
+    const left = isNarrow
+      ? Math.max(12, (window.innerWidth - panelWidth) / 2)
+      : Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
+    const top = isNarrow
+      ? Math.max(72, Math.min(rect.bottom + 12, window.innerHeight - 320))
+      : Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
       openInstanceId: instanceId,
