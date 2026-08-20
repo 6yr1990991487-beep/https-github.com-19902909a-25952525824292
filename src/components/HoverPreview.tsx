@@ -90,12 +90,10 @@ export const HoverPreview = ({
     setActive(false);
   };
 
+  // La lecture automatique ne verrouille pas la rotation globale :
+  // seul un clic / tap utilisateur pose le verrou (voir onClick / onTouch).
   useEffect(() => {
-    if (!active) return undefined;
-    hold();
-    return () => {
-      if (!heldRef.current) releaseHold();
-    };
+    if (!active && heldRef.current) releaseHold();
   }, [active]);
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
