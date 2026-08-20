@@ -489,6 +489,7 @@ export default function RootLandingPage() {
                                     muted={!previewSoundEnabled}
                                     delay={120}
                                     autoPlay={false}
+                                    retainAfterInteraction
                                     className="h-full w-full"
                                     onImgError={createImageFallbackHandler(item.id, item.image)}
                                   >
