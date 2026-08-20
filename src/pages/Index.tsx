@@ -288,35 +288,6 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-4 lg:px-8 py-16">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <h2 className="font-display text-2xl sm:text-3xl font-bold">Nouveautés de la magasin anime</h2>
-          <Link to="/shop" className="text-sm text-primary hover:underline whitespace-nowrap">Magasin →</Link>
-        </div>
-
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-          {SHOP_PRODUCTS.slice(0, 24).map((p) => (
-            <Link
-              key={p.id}
-              to="/shop"
-              className="rgb-card group rounded-xl overflow-hidden bg-card border border-border transition-all hover:-translate-y-0.5"
-            >
-              <div className="rgb-frame aspect-square overflow-hidden">
-                <div className="rgb-art w-full h-full group-hover:scale-110 transition-transform duration-700">
-                  <ProductArtwork seed={p.id} category={p.category} label={p.name} />
-                </div>
-              </div>
-              <div className="p-2">
-                <div className="font-display font-bold text-[11px] leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                  {p.name}
-                </div>
-                <div className="rgb-price text-[11px] font-bold mt-0.5">{p.price} €</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
     </PageShell>
   );
 };
