@@ -166,44 +166,6 @@ export default function RootLandingPage() {
   const trailerLocked = useTrailerPlaybackLock();
   const [catalogPreviewPool, setCatalogPreviewPool] = useState([]);
   const [catalogRotationIndex, setCatalogRotationIndex] = useState(0);
-  const bannerVideoRef = useRef(null);
-  const bannerShellRef = useRef(null);
-  const portalAudio = usePortalAudio({ storageKey: "lovanet.portal.audio.enabled" });
-
-  const [homeBanners, setHomeBanners] = useState(loadHomeBanners);
-  const dragIndexRef = useRef(null);
-
-  const heroBanner = homeBanners[0];
-  const cardBanners = [homeBanners[1], homeBanners[2]];
-
-  const persistBanners = (next) => {
-    setHomeBanners(next);
-    try {
-      localStorage.setItem(
-        BANNER_STATE_KEY,
-        JSON.stringify(next.map((b) => ({ id: b.id, visible: b.visible !== false })))
-      );
-    } catch (e) {
-      /* ignore */
-    }
-  };
-  const handleBannerDragStart = (i) => {
-    dragIndexRef.current = i;
-  };
-  const handleBannerDrop = (i) => {
-    const from = dragIndexRef.current;
-    dragIndexRef.current = null;
-    if (from === null || from === i) return;
-    const next = [...homeBanners];
-    const [moved] = next.splice(from, 1);
-    next.splice(i, 0, moved);
-    persistBanners(next);
-  };
-  const toggleBannerVisible = (id) => {
-    persistBanners(
-      homeBanners.map((b) => (b.id === id ? { ...b, visible: !(b.visible !== false) } : b))
-    );
-  };
 
   useEffect(() => {
     const id = window.setInterval(() => {
