@@ -420,31 +420,6 @@ export default function RootLandingPage() {
         <section className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12 relative" data-testid="home-platforms-section">
           <div className={`${luxurySection} home-platforms-neutral-shell p-4 sm:p-6 lg:p-8 relative overflow-hidden ring-1 ring-white/10 z-20`}>
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,14,26,0.1)_0%,rgba(6,14,26,0.85)_100%)]" />
-            {/* Couches vidéo verre translucide : vidéo 2 en arrière-plan, vidéo 1 par-dessus */}
-            <video
-              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-25"
-              src={portalGlassVideo2.url}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-              data-testid="home-platforms-bg-video-2"
-              data-bg-video
-            />
-            <video
-              className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-40 mix-blend-screen"
-              src={portalGlassVideo1.url}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-hidden="true"
-              data-testid="home-platforms-bg-video-1"
-              data-bg-video
-            />
             <div className="pointer-events-none absolute inset-0 z-0 border border-white/10 bg-[rgba(6,12,22,0.34)] backdrop-blur-[6px]" />
             <div className="relative">
               <div className="relative mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -490,6 +465,38 @@ export default function RootLandingPage() {
                     </Link>
                   );
                 })}
+              </div>
+
+              {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus */}
+              <div
+                className="glass3d-panel relative mb-4 h-32 w-full overflow-hidden rounded-[1.5rem] border border-white/20 sm:h-40 lg:h-44"
+                data-testid="home-platforms-glass-video-zone"
+              >
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35"
+                  src={portalGlassVideo2.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-2"
+                  data-bg-video
+                />
+                <video
+                  className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55 mix-blend-screen"
+                  src={portalGlassVideo1.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                  data-testid="home-platforms-bg-video-1"
+                  data-bg-video
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.18)] backdrop-blur-[3px]" />
               </div>
 
               {catalogPreviewRows.some((row) => row.length > 0) && (
