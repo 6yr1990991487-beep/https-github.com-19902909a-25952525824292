@@ -1328,9 +1328,12 @@ export default function AnimeCatalog() {
                               if (state === 0) {
                                 setIsPlaying(false);
                                 if (playerQueue.length > 1) {
-                                  const currentIndex = playerQueue.findIndex((media) => media.id === activePlayer.id);
-                                  const nextIndex = currentIndex === -1 || currentIndex === playerQueue.length - 1 ? 0 : currentIndex + 1;
-                                  activatePlayer(playerQueue[nextIndex], { unlockSound: soundUnlocked });
+                                  const next = pickNextUnplayed(activePlayer.id);
+                                  if (next) {
+                                    playedQueueRef.current.add(next.id);
+                                    suggestedHistoryRef.current.add(next.id);
+                                    activatePlayer(next, { unlockSound: soundUnlocked });
+                                  }
                                 }
                               }
                             }}
