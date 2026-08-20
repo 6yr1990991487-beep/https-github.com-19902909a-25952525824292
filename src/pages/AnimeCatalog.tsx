@@ -952,6 +952,7 @@ export default function AnimeCatalog() {
     const ids = videoSuggestionItems.map((media) => media.id);
     // Add each ID to favorites if not already present
     ids.forEach(id => {
+      suggestedHistoryRef.current.add(id);
       if (!favoriteIds.includes(id)) {
         authToggleFavorite(id);
       }
