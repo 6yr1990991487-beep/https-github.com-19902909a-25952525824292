@@ -12,7 +12,7 @@ import { hydrateYouTubeAvailability } from "@/lib/youtubeAvailability";
 import { useTrailerPlaybackLock } from "@/lib/trailerPlaybackLock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import heroTopBannerVideo from "@/assets/hero-top-banner.mp4.asset.json";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
 import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
