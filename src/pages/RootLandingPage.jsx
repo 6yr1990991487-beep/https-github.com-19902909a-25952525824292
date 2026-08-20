@@ -302,7 +302,7 @@ export default function RootLandingPage() {
       ? Math.max(12, (window.innerWidth - panelWidth) / 2)
       : Math.min(Math.max(rect.right + 16, 16), window.innerWidth - panelWidth - 16);
     const top = isNarrow
-      ? Math.max(72, Math.min(rect.bottom + 12, window.innerHeight - 320))
+      ? Math.max(72, Math.min(rect.bottom + 12, Math.max(72, window.innerHeight - 420)))
       : Math.max(rect.top, 96);
     setVersionPanelState((prev) => ({
       ...prev,
@@ -365,6 +365,38 @@ export default function RootLandingPage() {
 
   const togglePausePreview = useCallback((instanceId) => {
     setPausedPreviewMap((prev) => ({ ...prev, [instanceId]: !prev[instanceId] }));
+  }, []);
+
+  const panelDragRef = useRef(null);
+  const startPanelDrag = useCallback((event) => {
+    if (event.target.closest("button")) return;
+    const panel = event.currentTarget.closest("[data-version-panel]");
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    panelDragRef.current = {
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* noop */ }
+  }, []);
+  const movePanelDrag = useCallback((event) => {
+    const drag = panelDragRef.current;
+    if (!drag) return;
+    event.preventDefault();
+    const left = Math.min(
+      Math.max(8, event.clientX - drag.offsetX),
+      Math.max(8, window.innerWidth - drag.width - 8),
+    );
+    const top = Math.min(
+      Math.max(8, event.clientY - drag.offsetY),
+      Math.max(8, window.innerHeight - Math.min(drag.height, window.innerHeight - 16) - 8),
+    );
+    setVersionPanelState((prev) => ({ ...prev, panelLeft: left, panelTop: top }));
+  }, []);
+  const endPanelDrag = useCallback(() => {
+    panelDragRef.current = null;
   }, []);
 
   const togglePreviewSound = useCallback(() => {
@@ -467,7 +499,8 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="absolute top-2 left-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="absolute top-2 left-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
+                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
@@ -478,7 +511,8 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 bg-white/10 p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
+                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
@@ -498,19 +532,27 @@ export default function RootLandingPage() {
                       aria-hidden="true"
                     />
                     <div
-                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[80vh] overflow-y-auto rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem" }}
+                      data-version-panel="true"
+                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[min(80vh,32rem)] overflow-y-auto overscroll-contain rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem", touchAction: "none" }}
                     >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
+                      <div
+                        className="flex cursor-grab select-none flex-row items-start justify-between gap-3 active:cursor-grabbing"
+                        onPointerDown={startPanelDrag}
+                        onPointerMove={movePanelDrag}
+                        onPointerUp={endPanelDrag}
+                        onPointerCancel={endPanelDrag}
+                        style={{ touchAction: "none" }}
+                      >
+                        <div className="min-w-0">
                           <p className="text-xs uppercase tracking-[0.24em] text-white/60">Version du trailer</p>
-                          <p className="mt-1 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
+                          <p className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white">{versionPanelState.title}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-2">
                           <button
                             type="button"
                             onClick={togglePreviewSound}
-                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-3 text-xs uppercase tracking-[0.24em] text-white/80 hover:text-white"
+                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-2 text-[10px] uppercase tracking-[0.18em] text-white/80 hover:text-white"
                             aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
                           >
                             {previewSoundEnabled ? "Son ON" : "Son OFF"}
