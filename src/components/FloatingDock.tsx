@@ -13,7 +13,7 @@ type Pos = { x: number; y: number };
  * et regroupe les bulles flottantes (réduites).
  */
 export const FloatingDock = ({ children }: { children: ReactNode }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [top, setTop] = useState(0.45);
   const [pos, setPos] = useState<Pos | null>(() => {
     try {
