@@ -656,7 +656,14 @@ export default function AnimeCatalog() {
     return favoriteIds.map((id) => map.get(id)).filter(Boolean) as Media[];
   }, [allMedia, favoriteIds]);
 
-  const playerQueue = useMemo(() => favoriteItems.filter((media) => hasTrailer(media)), [favoriteItems]);
+  const playerQueue = useMemo(() => {
+    const seen = new Set<number>();
+    return favoriteItems.filter((media) => {
+      if (!hasTrailer(media) || seen.has(media.id)) return false;
+      seen.add(media.id);
+      return true;
+    });
+  }, [favoriteItems]);
 
   const activePlayer = useMemo(() => {
     if (activePlayerId == null) return null;
