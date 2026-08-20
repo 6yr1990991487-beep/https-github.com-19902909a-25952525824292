@@ -511,8 +511,7 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(event) => openVersionPanel(event, item, `${item.id}-${rowIndex}-${index}`)}
-                                className="absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
-                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
+                                className="glass3d-btn absolute top-2 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Choisir la version du trailer pour ${item.title}`}
                                 data-testid={`home-platforms-version-button-${item.id}`}
                               >
@@ -523,8 +522,7 @@ export default function RootLandingPage() {
                                 type="button"
                                 onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); togglePausePreview(`${item.id}-${rowIndex}-${index}`); }}
-                                className="absolute top-12 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full border p-2 text-white backdrop-blur-md shadow-[0_6px_18px_-10px_rgba(0,0,0,0.6)] transition focus:outline-none focus:ring-2 focus:ring-white/30"
-                                style={{ background: "rgba(255,255,255,0.12)", backgroundImage: "none", borderColor: "rgba(255,255,255,0.45)", boxShadow: "0 6px 18px -10px rgba(0,0,0,0.6)" }}
+                                className="glass3d-btn absolute top-12 right-2 z-50 inline-flex h-9 w-9 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                                 aria-label={`Mettre en pause/lecture l'aperçu pour ${item.title}`}
                                 data-testid={`home-platforms-pause-button-${item.id}`}
                               >
@@ -564,7 +562,7 @@ export default function RootLandingPage() {
                           <button
                             type="button"
                             onClick={togglePreviewSound}
-                            className="inline-flex h-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 px-2 text-[10px] uppercase tracking-[0.18em] text-white/80 hover:text-white"
+                            className="glass3d-btn inline-flex h-9 items-center justify-center rounded-2xl px-3 text-[10px] uppercase tracking-[0.18em] text-white/90 hover:scale-105"
                             aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
                           >
                             {previewSoundEnabled ? "Son ON" : "Son OFF"}
@@ -572,7 +570,7 @@ export default function RootLandingPage() {
                           <button
                             type="button"
                             onClick={closeVersionPanel}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-white/15 bg-black/40 text-white/80 hover:text-white"
+                            className="glass3d-btn inline-flex h-9 w-9 items-center justify-center rounded-2xl text-white/90 hover:scale-105"
                             aria-label="Fermer le panneau de versions"
                           >
                             <X className="h-4 w-4" />
@@ -594,7 +592,7 @@ export default function RootLandingPage() {
                             key={code}
                             type="button"
                             onClick={() => selectPanelVersion(code)}
-                            className={`w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition ${versionPanelState.selectedVersion === code ? "bg-white/15 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "bg-black/20 text-white/80 hover:bg-white/10"}`}
+                            className={`glass3d-btn w-full rounded-2xl px-3 py-2 text-left text-sm font-semibold transition hover:scale-[1.01] ${versionPanelState.selectedVersion === code ? "bg-white/20 text-white shadow-[0_0_24px_rgba(255,255,255,0.12)]" : "text-white/80 hover:text-white"}`}
                           >
                             {getVersionLabel(code)}
                           </button>
@@ -604,14 +602,14 @@ export default function RootLandingPage() {
                         <button
                           type="button"
                           onClick={applyVersionToTrailer}
-                          className="inline-flex items-center justify-center rounded-2xl bg-fuchsia-500 px-3 py-2 text-sm font-semibold text-white shadow-[0_12px_32px_-16px_rgba(217,70,239,0.45)] hover:bg-fuchsia-400"
+                          className="glass3d-btn inline-flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold text-white hover:scale-105"
                         >
                           Voir cette version
                         </button>
                         <button
                           type="button"
                           onClick={closeVersionPanel}
-                          className="text-xs uppercase tracking-[0.24em] text-white/60 hover:text-white"
+                          className="glass3d-btn text-xs uppercase tracking-[0.24em] text-white/70 hover:text-white"
                         >
                           Fermer
                         </button>
