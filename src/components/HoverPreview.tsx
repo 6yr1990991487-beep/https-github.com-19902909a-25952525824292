@@ -179,6 +179,9 @@ export const HoverPreview = ({
               className="w-full h-full border-0"
             />
           )}
+          {/* Masque fort du logo / titre YouTube */}
+          <span className="absolute bottom-0 right-0 h-[18%] w-[36%] bg-[rgba(6,10,18,0.98)] backdrop-blur-md" />
+          <span className="absolute top-0 left-0 h-[16%] w-full bg-gradient-to-b from-[rgba(6,10,18,0.98)] via-[rgba(6,10,18,0.75)] to-transparent" />
         </div>
       )}
 
