@@ -28,7 +28,6 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -123,6 +122,29 @@ const mobileGroups = [
     border: "border-sky-500/30",
   },
 ];
+
+const ytThumb = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
+/** Miniature de contenu associée à chaque page (affichée à côté du bouton). */
+const ROUTE_THUMBS: Record<string, string> = {
+  "/": ytThumb("bGFUthZjGd4"),
+  "/anime-moments": ytThumb("5Fr9M1GBDBo"),
+  "/tiktok": ytThumb("i0Pz8tmOy8o"),
+  "/chaine-youtube": ytThumb("E6X7VsKuMsM"),
+  "/chaine-youtube/manga": ytThumb("DtEDLCrliHs"),
+  "/prime-video": ytThumb("S0BmS2xG8tg"),
+  "/lecteurs-video": ytThumb("bGFUthZjGd4"),
+  "/anime-countdown": ytThumb("i0Pz8tmOy8o"),
+  "/anime-catalog": ytThumb("E6X7VsKuMsM"),
+  "/ai-hub": ytThumb("5Fr9M1GBDBo"),
+  "/shop": "/products/am-004.svg",
+  "/decouvrir": ytThumb("DtEDLCrliHs"),
+  "/actualites": ytThumb("S0BmS2xG8tg"),
+  "/profile": "/products/am-012.svg",
+  "/contact": "/products/am-020.svg",
+  "/legals": "/products/am-030.svg",
+  "/leaderboard": "/products/am-008.svg",
+};
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -450,7 +472,7 @@ export const Navbar = () => {
       </header>
 
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="mobile-sheet-panel mnav-slim w-[min(78vw,292px)] border-none bg-transparent p-1.5 shadow-none sm:p-2 overflow-hidden" data-testid="mobile-nav-sheet">
+        <SheetContent side="right" className="mobile-sheet-panel mnav-slim mnav-drawer w-[min(88vw,368px)] border-none bg-transparent p-1.5 shadow-none sm:p-2 overflow-hidden" data-testid="mobile-nav-sheet">
           <div className="mnav-backdrop absolute inset-0 -z-10" />
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation mobile Lovanet</SheetTitle>
@@ -549,94 +571,73 @@ export const Navbar = () => {
 
                 <Separator className="bg-white/10" />
 
-                {mobileLayout === "carousel" && (
-                  <div className="space-y-4" data-testid="mobile-nav-carousel">
-                    {mobileGroups.map((group) => (
-                      <div key={`carousel-${group.id}`} className="mnav-section rounded-[1.35rem] px-3 py-3">
-                        <div className="mnav-text mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-widest">
-                          {group.id === "priority" && <Flame className="h-4 w-4 animate-pulse" />}
-                          {group.id === "watch" && <Play className="h-4 w-4" />}
-                          {group.id === "explore" && <Compass className="h-4 w-4" />}
-                          {group.label}
-                        </div>
-                        <DragScroller className="flex gap-2 pb-1">
-                          {group.items.map((item) => {
-                            const active = isActivePath(item.to);
-                            return (
+                {mobileGroups.map((group) => (
+                  <div key={`drawer-${group.id}`} className="mnav-drawer-group rounded-[1.35rem] p-2.5">
+                    <div className="mnav-text mb-2 flex items-center gap-2 px-1 text-[11px] font-black uppercase tracking-[0.18em]">
+                      {group.id === "priority" && <Flame className="h-4 w-4 animate-pulse" />}
+                      {group.id === "watch" && <Play className="h-4 w-4" />}
+                      {group.id === "explore" && <Compass className="h-4 w-4" />}
+                      {group.label}
+                    </div>
+
+                    {mobileLayout === "carousel" ? (
+                      <DragScroller className="flex gap-2.5 pb-1" data-testid="mobile-nav-carousel">
+                        {group.items.map((item) => {
+                          const active = isActivePath(item.to);
+                          return (
+                            <Link
+                              key={`drawer-card-${group.id}-${item.to}`}
+                              to={item.to}
+                              onClick={() => setOpen(false)}
+                              aria-current={active ? "page" : undefined}
+                              className={cn("mnav-drawer-card relative flex w-[132px] shrink-0 flex-col overflow-hidden rounded-2xl", active && "is-active")}
+                              data-testid={`mobile-nav-card-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
+                            >
+                              <span className="mnav-drawer-thumb block h-[74px] w-full overflow-hidden">
+                                <img src={ROUTE_THUMBS[item.to] ?? ROUTE_THUMBS["/"]} alt="" loading="lazy" className="h-full w-full object-cover opacity-70" />
+                              </span>
+                              <span className="flex items-center gap-2 px-2.5 py-2">
+                                <item.icon className="mnav-text h-4 w-4 shrink-0" />
+                                <span className="mnav-text line-clamp-2 text-[11px] font-bold leading-tight">{item.label}</span>
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </DragScroller>
+                    ) : (
+                      <div className="grid gap-2">
+                        {group.items.map((item, idx) => {
+                          const active = isActivePath(item.to);
+                          return (
+                            <motion.div key={`drawer-row-${group.id}-${item.to}`} initial={{ opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.04 }}>
                               <Link
-                                key={`carousel-${group.id}-${item.to}`}
                                 to={item.to}
                                 onClick={() => setOpen(false)}
                                 aria-current={active ? "page" : undefined}
-                                className={cn(
-                                  "mnav-item mnav-text mnav-tile-slim flex min-w-[88px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
-                                  active ? "mnav-item-active nav-theme-chip-active" : "",
-                                )}
+                                className={cn("mnav-drawer-row group relative flex min-h-[58px] items-center gap-3 overflow-hidden rounded-2xl pr-3", active && "is-active")}
+                                data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
                               >
-                                <span className="nav-emoji-3d">
-                                  <item.icon className="mnav-text h-5 w-5" />
+                                <span className="mnav-drawer-thumb block h-[58px] w-[76px] shrink-0 overflow-hidden">
+                                  <img src={ROUTE_THUMBS[item.to] ?? ROUTE_THUMBS["/"]} alt="" loading="lazy" className="h-full w-full object-cover opacity-70" />
                                 </span>
-                                <span className="mnav-text line-clamp-2 text-[11px] font-bold">{item.label}</span>
+                                <span className="inline-flex min-w-0 flex-1 items-center gap-2.5">
+                                  <item.icon className="mnav-text h-5 w-5 shrink-0" />
+                                  <span className="mnav-text line-clamp-1 text-[12px] font-bold">{item.label}</span>
+                                </span>
+                                {active ? (
+                                  <Zap className="mnav-text h-4 w-4 shrink-0 animate-pulse" />
+                                ) : (
+                                  <ChevronRight className="mnav-text h-4 w-4 shrink-0 opacity-60 transition-transform group-hover:translate-x-1" />
+                                )}
                               </Link>
-                            );
-                          })}
-                        </DragScroller>
+                            </motion.div>
+                          );
+                        })}
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
+                ))}
 
-                {mobileLayout === "list" && (
-                <Accordion type="multiple" defaultValue={["priority", "watch"]} className="space-y-4">
-                  {mobileGroups.map((group) => (
-                    <AccordionItem key={group.id} value={group.id} className="mnav-section overflow-hidden rounded-[1.35rem] px-4 py-1 transition-all">
-                      <AccordionTrigger className="mnav-text py-3 text-sm font-black uppercase tracking-widest hover:no-underline">
-                        <span className="flex items-center gap-2">
-                           {group.id === 'priority' && <Flame className="w-4 h-4 animate-pulse" />}
-                           {group.id === 'watch' && <Play className="w-4 h-4" />}
-                           {group.id === 'explore' && <Compass className="w-4 h-4" />}
-                           {group.label}
-                        </span>
-                      </AccordionTrigger>
-                      <AccordionContent className="pb-3">
-                        <div className="grid gap-2 mt-2">
-                          {group.items.map((item, idx) => {
-                            const active = isActivePath(item.to);
-                            return (
-                              <motion.div key={`${group.id}-${item.to}`} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}>
-                                <Link
-                                  to={item.to}
-                                  onClick={() => setOpen(false)}
-                                  aria-current={active ? "page" : undefined}
-                                  className={cn(
-                                    "group relative flex min-h-[50px] items-center justify-between rounded-xl px-4 py-3 text-sm transition-all hover:scale-[1.02] border",
-                                    "mnav-item mnav-text mnav-tile-slim",
-                                    active ? "mnav-item-active nav-theme-chip-active" : ""
-                                  )}
-                                  data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
-                                >
-                                  <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity rounded-xl bg-gradient-to-r", group.gradient)} />
-                                  <span className="inline-flex items-center gap-3 relative z-10">
-                                    <motion.div className="nav-emoji-3d" whileHover={{ rotate: 15, scale: 1.2 }}>
-                                        <item.icon className={cn("mnav-text h-5 w-5", active ? "" : "opacity-80 group-hover:opacity-100")} />
-                                    </motion.div>
-                                    <span className="mnav-text font-bold">{item.label}</span>
-                                  </span>
-                                  {active ? (
-                                     <Zap className="mnav-text h-4 w-4 animate-pulse relative z-10" />
-                                  ) : (
-                                     <ChevronRight className="mnav-text h-4 w-4 opacity-60 group-hover:opacity-100 transition-transform group-hover:translate-x-1 relative z-10" />
-                                  )}
-                                </Link>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-                )}
 
               </div>
             </ScrollArea>
