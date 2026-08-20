@@ -46,6 +46,7 @@ export const HoverPreview = ({
   onImgError,
 }: Props) => {
   const [active, setActive] = useState(autoPlay);
+  const [frameReady, setFrameReady] = useState(false);
   const [retainOnTouchReleaseState] = useState(Boolean(autoPlay));
   const retainOnTouchRelease = retainOnTouchReleaseState ?? autoPlay;
   const knownUnavailable = getVideoStatusSync(videoId);
@@ -161,7 +162,7 @@ export const HoverPreview = ({
         decoding="async"
         onLoad={onImgLoad}
         onError={onImgError}
-        className={`w-full h-full object-cover transition-transform duration-500 ${active ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
+        className={`w-full h-full object-cover transition-all duration-500 ${active && frameReady ? "scale-[1.02] opacity-0" : "opacity-100 group-hover:scale-[1.02]"}`}
       />
 
       {active && (
