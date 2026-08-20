@@ -460,41 +460,41 @@ export const Navbar = () => {
             <div className="mnav-section flex items-center justify-between gap-2 px-3 py-3">
               {renderLogo()}
               <div className="flex items-center gap-2">
-                <Badge className="rounded-full border border-white/20 bg-primary/20 px-3 py-1 text-[11px] font-black text-primary animate-pulse">
-                  {count} panier
+                <Badge className="rounded-full border border-white/25 bg-white/10 px-2 py-0.5 text-[10px] font-black text-white">
+                  {count}
                 </Badge>
                 <button
                   type="button"
                   onClick={() => setMobileLayout((v) => (v === "carousel" ? "list" : "carousel"))}
-                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  className="mnav-chip-slim inline-flex h-9 w-9 items-center justify-center rounded-full transition-all"
                   aria-label={mobileLayout === "carousel" ? "Affichage en liste" : "Affichage en carrousel"}
                   data-testid="mobile-nav-layout-toggle"
                 >
-                  {mobileLayout === "carousel" ? <Rows3 className="mnav-text h-5 w-5" /> : <GalleryHorizontal className="mnav-text h-5 w-5" />}
+                  {mobileLayout === "carousel" ? <Rows3 className="mnav-text h-4 w-4" /> : <GalleryHorizontal className="mnav-text h-4 w-4" />}
                 </button>
                 <button
                   type="button"
                   onClick={mobileMinimize}
-                  className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full transition-all hover:bg-white/20"
+                  className="mnav-chip-slim inline-flex h-9 w-9 items-center justify-center rounded-full transition-all"
                   aria-label="Réduire le menu en fenêtre flottante"
                   data-testid="mobile-nav-minimize-button"
                 >
-                  <Minimize2 className="mnav-text h-5 w-5" />
+                  <Minimize2 className="mnav-text h-4 w-4" />
                 </button>
                 <SheetClose asChild>
                   <button
                     type="button"
-                    className="nav-theme-chip inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/20 transition-all hover:rotate-90"
+                    className="mnav-chip-slim inline-flex h-9 w-9 items-center justify-center rounded-full transition-all hover:rotate-90"
                     aria-label="Fermer le menu mobile"
                     data-testid="mobile-nav-close-button"
                   >
-                    <X className="h-5 w-5 text-white" />
+                    <X className="h-4 w-4 text-white" />
                   </button>
                 </SheetClose>
               </div>
             </div>
 
-            <ScrollArea className="flex-1 px-4 py-4">
+            <ScrollArea className="flex-1 px-2.5 py-3">
               <div className="space-y-6 pb-6">
                 <div className="mnav-section flex items-center justify-between gap-3 p-3 rounded-2xl">
                   <div className="flex items-center gap-4 w-full justify-between">
@@ -515,7 +515,7 @@ export const Navbar = () => {
                         key={`mobile-quick-${item.to}`}
                         to={item.to}
                         onClick={() => setOpen(false)}
-                        className="mnav-section nav-theme-chip nav-3d group relative flex min-h-[64px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all hover:scale-105 active:scale-95"
+                        className="mnav-section mnav-tile-slim group relative flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 transition-all hover:scale-105 active:scale-95"
                         data-testid={`mobile-nav-quick-action-${index + 1}`}
                       >
                         <motion.div className="nav-emoji-3d" whileHover={{ rotate: 360, scale: 1.2 }} transition={{ duration: 0.5 }}>
@@ -569,7 +569,7 @@ export const Navbar = () => {
                                 onClick={() => setOpen(false)}
                                 aria-current={active ? "page" : undefined}
                                 className={cn(
-                                  "mnav-item mnav-text nav-theme-chip nav-3d flex min-w-[104px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
+                                  "mnav-item mnav-text mnav-tile-slim flex min-w-[88px] flex-col items-center justify-center gap-2 rounded-2xl px-3 py-3 text-center transition-transform hover:scale-105 active:scale-95",
                                   active ? "mnav-item-active nav-theme-chip-active" : "",
                                 )}
                               >
@@ -610,7 +610,7 @@ export const Navbar = () => {
                                   aria-current={active ? "page" : undefined}
                                   className={cn(
                                     "group relative flex min-h-[50px] items-center justify-between rounded-xl px-4 py-3 text-sm transition-all hover:scale-[1.02] border",
-                                    "mnav-item mnav-text nav-theme-chip nav-3d",
+                                    "mnav-item mnav-text mnav-tile-slim",
                                     active ? "mnav-item-active nav-theme-chip-active" : ""
                                   )}
                                   data-testid={`mobile-nav-link-${item.to.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "home"}`}
