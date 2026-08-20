@@ -17,6 +17,8 @@ type Props = {
   delay?: number;
   /** Start playing automatically without waiting for hover (default true). */
   autoPlay?: boolean;
+  /** Keep playback active after hover/touch leaves the preview. */
+  retainAfterInteraction?: boolean;
   /** Keep playback active after touch release instead of stopping on touch end. */
   retainOnTouchRelease?: boolean;
   /** extra overlays rendered above the player (badges, captions...) */
@@ -40,6 +42,7 @@ export const HoverPreview = ({
   muted = true,
   delay = 0,
   autoPlay = false,
+  retainAfterInteraction = false,
   children,
   className = "",
   onImgLoad,
@@ -78,6 +81,7 @@ export const HoverPreview = ({
     if (knownUnavailable && knownUnavailable !== "ok") return;
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setActive(true), delay);
+    if (retainAfterInteraction) hold();
   };
   const stop = () => {
     if (heldRef.current) return; // lecture verrouillee par un tap
@@ -117,13 +121,16 @@ export const HoverPreview = ({
         if (!heldRef.current) {
           setActive(true);
           hold();
+        } else if (retainAfterInteraction && active) {
+          releaseHold();
+          setActive(false);
         }
       }}
       onTouchStart={() => {
         if (knownUnavailable && knownUnavailable !== "ok") return;
         touchTriggeredRef.current = true;
         // Tap = bascule lecture : on verrouille pour que le trailer aille au bout.
-        if (heldRef.current) {
+        if (heldRef.current && active) {
           releaseHold();
           if (timer.current) {
             window.clearTimeout(timer.current);
