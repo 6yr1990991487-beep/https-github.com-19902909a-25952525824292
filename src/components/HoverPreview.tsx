@@ -5,6 +5,12 @@ import { siteFallbackImage } from "@/lib/mediaFallback";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { acquireTrailerLock, releaseTrailerLock } from "@/lib/trailerPlaybackLock";
 import { claimAudioFocus, getAudioFocusOwner, releaseAudioFocus, subscribeAudioFocus } from "@/lib/trailerAudioFocus";
+import {
+  claimActivePreview,
+  getActivePreviewOwner,
+  releaseActivePreview,
+  subscribeActivePreview,
+} from "@/lib/trailerActiveFocus";
 
 type Props = {
   videoId: string;
@@ -50,13 +56,20 @@ export const HoverPreview = ({
   const [frameReady, setFrameReady] = useState(false);
   const audioId = useId();
   const audioOwner = useSyncExternalStore(subscribeAudioFocus, getAudioFocusOwner, () => null);
+  const previewOwner = useSyncExternalStore(subscribeActivePreview, getActivePreviewOwner, () => null);
+  // Un autre lecteur est selectionne : celui-ci doit rester en pause.
+  const preempted = previewOwner !== null && previewOwner !== audioId;
   // Securite : le son n'est autorise que sur le lecteur explicitement selectionne.
   const effectiveMuted = muted || audioOwner !== audioId;
   const selectAudio = () => {
+    claimActivePreview(audioId);
     if (muted) return;
     claimAudioFocus(audioId);
   };
-  useEffect(() => () => releaseAudioFocus(audioId), [audioId]);
+  useEffect(() => () => {
+    releaseAudioFocus(audioId);
+    releaseActivePreview(audioId);
+  }, [audioId]);
   useEffect(() => {
     if (muted) releaseAudioFocus(audioId);
   }, [muted, audioId]);
@@ -101,6 +114,7 @@ export const HoverPreview = ({
   };
   const stop = () => {
     releaseAudioFocus(audioId);
+    releaseActivePreview(audioId);
     if (heldRef.current) return; // lecture verrouillee par un tap
     if (timer.current) {
       window.clearTimeout(timer.current);
@@ -118,7 +132,8 @@ export const HoverPreview = ({
   }, [active]);
 
   const ratio = aspectClass || (vertical ? "aspect-[9/16]" : "aspect-video");
-  if (!active && frameReady) {
+  const playing = active && !preempted;
+  if (!playing && frameReady) {
     // reset le fondu quand l'apercu s'arrete
     queueMicrotask(() => setFrameReady(false));
   }
