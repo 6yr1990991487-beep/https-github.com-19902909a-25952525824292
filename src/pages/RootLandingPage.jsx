@@ -424,7 +424,7 @@ export default function RootLandingPage() {
             <div className="relative">
               {/* Zone vidéo verre translucide : vidéo 2 en fond, vidéo 1 par-dessus — placée AU-DESSUS des boutons */}
               <div
-                className="glass3d-panel relative mx-auto mb-6 w-full max-w-3xl overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video"
+                className="glass3d-panel relative mx-auto mb-6 w-[60%] max-w-xl overflow-hidden rounded-[1.5rem] border border-white/20 aspect-video sm:aspect-video lg:aspect-video"
                 data-testid="home-platforms-glass-video-zone"
               >
                 <video
@@ -476,14 +476,14 @@ export default function RootLandingPage() {
               </div>
 
               {/* Séparateur épais + boutons Catalogue & Son centrés en dessous */}
-              <div className="mt-5 flex flex-col items-center gap-5">
+              <div className="mt-10 flex flex-col items-center gap-8">
                 <div className="h-1.5 w-full max-w-md rounded-full bg-[linear-gradient(90deg,transparent,var(--theme-accent,#00ff9d),transparent)] opacity-60" />
                 <div className="flex items-center justify-center gap-3">
-                  <Button asChild variant="glass" size="sm" className="h-11 rounded-full px-6 text-sm font-semibold text-white backdrop-blur-md border border-white/20 bg-white/[0.06] hover:bg-white/[0.12]" data-testid="home-platforms-button">
+                  <Button asChild size="sm" className="h-11 rounded-full px-6 text-sm font-semibold !bg-white/[0.08] !text-white/95 backdrop-blur-md !border-white/25 !hover:bg-white/[0.18] !hover:border-white/40 hover:text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_12px_28px_-18px_rgba(0,0,0,0.5)]" data-testid="home-platforms-button">
                     <Link to="/anime-catalog">
                       <span className="inline-flex items-center gap-2 animate-in fade-in zoom-in-95 duration-500">
                         Catalogue
-                        <ArrowRight className="h-4 w-4 neon-rgb-icon" />
+                        <ArrowRight className="h-4 w-4 text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.55)]" />
                       </span>
                     </Link>
                   </Button>
@@ -491,7 +491,7 @@ export default function RootLandingPage() {
                     type="button"
                     onClick={togglePreviewSound}
                     aria-label={previewSoundEnabled ? "Couper le son des aperçus" : "Activer le son des aperçus"}
-                    className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-white/90 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
+                    className="glass3d-btn inline-flex h-11 w-11 items-center justify-center rounded-full text-white/95 transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                     data-testid="home-platforms-sound-toggle"
                   >
                     {previewSoundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
