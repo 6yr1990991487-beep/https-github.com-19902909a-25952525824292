@@ -662,10 +662,16 @@ export default function RootLandingPage() {
                       </div>
                     ))}
                   </div>
-                  {versionPanelState.openInstanceId && (
+                  {versionPanelState.openInstanceId && typeof document !== "undefined" && createPortal(
+                    <>
                     <div
-                      className="fixed z-50 block xl:max-w-[24rem] xl:min-w-[20rem] rounded-[1.75rem] border border-white/10 bg-[rgba(255,255,255,0.08)] p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
-                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft ? undefined : "1.5rem", top: versionPanelState.panelTop ?? "18rem", minWidth: versionPanelState.panelLeft ? undefined : "20rem" }}
+                      className="fixed inset-0 z-[998] bg-black/40 backdrop-blur-[2px]"
+                      onClick={closeVersionPanel}
+                      aria-hidden="true"
+                    />
+                    <div
+                      className="fixed z-[999] block w-[min(21rem,calc(100vw-1.5rem))] max-h-[80vh] overflow-y-auto rounded-[1.75rem] border border-white/25 bg-white/10 p-4 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.55)] backdrop-blur-3xl text-white glass3d-panel glass3d-surface"
+                      style={{ left: versionPanelState.panelLeft ?? undefined, right: versionPanelState.panelLeft == null ? "1.5rem" : undefined, top: versionPanelState.panelTop ?? "18rem" }}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div>
@@ -729,6 +735,8 @@ export default function RootLandingPage() {
                         </button>
                       </div>
                     </div>
+                    </>,
+                    document.body,
                   )}
                 </>
               )}
