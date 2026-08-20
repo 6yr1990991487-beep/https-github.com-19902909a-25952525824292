@@ -142,7 +142,7 @@ export const HoverPreview = ({
   }
   const contain = fit === "contain";
   const iframeWrap = contain
-    ? "absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none p-[5%]"
+    ? "absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none p-[3%]"
     : vertical
       ? "absolute inset-0 overflow-hidden pointer-events-none"
       : "absolute inset-0 pointer-events-none";
@@ -215,15 +215,15 @@ export const HoverPreview = ({
       {playing && (
         <div className={`${iframeWrap} bg-transparent transition-opacity duration-700 ${frameReady ? "opacity-100" : "opacity-0"}`}>
           {contain ? (
-            <div className="relative w-full overflow-hidden rounded-[0.9rem] border border-white/12 bg-transparent aspect-video">
+            <div className="relative w-full overflow-hidden rounded-[0.9rem] bg-transparent aspect-video">
+              {/* l'iframe est agrandie puis recadree : la surcouche YouTube (titre, logo, boutons) sort du cadre visible */}
               <iframe
                 src={buildYouTubeEmbedUrl(videoId, { autoplay: true, muted: effectiveMuted, controls: false, loop: true, playlist: videoId, playsInline: true, nocookie: false })}
                 title={title}
                 allow="autoplay; encrypted-media; picture-in-picture"
                 onLoad={() => window.setTimeout(() => setFrameReady(true), 1200)}
-                className="absolute inset-0 h-full w-full border-0"
+                className="absolute left-1/2 top-1/2 h-[132%] w-[132%] -translate-x-1/2 -translate-y-1/2 border-0"
               />
-              <span className="pointer-events-none absolute bottom-0 right-0 h-6 w-16 rounded-md bg-white/[0.06] backdrop-blur-md" aria-hidden />
             </div>
           ) : vertical ? (
             <iframe
