@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
-import footerNavBannerVideo from "@/assets/footer-logo-banner.mp4.asset.json";
+import footerNavBannerVideo from "@/assets/footer-portal-banner.mp4.asset.json";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -25,9 +25,13 @@ export const Footer = () => {
       <div className={`mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
         <div className="grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
           <div className="space-y-5">
-            <div className="theme-footer-video-shell relative overflow-hidden rounded-[1.75rem] border border-[var(--theme-border-soft)]" data-testid="footer-lovanet-video-shell">
+            <div
+              className="theme-footer-video-shell glass3d-panel relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden rounded-[1.75rem] border border-white/25"
+              style={{ background: "rgba(255,255,255,0.07)", backdropFilter: "blur(22px)" }}
+              data-testid="footer-lovanet-video-shell"
+            >
               <video
-                className="h-[250px] w-full bg-black/70 object-contain object-center"
+                className="h-full w-full bg-transparent object-contain object-center"
                 src={footerNavBannerVideo.url}
                 autoPlay
                 muted
@@ -37,8 +41,7 @@ export const Footer = () => {
                 data-testid="footer-lovanet-video"
                 data-bg-video
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[rgba(6,11,24,0.88)] via-[rgba(7,12,24,0.56)] to-[rgba(7,12,24,0.2)]" />
-              <div className="pointer-events-none absolute inset-0 opacity-18 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
+              <div className="pointer-events-none absolute inset-0 opacity-20 mix-blend-screen bg-[linear-gradient(110deg,transparent_16%,rgba(255,255,255,0.16)_28%,transparent_42%,transparent_64%,rgba(255,255,255,0.12)_74%,transparent_88%)] animate-[shimmer_9s_linear_infinite]" />
             </div>
           </div>
 
