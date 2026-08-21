@@ -19,18 +19,14 @@ export default function Login() {
       const prev = localStorage.getItem('lovanet.nav.style');
       (window as any).__lovanet_prev_nav_style = prev;
       window.dispatchEvent(new CustomEvent('navstyle:change', { detail: null }));
-    } catch (error) {
-      console.error("Login nav style init failed", error);
-    }
+    } catch {}
     return () => {
       try {
         const prev = (window as any).__lovanet_prev_nav_style;
         if (prev !== undefined && prev !== null) {
           window.dispatchEvent(new CustomEvent('navstyle:change', { detail: prev }));
         }
-      } catch (error) {
-        console.error("Login nav style restore failed", error);
-      }
+      } catch {}
     };
   }, []);
 
