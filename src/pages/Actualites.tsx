@@ -414,6 +414,8 @@ function collectionJsonLd(items: NewsItem[]) {
       "@type": "NewsArticle",
       headline: item.title,
       description: item.description || item.excerpt,
+      articleBody: item.description || item.excerpt || item.title,
+      inLanguage: "fr-FR",
       image: [seoImage(item.image)],
       datePublished: item.published_at,
       url: `${PRIMARY_SITE}/actualites/${item.slug}`,
@@ -442,6 +444,9 @@ function articleJsonLd(item: NewsItem) {
     },
     articleSection: item.categoryLabels?.join(", ") || item.categories?.join(", "),
     keywords: item.tags?.join(", ") || "actualités anime, manga, gaming, pop culture japonaise",
+    articleBody: item.description || item.excerpt || item.title,
+    inLanguage: "fr-FR",
+    isAccessibleForFree: true,
   };
 }
 

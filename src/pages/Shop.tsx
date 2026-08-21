@@ -249,8 +249,7 @@ const Shop = () => {
                     reviewBody: p.description,
                     reviewRating: { "@type": "Rating", ratingValue: `${ratingValue}`, bestRating: "5", worstRating: "1" },
                     author: { "@type": "Organization", name: "Lovanet" },
-                    publisher: { "@type": "Organization", name: "Lovanet" },
-                    positiveNotes: p.bullets?.slice(0, 3) ?? [],
+                    datePublished: "2026-01-01",
                   },
                 ],
                 offers: {
