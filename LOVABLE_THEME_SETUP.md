@@ -50,7 +50,7 @@ bash scripts/apply-lovable-default-theme.sh emergent/current-site-20260820
 
 ## Ce que fait le script
 
-1. Bascule sur la branche spécifiée (par défaut `fix-right-anchor-lovable`).
+1. Bascule sur la branche spécifiée (par défaut `emergent/current-site-20260820`).
 2. Met à jour les fichiers `ThemeBubble.tsx` suivants si nécessaire :
    - `src/components/ThemeBubble.tsx`
    - `frontend/src/components/ThemeBubble.tsx`
@@ -67,7 +67,7 @@ cd lovanet-fr-4dc85ff8
 ```
 2. Exécutez le script :
    ```bash
-   bash scripts/apply-lovable-default-theme.sh fix-right-anchor-lovable
+   bash scripts/apply-lovable-default-theme.sh emergent/current-site-20260820
 ```
 3. Vérifiez que les fichiers ont bien été modifiés :
    ```bash
