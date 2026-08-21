@@ -18,7 +18,7 @@ Assurer que le projet actif utilise la bonne configuration de thème et que cell
 ## Branches de publication
 
 Le projet Lovable actuel doit surveiller la branche :
-- `fix-right-anchor-lovable`
+- `emergent/current-site-20260820`
 
 ## Cible de synchronisation verrouillée
 
@@ -30,7 +30,7 @@ La cible courante est :
 
 - repo : `https://github.com/lijk7677-dev/lovanet-fr-4dc85ff8.git`
 - remote local : `lovable-sync`
-- branche : `fix-right-anchor-lovable`
+- branche : `emergent/current-site-20260820`
 
 Si Lovable recrée encore un repo au reconnect, mets à jour ce seul fichier pour changer la cible de publication.
 
@@ -45,7 +45,7 @@ bash scripts/apply-lovable-default-theme.sh [branch]
 ### Exemple
 
 ```bash
-bash scripts/apply-lovable-default-theme.sh fix-right-anchor-lovable
+bash scripts/apply-lovable-default-theme.sh emergent/current-site-20260820
 ```
 
 ## Ce que fait le script
