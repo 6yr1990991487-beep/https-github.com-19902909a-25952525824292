@@ -5264,3 +5264,55 @@ html[data-nav-carousel] .quicknav-floating a:hover {
   mix-blend-mode: screen;
   filter: saturate(115%) contrast(105%);
 }
+
+/* Portail: effets 3D aléatoires appliqués sur desktop. */
+.portal-hero-fx {
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+@media (min-width: 1024px) {
+  .portal-hero-fx-1 { animation: portal-fx-panorama 18s ease-in-out infinite; }
+  .portal-hero-fx-2 { animation: portal-fx-flex 14s ease-in-out infinite; }
+  .portal-hero-fx-3 { animation: portal-fx-tilt 16s ease-in-out infinite; }
+  .portal-hero-fx-4 { animation: portal-fx-wave 20s ease-in-out infinite; }
+  .portal-hero-fx-5 { animation: portal-fx-swing 15s ease-in-out infinite; }
+}
+
+@keyframes portal-fx-panorama {
+  0% { transform: perspective(1400px) rotateY(-11deg) translateX(-1.5%) scale(1.02); }
+  50% { transform: perspective(1400px) rotateY(11deg) translateX(1.5%) scale(1.05); }
+  100% { transform: perspective(1400px) rotateY(-11deg) translateX(-1.5%) scale(1.02); }
+}
+@keyframes portal-fx-flex {
+  0% { transform: perspective(1200px) rotateX(7deg) rotateZ(-1.2deg) scale(1.01); }
+  50% { transform: perspective(1200px) rotateX(-7deg) rotateZ(1.2deg) scale(1.04); }
+  100% { transform: perspective(1200px) rotateX(7deg) rotateZ(-1.2deg) scale(1.01); }
+}
+@keyframes portal-fx-tilt {
+  0% { transform: perspective(1300px) rotate3d(1, 1, 0, 8deg) scale(1.02); }
+  33% { transform: perspective(1300px) rotate3d(-1, 1, 0, 8deg) scale(1.05); }
+  66% { transform: perspective(1300px) rotate3d(1, -1, 0, 8deg) scale(1.03); }
+  100% { transform: perspective(1300px) rotate3d(1, 1, 0, 8deg) scale(1.02); }
+}
+@keyframes portal-fx-wave {
+  0% { transform: perspective(1500px) rotateY(-8deg) rotateX(4deg) translateY(0); }
+  25% { transform: perspective(1500px) rotateY(0deg) rotateX(-4deg) translateY(-1.5%); }
+  50% { transform: perspective(1500px) rotateY(8deg) rotateX(4deg) translateY(0); }
+  75% { transform: perspective(1500px) rotateY(0deg) rotateX(-3deg) translateY(1.5%); }
+  100% { transform: perspective(1500px) rotateY(-8deg) rotateX(4deg) translateY(0); }
+}
+@keyframes portal-fx-swing {
+  0% { transform: perspective(1100px) rotateZ(-2.5deg) rotateY(-6deg) scale(1.03); }
+  50% { transform: perspective(1100px) rotateZ(2.5deg) rotateY(6deg) scale(1.01); }
+  100% { transform: perspective(1100px) rotateZ(-2.5deg) rotateY(-6deg) scale(1.03); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-hero-fx,
+  .portal-hero-fx-1,
+  .portal-hero-fx-2,
+  .portal-hero-fx-3,
+  .portal-hero-fx-4,
+  .portal-hero-fx-5 { animation: none !important; }
+}
