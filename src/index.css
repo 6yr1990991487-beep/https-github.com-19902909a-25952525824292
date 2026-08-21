@@ -5006,11 +5006,13 @@ html[data-nav-carousel] .quicknav-floating a:hover {
   transform-style: preserve-3d;
   will-change: transform;
 }
-.portal-hero-fx-1 { animation: portal-fx-panorama 18s ease-in-out infinite; }
-.portal-hero-fx-2 { animation: portal-fx-flex 14s ease-in-out infinite; }
-.portal-hero-fx-3 { animation: portal-fx-tilt 16s ease-in-out infinite; }
-.portal-hero-fx-4 { animation: portal-fx-wave 20s ease-in-out infinite; }
-.portal-hero-fx-5 { animation: portal-fx-swing 15s ease-in-out infinite; }
+@media (min-width: 1024px) and (hover: hover) {
+  .portal-hero-fx-1 { animation: portal-fx-panorama 18s ease-in-out infinite; }
+  .portal-hero-fx-2 { animation: portal-fx-flex 14s ease-in-out infinite; }
+  .portal-hero-fx-3 { animation: portal-fx-tilt 16s ease-in-out infinite; }
+  .portal-hero-fx-4 { animation: portal-fx-wave 20s ease-in-out infinite; }
+  .portal-hero-fx-5 { animation: portal-fx-swing 15s ease-in-out infinite; }
+}
 
 @keyframes portal-fx-panorama {
   0%   { transform: perspective(1400px) rotateY(-11deg) translateX(-1.5%) scale(1.02); }
