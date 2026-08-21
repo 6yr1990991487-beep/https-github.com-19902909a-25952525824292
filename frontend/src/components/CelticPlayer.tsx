@@ -16,9 +16,10 @@ const CelticPlayer: React.FC<{ playlistUrl?: string; className?: string }> = ({ 
     let cancelled = false;
     (async () => {
       const tried = new Set<string>();
+      const baseUrl = process.env.PUBLIC_URL || '/';
       const candidates = [
         playlistUrl,
-        `${import.meta.env.BASE_URL || '/'}${playlistUrl.replace(/^\//, '')}`,
+        `${baseUrl}${playlistUrl.replace(/^\//, '')}`,
         playlistUrl.replace(/^\//, ''),
         `${window.location.origin}${playlistUrl}`
       ];
