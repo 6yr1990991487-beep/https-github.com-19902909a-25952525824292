@@ -35,13 +35,47 @@ const unregisterAppWorkers = async () => {
   );
 };
 
+// Purge unique par version : si un navigateur (ou une PWA installee) garde un
+// ancien cache Workbox, on supprime workers + caches puis on recharge une fois.
+const PURGE_KEY = "lovanet_prod_cache_purge";
+const PURGE_VERSION = "2026-08-22";
+
+const purgeStaleCachesOnce = async () => {
+  try {
+    if (localStorage.getItem(PURGE_KEY) === PURGE_VERSION) return false;
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((r) => r.unregister().catch(() => false)));
+    }
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => caches.delete(k).catch(() => false)));
+    }
+    localStorage.setItem(PURGE_KEY, PURGE_VERSION);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
   if (isRefusedContext()) {
     void unregisterAppWorkers().catch(() => {});
     return;
   }
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register(SW_URL, { scope: "/" }).catch(() => {});
+  void purgeStaleCachesOnce().then((purged) => {
+    if (purged) {
+      window.location.reload();
+      return;
+    }
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register(SW_URL, { scope: "/" })
+        .then((reg) => {
+          reg.update().catch(() => {});
+        })
+        .catch(() => {});
+    });
   });
 }
