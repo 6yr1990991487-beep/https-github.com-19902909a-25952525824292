@@ -232,7 +232,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
                   <DragScroller className="quicknav-floating__mini-carousel no-scrollbar flex gap-2 px-2 py-2" data-testid="quicknav-mini-carousel">
                     {secondaryItems.map((item) => {
                       const thumb = thumbFor(item.to);
-                      const Icon = item.icon;
+                      const badge = item.title.slice(0, 1).toUpperCase();
                       return (
                         <Link
                           key={`mini-${item.id}`}
@@ -244,9 +244,9 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
                           <img src={thumb} alt="" className="absolute inset-0 h-full w-full object-cover opacity-72" loading="lazy" />
                           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.56))]" />
                           <div className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/12 shadow-[0_0_14px_rgba(255,255,255,0.12)]">
-                            <motion.div whileHover={{ rotate: 360, scale: 1.14 }} transition={{ duration: 0.6 }}>
-                              <Icon className="h-3.5 w-3.5 text-white" />
-                            </motion.div>
+                            <motion.span whileHover={{ rotate: 360, scale: 1.14 }} transition={{ duration: 0.6 }} className="text-[10px] font-black text-white">
+                              {badge}
+                            </motion.span>
                           </div>
                           <div className="absolute inset-x-2 bottom-2 z-10 text-[10px] font-bold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] line-clamp-2">
                             {item.title}
