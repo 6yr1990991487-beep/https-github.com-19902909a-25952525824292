@@ -4989,14 +4989,14 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
   -webkit-backdrop-filter: blur(16px) saturate(108%);
 }
 .quicknav-floating__edge-toggle--left {
-  left: 0;
+  left: 0.4rem;
   top: 38%;
-  transform: translate(-50%, -50%);
+  transform: translate(0, -50%);
 }
 .quicknav-floating__edge-toggle--right {
-  right: 0;
+  right: 0.4rem;
   top: 64%;
-  transform: translate(50%, -50%);
+  transform: translate(0, -50%);
 }
 .quicknav-floating__stack {
   display: flex;

@@ -451,7 +451,6 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
               </span>
               Menu
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Auto + Slide</div>
           </div>
 
           <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="quicknav-roll__main overflow-hidden">

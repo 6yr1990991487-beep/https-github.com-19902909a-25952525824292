@@ -167,7 +167,7 @@ export const RecentEpisodesCarousel = () => {
       )}
       <div
         ref={scrollerRef}
-        className="flex gap-6 sm:gap-7 lg:gap-8 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-5 -mx-4 px-4 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-10 sm:gap-12 lg:gap-14 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-6 -mx-4 px-4 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {!loaded &&
           Array.from({ length: 4 }).map((_, i) => (
