@@ -19,7 +19,7 @@ import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
 import { motion } from "framer-motion";
 
 const PORTAL_CARD_VIDEO = "https://drive.google.com/uc?export=download&id=1Sao371KD1M-K6uvNiOP_vlrAX5D2DGzX";
-const PORTAL_BACKGROUND_VIDEO = "https://drive.google.com/uc?export=download&id=1-cYmT-i_clEth0g2SJv48n8ZnkPQex39";
+const PORTAL_BACKGROUND_VIDEO = "https://drive.google.com/uc?export=download&id=1OagvdeVi3u0c_opbhUSQoTni3znvkUt8";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
