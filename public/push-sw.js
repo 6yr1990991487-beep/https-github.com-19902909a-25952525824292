@@ -8,8 +8,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body: payload.body || 'Nouveau contenu disponible sur Lovanet.',
-      icon: '/lovanet-icon-192.png?v=11',
-      badge: '/lovanet-icon-192.png?v=11',
+      icon: '/lovanet-icon-192.png?v=17',
+      badge: '/lovanet-icon-192.png?v=17',
       data: { url: payload.url || '/' },
       tag: payload.tag || 'lovanet-push',
       renotify: true,
