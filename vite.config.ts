@@ -16,6 +16,12 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
+  // Allow Emergent preview host so preview requests are not blocked
+  preview: {
+    allowedHosts: [
+      'complete-site-build-1.cluster-5.preview.emergentcf.cloud'
+    ],
+  },
   plugins: [
     react(),
     shopSeoPlugin(),
