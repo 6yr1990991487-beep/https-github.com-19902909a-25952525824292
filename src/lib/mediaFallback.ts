@@ -1,6 +1,15 @@
 import type { SyntheticEvent } from "react";
 
-const LOCAL_VIDEO_FALLBACKS = [
+export const LOCAL_VIDEO_FALLBACKS = [
+  "/global-bg-web.mp4",
+  "/global-bg-mobile.mp4",
+  "/actualites-banner.mp4",
+  "/actualites-banner-2.mp4",
+  "/home-banner.mp4",
+  "/custom-hero-banner.mp4",
+  "/manga-universe-banner.mp4",
+  "/leaderboard-banner.mp4",
+  "/catalogue-banner.mp4",
   "/custom_video_lovanet.mp4",
   "/root-capture-video-latest.mp4",
   "/banner-seq-2.mp4",
