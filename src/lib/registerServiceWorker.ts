@@ -42,12 +42,12 @@ const unregisterAppWorkers = async () => {
 // Purge unique par version : si un navigateur (ou une PWA installee) garde un
 // ancien cache Workbox, on supprime workers + caches puis on recharge une fois.
 const PURGE_KEY = "lovanet_prod_cache_purge";
-const PURGE_VERSION = "2026-08-22";
+const PURGE_VERSION = "2026-08-23-preview-v4";
 
 const purgeStaleCachesOnce = async () => {
   try {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("lovanet_reload") === "1" && params.get("_v") === "2026.08.23") {
+    if (params.get("lovanet_reload") === "1") {
       localStorage.setItem(PURGE_KEY, PURGE_VERSION);
       sessionStorage.setItem(PURGE_KEY, PURGE_VERSION);
       return false;
