@@ -17,9 +17,46 @@ createRoot(document.getElementById("root")!).render(
   </HelmetProvider>,
 );
 
+const APP_BUILD_VERSION = "2026.08.23";
+const APP_BUILD_STORAGE_KEY = "lovanet_app_build_version";
+
+const enforceCurrentBuild = async () => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const previous = localStorage.getItem(APP_BUILD_STORAGE_KEY);
+    if (previous === APP_BUILD_VERSION) return;
+
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister().catch(() => undefined)));
+    }
+
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key).catch(() => undefined)));
+    }
+
+    localStorage.setItem(APP_BUILD_STORAGE_KEY, APP_BUILD_VERSION);
+    sessionStorage.setItem(APP_BUILD_STORAGE_KEY, APP_BUILD_VERSION);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("_v", APP_BUILD_VERSION);
+    url.searchParams.set("lovanet_reload", "1");
+    window.location.replace(url.toString());
+  } catch {
+    try {
+      localStorage.setItem(APP_BUILD_STORAGE_KEY, APP_BUILD_VERSION);
+      sessionStorage.setItem(APP_BUILD_STORAGE_KEY, APP_BUILD_VERSION);
+    } catch {
+      // ignore
+    }
+  }
+};
+
 // Ensure old service workers and caches are unregistered to avoid stale preview assets.
 const LOVANET_RELOAD_FLAG = "lovanet_sw_unregistered";
-const LOVANET_RELOAD_VERSION = "5"; // bump to force a new cleanup cycle and full PWA reinstall
+const LOVANET_RELOAD_VERSION = "6"; // bump to force a new cleanup cycle and full PWA reinstall
 
 const forceLovanetReload = () => {
   if (typeof window === "undefined") return;
@@ -70,9 +107,17 @@ if (typeof window !== "undefined") {
     window.self !== window.top ||
     swHost.startsWith("id-preview--") ||
     swHost.startsWith("preview--") ||
+    swHost.includes("preview") ||
+    swHost.endsWith(".preview.emergentcf.cloud") ||
+    swHost.endsWith(".emergentcf.cloud") ||
+    swHost.endsWith(".emergent.host") ||
     swHost.endsWith("lovableproject.com") ||
     swHost.endsWith("lovableproject-dev.com") ||
     swHost === "localhost";
+
+  if (swIsPreview) {
+    void enforceCurrentBuild();
+  }
 
   if ("serviceWorker" in navigator && swIsPreview) {
     try {

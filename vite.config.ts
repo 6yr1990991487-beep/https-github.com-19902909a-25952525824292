@@ -21,7 +21,9 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: [
       'complete-site-build-1.cluster-5.preview.emergentcf.cloud',
       'complete-site-build-1.emergent.host',
-      // include emergent host pattern used by preview/prod
+      '*.preview.emergentcf.cloud',
+      '*.emergentcf.cloud',
+      '*.emergent.host',
       'complete-site-build-1.*.emergent.host',
     ],
   },
