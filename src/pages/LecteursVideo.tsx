@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { Helmet } from "react-helmet-async";
 import lecteurBanner from "@/assets/lecteur-video-banner-v15.mp4.asset.json";
@@ -27,6 +27,19 @@ const videoJsonLd = {
  */
 const LecteursVideo = () => {
   const [lecteursTopVideo, setLecteursTopVideo] = useState(LECTEURS_VIDEO_TOP_VIDEO);
+  const [lecteursTopReady, setLecteursTopReady] = useState(false);
+
+  useEffect(() => {
+    setLecteursTopReady(false);
+  }, [lecteursTopVideo]);
+
+  useEffect(() => {
+    if (lecteursTopReady || lecteursTopVideo === LECTEURS_VIDEO_TOP_VIDEO_FALLBACK) return;
+    const id = window.setTimeout(() => {
+      setLecteursTopVideo(LECTEURS_VIDEO_TOP_VIDEO_FALLBACK);
+    }, 4500);
+    return () => window.clearTimeout(id);
+  }, [lecteursTopReady, lecteursTopVideo]);
 
   return (
     <PageShell>
@@ -40,6 +53,7 @@ const LecteursVideo = () => {
             src={lecteursTopVideo}
             className="w-full h-auto block"
             style={{ aspectRatio: "854 / 480" }}
+            onLoadedData={() => setLecteursTopReady(true)}
             onError={() => {
               if (lecteursTopVideo !== LECTEURS_VIDEO_TOP_VIDEO_FALLBACK) {
                 setLecteursTopVideo(LECTEURS_VIDEO_TOP_VIDEO_FALLBACK);

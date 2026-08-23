@@ -40,6 +40,8 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
   const [muted, setMuted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [playerBgVideoSrc, setPlayerBgVideoSrc] = useState(AI_HUB_PLAYER_BG_VIDEO);
+  const [playerBgVideoReady, setPlayerBgVideoReady] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -50,6 +52,18 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
 
   const tracks = useMemo(() => [...local, ...cloud, ...remote], [local, cloud, remote]);
   const track = tracks[index];
+
+  useEffect(() => {
+    setPlayerBgVideoReady(false);
+  }, [playerBgVideoSrc]);
+
+  useEffect(() => {
+    if (playerBgVideoReady || playerBgVideoSrc === AI_HUB_PLAYER_BG_VIDEO_FALLBACK) return;
+    const id = window.setTimeout(() => {
+      setPlayerBgVideoSrc(AI_HUB_PLAYER_BG_VIDEO_FALLBACK);
+    }, 4500);
+    return () => window.clearTimeout(id);
+  }, [playerBgVideoReady, playerBgVideoSrc]);
 
   useEffect(() => {
     let cancelled = false;
@@ -222,19 +236,17 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
     >
       <video
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-65"
-        src={AI_HUB_PLAYER_BG_VIDEO}
+        src={playerBgVideoSrc}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
+        onLoadedData={() => setPlayerBgVideoReady(true)}
         onError={(event) => {
           const video = event.currentTarget;
           if (video.src.endsWith(AI_HUB_PLAYER_BG_VIDEO_FALLBACK)) return;
-          video.src = AI_HUB_PLAYER_BG_VIDEO_FALLBACK;
-          video.load();
-          const p = video.play();
-          if (p && typeof p.catch === "function") p.catch(() => {});
+          setPlayerBgVideoSrc(AI_HUB_PLAYER_BG_VIDEO_FALLBACK);
         }}
       />
       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.34))]" />

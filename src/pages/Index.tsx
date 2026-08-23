@@ -123,6 +123,7 @@ const reactions = [
 
 const Index = () => {
   const [animeMomentsTopVideo, setAnimeMomentsTopVideo] = useState(ANIME_MOMENTS_TOP_VIDEO);
+  const [animeMomentsTopReady, setAnimeMomentsTopReady] = useState(false);
   const [ytIds, setYtIds] = useState<string[]>([]);
   const [animeTrailers, setAnimeTrailers] = useState<{ countdown: string[]; catalog: string[] }>({
     countdown: [],
@@ -132,6 +133,18 @@ const Index = () => {
     countdown: [],
     catalog: [],
   });
+
+  useEffect(() => {
+    setAnimeMomentsTopReady(false);
+  }, [animeMomentsTopVideo]);
+
+  useEffect(() => {
+    if (animeMomentsTopReady || animeMomentsTopVideo === ANIME_MOMENTS_TOP_VIDEO_FALLBACK) return;
+    const id = window.setTimeout(() => {
+      setAnimeMomentsTopVideo(ANIME_MOMENTS_TOP_VIDEO_FALLBACK);
+    }, 4500);
+    return () => window.clearTimeout(id);
+  }, [animeMomentsTopReady, animeMomentsTopVideo]);
 
   useEffect(() => {
     let cancelled = false;
@@ -274,6 +287,7 @@ const Index = () => {
               <video
                 src={animeMomentsTopVideo}
                 className="h-full w-full object-cover"
+                onLoadedData={() => setAnimeMomentsTopReady(true)}
                 onError={() => {
                   if (animeMomentsTopVideo !== ANIME_MOMENTS_TOP_VIDEO_FALLBACK) {
                     setAnimeMomentsTopVideo(ANIME_MOMENTS_TOP_VIDEO_FALLBACK);

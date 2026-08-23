@@ -250,8 +250,34 @@ export default function RootLandingPage() {
   const [heroFxVariant] = useState(() => 1 + Math.floor(Math.random() * 5));
   const [portalGlassVideo1Source, setPortalGlassVideo1Source] = useState(PORTAL_CARD_VIDEO);
   const [portalGlassVideo2Source, setPortalGlassVideo2Source] = useState(PORTAL_BACKGROUND_VIDEO);
+  const [portalGlassVideo1Ready, setPortalGlassVideo1Ready] = useState(false);
+  const [portalGlassVideo2Ready, setPortalGlassVideo2Ready] = useState(false);
   // Variation d'effet 3D (panorama / flexion / tilt / vague / balancier) tiree
   // au hasard a chaque arrivee sur la page Portail.
+
+  useEffect(() => {
+    setPortalGlassVideo1Ready(false);
+  }, [portalGlassVideo1Source]);
+
+  useEffect(() => {
+    if (portalGlassVideo1Ready || portalGlassVideo1Source === PORTAL_CARD_VIDEO_FALLBACK) return;
+    const id = window.setTimeout(() => {
+      setPortalGlassVideo1Source(PORTAL_CARD_VIDEO_FALLBACK);
+    }, 4500);
+    return () => window.clearTimeout(id);
+  }, [portalGlassVideo1Ready, portalGlassVideo1Source]);
+
+  useEffect(() => {
+    setPortalGlassVideo2Ready(false);
+  }, [portalGlassVideo2Source]);
+
+  useEffect(() => {
+    if (portalGlassVideo2Ready || portalGlassVideo2Source === PORTAL_BACKGROUND_VIDEO_FALLBACK) return;
+    const id = window.setTimeout(() => {
+      setPortalGlassVideo2Source(PORTAL_BACKGROUND_VIDEO_FALLBACK);
+    }, 4500);
+    return () => window.clearTimeout(id);
+  }, [portalGlassVideo2Ready, portalGlassVideo2Source]);
 
   const [selectedTrailerIdMap, setSelectedTrailerIdMap] = useState({});
   const [pausedPreviewMap, setPausedPreviewMap] = useState({});
@@ -440,6 +466,7 @@ export default function RootLandingPage() {
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-60"
                   src={portalGlassVideo2Source}
+                  onLoadedData={() => setPortalGlassVideo2Ready(true)}
                   onError={() => {
                     if (portalGlassVideo2Source !== PORTAL_BACKGROUND_VIDEO_FALLBACK) {
                       setPortalGlassVideo2Source(PORTAL_BACKGROUND_VIDEO_FALLBACK);
@@ -456,6 +483,7 @@ export default function RootLandingPage() {
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-85 mix-blend-screen"
                   src={portalGlassVideo1Source}
+                  onLoadedData={() => setPortalGlassVideo1Ready(true)}
                   onError={() => {
                     if (portalGlassVideo1Source !== PORTAL_CARD_VIDEO_FALLBACK) {
                       setPortalGlassVideo1Source(PORTAL_CARD_VIDEO_FALLBACK);
