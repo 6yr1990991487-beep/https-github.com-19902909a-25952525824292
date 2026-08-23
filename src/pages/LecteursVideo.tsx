@@ -1,6 +1,9 @@
 import { PageShell } from "@/components/PageShell";
 import { Helmet } from "react-helmet-async";
 import lecteurBanner from "@/assets/lecteur-video-banner-v15.mp4.asset.json";
+import { safeLovableVideoSource } from "@/lib/lovableVideoSources";
+
+const LECTEURS_VIDEO_TOP_VIDEO = "https://drive.google.com/uc?export=download&id=1OagvdeVi3u0c_opbhUSQoTni3znvkUt8";
 
 const PRIMARY_SITE = "https://lovanet.fr";
 
@@ -29,7 +32,7 @@ const LecteursVideo = () => (
       <h1 className="sr-only">Lecteur vidéo Lovanet</h1>
       <div className="mx-auto max-w-[854px] overflow-hidden rounded-[2rem] border border-white/12 bg-black shadow-[0_28px_90px_-42px_rgba(56,189,248,0.6)]">
         <video
-          src={lecteurBanner.url}
+          src={LECTEURS_VIDEO_TOP_VIDEO}
           className="w-full h-auto block"
           style={{ aspectRatio: "854 / 480" }}
           autoPlay

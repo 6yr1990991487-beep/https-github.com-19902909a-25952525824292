@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
 import footerNavBannerVideo from "@/assets/footer-portal-banner.mp4.asset.json";
 import footerBackdropVideo from "@/assets/portal-footer-video-3.mp4.asset.json";
+import { safeLovableVideoSource } from "@/lib/lovableVideoSources";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -26,7 +27,7 @@ export const Footer = () => {
       <div className={`relative mx-auto w-full max-w-6xl overflow-hidden ${footerPanel}`} data-testid="site-footer-shell">
         <video
           className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-100"
-          src={footerBackdropVideo.url}
+          src={safeLovableVideoSource(footerBackdropVideo?.url, "/global-bg-mobile.mp4")}
           autoPlay
           muted
           loop
@@ -47,7 +48,7 @@ export const Footer = () => {
               <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.28)] backdrop-blur-[2px]" />
               <video
                 className="relative z-10 h-full w-full bg-transparent object-contain object-center"
-                src={footerNavBannerVideo.url}
+                src={safeLovableVideoSource(footerNavBannerVideo?.url, "/home-banner.mp4")}
                 autoPlay
                 muted
                 loop

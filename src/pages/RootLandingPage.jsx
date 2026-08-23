@@ -20,6 +20,14 @@ import { motion } from "framer-motion";
 import portalGlassVideo1 from "@/assets/portal-glass-video-1.mp4.asset.json";
 import portalGlassVideo2 from "@/assets/portal-glass-video-2.mp4.asset.json";
 
+const PORTAL_CARD_VIDEO = "https://drive.google.com/uc?export=download&id=1Sao371KD1M-K6uvNiOP_vlrAX5D2DGzX";
+const PORTAL_BACKGROUND_VIDEO = "https://drive.google.com/uc?export=download&id=1-cYmT-i_clEth0g2SJv48n8ZnkPQex39";
+
+const resolvePortalGlassVideoSource = (asset, fallback) => {
+  const source = asset?.url || fallback;
+  return source.startsWith("/__l5e/") ? fallback : source;
+};
+
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
   { to: "/decouvrir", label: "Univers Lovanet", icon: Compass },
@@ -245,6 +253,8 @@ export default function RootLandingPage() {
 
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   const [heroFxVariant] = useState(() => 1 + Math.floor(Math.random() * 5));
+  const portalGlassVideo1Source = PORTAL_CARD_VIDEO;
+  const portalGlassVideo2Source = PORTAL_BACKGROUND_VIDEO;
   // Variation d'effet 3D (panorama / flexion / tilt / vague / balancier) tiree
   // au hasard a chaque arrivee sur la page Portail.
 
@@ -434,7 +444,7 @@ export default function RootLandingPage() {
               >
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-60"
-                  src={portalGlassVideo2.url}
+                  src={portalGlassVideo2Source}
                   autoPlay
                   muted
                   loop
@@ -442,11 +452,10 @@ export default function RootLandingPage() {
                   preload="auto"
                   aria-hidden="true"
                   data-testid="home-platforms-bg-video-2"
-                  data-bg-video
                 />
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-85 mix-blend-screen"
-                  src={portalGlassVideo1.url}
+                  src={portalGlassVideo1Source}
                   autoPlay
                   muted
                   loop
@@ -454,7 +463,6 @@ export default function RootLandingPage() {
                   preload="auto"
                   aria-hidden="true"
                   data-testid="home-platforms-bg-video-1"
-                  data-bg-video
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[rgba(6,12,22,0.10)] backdrop-blur-[1px]" />
               </div>

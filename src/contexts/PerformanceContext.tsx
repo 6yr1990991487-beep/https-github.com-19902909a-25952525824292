@@ -43,12 +43,30 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
         setDisableAnimations(JSON.parse(savedAnimations));
       }
       
-      // Only honor persisted video-hide if it was explicitly set by user toggle.
-      if (savedVideos !== null && savedVideosManual === "1") {
-        setDisableVideos(JSON.parse(savedVideos));
+      const shouldForcePreviewVisibility =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1" ||
+          window.location.hostname.includes("preview") ||
+          window.location.hostname.includes("emergent") ||
+          window.location.port === "3000");
+
+      // Preview hosts are forced to keep background video enabled to avoid stale localStorage hiding the whole loop.
+      if (shouldForcePreviewVisibility) {
+        try {
+          localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+          localStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+          sessionStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+          sessionStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+        } catch {}
+        document.body.removeAttribute("data-hide-videos");
+        setDisableVideos(false);
+      } else if (savedVideosManual === "1") {
+        setDisableVideos(JSON.parse(savedVideos ?? "false"));
       } else {
         setDisableVideos(false);
         localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+        localStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
       }
 
       if (savedDecorOverlay !== null) {
@@ -67,6 +85,27 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
     try { localStorage.setItem("site_disable_animations", JSON.stringify(disableAnimations)); } catch {}
   }, [disableAnimations]);
 
+  // Force preview hosts to always keep videos visible
+  useEffect(() => {
+    const shouldForcePreviewVisibility =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname.includes("preview") ||
+        window.location.hostname.includes("emergent") ||
+        window.location.port === "3000");
+
+    if (shouldForcePreviewVisibility) {
+      document.body.removeAttribute("data-hide-videos");
+      try {
+        localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+        localStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+        sessionStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+        sessionStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+      } catch {}
+    }
+  }, []);
+
   useEffect(() => {
     try { localStorage.setItem("site_decor_overlay_enabled", JSON.stringify(decorOverlayEnabled)); } catch {}
     if (!decorOverlayEnabled) {
@@ -77,23 +116,36 @@ export function PerformanceProvider({ children }: { children: React.ReactNode })
   }, [decorOverlayEnabled]);
 
   useEffect(() => {
-    try { localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(disableVideos)); } catch {}
-    if (disableVideos) {
-      document.body.setAttribute("data-hide-videos", "1");
-    } else {
+    const shouldForcePreviewVisibility =
+      typeof window !== "undefined" &&
+      (window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname.includes("preview") ||
+        window.location.hostname.includes("emergent") ||
+        window.location.port === "3000");
+
+    // On preview hosts, NEVER apply data-hide-videos
+    if (shouldForcePreviewVisibility) {
       document.body.removeAttribute("data-hide-videos");
-      // Try to resume background/hero videos after they become visible again.
-      window.requestAnimationFrame(() => {
-        const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
-        nodes.forEach((node) => {
-          const video = node as HTMLVideoElement;
-          video.muted = true;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === "function") {
-            playPromise.catch(() => {});
-          }
+    } else {
+      try { localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(disableVideos)); } catch {}
+      if (disableVideos) {
+        document.body.setAttribute("data-hide-videos", "1");
+      } else {
+        document.body.removeAttribute("data-hide-videos");
+        // Try to resume background/hero videos after they become visible again.
+        window.requestAnimationFrame(() => {
+          const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
+          nodes.forEach((node) => {
+            const video = node as HTMLVideoElement;
+            video.muted = true;
+            const playPromise = video.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+              playPromise.catch(() => {});
+            }
+          });
         });
-      });
+      }
     }
   }, [disableVideos]);
 

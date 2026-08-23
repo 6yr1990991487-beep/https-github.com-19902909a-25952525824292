@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
+import { safeLovableVideoSource } from '@/lib/lovableVideoSources';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,7 +71,7 @@ export const AiHub = () => {
   return (
     <PageShell className="page-nav-glass ai-hub-page">
       {/** Background video with runtime availability check; fallback shown if asset missing */}
-      <BackgroundVideo src={aiHubLongBanner.url} />
+      <BackgroundVideo src={safeLovableVideoSource(aiHubLongBanner?.url, "/home-banner.mp4")} />
 
       <div className="relative z-10 mx-auto max-w-7xl w-full px-4 pb-12 pt-4">
         <div className="mb-8 flex justify-center">
