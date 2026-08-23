@@ -184,13 +184,14 @@ export const InstallAppPrompt = () => {
           <X className="h-4 w-4" />
         </button>
 
-        <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-[1.5rem] border border-white/30 bg-white/10 shadow-xl backdrop-blur-md sm:h-32 sm:w-32">
+        <div className="relative mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-white/25 bg-white/[0.07] shadow-[0_10px_40px_-10px_rgba(255,255,255,0.35)] backdrop-blur-xl sm:h-36 sm:w-36">
+          <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.28),transparent_65%)]" />
           <img
-            src="/lovanet-icon-512.png?v=17"
+            src="/lovanet-icon-transparent-512.png?v=18"
             alt="Logo Lovanet"
-            width={160}
-            height={160}
-            className="h-20 w-20 object-contain sm:h-28 sm:w-28"
+            width={192}
+            height={192}
+            className="relative h-24 w-24 object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.45)] sm:h-32 sm:w-32"
           />
         </div>
 
