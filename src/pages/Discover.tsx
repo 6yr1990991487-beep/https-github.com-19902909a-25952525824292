@@ -9,7 +9,7 @@ import { ShoppingBag, Youtube, Music2, Play, Film, Calendar, Sparkles, ArrowRigh
 import { ManualSyncButton } from "@/components/ManualSyncButton";
 
 /**
- * /decouvrir — SEO landing page.
+ * /decouvrir — Univers landing page.
  * Purpose: give Google / Bing / image & video search a single,
  * crawlable index of everything Lovanet offers — products with real
  * <img> thumbnails, video previews with VideoObject JSON-LD, and
@@ -34,15 +34,16 @@ const Discover = () => {
   }, []);
 
   useEffect(() => {
-    document.title = "Univers Lovanet — Vidéos, shorts, magasin, animés";
+    document.title = "Univers Lovanet : vidéos, shorts, magasin et animés";
     const meta = (name: string, value: string, prop = false) => {
       const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let el = document.querySelector(sel) as HTMLMetaElement | null;
       if (!el) { el = document.createElement("meta"); prop ? el.setAttribute("property", name) : el.setAttribute("name", name); document.head.appendChild(el); }
       el.content = value;
     };
-    meta("description", "Anime.Moments.officiel : Lovanet — la plateforme officielle dédiée à l'anime : chaîne YouTube AnimemomentsAnimeofficiel, shorts TikTok Anime.Moments.officiel, Prime Video, animés à venir, catalogue 1500+ titres et magasin collector.");
-    meta("og:title", "Univers Lovanet — AnimemomentsAnimeofficiel", true);
+    meta("description", "Univers Lovanet : la porte d'entrée vers Anime Moments, la chaîne YouTube, les shorts TikTok, Prime Video, le catalogue 1500+ titres, les sorties à venir et le magasin collector.");
+    meta("og:title", "Univers Lovanet", true);
+    meta("og:description", "Univers Lovanet : vidéos, shorts, catalogue anime, sorties à venir et magasin collector.", true);
     meta("og:url", "https://lovanet.fr/decouvrir", true);
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
@@ -178,14 +179,30 @@ const Discover = () => {
         >
           <div className="relative flex flex-col items-center text-center">
             <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
-              <div className="flex flex-wrap justify-center gap-3 mt-6">
-
-                <Link
-                  to="/shop"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white border border-white/20 bg-white/5 backdrop-blur hover:bg-white/10 transition-colors"
-                >
-                  <ShoppingBag className="w-4 h-4" /> Magasin
-                </Link>
+              <div className="max-w-3xl space-y-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-4 py-2 text-xs font-bold uppercase tracking-[0.24em] text-white/75 backdrop-blur-xl">
+                  Univers Lovanet
+                </div>
+                <h1 className="text-4xl font-black tracking-tight text-white md:text-6xl">
+                  Explore l’univers anime, vidéos et magasin de Lovanet
+                </h1>
+                <p className="mx-auto max-w-2xl text-sm leading-7 text-white/72 md:text-base">
+                  Une porte d’entrée unique vers les vidéos officielles, les shorts, le catalogue anime, les sorties à venir et les collections du magasin.
+                </p>
+                <div className="flex flex-wrap justify-center gap-3 pt-2">
+                  <Link
+                    to="/shop"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
+                  >
+                    <ShoppingBag className="w-4 h-4" /> Magasin
+                  </Link>
+                  <Link
+                    to="/anime-moments"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
+                  >
+                    <Play className="w-4 h-4" /> Anime Moments
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
@@ -251,7 +268,7 @@ const Discover = () => {
               </div>
 
               <div className="relative z-10 mt-5 inline-flex items-center gap-2 text-xs font-semibold text-white/80 group-hover:text-white transition-colors">
-                Découvrir
+                Univers
                 <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </div>
             </Link>

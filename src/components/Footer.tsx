@@ -8,7 +8,7 @@ const FOOTER_BACKDROP_VIDEO = "/portal-bottom-background.mp4";
 const allDestinations = [
   { to: "/", label: "Portail", icon: Home, color: "#a78bfa" },
   { to: "/anime-moments", label: "Anime Moments", icon: Film, color: "#f472b6" },
-  { to: "/decouvrir", label: "Découvrir", icon: Compass, color: "#22d3ee" },
+  { to: "/decouvrir", label: "Univers", icon: Compass, color: "#22d3ee" },
   { to: "/chaine-youtube", label: "YouTube", icon: Youtube, color: "#ef4444" },
   { to: "/tiktok", label: "TikTok", icon: Music2, color: "#ec4899" },
   { to: "/prime-video", label: "Prime Vidéo", icon: PlayCircle, color: "#3b82f6" },

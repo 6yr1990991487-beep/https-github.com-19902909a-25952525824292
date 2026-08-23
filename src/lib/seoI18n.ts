@@ -49,7 +49,7 @@ type Meta = { title: string; description: string };
 const ROUTE_DESCRIPTIONS: Record<RouteKey, string> = {
   "/": "Lovanet  Portail anime, manga, gaming, pop culture japonaise.",
   "/anime-moments": "Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet.",
-  "/decouvrir": "Découvrir Lovanet : entrée rapide vers les vidéos, la magasin, le catalogue, les actualités et les services du compte.",
+  "/decouvrir": "Univers Lovanet : entrée rapide vers les vidéos, le magasin, le catalogue, les actualités et les services du compte.",
   "/shop": "Magasin Lovanet : posters, collectors, vêtements et produits manga, avec accès panier et parcours client.",
   "/anime-catalog": "Catalogue anime Lovanet : fiches, trailers et recherche de titres pour explorer les séries et films.",
   "/anime-countdown": "Anime à venir : calendrier et compte à rebours des prochaines sorties d'épisodes et de saisons.",
@@ -71,7 +71,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   fr: {
     "/": "Lovanet : portail anime manga officiel",
     "/anime-moments": "Lovanet : page officielle Lovanet",
-    "/decouvrir": "Discover Lovanet : Univers anime, vidéos et magasin",
+    "/decouvrir": "Univers Lovanet : vidéos, shorts, catalogue anime et magasin",
     "/shop": "Magasin Lovanet : Posters, collectors et vêtements anime",
     "/anime-catalog": "Catalogue Anime : 1500+ animés avec trailers",
     "/anime-countdown": "Anime à venir : Countdown live des sorties",
@@ -89,7 +89,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   en: {
     "/": "Lovanet : official anime manga portal",
     "/anime-moments": "Lovanet : official Lovanet page",
-    "/decouvrir": "Discover Lovanet : anime universe, videos and shop",
+    "/decouvrir": "Lovanet Universe : anime videos, shorts, catalog and shop",
     "/shop": "Lovanet Shop : anime posters, collectors and apparel",
     "/anime-catalog": "Anime Catalog : 1500+ shows with trailers",
     "/anime-countdown": "Upcoming Anime : Live release countdown",
@@ -107,7 +107,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   es: {
     "/": "Lovanet : portal oficial de anime y manga",
     "/anime-moments": "Lovanet : página oficial Lovanet",
-    "/decouvrir": "Discover Lovanet : universo anime, vídeos y tienda",
+    "/decouvrir": "Universo Lovanet : vídeos anime, shorts, catálogo y tienda",
     "/shop": "Tienda Lovanet : pósteres, coleccionables y ropa anime",
     "/anime-catalog": "Catálogo Anime : 1500+ series con tráilers",
     "/anime-countdown": "Próximos anime : cuenta atrás en directo",
@@ -125,7 +125,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   de: {
     "/": "Lovanet : offizielles Anime- und Manga-Portal",
     "/anime-moments": "Lovanet : offizielle Lovanet-Seite",
-    "/decouvrir": "Discover Lovanet : Anime-Universum, Videos und Shop",
+    "/decouvrir": "Lovanet-Universum : Anime-Videos, Shorts, Katalog und Shop",
     "/shop": "Lovanet Shop : Anime-Poster, Sammlerstuecke und Kleidung",
     "/anime-catalog": "Anime-Katalog : 1500+ Serien mit Trailern",
     "/anime-countdown": "Kommende Anime : Live-Countdown",
@@ -143,7 +143,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   it: {
     "/": "Lovanet : portale ufficiale anime e manga",
     "/anime-moments": "Lovanet : pagina ufficiale Lovanet",
-    "/decouvrir": "Discover Lovanet : universo anime, video e shop",
+    "/decouvrir": "Universo Lovanet : video anime, shorts, catalogo e shop",
     "/shop": "Shop Lovanet : poster, collector e abbigliamento anime",
     "/anime-catalog": "Catalogo Anime : 1500+ serie con trailer",
     "/anime-countdown": "Anime in arrivo : countdown live",
@@ -161,7 +161,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   pt: {
     "/": "Lovanet : portal oficial de anime e manga",
     "/anime-moments": "Lovanet : página oficial Lovanet",
-    "/decouvrir": "Discover Lovanet : universo anime, vídeos e loja",
+    "/decouvrir": "Universo Lovanet : vídeos anime, shorts, catálogo e loja",
     "/shop": "Loja Lovanet : pôsteres, colecionáveis e roupas anime",
     "/anime-catalog": "Catálogo Anime : 1500+ séries com trailers",
     "/anime-countdown": "Próximos anime : contagem regressiva ao vivo",
@@ -179,7 +179,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   ja: {
     "/": "Lovanet : 公式アニメ・マンガポータル",
     "/anime-moments": "Lovanet : Lovanet 公式ページ",
-    "/decouvrir": "Discover Lovanet : アニメの世界・動画・ショップ",
+    "/decouvrir": "Lovanetの世界 : アニメ動画、ショート、カタログ、ショップ",
     "/shop": "Lovanet ショップ : アニメポスター・コレクション・アパレル",
     "/anime-catalog": "アニメカタログ : 1500本以上・予告編付き",
     "/anime-countdown": "配信予定アニメ : ライブ カウントダウン",
@@ -197,7 +197,7 @@ const TITLES: Record<Locale, Record<RouteKey, string>> = {
   zh: {
     "/": "Lovanet : 官方动漫漫画门户",
     "/anime-moments": "Lovanet : Lovanet 官方页面",
-    "/decouvrir": "Discover Lovanet : 动漫世界、视频与商店",
+    "/decouvrir": "Lovanet宇宙 : 动漫视频、短片、目录与商店",
     "/shop": "Lovanet 商店 : 动漫海报、收藏品与服饰",
     "/anime-catalog": "动漫目录 : 1500+ 部作品含预告",
     "/anime-countdown": "即将上线动漫 : 实时倒计时",
