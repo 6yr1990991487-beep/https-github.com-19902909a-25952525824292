@@ -19,6 +19,49 @@ createRoot(document.getElementById("root")!).render(
 
 const APP_BUILD_VERSION = "2026.08.23.preview-v3";
 const APP_BUILD_STORAGE_KEY = "lovanet_app_build_version";
+const VIDEO_PREF_KEY = "site_disable_videos";
+const VIDEO_PREF_MANUAL_KEY = "site_disable_videos_manual";
+
+const forcePreviewVideoVisibility = () => {
+  if (typeof window === "undefined") return;
+
+  const unhide = () => {
+    document.body.removeAttribute("data-hide-videos");
+    try {
+      localStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+      localStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+      sessionStorage.setItem(VIDEO_PREF_KEY, JSON.stringify(false));
+      sessionStorage.setItem(VIDEO_PREF_MANUAL_KEY, "0");
+    } catch {
+      // ignore storage errors
+    }
+  };
+
+  unhide();
+
+  const playVisibleBackgroundVideos = () => {
+    const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
+    nodes.forEach((node) => {
+      if (!(node instanceof HTMLVideoElement)) return;
+      node.muted = true;
+      const playPromise = node.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    });
+  };
+
+  // Keep videos visible if any stale code tries to re-add the body flag.
+  const observer = new MutationObserver(() => {
+    if (document.body.hasAttribute("data-hide-videos")) {
+      unhide();
+      playVisibleBackgroundVideos();
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ["data-hide-videos"] });
+
+  window.requestAnimationFrame(playVisibleBackgroundVideos);
+};
 
 const enforceCurrentBuild = async () => {
   if (typeof window === "undefined") return;
@@ -121,6 +164,7 @@ if (typeof window !== "undefined") {
     swHost === "localhost";
 
   if (swIsPreview) {
+    forcePreviewVideoVisibility();
     void enforceCurrentBuild();
   }
 

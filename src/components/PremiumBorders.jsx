@@ -4,12 +4,13 @@ import bgLoop1 from '@/assets/bg-loop-1.mp4.asset.json';
 import bgLoop2 from '@/assets/bg-loop-2.mp4.asset.json';
 import bgLoop3 from '@/assets/bg-loop-3.mp4.asset.json';
 import bgLoop4 from '@/assets/bg-loop-4.mp4.asset.json';
+import { safeLovableVideoSource } from '@/lib/lovableVideoSources';
 
 const BACKGROUND_VIDEO_PLAYLIST = [
-  "https://drive.google.com/uc?export=download&id=1B53BjAXQHtOqog07KJirn6FRzWbZNp1O",
-  "https://drive.google.com/uc?export=download&id=1Z-2Tg96mQWPcMPr2FRTV2SjnEm_0hcJF",
-  "https://drive.google.com/uc?export=download&id=1E8QyVwiogsVLAEgEqomQCKMRLqtzuL5B",
-  "https://drive.google.com/uc?export=download&id=1rjT6serxi0jz_56bkS9hUvAGiX9nJWtx",
+  safeLovableVideoSource(bgLoop1?.url, '/global-bg-web.mp4'),
+  safeLovableVideoSource(bgLoop2?.url, '/global-bg-mobile.mp4'),
+  safeLovableVideoSource(bgLoop3?.url, '/home-banner.mp4'),
+  safeLovableVideoSource(bgLoop4?.url, '/custom-hero-banner.mp4'),
 ];
 
 const Leaf = ({ delay, x, duration }) => (
@@ -50,13 +51,6 @@ const Cloud = ({ delay, y, duration, scale }) => (
     style={{ top: y, width: 300 * scale, height: 100 * scale }}
   />
 );
-
-const resolveGoogleDriveVideoSource = (input) => {
-  if (typeof input !== "string") return input;
-  const match = input.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if (match?.[1]) return `https://drive.google.com/uc?export=download&id=${match[1]}`;
-  return input;
-};
 
 const OVERLAY_BACKGROUND_VIDEOS = [
   {
