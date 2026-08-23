@@ -72,14 +72,7 @@ function thumbFor(to: string) {
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const [signedIn, setSignedIn] = useState(false);
-  const [open, setOpen] = useState(() => {
-    try {
-      const saved = localStorage.getItem(OPEN_KEY);
-      return saved === null ? true : saved === "1";
-    } catch {
-      return true;
-    }
-  });
+  const [open, setOpen] = useState(true);
   const [mainCollapsed, setMainCollapsed] = useState(() => {
     try {
       return localStorage.getItem(MAIN_KEY) === "1";
@@ -123,11 +116,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   const secondaryItems = useMemo(() => navItems.slice(6), [navItems]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(OPEN_KEY, open ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
+    try { localStorage.setItem(OPEN_KEY, open ? "1" : "0"); } catch { /* ignore */ }
   }, [open]);
 
   useEffect(() => {
@@ -154,7 +143,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="quicknav-floating glass3d-panel glass3d-surface" data-panel-key="quick-nav" role="dialog" aria-label="Navigation rapide">
+    <div className="quicknav-floating glass3d-panel glass3d-surface" data-panel-key="quick-nav" data-collapsed={!open ? "true" : "false"} role="dialog" aria-label="Navigation rapide">
       <button
         type="button"
         onClick={() => (open ? close() : setOpen(true))}
