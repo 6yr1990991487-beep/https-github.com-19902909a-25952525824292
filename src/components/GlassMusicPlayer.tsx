@@ -9,7 +9,8 @@ import {
   MUSIC_GENRES, MusicTrack, fetchGenreTracks, fetchCloudTracks, makeLocalTrack, uploadCloudTrack,
 } from "@/lib/musicLibrary";
 
-const AI_HUB_PLAYER_BG_IMAGE = "/images/aihub-player-bg.jpg";
+const AI_HUB_PLAYER_TOP_GIF = "/images/aihub-player-top.gif";
+const AI_HUB_PLAYER_BOTTOM_IMAGE = "/images/aihub-player-bottom.png";
 
 function formatTime(sec: number) {
   if (!Number.isFinite(sec) || sec <= 0) return "00:00";
@@ -218,12 +219,18 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
       data-testid="aihub-glass-music-player"
       className={`glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7 ${className}`}
     >
-      <img
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-65"
-        src={AI_HUB_PLAYER_BG_IMAGE}
-        alt=""
-        aria-hidden
-      />
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+        <img
+          className="absolute inset-x-0 top-0 h-[58%] w-full object-cover opacity-70"
+          src={AI_HUB_PLAYER_TOP_GIF}
+          alt=""
+        />
+        <img
+          className="absolute inset-x-0 bottom-0 h-[56%] w-full object-cover opacity-70"
+          src={AI_HUB_PLAYER_BOTTOM_IMAGE}
+          alt=""
+        />
+      </div>
       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.34))]" />
       <div className="pointer-events-none absolute inset-0 audio-shell-glow" aria-hidden />
 
