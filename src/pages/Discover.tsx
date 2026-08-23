@@ -27,6 +27,13 @@ const Discover = () => {
   }, []);
 
   useEffect(() => {
+    document.body.setAttribute("data-hide-decors", "1");
+    return () => {
+      document.body.removeAttribute("data-hide-decors");
+    };
+  }, []);
+
+  useEffect(() => {
     document.title = "Univers Lovanet — Vidéos, shorts, magasin, animés";
     const meta = (name: string, value: string, prop = false) => {
       const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
