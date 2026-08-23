@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/png" href="/favicon.png?v=19">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=19">
+    <link rel="icon" type="image/png" sizes="32x32" href="/lovanet-icon-32.png?v=19">
+    <link rel="icon" type="image/png" sizes="192x192" href="/lovanet-icon-192.png?v=19">
+    <link rel="apple-touch-icon" href="/lovanet-icon-180.png?v=19" />
+    <meta name="msapplication-TileColor" content="#0a0e1a" />
+    <meta name="msapplication-TileImage" content="/lovanet-icon-192.png?v=19" />
+    <meta name="msapplication-config" content="none" />
+    <link rel="manifest" href="/manifest.json?v=19" />
+    <script>
+      // Capture l'evenement d'installation avant le montage de React
+      // (sinon Chrome/Edge/Samsung le declenchent trop tot et le bouton disparait).
+      (function () {
+        window.__lovanetInstallEvent = null;
+        window.addEventListener("beforeinstallprompt", function (e) {
+          e.preventDefault();
+          window.__lovanetInstallEvent = e;
+          window.dispatchEvent(new CustomEvent("lovanet:installready"));
+        });
+        window.addEventListener("appinstalled", function () {
+          window.__lovanetInstallEvent = null;
+          window.dispatchEvent(new CustomEvent("lovanet:installed"));
+        });
+      })();
+    </script>
+
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Lovanet" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="google-adsense-account" content="ca-pub-6025342914124007">
+    <meta name="google-site-verification" content="LMH85l889Fiosf_9fA2L9MRPsUNI8lBPjDKebZqILSA" />
+    <meta name="google-site-verification" content="MUnzTZ9tFO1AS4RX_4-LiRNP84MJAK1MtX3Lxk_gvBg" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6025342914124007" crossorigin="anonymous"></script>
+    <!-- TODO: Set the document title to the name of your application -->
+    <title>Lovanet : página oficial Lovanet</title>
+    <meta name="description" content="Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet." />
+    <meta name="keywords" content="AnimemomentsAnimeofficiel, Anime Moments, Lovanet, magasin anime, posters anime, collector anime, vêtements anime, sneakers anime" />
+    <meta name="author" content="AnimemomentsAnimeofficiel / Lovanet" />
+    <meta name="application-name" content="AnimemomentsAnimeofficiel" />
+    <link rel="canonical" href="https://lovanet.fr/es/anime-moments" />
+    <!-- hreflang alternates (static fallback for the root) — LocalizedHead
+         overrides these per-route once React hydrates, and the
+         prerender-locales Vite plugin bakes localized variants per language
+         under /en/, /es/, /de/, /it/, /pt/, /ja/, /zh/. -->
+
+    <!-- TODO: Update og:title to match your application name -->
+    
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AnimemomentsAnimeofficiel : Lovanet" />
+    <meta property="og:url" content="https://lovanet.fr/es/anime-moments" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2cb8c14b-725a-45a2-bb3f-b827e4d6158e">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/2cb8c14b-725a-45a2-bb3f-b827e4d6158e">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://lovanet.fr/#website",
+    "name": "AnimemomentsAnimeofficiel : Lovanet",
+    "alternateName": ["AnimemomentsAnimeofficiel", "Anime Moments Anime Officiel", "Lovanet"],
+    "description": "Lovanet  Portail anime, manga, gaming, pop culture japonaise.",
+    "url": "https://lovanet.fr/",
+    "inLanguage": "fr-FR",
+    "publisher": { "@id": "https://lovanet.fr/#organization" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://lovanet.fr/shop?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://lovanet.fr/#organization",
+    "name": "AnimemomentsAnimeofficiel",
+    "alternateName": "Anime Moments Anime Officiel",
+    "description": "Lovanet  Portail anime, manga, gaming, pop culture japonaise.",
+    "url": "https://lovanet.fr/",
+    "logo": "https://lovanet.fr/favicon.png",
+    "brand": "AnimemomentsAnimeofficiel",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "Lovanet",
+      "url": "https://lovanet.fr/"
+    },
+    "sameAs": [
+      "https://www.tiktok.com/@animemomentsanimeofficiel",
+      "https://www.youtube.com/@animemomentsanimeofficiel"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "SiteNavigationElement", "position": 1, "name": "YouTube AnimeMoments",                        "description": "chaîne YouTube officielle Lovanet, moments cultes, shorts et compilations anime manga.",     "url": "https://lovanet.fr/chaine-youtube",   "image": "https://lovanet.fr/products/am-004.svg" },
+      { "@type": "SiteNavigationElement", "position": 2, "name": "Discover Lovanet",                            "description": "univers Lovanet, vidéos, produits et découvertes anime manga.",                              "url": "https://lovanet.fr/decouvrir",        "image": "https://lovanet.fr/products/am-007.svg" },
+      { "@type": "SiteNavigationElement", "position": 3, "name": "Prime Video Lovanet",          "description": "lecture immersive Prime Video des animés partenaires manga Lovanet.",                        "url": "https://lovanet.fr/prime-video",      "image": "https://lovanet.fr/products/am-008.svg" },
+      { "@type": "SiteNavigationElement", "position": 4, "name": "TikTok Lovanet",               "description": "compte TikTok officiel Lovanet, shorts verticaux, moments cultes et tendances manga.",       "url": "https://lovanet.fr/tiktok",           "image": "https://lovanet.fr/products/am-003.svg" },
+      { "@type": "SiteNavigationElement", "position": 5, "name": "Magasin Lovanet",                            "description": "magasin manga officielle, posters, collectors, vêtements et objets anime.",                 "url": "https://lovanet.fr/shop",             "image": "https://lovanet.fr/products/am-006.svg" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "Anime a venir",                               "description": "countdown live des prochains épisodes et sorties anime manga.",                              "url": "https://lovanet.fr/anime-countdown",  "image": "https://lovanet.fr/products/am-005.svg" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "Catalogue Anime",                             "description": "1500+ animés manga avec trailers, resumes et fiches completes.",                             "url": "https://lovanet.fr/anime-catalog",    "image": "https://lovanet.fr/products/am-002.svg" }
+    ]
+  }
+  </script>
+  <meta property="og:title" content="Lovanet : página oficial Lovanet" />
+  <meta name="twitter:title" content="Lovanet : página oficial Lovanet" />
+  <meta property="og:description" content="Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet." />
+  <meta name="twitter:description" content="Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet." />
+
+  <!-- Brand-alias landing pages: each alias references a primary section with its thumbnail -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://lovanet.fr/#anime-moments-officiel",
+        "name": "Lovanet : shorts TikTok anime",
+        "alternateName": "Lovanet",
+        "description": "shorts TikTok verticaux, moments cultes, reactions et tendances anime manga.",
+        "url": "https://lovanet.fr/tiktok",
+        "primaryImageOfPage": "https://lovanet.fr/products/am-003.svg",
+        "isPartOf": { "@id": "https://lovanet.fr/#website" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://lovanet.fr/#animemomentsanimeofficiel",
+        "name": "YouTube AnimeMoments : chaine officielle anime",
+        "alternateName": "AnimemomentsAnimeofficiel",
+        "description": "chaine YouTube officielle Lovanet, episodes, moments cultes, shorts et compilations manga.",
+        "url": "https://lovanet.fr/chaine-youtube",
+        "primaryImageOfPage": "https://lovanet.fr/products/am-004.svg",
+        "isPartOf": { "@id": "https://lovanet.fr/#website" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://lovanet.fr/#lovanet",
+        "name": "Discover Lovanet : univers anime videos magasin et catalogue",
+        "alternateName": "Lovanet",
+        "description": "univers reunissant videos YouTube, shorts TikTok, Prime Video, catalogue 1500+ anime manga et magasin.",
+        "url": "https://lovanet.fr/decouvrir",
+        "primaryImageOfPage": "https://lovanet.fr/products/am-007.svg",
+        "isPartOf": { "@id": "https://lovanet.fr/#website" }
+      }
+    ]
+  }
+  </script>
+<script defer src="/~flock.js" data-proxy-url="/~api/analytics"></script>  <script type="module" crossorigin src="/assets/index-VZI1Us_w.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-B2vdNj6b.css">
+    <link rel="alternate" hreflang="fr" href="https://lovanet.fr/anime-moments" />
+    <link rel="alternate" hreflang="en" href="https://lovanet.fr/en/anime-moments" />
+    <link rel="alternate" hreflang="es" href="https://lovanet.fr/es/anime-moments" />
+    <link rel="alternate" hreflang="de" href="https://lovanet.fr/de/anime-moments" />
+    <link rel="alternate" hreflang="it" href="https://lovanet.fr/it/anime-moments" />
+    <link rel="alternate" hreflang="pt" href="https://lovanet.fr/pt/anime-moments" />
+    <link rel="alternate" hreflang="ja" href="https://lovanet.fr/ja/anime-moments" />
+    <link rel="alternate" hreflang="zh" href="https://lovanet.fr/zh/anime-moments" />
+    <link rel="alternate" hreflang="x-default" href="https://lovanet.fr/anime-moments" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:locale:alternate" content="it_IT" />
+    <meta property="og:locale:alternate" content="pt_BR" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Lovanet : página oficial Lovanet","description":"Anime Moments : page officielle avec sélections vidéo, aperçus, nouveautés et accès direct aux services Lovanet.","url":"https://lovanet.fr/es/anime-moments","inLanguage":"es","isPartOf":{"@type":"WebSite","@id":"https://lovanet.fr/#website"}}</script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <nav aria-label="Lovanet : Plan du site">
+        <h1>Lovanet : portail anime, manga, gaming, pop culture japonaise</h1>
+        <p>Lovanet  Portail anime, manga, gaming, pop culture japonaise.</p>
+        <ul>
+          <li><a href="https://lovanet.fr/chaine-youtube">YouTube AnimeMoments</a></li>
+          <li><a href="https://lovanet.fr/decouvrir">Discover Lovanet</a></li>
+          <li><a href="https://lovanet.fr/prime-video">Prime Video Lovanet</a></li>
+          <li><a href="https://lovanet.fr/tiktok">TikTok Lovanet</a></li>
+          <li><a href="https://lovanet.fr/shop">Magasin Lovanet</a></li>
+          <li><a href="https://lovanet.fr/anime-countdown">Anime a venir</a></li>
+          <li><a href="https://lovanet.fr/anime-catalog">Catalogue Anime</a></li>
+        </ul>
+      </nav>
+    </noscript>
+    <script>
+      (function () {
+        const key = 'lovanet_pwa_diag';
+        function push(msg) {
+          try {
+            const now = new Date().toISOString();
+            const arr = JSON.parse(localStorage.getItem(key) || '[]');
+            arr.push({ t: now, m: msg });
+            localStorage.setItem(key, JSON.stringify(arr.slice(-200)));
+          } catch (e) { /* ignore */ }
+        }
+
+        // Record service worker registration state
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            push('sw.getRegistration -> ' + (reg ? ('active:' + !!reg.active) : 'none'));
+          }).catch((e) => push('sw.getRegistration:error '+(e&&e.message)));
+        } else {
+          push('serviceWorker not supported');
+        }
+
+        // Probe the files /sw.js and /manifest.json for headers/status
+        fetch('/sw.js', { method: 'HEAD' }).then(r => push('/sw.js HEAD ' + r.status + ' ' + (r.headers.get('content-type')||''))).catch(e => push('/sw.js HEAD error '+(e&&e.message)));
+        fetch('/manifest.json', { method: 'HEAD' }).then(r => push('/manifest.json HEAD ' + r.status + ' ' + (r.headers.get('content-type')||''))).catch(e => push('/manifest.json HEAD error '+(e&&e.message)));
+
+        window.addEventListener('beforeinstallprompt', (e) => { push('beforeinstallprompt fired'); window.__lovanetInstallEvent = e; });
+        window.addEventListener('appinstalled', () => { push('appinstalled fired'); });
+
+        // Expose a quick viewer if ?showPwaDiag=1
+        try {
+          const params = new URLSearchParams(location.search);
+          if (params.get('showPwaDiag') === '1') {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.inset = '1rem';
+            overlay.style.zIndex = '99999';
+            overlay.style.background = 'rgba(0,0,0,0.85)';
+            overlay.style.color = '#fff';
+            overlay.style.padding = '12px';
+            overlay.style.overflow = 'auto';
+            overlay.style.fontFamily = 'monospace';
+            overlay.style.fontSize = '12px';
+            const h = document.createElement('div');
+            h.textContent = 'PWA Diagnostics — close with ESC';
+            h.style.fontWeight = '700';
+            h.style.marginBottom = '8px';
+            overlay.appendChild(h);
+            const dump = document.createElement('pre');
+            dump.style.whiteSpace = 'pre-wrap';
+            function render() {
+              const arr = JSON.parse(localStorage.getItem(key) || '[]');
+              dump.textContent = arr.map(a => '['+a.t+'] '+a.m).join('\n');
+            }
+            render();
+            overlay.appendChild(dump);
+            document.body.appendChild(overlay);
+            window.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') overlay.remove(); });
+          }
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
+  </body>
+</html>

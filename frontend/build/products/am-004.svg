@@ -1,20 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Triptyque Moments Forts S1 — AnimemomentsAnimeofficiel">
+  <title>Triptyque Moments Forts S1 — AnimemomentsAnimeofficiel</title>
   <defs>
-    <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f59e0b"/>
-      <stop offset="100%" stop-color="#fbbf24"/>
+    <linearGradient id="gyzpby2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00ffa3"/>
+      <stop offset="55%" stop-color="#00b8ff"/>
+      <stop offset="100%" stop-color="#7b2dff"/>
     </linearGradient>
-    <radialGradient id="r4" cx="50%" cy="35%" r="60%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-    </radialGradient>
   </defs>
-  <rect width="600" height="800" fill="url(#g4)"/>
-  <rect width="600" height="800" fill="url(#r4)"/>
-  <circle cx="300" cy="320" r="140" fill="rgba(0,0,0,0.25)"/>
-  <circle cx="300" cy="320" r="140" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4"/>
-  <polygon points="270,260 270,380 380,320" fill="white"/>
-  <text x="50%" y="580" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="middle" letter-spacing="6">AN</text>
-  <text x="50%" y="640" font-family="Inter,Arial,sans-serif" font-size="24" font-weight="600" fill="rgba(255,255,255,0.75)" text-anchor="middle" letter-spacing="4">LOVANET</text>
-  <text x="50%" y="700" font-family="Inter,Arial,sans-serif" font-size="18" font-weight="400" fill="rgba(255,255,255,0.65)" text-anchor="middle" letter-spacing="6">ANIME · MOMENTS</text>
+  <rect width="400" height="400" fill="url(#gyzpby2)"/>
+  <g transform="rotate(5 200 200)" opacity="0.55">
+    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+  <circle cx="386.0" cy="200.0" r="10" fill="#fff" opacity="0.45"/><circle cx="121.1" cy="272.3" r="7" fill="#fff" opacity="0.45"/><circle cx="212.0" cy="62.5" r="4" fill="#fff" opacity="0.45"/><circle cx="302.9" cy="334.1" r="11" fill="#fff" opacity="0.45"/><circle cx="111.4" cy="184.4" r="8" fill="#fff" opacity="0.45"/><circle cx="302.1" cy="135.0" r="5" fill="#fff" opacity="0.45"/><circle cx="160.7" cy="346.8" r="12" fill="#fff" opacity="0.45"/><circle cx="115.5" cy="37.7" r="9" fill="#fff" opacity="0.45"/><circle cx="297.7" cy="235.6" r="6" fill="#fff" opacity="0.45"/><circle cx="75.3" cy="251.7" r="13" fill="#fff" opacity="0.45"/><circle cx="270.2" cy="49.6" r="10" fill="#fff" opacity="0.45"/><circle cx="226.2" cy="283.0" r="7" fill="#fff" opacity="0.45"/><circle cx="97.8" cy="141.0" r="4" fill="#fff" opacity="0.45"/><circle cx="345.5" cy="167.8" r="11" fill="#fff" opacity="0.45"/><circle cx="96.8" cy="347.4" r="8" fill="#fff" opacity="0.45"/><circle cx="186.8" cy="99.9" r="5" fill="#fff" opacity="0.45"/><circle cx="301.1" cy="284.8" r="12" fill="#fff" opacity="0.45"/><circle cx="37.2" cy="207.1" r="9" fill="#fff" opacity="0.45"/>
+  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
+  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#00ffa3">P</text>
+  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">POSTER</text>
+  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Triptyque Moments Forts S1</text>
+  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-004</text>
 </svg>

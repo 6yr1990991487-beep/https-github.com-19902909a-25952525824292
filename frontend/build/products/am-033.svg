@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Casquette Brodée Lovanet — AnimemomentsAnimeofficiel">
+  <title>Casquette Brodée Lovanet — AnimemomentsAnimeofficiel</title>
+  <defs>
+    <linearGradient id="gvdrcfg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8338ec"/>
+      <stop offset="55%" stop-color="#3a86ff"/>
+      <stop offset="100%" stop-color="#06ffa5"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#gvdrcfg)"/>
+  <g transform="rotate(-18 200 200)" opacity="0.55">
+    <circle cx="200" cy="200" r="60"  fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="2"/>
+    <circle cx="200" cy="200" r="100" fill="none" stroke="#fff" stroke-opacity="0.14" stroke-width="2"/>
+    <circle cx="200" cy="200" r="140" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="2"/>
+  </g>
+  <circle cx="304.0" cy="200.0" r="8" fill="#fff" opacity="0.45"/><circle cx="100.5" cy="291.2" r="5" fill="#fff" opacity="0.45"/><circle cx="214.5" cy="34.6" r="12" fill="#fff" opacity="0.45"/><circle cx="253.0" cy="269.0" r="9" fill="#fff" opacity="0.45"/><circle cx="83.8" cy="179.5" r="6" fill="#fff" opacity="0.45"/><circle cx="325.7" cy="119.9" r="13" fill="#fff" opacity="0.45"/><circle cx="153.4" cy="373.9" r="10" fill="#fff" opacity="0.45"/><circle cx="153.4" cy="110.4" r="7" fill="#fff" opacity="0.45"/><circle cx="324.0" cy="245.1" r="4" fill="#fff" opacity="0.45"/><circle cx="49.4" cy="262.4" r="11" fill="#fff" opacity="0.45"/><circle cx="235.5" cy="123.9" r="8" fill="#fff" opacity="0.45"/><circle cx="234.6" cy="309.7" r="5" fill="#fff" opacity="0.45"/><circle cx="73.6" cy="127.0" r="12" fill="#fff" opacity="0.45"/><circle cx="372.8" cy="161.7" r="9" fill="#fff" opacity="0.45"/><circle cx="143.8" cy="280.3" r="6" fill="#fff" opacity="0.45"/><circle cx="183.2" cy="72.1" r="13" fill="#fff" opacity="0.45"/><circle cx="322.6" cy="302.8" r="10" fill="#fff" opacity="0.45"/><circle cx="119.1" cy="203.5" r="7" fill="#fff" opacity="0.45"/>
+  <rect x="40" y="60" width="320" height="280" rx="14" fill="#0c0c14" opacity="0.78"/>
+  <text x="200" y="200" text-anchor="middle" font-family="serif" font-weight="900" font-size="120" fill="#8338ec">A</text>
+  <text x="200" y="260" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="14" letter-spacing="4" fill="#fff">APPAREL</text>
+  <text x="200" y="300" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fff" opacity="0.9">Casquette Brodée Lovanet</text>
+  <text x="20" y="385" font-family="Orbitron, sans-serif" font-size="10" letter-spacing="3" fill="#fff" opacity="0.7">AnimemomentsAnimeofficiel · AM-033</text>
+</svg>
