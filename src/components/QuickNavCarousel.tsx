@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, Home, BookOpen, Sparkles, Youtube, ShoppingBag, Video, Newspaper, Trophy, User, LogIn, LucideIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, BookOpen, Sparkles, Youtube, ShoppingBag, Video, Newspaper, Trophy, User, LogIn, LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import DragScroller from "@/components/DragScroller";
 
 export const OPEN_QUICKNAV_EVENT = "lovanet:open-quicknav";
-const OPEN_KEY = "lovanet.quicknav.open";
 const MAIN_KEY = "lovanet.quicknav.main.collapsed";
 const MINI_KEY = "lovanet.quicknav.mini.collapsed";
 const POS_KEY = "lovanet.quicknav.position";
@@ -73,7 +72,7 @@ const MINI_TINT_BY_ID: Record<string, string> = {
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const [signedIn, setSignedIn] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [dockPos, setDockPos] = useState<{ x: number; y: number; dragged: boolean }>(() => {
     try {
@@ -104,13 +103,10 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   });
 
   useEffect(() => {
-    const openIt = () => setOpen(true);
-    const toggleIt = () => setOpen((value) => !value);
-    window.addEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
-    window.addEventListener("quicknav:toggle", toggleIt as EventListener);
+    const closeIt = () => setOpen(false);
+    window.addEventListener("quicknav:close", closeIt as EventListener);
     return () => {
-      window.removeEventListener(OPEN_QUICKNAV_EVENT, openIt as EventListener);
-      window.removeEventListener("quicknav:toggle", toggleIt as EventListener);
+      window.removeEventListener("quicknav:close", closeIt as EventListener);
     };
   }, []);
 
@@ -147,10 +143,6 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   };
 
   useEffect(() => {
-    try { localStorage.setItem(OPEN_KEY, open ? "1" : "0"); } catch { /* ignore */ }
-  }, [open]);
-
-  useEffect(() => {
     try {
       localStorage.setItem(MAIN_KEY, mainCollapsed ? "1" : "0");
     } catch {
@@ -180,6 +172,55 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [dockPos.dragged]);
+
+  useEffect(() => {
+    if (!open || mainCollapsed) return;
+
+    const root = dockRef.current;
+    if (!root) return;
+    const scroller = root.querySelector('[data-testid="quicknav-main-carousel"]') as HTMLDivElement | null;
+    if (!scroller) return;
+
+    let raf = 0;
+    let direction: -1 | 1 = -1;
+    let pauseFrames = 14;
+
+    const toRightEdge = () => Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+    scroller.scrollLeft = toRightEdge();
+
+    const tick = () => {
+      const max = toRightEdge();
+      if (max <= 0) {
+        raf = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      if (pauseFrames > 0) {
+        pauseFrames -= 1;
+        raf = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      if (direction === -1) {
+        scroller.scrollLeft = Math.max(0, scroller.scrollLeft - 0.38);
+        if (scroller.scrollLeft <= 0.5) {
+          direction = 1;
+          pauseFrames = 18;
+        }
+      } else {
+        scroller.scrollLeft = Math.min(max, scroller.scrollLeft + 0.95);
+        if (scroller.scrollLeft >= max - 0.5) {
+          setOpen(false);
+          return;
+        }
+      }
+
+      raf = window.requestAnimationFrame(tick);
+    };
+
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  }, [open, mainCollapsed, primaryItems.length]);
 
   const beginDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest("button, a, [data-no-panel-drag]")) return;
@@ -241,7 +282,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
         className="quicknav-floating__edge-toggle"
         aria-label={open ? "Réduire le carrousel de navigation" : "Ouvrir le carrousel de navigation"}
       >
-        {open ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
       {open && (
@@ -259,14 +300,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
               </span>
               Menu carrousel
             </div>
-            <button
-              type="button"
-              onClick={close}
-              aria-label="Fermer la navigation rapide"
-              className="glass3d-btn inline-flex h-8 w-8 items-center justify-center rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Glisser</div>
           </div>
 
           <section className="quicknav-floating__section">
@@ -276,7 +310,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
               className="quicknav-floating__section-toggle"
               aria-label={mainCollapsed ? "Ouvrir le carrousel complet" : "Replier le carrousel complet"}
             >
-              <span>Menu complet</span>
+              <span className="sr-only">Menu complet</span>
               {mainCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
 
@@ -319,7 +353,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
               className="quicknav-floating__section-toggle"
               aria-label={miniCollapsed ? "Ouvrir le carrousel miniature" : "Replier le carrousel miniature"}
             >
-              <span>Miniatures</span>
+              <span className="sr-only">Miniatures</span>
               {miniCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
 
