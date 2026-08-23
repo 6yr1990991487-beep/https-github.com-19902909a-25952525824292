@@ -4165,6 +4165,20 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   border-radius: 1.35rem;
   padding-left: 1rem;
 }
+.quicknav-floating--left {
+  left: 0.9rem;
+}
+.quicknav-floating--right {
+  left: auto;
+  right: 0.9rem;
+  padding-left: 0;
+  padding-right: 1rem;
+}
+.quicknav-floating--top {
+  top: 1rem;
+  transform: none;
+  width: min(92vw, 20rem);
+}
 .quicknav-floating[data-dragged="true"] {
   transform: none;
 }
@@ -4942,6 +4956,9 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
   width: auto;
   padding-left: 0.1rem;
 }
+.quicknav-floating--right[data-collapsed="true"] {
+  padding-right: 0.1rem;
+}
 .quicknav-floating[data-collapsed="true"] .quicknav-floating__stack {
   display: none;
 }
@@ -5023,8 +5040,13 @@ html[data-nav-carousel] .quicknav-floating a:hover {
 
 @media (max-width: 767px) {
   .quicknav-floating {
-    left: 0.55rem;
     width: min(94vw, 20rem);
+  }
+  .quicknav-floating--left {
+    left: 0.55rem;
+  }
+  .quicknav-floating--right {
+    right: 0.55rem;
   }
   .quicknav-card--full {
     min-width: 12.25rem;

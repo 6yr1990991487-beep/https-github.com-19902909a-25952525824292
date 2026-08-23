@@ -72,7 +72,8 @@ const MINI_TINT_BY_ID: Record<string, string> = {
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const [signedIn, setSignedIn] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [dockPos, setDockPos] = useState<{ x: number; y: number; dragged: boolean }>(() => {
     try {
@@ -103,7 +104,10 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   });
 
   useEffect(() => {
-    const closeIt = () => setOpen(false);
+    const closeIt = () => {
+      setLeftOpen(false);
+      setRightOpen(false);
+    };
     window.addEventListener("quicknav:close", closeIt as EventListener);
     return () => {
       window.removeEventListener("quicknav:close", closeIt as EventListener);
@@ -125,6 +129,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   const navItems = [...items, signedIn ? PROFILE_ITEM : LOGIN_ITEM];
   const primaryItems = useMemo(() => navItems.slice(0, 6), [navItems]);
   const secondaryItems = useMemo(() => navItems.slice(6), [navItems]);
+  const rightItems = useMemo(() => [...primaryItems, ...secondaryItems], [primaryItems, secondaryItems]);
   const dockRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; baseX: number; baseY: number } | null>(null);
 
@@ -174,11 +179,9 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   }, [dockPos.dragged]);
 
   useEffect(() => {
-    if (!open || mainCollapsed) return;
+    if (!rightOpen) return;
 
-    const root = dockRef.current;
-    if (!root) return;
-    const scroller = root.querySelector('[data-testid="quicknav-main-carousel"]') as HTMLDivElement | null;
+    const scroller = document.querySelector('[data-testid="quicknav-right-carousel"]') as HTMLDivElement | null;
     if (!scroller) return;
 
     let raf = 0;
@@ -210,7 +213,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
       } else {
         scroller.scrollLeft = Math.min(max, scroller.scrollLeft + 0.95);
         if (scroller.scrollLeft >= max - 0.5) {
-          setOpen(false);
+          setRightOpen(false);
           return;
         }
       }
@@ -220,7 +223,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
 
     raf = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(raf);
-  }, [open, mainCollapsed, primaryItems.length]);
+  }, [rightOpen, rightItems.length]);
 
   const beginDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if ((event.target as HTMLElement).closest("button, a, [data-no-panel-drag]")) return;
@@ -257,19 +260,20 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     }
   };
 
-  const close = () => {
-    setOpen(false);
+  const closeLeft = () => {
+    setLeftOpen(false);
     onClose?.();
   };
 
   if (typeof document === "undefined") return null;
 
   return createPortal(
+    <>
     <div
       ref={dockRef}
-      className="quicknav-floating glass3d-panel glass3d-surface"
+      className="quicknav-floating quicknav-floating--left glass3d-panel glass3d-surface"
       data-panel-key="quick-nav"
-      data-collapsed={!open ? "true" : "false"}
+      data-collapsed={!leftOpen ? "true" : "false"}
       data-dragged={dockPos.dragged ? "true" : "false"}
       data-dragging={dragging ? "true" : "false"}
       role="dialog"
@@ -278,14 +282,14 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     >
       <button
         type="button"
-        onClick={() => (open ? close() : setOpen(true))}
+        onClick={() => (leftOpen ? closeLeft() : setLeftOpen(true))}
         className="quicknav-floating__edge-toggle"
-        aria-label={open ? "Réduire le carrousel de navigation" : "Ouvrir le carrousel de navigation"}
+        aria-label={leftOpen ? "Réduire le menu récent" : "Ouvrir le menu récent"}
       >
-        {open ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        {leftOpen ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
-      {open && (
+      {leftOpen && (
         <div className="quicknav-floating__stack">
           <div
             className="quicknav-floating__topbar glass3d-header flex items-center justify-between gap-2 px-3 py-2"
@@ -298,7 +302,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/10">
                 <ChevronRight className="h-3.5 w-3.5" />
               </span>
-              Menu carrousel
+              Menu recent
             </div>
             <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Glisser</div>
           </div>
@@ -399,7 +403,75 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
           </section>
         </div>
       )}
-    </div>,
+    </div>
+
+    <div
+      className="quicknav-floating quicknav-floating--right quicknav-floating--top glass3d-panel glass3d-surface"
+      data-panel-key="quick-nav-right"
+      data-collapsed={!rightOpen ? "true" : "false"}
+      role="dialog"
+      aria-label="Carrousel defilant"
+    >
+      <button
+        type="button"
+        onClick={() => setRightOpen((value) => !value)}
+        className="quicknav-floating__edge-toggle"
+        aria-label={rightOpen ? "Fermer le carrousel defilant" : "Ouvrir le carrousel defilant"}
+      >
+        {rightOpen ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      </button>
+
+      {rightOpen && (
+        <div className="quicknav-floating__stack">
+          <div className="quicknav-floating__topbar glass3d-header flex items-center justify-between gap-2 px-3 py-2">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/82">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/10">
+                <ChevronRight className="h-3.5 w-3.5" />
+              </span>
+              Defilant
+            </div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Auto</div>
+          </div>
+
+          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
+            <DragScroller className="quicknav-floating__mini-carousel no-scrollbar flex gap-2 px-2 py-2" data-testid="quicknav-right-carousel">
+              {rightItems.map((item) => {
+                const MiniIcon = MINI_ICON_BY_ID[item.id] ?? Sparkles;
+                const tint = MINI_TINT_BY_ID[item.id] ?? "from-cyan-400/45 to-indigo-500/45";
+                const badge = item.title.slice(0, 1).toUpperCase();
+                return (
+                  <Link
+                    key={`right-mini-${item.id}`}
+                    to={item.to}
+                    className="quicknav-card quicknav-card--mini group relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl border border-white/15 bg-white/[0.06] text-white"
+                    aria-label={item.title}
+                    draggable={false}
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-br ${tint}`} />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.28),transparent_52%),linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.56))]" />
+                    <motion.div
+                      className="absolute -right-3 -top-3 h-10 w-10 rounded-full bg-white/20 blur-sm"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+                    />
+                    <div className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/12 shadow-[0_0_14px_rgba(255,255,255,0.12)]">
+                      <motion.div whileHover={{ rotate: 360, scale: 1.14 }} transition={{ duration: 0.6 }}>
+                        <MiniIcon className="h-3.5 w-3.5 text-white" />
+                      </motion.div>
+                    </div>
+                    <div className="absolute right-2 top-2 rounded-full border border-white/25 bg-black/25 px-1.5 py-0.5 text-[9px] font-black text-white/90">{badge}</div>
+                    <div className="absolute inset-x-2 bottom-2 z-10 text-[10px] font-bold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] line-clamp-2">
+                      {item.title}
+                    </div>
+                  </Link>
+                );
+              })}
+            </DragScroller>
+          </motion.div>
+        </div>
+      )}
+    </div>
+    </>,
     document.body,
   );
 }
