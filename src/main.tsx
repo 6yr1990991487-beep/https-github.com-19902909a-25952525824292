@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")!).render(
   </HelmetProvider>,
 );
 
-const APP_BUILD_VERSION = "2026.08.23.preview-v4";
+const APP_BUILD_VERSION = "2026.08.23.preview-v5";
 const APP_BUILD_STORAGE_KEY = "lovanet_app_build_version";
 const VIDEO_PREF_KEY = "site_disable_videos";
 const VIDEO_PREF_MANUAL_KEY = "site_disable_videos_manual";
@@ -104,7 +104,7 @@ const enforceCurrentBuild = async () => {
 
 // Ensure old service workers and caches are unregistered to avoid stale preview assets.
 const LOVANET_RELOAD_FLAG = "lovanet_sw_unregistered";
-const LOVANET_RELOAD_VERSION = "9"; // bump to force a new cleanup cycle and full PWA reinstall
+const LOVANET_RELOAD_VERSION = "10"; // bump to force a new cleanup cycle and full PWA reinstall
 
 const forceLovanetReload = () => {
   if (typeof window === "undefined") return;
