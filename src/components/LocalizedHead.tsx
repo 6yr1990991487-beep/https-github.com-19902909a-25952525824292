@@ -9,9 +9,10 @@ import {
   normalizeRoute,
   metaFor,
 } from "@/lib/seoI18n";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
-const PRIMARY_SITE = "https://lovanet.fr";
-const ALTERNATE_SITES = ["https://animemomentsofficiel.fr", "https://animeofficiel.fr"];
+const PRIMARY_SITE = getSiteOrigin();
+const ALTERNATE_SITES = ["https://animemomentsofficiel.fr", "https://animeofficiel.fr", "https://lovanet.fr"].filter((site) => site !== PRIMARY_SITE);
 const OG_IMAGE = `${PRIMARY_SITE}/lovanet-logo-custom.png`;
 const LOGO = `${PRIMARY_SITE}/lovanet-logo-custom.png`;
 const GOOGLE_SITE_VERIFICATION = (import.meta.env.VITE_GOOGLE_SITE_VERIFICATION ?? "");

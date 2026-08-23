@@ -47,6 +47,7 @@ import { idbGet, idbSet, normalizeTitle } from "@/lib/animeCache";
 import { warmVideoAvailability, getVideoStatusSync, setVideoStatus } from "@/lib/videoAvailability";
 import { useFrenchTranslation } from "@/hooks/useFrenchTranslation";
 import { useAuth } from "@/contexts/AuthContext";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
 
 type Media = {
@@ -75,7 +76,7 @@ declare global {
   }
 }
 
-const PRIMARY_SITE = "https://lovanet.fr";
+const PRIMARY_SITE = getSiteOrigin();
 const FAVORITES_STORAGE_KEY = "lovanet.catalog.favorites.v2";
 
 function mediaTitle(media: Media | null | undefined) {

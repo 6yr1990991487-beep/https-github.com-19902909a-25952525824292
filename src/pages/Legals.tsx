@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { PageShell } from "@/components/PageShell";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
 const Legals = () => {
   useEffect(() => {
@@ -21,7 +22,7 @@ const Legals = () => {
       canonical.setAttribute("rel", "canonical");
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute("href", "https://lovanet.fr/legals");
+    canonical.setAttribute("href", `${getSiteOrigin()}/legals`);
   }, []);
 
   return (

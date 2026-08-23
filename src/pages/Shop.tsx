@@ -21,8 +21,9 @@ import { wishlistApi, recentApi } from "@/components/shop/WidgetDock";
 
 import { useGamification } from "@/contexts/GamificationContext";
 import { CyberRadarTracker } from "@/components/shop/CyberRadarTracker";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 const PAGE_SIZE = 40;
-const DEFAULT_SHOP_ORIGIN = "https://lovanet.fr";
+const DEFAULT_SHOP_ORIGIN = getSiteOrigin();
 const SOURCE_LABEL: Record<ShopProduct["source"], string> = {
   youtube: "YouTube drop",
   tiktok: "TikTok drop",

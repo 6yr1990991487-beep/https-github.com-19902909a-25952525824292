@@ -80,12 +80,10 @@ export function LaunchFormatPicker() {
           <button onClick={() => choose("browser")} className="glass3d-btn rounded-[1.4rem] border border-white/15 p-4 text-left transition-transform hover:scale-[1.01]">
             <Monitor className="h-7 w-7" />
             <div className="mt-3 text-base font-bold">Format navigateur</div>
-            <div className="mt-1 text-xs text-white/70">Barre du navigateur visible, style web classique.</div>
           </button>
           <button onClick={() => choose("app")} className="glass3d-btn rounded-[1.4rem] border border-white/15 p-4 text-left transition-transform hover:scale-[1.01]">
             <Smartphone className="h-7 w-7" />
             <div className="mt-3 text-base font-bold">Format application</div>
-            <div className="mt-1 text-xs text-white/70">Interface compacte, immersive et plus native.</div>
           </button>
         </div>
 

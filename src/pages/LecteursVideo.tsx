@@ -3,11 +3,12 @@ import { PageShell } from "@/components/PageShell";
 import { Helmet } from "react-helmet-async";
 import lecteurBanner from "@/assets/lecteur-video-banner-v15.mp4.asset.json";
 import { safeLovableVideoSource } from "@/lib/lovableVideoSources";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
 const LECTEURS_VIDEO_TOP_VIDEO = "/videos/portal-top-bg.mp4";
 const LECTEURS_VIDEO_TOP_VIDEO_FALLBACK = safeLovableVideoSource(lecteurBanner?.url, "/home-banner.mp4");
 
-const PRIMARY_SITE = "https://lovanet.fr";
+const PRIMARY_SITE = getSiteOrigin();
 
 const videoJsonLd = {
   "@context": "https://schema.org",

@@ -7,6 +7,7 @@ import { SHOP_PRODUCTS, categoryLabel } from "@/data/shopProducts";
 import { videos, thumb } from "@/data/videos";
 import { ShoppingBag, Youtube, Music2, Play, Film, Calendar, Sparkles, ArrowRight } from "lucide-react";
 import { ManualSyncButton } from "@/components/ManualSyncButton";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
 /**
  * /decouvrir — Univers landing page.
@@ -35,6 +36,7 @@ const Discover = () => {
 
   useEffect(() => {
     document.title = "Univers Lovanet : vidéos, shorts, magasin et animés";
+    const PRIMARY_SITE = getSiteOrigin();
     const meta = (name: string, value: string, prop = false) => {
       const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
       let el = document.querySelector(sel) as HTMLMetaElement | null;
@@ -44,10 +46,10 @@ const Discover = () => {
     meta("description", "Univers Lovanet : la porte d'entrée vers Anime Moments, la chaîne YouTube, les shorts TikTok, Prime Video, le catalogue 1500+ titres, les sorties à venir et le magasin collector.");
     meta("og:title", "Univers Lovanet", true);
     meta("og:description", "Univers Lovanet : vidéos, shorts, catalogue anime, sorties à venir et magasin collector.", true);
-    meta("og:url", "https://lovanet.fr/decouvrir", true);
+      meta("og:url", `${PRIMARY_SITE}/decouvrir`, true);
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
-    canonical.href = "https://lovanet.fr/decouvrir";
+      canonical.href = `${PRIMARY_SITE}/decouvrir`;
   }, []);
 
   const sections: Array<{
@@ -74,8 +76,8 @@ const Discover = () => {
         "@type": "Product",
         name: p.name,
         description: p.description,
-        image: `https://lovanet.fr/products/${p.id}.svg`,
-        url: `https://lovanet.fr/shop#${p.id}`,
+          image: `${getSiteOrigin()}/products/${p.id}.svg`,
+          url: `${getSiteOrigin()}/shop#${p.id}`,
         brand: { "@type": "Brand", name: "AnimemomentsAnimeofficiel" },
         offers: { "@type": "Offer", price: p.price.toFixed(2), priceCurrency: "EUR", availability: "https://schema.org/InStock" },
       },
@@ -161,7 +163,7 @@ const Discover = () => {
           ))}
           {SHOP_PRODUCTS.map((p) => (
             <li key={`seo-p-${p.id}`} itemScope itemType="https://schema.org/Product">
-              <a href={`https://lovanet.fr/shop#${p.id}`}>
+              <a href={`${getSiteOrigin()}/shop#${p.id}`}>
                 <img src={`/products/${p.id}.svg`} alt={`${p.name} — ${categoryLabel(p.category)}`} itemProp="image" />
                 <span itemProp="name">{p.name}</span>
                 <span itemProp="description">{p.description}</span>

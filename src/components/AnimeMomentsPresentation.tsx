@@ -267,7 +267,7 @@ export const AnimeMomentsPresentation = () => {
   const activeVideo = videos.find((v) => v.id === bannerId) ?? videos[0];
 
   const shareUrl =
-    typeof window !== "undefined" ? window.location.href : "https://lovanet.fr";
+    typeof window !== "undefined" ? window.location.href : "https://animemomentsofficiel.fr";
   const shareText = "Lovanet — Anime Moments, catalogue & shop";
 
   const copyLink = async () => {

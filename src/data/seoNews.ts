@@ -1,4 +1,8 @@
-export const SEO_NEWS = [
+import { getSiteOrigin } from "@/lib/siteOrigin";
+
+const SITE_ORIGIN = getSiteOrigin();
+
+const RAW_SEO_NEWS = [
   {
     "id": "video-attack-on-titan-1",
     "slug": "video-attack-on-titan-1",
@@ -629,5 +633,11 @@ export const SEO_NEWS = [
     "sourcePath": "/anime-catalog",
     "author": "Rédaction Lovanet"
   }
-] as const;
+ ] as const;
+
+export const SEO_NEWS = RAW_SEO_NEWS.map((entry) => ({
+  ...entry,
+  url: typeof entry.url === "string" ? entry.url.replace(/^https:\/\/lovanet\.fr/i, SITE_ORIGIN) : entry.url,
+}));
+
 export type SeoNewsItem = (typeof SEO_NEWS)[number];

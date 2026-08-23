@@ -34,9 +34,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/sonner";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { getSiteOrigin } from "@/lib/siteOrigin";
 
-const PRIMARY_SITE = "https://lovanet.fr";
 import { API_BASE as API } from "@/lib/apiBase";
+const PRIMARY_SITE = getSiteOrigin();
 const PAGE_SIZE = 24;
 
 const ACTUALITES_BANNER_VIDEO = "https://drive.google.com/uc?export=download&id=1Rf2nvttvwP8pLXhgT5pU8vFkPwkwy92N";
