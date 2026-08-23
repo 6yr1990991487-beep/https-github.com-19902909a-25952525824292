@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import aiHubLongBanner from '@/assets/aihub-banner-v2.mp4.asset.json';
-import { safeLovableVideoSource } from '@/lib/lovableVideoSources';
+import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Float, Environment, Stars } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Cpu, Shield, Search, PlayCircle, Gavel, CheckCircle2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LovaBot, LovaBotEnv, LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
+import { LovaAI, LovaAIEnv, LovaKingAI, LovaKingEnv } from '@/components/bots/BotModels';
 import { PageShell } from '@/components/PageShell';
 import GlassMusicPlayer from '@/components/GlassMusicPlayer';
 
@@ -16,7 +14,7 @@ export const AiHub = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'lova-bot':
-        return <TreasureHuntFeature />;
+        return null;
       case 'lova-ai':
         return <PlaylistFeature />;
       case 'lova-king':
@@ -27,19 +25,9 @@ export const AiHub = () => {
   };
 
   const render3D = () => {
+    if (activeTab === 'lova-bot') return null;
     return (
       <Canvas camera={{ position: [0, 2, 8], fov: 45 }} className="w-full h-full">
-        {activeTab === 'lova-bot' && (
-          <>
-            <ambientLight intensity={0.6} />
-            <spotLight position={[5, 10, 5]} angle={0.3} penumbra={1} intensity={1} castShadow color="#ffffff" />
-            <Environment preset="city" />
-            <LovaBotEnv />
-            <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-              <LovaBot isSpeaking={false} />
-            </Float>
-          </>
-        )}
         {activeTab === 'lova-ai' && (
           <>
             <ambientLight intensity={0.8} />
@@ -70,8 +58,7 @@ export const AiHub = () => {
 
   return (
     <PageShell className="page-nav-glass ai-hub-page">
-      {/** Background video with runtime availability check; fallback shown if asset missing */}
-      <BackgroundVideo src={safeLovableVideoSource(aiHubLongBanner?.url, "/home-banner.mp4")} />
+      <div className="ai-hub-bg-fallback" aria-hidden />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-12 pt-4">
         <div className="mb-6 flex justify-center">
@@ -99,7 +86,8 @@ export const AiHub = () => {
           </button>
         </div>
 
-        <div className="mx-auto grid h-auto max-w-5xl grid-cols-1 gap-4 lg:h-[470px] lg:grid-cols-2">
+        {activeTab !== 'lova-bot' && (
+          <div className="mx-auto grid h-auto max-w-5xl grid-cols-1 gap-4 lg:h-[470px] lg:grid-cols-2">
           <div className="glass3d-panel glass3d-surface overflow-y-auto rounded-[1.6rem] border border-white/22 bg-white/[0.08] p-4 backdrop-blur-2xl">
             <AnimatePresence mode="wait">
               <motion.div
@@ -120,112 +108,10 @@ export const AiHub = () => {
             </div>
             {render3D()}
           </div>
-        </div>
-      </div>
-    </PageShell>
-  );
-};
-
-const BackgroundVideo: React.FC<{ src: string }> = ({ src }) => {
-  const [available, setAvailable] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
-    (async () => {
-      try {
-        const res = await fetch(src, { method: 'HEAD', signal: controller.signal });
-        if (!mounted) return;
-        setAvailable(res.ok);
-      } catch (e) {
-        if (!mounted) return;
-        setAvailable(false);
-      } finally {
-        clearTimeout(timeout);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-      controller.abort();
-      clearTimeout(timeout);
-    };
-  }, [src]);
-
-  if (available === null) {
-    return <div className="ai-hub-bg-loading" aria-hidden />;
-  }
-
-  if (available === false) {
-    return <div className="ai-hub-bg-fallback" aria-hidden />;
-  }
-
-  return (
-    <video
-      ref={(el) => {
-        if (el && el.paused) {
-          const p = el.play();
-          if (p && typeof p.catch === 'function') p.catch(() => {});
-        }
-      }}
-      src={src}
-      className="ai-hub-bg-video"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      onLoadedData={(e) => {
-        const v = e.currentTarget;
-        const p = v.play();
-        if (p && typeof p.catch === 'function') p.catch(() => {});
-      }}
-    />
-  );
-};
-
-const TreasureHuntFeature = () => {
-  const [hunted, setHunted] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleHunt = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setHunted(true);
-    }, 1500);
-  };
-
-  return (
-    <div className="flex flex-col h-full">
-      <h2 className="mb-1 text-2xl font-black text-white">Chasse aux Trésors</h2>
-      <p className="mb-5 text-sm text-white/72">Lova-Bot a caché des récompenses sur le site aujourd'hui.</p>
-      <div className="flex-1 flex flex-col justify-center items-center">
-        {!hunted ? (
-          <div className="w-full max-w-xs rounded-2xl border border-white/20 bg-white/[0.08] p-4 text-center backdrop-blur-xl">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/10">
-              <Search className="h-6 w-6 text-white/90" />
-            </div>
-            <h3 className="mb-2 text-base font-bold text-white">L'énigme du jour</h3>
-            <p className="mb-4 text-xs italic text-white/75">"Je brille dans la nuit, mais je ne suis pas une étoile. Que suis-je ?"</p>
-            <Button onClick={handleHunt} disabled={loading} className="w-full rounded-full border border-white/35 bg-white/15 text-xs font-bold text-white hover:bg-white/25">
-              {loading ? 'Recherche en cours...' : 'Fouiller la zone'}
-            </Button>
           </div>
-        ) : (
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-xs rounded-2xl border border-white/28 bg-white/[0.1] p-4 text-center backdrop-blur-xl">
-            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-white/35 bg-white/12">
-              <span className="text-4xl">💎</span>
-            </div>
-            <h3 className="mb-2 text-xl font-bold text-white">Trouvé !</h3>
-            <p className="mb-4 text-sm text-white/80">Félicitations, tu as gagné <strong className="text-white">50 LovaCoins</strong>.</p>
-            <p className="text-xs text-white/60">Reviens demain pour une nouvelle énigme.</p>
-          </motion.div>
         )}
       </div>
-    </div>
+    </PageShell>
   );
 };
 
