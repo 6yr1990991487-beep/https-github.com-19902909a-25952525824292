@@ -9,8 +9,7 @@ import {
   MUSIC_GENRES, MusicTrack, fetchGenreTracks, fetchCloudTracks, makeLocalTrack, uploadCloudTrack,
 } from "@/lib/musicLibrary";
 
-const AI_HUB_PLAYER_BG_VIDEO = "/videos/ai-hub-drive.mp4";
-const AI_HUB_PLAYER_BG_VIDEO_FALLBACK = "/videos/ai-hub-drive-2.mp4";
+const AI_HUB_PLAYER_BG_IMAGE = "/images/aihub-player-bg.jpg";
 
 function formatTime(sec: number) {
   if (!Number.isFinite(sec) || sec <= 0) return "00:00";
@@ -40,9 +39,6 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
   const [muted, setMuted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [playerBgVideoSrc, setPlayerBgVideoSrc] = useState(AI_HUB_PLAYER_BG_VIDEO);
-  const [playerBgVideoReady, setPlayerBgVideoReady] = useState(false);
-
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const shellRef = useRef<HTMLDivElement | null>(null);
@@ -52,18 +48,6 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
 
   const tracks = useMemo(() => [...local, ...cloud, ...remote], [local, cloud, remote]);
   const track = tracks[index];
-
-  useEffect(() => {
-    setPlayerBgVideoReady(false);
-  }, [playerBgVideoSrc]);
-
-  useEffect(() => {
-    if (playerBgVideoReady || playerBgVideoSrc === AI_HUB_PLAYER_BG_VIDEO_FALLBACK) return;
-    const id = window.setTimeout(() => {
-      setPlayerBgVideoSrc(AI_HUB_PLAYER_BG_VIDEO_FALLBACK);
-    }, 4500);
-    return () => window.clearTimeout(id);
-  }, [playerBgVideoReady, playerBgVideoSrc]);
 
   useEffect(() => {
     let cancelled = false;
@@ -234,20 +218,11 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
       data-testid="aihub-glass-music-player"
       className={`glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7 ${className}`}
     >
-      <video
+      <img
         className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-65"
-        src={playerBgVideoSrc}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        onLoadedData={() => setPlayerBgVideoReady(true)}
-        onError={(event) => {
-          const video = event.currentTarget;
-          if (video.src.endsWith(AI_HUB_PLAYER_BG_VIDEO_FALLBACK)) return;
-          setPlayerBgVideoSrc(AI_HUB_PLAYER_BG_VIDEO_FALLBACK);
-        }}
+        src={AI_HUB_PLAYER_BG_IMAGE}
+        alt=""
+        aria-hidden
       />
       <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.34))]" />
       <div className="pointer-events-none absolute inset-0 audio-shell-glow" aria-hidden />
