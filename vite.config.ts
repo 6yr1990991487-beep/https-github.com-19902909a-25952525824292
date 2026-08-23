@@ -19,7 +19,10 @@ export default defineConfig(({ mode }) => ({
   // Allow Emergent preview host so preview requests are not blocked
   preview: {
     allowedHosts: [
-      'complete-site-build-1.cluster-5.preview.emergentcf.cloud'
+      'complete-site-build-1.cluster-5.preview.emergentcf.cloud',
+      'complete-site-build-1.emergent.host',
+      // include emergent host pattern used by preview/prod
+      'complete-site-build-1.*.emergent.host',
     ],
   },
   plugins: [
