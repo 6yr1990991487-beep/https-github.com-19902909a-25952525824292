@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { buildYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 import { Link } from "react-router-dom";
 import { PageShell } from "@/components/PageShell";
@@ -61,17 +61,6 @@ const Discover = () => {
     { to: "/anime-moments", label: "Anime Moments", tagline: "Expérience premium", desc: "La page originale avec hologrammes et carrousel vivant", icon: Film, grad: "from-emerald-500/40 via-teal-500/20 to-transparent", accent: "#34d399", emoji: "🌌" },
     { to: "/shop", label: "Shop", tagline: "Collector officiel", desc: `${SHOP_PRODUCTS.length} pièces exclusives · édition limitée`, icon: ShoppingBag, grad: "from-pink-500/40 via-rose-500/20 to-transparent", accent: "#f472b6", emoji: "🛍️" },
   ];
-
-  // Rotating hero showcase — cycles through featured video thumbnails.
-  const heroVideos = videos.slice(0, 6);
-  const [heroIdx, setHeroIdx] = useState(0);
-  useEffect(() => {
-    if (!heroVideos.length) return;
-    const t = setInterval(() => setHeroIdx((i) => (i + 1) % heroVideos.length), 4200);
-    return () => clearInterval(t);
-  }, [heroVideos.length]);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   const itemListLd = {
     "@context": "https://schema.org",
@@ -184,26 +173,9 @@ const Discover = () => {
       {/* HERO — animated banner */}
       <section className="relative overflow-hidden">
         <div
-          ref={heroRef}
-          onMouseMove={(e) => {
-            const r = heroRef.current?.getBoundingClientRect();
-            if (!r) return;
-            const x = ((e.clientX - r.left) / r.width - 0.5) * 2;
-            const y = ((e.clientY - r.top) / r.height - 0.5) * 2;
-            setTilt({ x, y });
-          }}
-          onMouseLeave={() => setTilt({ x: 0, y: 0 })}
           className="relative container mx-auto px-4 pt-10 pb-16 md:pt-16 md:pb-24"
           style={{ perspective: "1400px" }}
         >
-          {/* Aurora blobs */}
-          <div aria-hidden className="absolute -top-24 -left-24 w-[520px] h-[520px] rounded-full blur-3xl opacity-40 animate-pulse"
-            style={{ background: "radial-gradient(circle, #e879f9 0%, transparent 60%)" }} />
-          <div aria-hidden className="absolute top-10 right-0 w-[480px] h-[480px] rounded-full blur-3xl opacity-30 animate-pulse"
-            style={{ background: "radial-gradient(circle, #38bdf8 0%, transparent 60%)", animationDelay: "1.5s" }} />
-          <div aria-hidden className="absolute bottom-0 left-1/3 w-[420px] h-[420px] rounded-full blur-3xl opacity-30 animate-pulse"
-            style={{ background: "radial-gradient(circle, #a78bfa 0%, transparent 60%)", animationDelay: "3s" }} />
-
           <div className="relative flex flex-col items-center text-center">
             <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center">
               <div className="flex flex-wrap justify-center gap-3 mt-6">
