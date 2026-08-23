@@ -221,13 +221,13 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
         <img
-          className="absolute inset-x-0 top-0 h-[58%] w-full object-cover opacity-70"
-          src={AI_HUB_PLAYER_TOP_GIF}
+          className="absolute inset-0 h-full w-full object-cover opacity-72"
+          src={AI_HUB_PLAYER_BOTTOM_IMAGE}
           alt=""
         />
         <img
-          className="absolute inset-x-0 bottom-0 h-[56%] w-full object-cover opacity-70"
-          src={AI_HUB_PLAYER_BOTTOM_IMAGE}
+          className="absolute left-[10%] right-[10%] top-[14%] h-[44%] w-auto rounded-2xl object-cover opacity-78 shadow-[0_24px_60px_rgba(2,6,23,0.5)]"
+          src={AI_HUB_PLAYER_TOP_GIF}
           alt=""
         />
       </div>
