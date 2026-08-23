@@ -13,7 +13,7 @@ import FerryTrainCityPlaza from './FerryTrainCityPlaza';
    Enhanced: Stage, strobes, crowd, realistic seagulls, wake
    ============================================================ */
 
-const DAY = 1080; // 18 minutes par cycle complet — jour nettement plus long que la nuit
+const DAY = 1079; // 18 minutes par cycle complet — jour nettement plus long que la nuit
 
 const FREIGHTER_ROUTE_OBSTACLES = [
   { x: 7.5, z: -1.5, radius: 17, push: 2.9 },
