@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
