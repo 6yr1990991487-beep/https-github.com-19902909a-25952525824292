@@ -7056,6 +7056,72 @@ function FerryCameraController({ controlsRef, cameraRef, autoRotateRef, initialV
   return null;
 }
 
+function FerryGameplayHUD() {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const runCameraAction = (action) => {
+    try {
+      if (window.stopFerryAutoCameraSequence) window.stopFerryAutoCameraSequence();
+      if (typeof window[action] === 'function') {
+        window[action]();
+      }
+    } catch {
+      // ignore camera action errors
+    }
+  };
+
+  return (
+    <div className="fixed left-4 top-20 z-[130] pointer-events-auto" data-testid="ferry-gameplay-hud">
+      <div className="rounded-2xl border border-cyan-300/30 bg-slate-950/72 px-3 py-3 shadow-[0_20px_50px_-30px_rgba(34,211,238,0.8)] backdrop-blur-md">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Hub Ferry Gameplay</span>
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            className="rounded-full border border-white/20 px-2 py-1 text-[10px] font-semibold text-white/90 hover:bg-white/10"
+          >
+            {collapsed ? 'Ouvrir' : 'Réduire'}
+          </button>
+        </div>
+
+        {!collapsed && (
+          <>
+            <div className="mb-3 grid grid-cols-2 gap-2">
+              {[
+                ['Vue Défaut', 'resetFerryCamera'],
+                ['Vue Mer', 'setFerrySeaView'],
+                ['Vue Oiseau', 'setFerryBirdView'],
+                ['Vue Ville', 'setFerryTrainCityView'],
+                ['Vue Rue', 'setFerryStreetView'],
+                ['Panorama', 'setFerryPanoramaView'],
+              ].map(([label, action]) => (
+                <button
+                  key={action}
+                  type="button"
+                  onClick={() => runCameraAction(action)}
+                  className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-white/20"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mb-2 text-[11px] text-cyan-100/90">
+              Contrôles: glisser pour tourner, zoomer pour explorer, double-clic pour voler.
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-2 py-1 text-[10px] font-semibold text-emerald-100">Suivi live: Porte-avions</span>
+              <span className="rounded-full border border-sky-300/30 bg-sky-400/15 px-2 py-1 text-[10px] font-semibold text-sky-100">Suivi live: Ferry</span>
+              <span className="rounded-full border border-fuchsia-300/30 bg-fuchsia-400/15 px-2 py-1 text-[10px] font-semibold text-fuchsia-100">Lieux: Ville & Gare</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Full Scene with Mobile Optimization ────────────────────
 function Scene({ isMobile, isTablet, isLowPower, shouldReduceParticles, shouldDisableHeavyEffects, preferFastDesktop, sceneHoldPaused, isTouchDevice, threeDSettings }) {
   const todRef = useRef(0.5);
@@ -7788,6 +7854,7 @@ const FerryBackground = memo(() => {
       
       {/* Camera buttons are created in pure DOM via FerryCameraButtons */}
       <FerryCameraButtons />
+      <FerryGameplayHUD />
     </>
   );
 });
