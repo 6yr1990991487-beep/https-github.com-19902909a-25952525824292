@@ -5,7 +5,18 @@ import bgLoop2 from '@/assets/bg-loop-2.mp4.asset.json';
 import bgLoop3 from '@/assets/bg-loop-3.mp4.asset.json';
 import bgLoop4 from '@/assets/bg-loop-4.mp4.asset.json';
 
-const BACKGROUND_VIDEO_PLAYLIST = [bgLoop1.url, bgLoop2.url, bgLoop3.url, bgLoop4.url];
+const DRIVE_BACKGROUND_VIDEO_PLAYLIST = [
+  "https://drive.google.com/uc?export=download&id=1bo0FDHxvNvIGulffMKbyJFlmb0vA3YCs",
+  "https://drive.google.com/uc?export=download&id=1Rf2nvttvwP8pLXhgT5pU8vFkPwkwy92N",
+];
+
+const BACKGROUND_VIDEO_PLAYLIST = [
+  ...DRIVE_BACKGROUND_VIDEO_PLAYLIST,
+  bgLoop1.url,
+  bgLoop2.url,
+  bgLoop3.url,
+  bgLoop4.url,
+];
 
 const Leaf = ({ delay, x, duration }) => (
   <motion.div
