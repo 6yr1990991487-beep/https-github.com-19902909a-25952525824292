@@ -24,6 +24,11 @@ const enforceCurrentBuild = async () => {
   if (typeof window === "undefined") return;
 
   try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("_v") === APP_BUILD_VERSION && params.get("lovanet_reload") === "1") {
+      return;
+    }
+
     const previous = localStorage.getItem(APP_BUILD_STORAGE_KEY);
     if (previous === APP_BUILD_VERSION) return;
 

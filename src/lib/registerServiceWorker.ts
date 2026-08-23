@@ -46,6 +46,13 @@ const PURGE_VERSION = "2026-08-22";
 
 const purgeStaleCachesOnce = async () => {
   try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("lovanet_reload") === "1" && params.get("_v") === "2026.08.23") {
+      localStorage.setItem(PURGE_KEY, PURGE_VERSION);
+      sessionStorage.setItem(PURGE_KEY, PURGE_VERSION);
+      return false;
+    }
+
     if (localStorage.getItem(PURGE_KEY) === PURGE_VERSION) return false;
     if ("serviceWorker" in navigator) {
       const regs = await navigator.serviceWorker.getRegistrations();
@@ -56,6 +63,7 @@ const purgeStaleCachesOnce = async () => {
       await Promise.all(keys.map((k) => caches.delete(k).catch(() => false)));
     }
     localStorage.setItem(PURGE_KEY, PURGE_VERSION);
+    sessionStorage.setItem(PURGE_KEY, PURGE_VERSION);
     return true;
   } catch {
     return false;
