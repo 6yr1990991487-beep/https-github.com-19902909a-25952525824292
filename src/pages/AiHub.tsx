@@ -73,34 +73,34 @@ export const AiHub = () => {
       {/** Background video with runtime availability check; fallback shown if asset missing */}
       <BackgroundVideo src={safeLovableVideoSource(aiHubLongBanner?.url, "/home-banner.mp4")} />
 
-      <div className="relative z-10 mx-auto max-w-7xl w-full px-4 pb-12 pt-4">
-        <div className="mb-8 flex justify-center">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-12 pt-4">
+        <div className="mb-6 flex justify-center">
           <GlassMusicPlayer className="w-full max-w-3xl" />
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
+        <div className="mb-5 flex flex-wrap justify-center gap-2.5">
           <button
             onClick={() => setActiveTab('lova-bot')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
+            className={`glass3d-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-all duration-300 ${activeTab === 'lova-bot' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
-            <Bot className="w-5 h-5" /> Lova-Bot
+            <Bot className="h-4 w-4" /> Lova-Bot
           </button>
           <button
             onClick={() => setActiveTab('lova-ai')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
+            className={`glass3d-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-all duration-300 ${activeTab === 'lova-ai' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
-            <Cpu className="w-5 h-5" /> Lova-AI
+            <Cpu className="h-4 w-4" /> Lova-AI
           </button>
           <button
             onClick={() => setActiveTab('lova-king')}
-            className={`glass3d-btn flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
+            className={`glass3d-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition-all duration-300 ${activeTab === 'lova-king' ? 'is-active scale-105' : 'text-white/70 hover:text-white'}`}
           >
-            <Shield className="w-5 h-5" /> Lova King AI
+            <Shield className="h-4 w-4" /> Lova King AI
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-md overflow-y-auto">
+        <div className="mx-auto grid h-auto max-w-5xl grid-cols-1 gap-4 lg:h-[470px] lg:grid-cols-2">
+          <div className="glass3d-panel glass3d-surface overflow-y-auto rounded-[1.6rem] border border-white/22 bg-white/[0.08] p-4 backdrop-blur-2xl">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
@@ -114,8 +114,8 @@ export const AiHub = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-          <div className="bg-black/20 border border-white/5 rounded-3xl overflow-hidden relative">
-            <div className="absolute top-4 left-4 z-10 bg-black/50 px-4 py-1 rounded-full text-xs font-mono text-white/50 border border-white/10">
+          <div className="glass3d-panel glass3d-surface relative overflow-hidden rounded-[1.6rem] border border-white/18 bg-white/[0.08] backdrop-blur-2xl">
+            <div className="absolute left-3 top-3 z-10 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[10px] font-black tracking-[0.16em] text-white/75">
               LIVE RENDER
             </div>
             {render3D()}
@@ -200,28 +200,28 @@ const TreasureHuntFeature = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">Chasse aux Trésors</h2>
-      <p className="text-slate-400 mb-8">Lova-Bot a caché des récompenses sur le site aujourd'hui !</p>
+      <h2 className="mb-1 text-2xl font-black text-white">Chasse aux Trésors</h2>
+      <p className="mb-5 text-sm text-white/72">Lova-Bot a caché des récompenses sur le site aujourd'hui.</p>
       <div className="flex-1 flex flex-col justify-center items-center">
         {!hunted ? (
-          <div className="bg-emerald-950/30 border border-emerald-500/20 p-6 rounded-2xl text-center max-w-sm w-full">
-            <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-emerald-400" />
+          <div className="w-full max-w-xs rounded-2xl border border-white/20 bg-white/[0.08] p-4 text-center backdrop-blur-xl">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-white/10">
+              <Search className="h-6 w-6 text-white/90" />
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">L'énigme du jour</h3>
-            <p className="text-emerald-200/70 italic mb-6">"Je brille dans la nuit, mais je ne suis pas une étoile. Que suis-je ?"</p>
-            <Button onClick={handleHunt} disabled={loading} className="w-full rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all">
+            <h3 className="mb-2 text-base font-bold text-white">L'énigme du jour</h3>
+            <p className="mb-4 text-xs italic text-white/75">"Je brille dans la nuit, mais je ne suis pas une étoile. Que suis-je ?"</p>
+            <Button onClick={handleHunt} disabled={loading} className="w-full rounded-full border border-white/35 bg-white/15 text-xs font-bold text-white hover:bg-white/25">
               {loading ? 'Recherche en cours...' : 'Fouiller la zone'}
             </Button>
           </div>
         ) : (
-          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-emerald-950/30 border border-emerald-500/50 p-6 rounded-2xl text-center max-w-sm w-full">
-            <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-xs rounded-2xl border border-white/28 bg-white/[0.1] p-4 text-center backdrop-blur-xl">
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full border border-white/35 bg-white/12">
               <span className="text-4xl">💎</span>
             </div>
-            <h3 className="text-2xl font-bold text-emerald-400 mb-2">Trouvé !</h3>
-            <p className="text-slate-300 mb-6">Félicitations, tu as gagné <strong className="text-white">50 LovaCoins</strong>.</p>
-            <p className="text-xs text-slate-500">Reviens demain pour une nouvelle énigme.</p>
+            <h3 className="mb-2 text-xl font-bold text-white">Trouvé !</h3>
+            <p className="mb-4 text-sm text-white/80">Félicitations, tu as gagné <strong className="text-white">50 LovaCoins</strong>.</p>
+            <p className="text-xs text-white/60">Reviens demain pour une nouvelle énigme.</p>
           </motion.div>
         )}
       </div>
@@ -246,22 +246,22 @@ const PlaylistFeature = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-500 mb-2">Playlist par Humeur</h2>
-      <p className="text-slate-400 mb-8">Lova-AI génère une sélection parfaite basée sur ton état d'esprit.</p>
-      <div className="grid grid-cols-3 gap-3 mb-8">
-        <Button onClick={() => generate('epic')} className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30">🔥 Épique</Button>
-        <Button onClick={() => generate('chill')} className="bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30">😌 Détente</Button>
-        <Button onClick={() => generate('sad')} className="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30">😢 Émotion</Button>
+      <h2 className="mb-1 text-2xl font-black text-white">Playlist par Humeur</h2>
+      <p className="mb-5 text-sm text-white/72">Lova-AI génère une sélection basée sur ton état d'esprit.</p>
+      <div className="mb-5 grid grid-cols-3 gap-2">
+        <Button onClick={() => generate('epic')} className="h-8 border border-white/35 bg-white/12 px-2 text-xs text-white hover:bg-white/22">Épique</Button>
+        <Button onClick={() => generate('chill')} className="h-8 border border-white/35 bg-white/12 px-2 text-xs text-white hover:bg-white/22">Détente</Button>
+        <Button onClick={() => generate('sad')} className="h-8 border border-white/35 bg-white/12 px-2 text-xs text-white hover:bg-white/22">Émotion</Button>
       </div>
-      <div className="flex-1 bg-black/20 rounded-2xl p-4 border border-white/5">
-        {loading && <div className="h-full flex items-center justify-center text-sky-400 animate-pulse">Lova-AI analyse tes goûts...</div>}
-        {!loading && playlist.length === 0 && <div className="h-full flex items-center justify-center text-slate-600">Sélectionne une humeur pour commencer.</div>}
+      <div className="flex-1 rounded-2xl border border-white/20 bg-white/[0.08] p-3 backdrop-blur-xl">
+        {loading && <div className="flex h-full items-center justify-center text-sm text-white/85 animate-pulse">Lova-AI analyse tes goûts...</div>}
+        {!loading && playlist.length === 0 && <div className="flex h-full items-center justify-center text-sm text-white/55">Sélectionne une humeur pour commencer.</div>}
         {!loading && playlist.length > 0 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-3">
             {playlist.map((anime, i) => (
-              <div key={i} className="bg-white/5 p-3 rounded-xl flex justify-between items-center group hover:bg-white/10 transition-colors">
-                <span className="font-bold text-slate-200">{anime}</span>
-                <Button size="icon" variant="ghost" className="rounded-full text-sky-400 group-hover:bg-sky-500 group-hover:text-white"><PlayCircle className="w-5 h-5" /></Button>
+              <div key={i} className="group flex items-center justify-between rounded-xl border border-white/15 bg-white/8 px-3 py-2 transition-colors hover:bg-white/14">
+                <span className="text-sm font-bold text-white/92">{anime}</span>
+                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full text-white/80 group-hover:bg-white/25 group-hover:text-white"><PlayCircle className="h-4 w-4" /></Button>
               </div>
             ))}
           </motion.div>
@@ -283,44 +283,44 @@ const FortressVIPFeature = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-red-600">La Forteresse VIP</h2>
-        <div className="flex items-center gap-2 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/20">
-          <Lock className="w-3 h-3" /> SÉCURITÉ OPTIMALE
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h2 className="text-2xl font-black text-white">La Forteresse VIP</h2>
+        <div className="flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white/85">
+          <Lock className="h-3 w-3" /> SÉCURITÉ
         </div>
       </div>
-      <p className="text-slate-400 mb-6">Lova King AI gère les accès exclusifs et les enchères secrètes.</p>
-      <div className="space-y-6">
-        <div className="bg-red-950/20 border border-red-500/20 p-5 rounded-2xl">
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-amber-500" /> Défis Exclusifs
+      <p className="mb-4 text-sm text-white/72">Lova King AI gère les accès exclusifs et les enchères secrètes.</p>
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-white/20 bg-white/[0.08] p-4 backdrop-blur-xl">
+          <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-white">
+            <Shield className="h-4 w-4 text-white/85" /> Défis Exclusifs
           </h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-300">Regarder 5 épisodes VIP</span>
-              <span className="text-amber-500 font-mono">2 / 5</span>
+              <span className="text-white/82">Regarder 5 épisodes VIP</span>
+              <span className="font-mono text-white">2 / 5</span>
             </div>
-            <div className="w-full bg-black/50 h-2 rounded-full overflow-hidden">
-              <div className="bg-gradient-to-r from-amber-500 to-red-500 w-2/5 h-full" />
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
+              <div className="h-full w-2/5 rounded-full bg-white/70" />
             </div>
             <div className="flex justify-between items-center text-sm pt-2">
-              <span className="text-slate-300 line-through">Connecter son compte Discord</span>
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
+              <span className="text-white/70 line-through">Connecter son compte Discord</span>
+              <CheckCircle2 className="h-4 w-4 text-white/80" />
             </div>
           </div>
         </div>
-        <div className="bg-amber-950/20 border border-amber-500/20 p-5 rounded-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-lg">LIVE</div>
-          <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-            <Gavel className="w-5 h-5 text-amber-500" /> Enchère Secrète
+        <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] p-4 backdrop-blur-xl">
+          <div className="absolute right-0 top-0 rounded-bl-lg border-l border-b border-white/20 bg-white/18 px-2.5 py-1 text-[10px] font-black text-white/85">LIVE</div>
+          <h3 className="mb-2 flex items-center gap-2 text-base font-bold text-white">
+            <Gavel className="h-4 w-4 text-white/85" /> Enchère Secrète
           </h3>
-          <p className="text-sm text-slate-400 mb-4">Figurine Holographique Lova King AI (Édition Limitée 1/10)</p>
+          <p className="mb-4 text-xs text-white/68">Figurine Holographique Lova King AI (Édition Limitée 1/10)</p>
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Enchère Actuelle</p>
-              <p className="text-3xl font-black text-amber-400 font-mono">{bid} <span className="text-sm text-amber-500/50">LC</span></p>
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-white/55">Enchère Actuelle</p>
+              <p className="font-mono text-2xl font-black text-white">{bid} <span className="text-xs text-white/65">LC</span></p>
             </div>
-            <Button onClick={placeBid} disabled={isHighest} className={`rounded-full font-bold transition-all ${isHighest ? 'bg-green-500/20 text-green-400 border-none hover:bg-green-500/20' : 'bg-gradient-to-r from-amber-500 to-red-600 text-white hover:scale-105'}`}>
+            <Button onClick={placeBid} disabled={isHighest} className={`rounded-full border border-white/35 bg-white/15 px-3 text-xs font-bold text-white transition-all hover:bg-white/25 ${isHighest ? 'opacity-85' : ''}`}>
               {isHighest ? 'Meilleur Enchérisseur' : `Enchérir ${bid + 100} LC`}
             </Button>
           </div>
