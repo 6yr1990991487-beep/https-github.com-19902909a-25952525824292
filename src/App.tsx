@@ -40,6 +40,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import AuthCallback from "./pages/AuthCallback";
 import { Onboarding3D } from "./components/Onboarding3D";
 import { InstallAppPrompt } from "./components/InstallAppPrompt";
+import { LaunchFormatPicker, getLaunchFormat } from "./components/LaunchFormatPicker";
 import { AiHub } from "./pages/AiHub";
 
 import { GlobalTranslateWidget } from "./components/GlobalTranslateWidget";
@@ -108,6 +109,7 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
 const AppShell = () => {
   usePushNotifications();
   const location = useLocation();
+  const launchFormat = getLaunchFormat();
 
   const isPreviewLikeHost = () => {
     if (typeof window === "undefined") return false;
@@ -203,7 +205,8 @@ const AppShell = () => {
       )}
       {!isHubPreviewRoute && <CartDrawer />}
       {!isHubPreviewRoute && <GoogleTranslate />}
-      {!isHubPreviewRoute && <InstallAppPrompt />}
+          {!isHubPreviewRoute && <InstallAppPrompt />}
+          {!isHubPreviewRoute && <LaunchFormatPicker />}
         </CartProvider>
       </GamificationProvider>
     </PiPProvider>

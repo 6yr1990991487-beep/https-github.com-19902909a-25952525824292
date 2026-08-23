@@ -19,6 +19,7 @@ createRoot(document.getElementById("root")!).render(
 
 const APP_BUILD_VERSION = "2026.08.23.preview-v6";
 const APP_BUILD_STORAGE_KEY = "lovanet_app_build_version";
+const LAUNCH_FORMAT_KEY = "lovanet.launch.format.v1";
 const VIDEO_PREF_KEY = "site_disable_videos";
 const VIDEO_PREF_MANUAL_KEY = "site_disable_videos_manual";
 
@@ -61,6 +62,21 @@ const forcePreviewVideoVisibility = () => {
   observer.observe(document.body, { attributes: true, attributeFilter: ["data-hide-videos"] });
 
   window.requestAnimationFrame(playVisibleBackgroundVideos);
+};
+
+const applyLaunchFormatBodyClass = () => {
+  if (typeof window === "undefined") return;
+  const stored = (() => {
+    try {
+      return localStorage.getItem(LAUNCH_FORMAT_KEY);
+    } catch {
+      return null;
+    }
+  })();
+  const format = stored === "browser" || stored === "app" ? stored : (window.matchMedia("(display-mode: standalone)").matches ? "app" : "browser");
+  document.body.dataset.launchFormat = format;
+  document.body.classList.toggle("launch-format-app", format === "app");
+  document.body.classList.toggle("launch-format-browser", format === "browser");
 };
 
 const enforceCurrentBuild = async () => {
@@ -149,6 +165,11 @@ const forceLovanetReload = () => {
 
 if (typeof window !== "undefined") {
   (window as any).forceLovanetReload = forceLovanetReload;
+  applyLaunchFormatBodyClass();
+
+  window.addEventListener("lovanet:launch-format", () => {
+    applyLaunchFormatBodyClass();
+  });
 
   const swHost = window.location.hostname;
   const swIsPreview =
