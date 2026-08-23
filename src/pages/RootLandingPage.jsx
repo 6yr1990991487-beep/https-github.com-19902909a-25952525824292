@@ -17,8 +17,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { usePortalAudio } from "@/hooks/usePortalAudio";
 import { FloatingCardsDeco } from "@/components/BreakoutDecorations";
 import { motion } from "framer-motion";
-import portalHeroVideo1 from "@/assets/portal-hero-video-1.mp4";
-import portalHeroVideo2 from "@/assets/portal-hero-video-2.mp4";
+
+const PORTAL_CARD_VIDEO = "https://drive.google.com/uc?export=download&id=1Sao371KD1M-K6uvNiOP_vlrAX5D2DGzX";
+const PORTAL_BACKGROUND_VIDEO = "https://drive.google.com/uc?export=download&id=1-cYmT-i_clEth0g2SJv48n8ZnkPQex39";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -245,8 +246,8 @@ export default function RootLandingPage() {
 
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   const [heroFxVariant] = useState(() => 1 + Math.floor(Math.random() * 5));
-  const portalGlassVideo1Source = portalHeroVideo1;
-  const portalGlassVideo2Source = portalHeroVideo2;
+  const portalGlassVideo1Source = PORTAL_CARD_VIDEO;
+  const portalGlassVideo2Source = PORTAL_BACKGROUND_VIDEO;
   // Variation d'effet 3D (panorama / flexion / tilt / vague / balancier) tiree
   // au hasard a chaque arrivee sur la page Portail.
 
