@@ -237,10 +237,6 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
           <span className="audio-orb inline-flex h-12 w-12 items-center justify-center rounded-2xl">
             <Music4 className="h-6 w-6 text-white" />
           </span>
-          <div>
-            <h2 className="text-lg font-black tracking-wide text-white">Lecteur ambiance 3D</h2>
-            <p className="text-xs font-semibold text-white/70">Catalogue libre de droits · {tracks.length} titres chargés</p>
-          </div>
         </div>
         <div className="flex items-center gap-2">
           <label className="glass3d-btn inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white">

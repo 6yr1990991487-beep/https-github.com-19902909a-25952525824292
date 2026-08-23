@@ -26,7 +26,7 @@ body[data-hide-decors] [data-animated-bg] {
 .ai-hub-page {
   position: relative;
   overflow-x: hidden;
-  background: linear-gradient(180deg, rgba(2,6,23,0.96), rgba(2,6,23,0.88));
+  background: linear-gradient(180deg, rgba(10, 18, 30, 0.94), rgba(15, 23, 39, 0.9));
 }
 
 .ai-hub-bg-video {
@@ -35,8 +35,8 @@ body[data-hide-decors] [data-animated-bg] {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.42;
-  filter: saturate(1.25) contrast(1.06);
+  opacity: 0.32;
+  filter: saturate(0.7) contrast(1.04) brightness(0.9);
   pointer-events: none;
   z-index: 0;
 }
@@ -48,8 +48,8 @@ body[data-hide-decors] [data-animated-bg] {
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(60% 60% at 20% 20%, rgba(0,255,157,0.14), transparent 70%),
-    radial-gradient(60% 60% at 80% 70%, rgba(34,211,238,0.12), transparent 70%);
+    radial-gradient(60% 60% at 20% 20%, rgba(148, 163, 184, 0.18), transparent 70%),
+    radial-gradient(60% 60% at 80% 70%, rgba(96, 165, 250, 0.14), transparent 70%);
 }
 
 .audio-shell-glow {
@@ -70,13 +70,13 @@ body[data-hide-decors] [data-animated-bg] {
   border-radius: 1.8rem;
   border: 1px solid rgba(255,255,255,0.24);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 35%, rgba(6,18,13,0.28) 100%);
+    linear-gradient(180deg, rgba(255,255,255,0.11) 0%, rgba(148,163,184,0.08) 35%, rgba(15,23,42,0.40) 100%);
   box-shadow:
     0 26px 70px -32px rgba(0,0,0,0.65),
-    inset 0 1px 0 rgba(255,255,255,0.35),
-    inset 0 -10px 28px rgba(0,0,0,0.24),
-    0 0 24px rgba(0,255,157,0.10);
-  backdrop-filter: blur(26px) saturate(1.2);
+    inset 0 1px 0 rgba(255,255,255,0.38),
+    inset 0 -10px 28px rgba(0,0,0,0.28),
+    0 0 22px rgba(96, 165, 250, 0.08);
+  backdrop-filter: blur(26px) saturate(1.08);
   transform: translateZ(0);
   animation: audio-shell-pulse 2.8s ease-in-out infinite;
 }
@@ -86,7 +86,7 @@ body[data-hide-decors] [data-animated-bg] {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(0,255,157,0.12), rgba(34,211,238,0.10), rgba(16,185,129,0.08));
+  background: linear-gradient(135deg, rgba(147, 197, 253, 0.12), rgba(191, 219, 254, 0.08), rgba(59, 130, 246, 0.06));
   pointer-events: none;
 }
 
@@ -100,8 +100,8 @@ body[data-hide-decors] [data-animated-bg] {
   border-radius: 1.25rem;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.14);
-  background: radial-gradient(circle at 50% 20%, rgba(0,255,157,0.22), rgba(6,18,13,0.24) 52%, rgba(2,6,23,0.62) 100%);
-  box-shadow: inset 0 0 42px rgba(0,255,157,0.12), 0 18px 32px -24px rgba(0,255,157,0.55);
+  background: radial-gradient(circle at 50% 20%, rgba(191, 219, 254, 0.22), rgba(15, 23, 42, 0.28) 52%, rgba(15, 23, 42, 0.62) 100%);
+  box-shadow: inset 0 0 42px rgba(147, 197, 253, 0.12), 0 18px 32px -24px rgba(96, 165, 250, 0.45);
 }
 
 .audio-visual {
@@ -4591,7 +4591,7 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 .page-nav-glass [class*="text-blue-"],
 .page-nav-glass [class*="text-cyan-"],
 .page-nav-glass [class*="text-indigo-"] {
-  color: hsl(var(--primary)) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .page-nav-glass [class*="bg-sky-"],
@@ -4603,7 +4603,7 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 .page-nav-glass [class*="to-blue-"],
 .page-nav-glass [class*="to-sky-"] {
   background-image: none !important;
-  background-color: hsl(var(--primary) / 0.18) !important;
+  background-color: rgba(148, 163, 184, 0.12) !important;
   color: #fff !important;
 }
 
@@ -4611,12 +4611,12 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
 .page-nav-glass [class*="border-blue-"],
 .page-nav-glass [class*="border-cyan-"],
 .page-nav-glass [class*="border-indigo-"] {
-  border-color: hsl(var(--primary) / 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
 }
 
 .page-nav-glass [class*="shadow-sky-"],
 .page-nav-glass [class*="shadow-blue-"] {
-  box-shadow: 0 0 22px -6px hsl(var(--primary) / 0.45) !important;
+  box-shadow: 0 0 18px -8px rgba(148, 163, 184, 0.34) !important;
 }
 
 /* Boutons, chips et champs : verre 3D interactif comme la nav */
