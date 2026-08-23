@@ -4948,6 +4948,14 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
 .quicknav-floating__topbar {
   min-height: 2.55rem;
   border-radius: 1rem;
+  cursor: grab;
+  touch-action: none;
+}
+.quicknav-floating[data-dragging="true"] .quicknav-floating__topbar {
+  cursor: grabbing;
+}
+.quicknav-floating[data-dragging="true"] {
+  user-select: none;
 }
 .quicknav-floating__section {
   overflow: hidden;

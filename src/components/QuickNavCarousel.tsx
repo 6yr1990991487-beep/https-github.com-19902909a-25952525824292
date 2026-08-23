@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Home, BookOpen, Sparkles, Youtube, ShoppingBag, Video, Newspaper, Trophy, User, LogIn, LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import DragScroller from "@/components/DragScroller";
@@ -10,6 +10,7 @@ export const OPEN_QUICKNAV_EVENT = "lovanet:open-quicknav";
 const OPEN_KEY = "lovanet.quicknav.open";
 const MAIN_KEY = "lovanet.quicknav.main.collapsed";
 const MINI_KEY = "lovanet.quicknav.mini.collapsed";
+const POS_KEY = "lovanet.quicknav.position";
 
 type QuickNavItem = {
   id: string;
@@ -44,35 +45,49 @@ const PROFILE_ITEM: QuickNavItem = {
   color: "linear-gradient(45deg, #00ff9d, #22d3ee)",
 };
 
-const ytThumb = (id: string) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-
-const ROUTE_THUMBS: Record<string, string> = {
-  "/": ytThumb("bGFUthZjGd4"),
-  "/anime-moments": ytThumb("5Fr9M1GBDBo"),
-  "/tiktok": ytThumb("i0Pz8tmOy8o"),
-  "/chaine-youtube": ytThumb("E6X7VsKuMsM"),
-  "/chaine-youtube/manga": ytThumb("DtEDLCrliHs"),
-  "/prime-video": ytThumb("S0BmS2xG8tg"),
-  "/lecteurs-video": ytThumb("bGFUthZjGd4"),
-  "/anime-countdown": ytThumb("i0Pz8tmOy8o"),
-  "/anime-catalog": ytThumb("E6X7VsKuMsM"),
-  "/ai-hub": ytThumb("5Fr9M1GBDBo"),
-  "/shop": "/products/am-004.svg",
-  "/decouvrir": ytThumb("DtEDLCrliHs"),
-  "/actualites": ytThumb("S0BmS2xG8tg"),
-  "/profile": "/products/am-012.svg",
-  "/contact": "/products/am-020.svg",
-  "/legals": "/products/am-030.svg",
-  "/leaderboard": "/products/am-008.svg",
+const MINI_ICON_BY_ID: Record<string, LucideIcon> = {
+  home: Home,
+  catalog: BookOpen,
+  ai: Sparkles,
+  youtube: Youtube,
+  shop: ShoppingBag,
+  prime: Video,
+  news: Newspaper,
+  leader: Trophy,
+  profile: User,
+  login: LogIn,
 };
 
-function thumbFor(to: string) {
-  return ROUTE_THUMBS[to] ?? ROUTE_THUMBS["/"];
-}
+const MINI_TINT_BY_ID: Record<string, string> = {
+  home: "from-cyan-400/45 to-indigo-500/45",
+  catalog: "from-amber-400/45 to-rose-500/45",
+  ai: "from-emerald-400/45 to-sky-400/45",
+  youtube: "from-green-400/45 to-emerald-600/45",
+  shop: "from-pink-400/45 to-violet-500/45",
+  prime: "from-sky-400/45 to-blue-700/45",
+  news: "from-violet-400/45 to-purple-700/45",
+  leader: "from-fuchsia-400/45 to-red-500/45",
+  profile: "from-emerald-400/45 to-cyan-500/45",
+  login: "from-emerald-300/45 to-teal-500/45",
+};
 
 export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { items?: QuickNavItem[]; onClose?: () => void }) {
   const [signedIn, setSignedIn] = useState(false);
   const [open, setOpen] = useState(true);
+  const [dragging, setDragging] = useState(false);
+  const [dockPos, setDockPos] = useState<{ x: number; y: number; dragged: boolean }>(() => {
+    try {
+      const raw = localStorage.getItem(POS_KEY);
+      if (!raw) return { x: 0, y: 0, dragged: false };
+      const parsed = JSON.parse(raw) as { x?: number; y?: number; dragged?: boolean };
+      if (typeof parsed.x === "number" && typeof parsed.y === "number" && parsed.dragged) {
+        return { x: parsed.x, y: parsed.y, dragged: true };
+      }
+    } catch {
+      /* ignore */
+    }
+    return { x: 0, y: 0, dragged: false };
+  });
   const [mainCollapsed, setMainCollapsed] = useState(() => {
     try {
       return localStorage.getItem(MAIN_KEY) === "1";
@@ -114,6 +129,22 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   const navItems = [...items, signedIn ? PROFILE_ITEM : LOGIN_ITEM];
   const primaryItems = useMemo(() => navItems.slice(0, 6), [navItems]);
   const secondaryItems = useMemo(() => navItems.slice(6), [navItems]);
+  const dockRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef<{ pointerId: number; startX: number; startY: number; baseX: number; baseY: number } | null>(null);
+
+  const clampPosition = (x: number, y: number) => {
+    if (typeof window === "undefined") return { x, y };
+    const node = dockRef.current;
+    const margin = 8;
+    const width = node?.offsetWidth ?? 320;
+    const height = node?.offsetHeight ?? 260;
+    const maxX = Math.max(margin, window.innerWidth - width - margin);
+    const maxY = Math.max(margin, window.innerHeight - height - margin);
+    return {
+      x: Math.min(Math.max(margin, x), maxX),
+      y: Math.min(Math.max(margin, y), maxY),
+    };
+  };
 
   useEffect(() => {
     try { localStorage.setItem(OPEN_KEY, open ? "1" : "0"); } catch { /* ignore */ }
@@ -135,6 +166,56 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     }
   }, [miniCollapsed]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(POS_KEY, JSON.stringify(dockPos));
+    } catch {
+      /* ignore */
+    }
+  }, [dockPos]);
+
+  useEffect(() => {
+    if (!dockPos.dragged) return;
+    const onResize = () => setDockPos((prev) => ({ ...clampPosition(prev.x, prev.y), dragged: true }));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [dockPos.dragged]);
+
+  const beginDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if ((event.target as HTMLElement).closest("button, a, [data-no-panel-drag]")) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const rect = dockRef.current?.getBoundingClientRect();
+    const baseX = dockPos.dragged ? dockPos.x : (rect?.left ?? 14);
+    const baseY = dockPos.dragged ? dockPos.y : (rect?.top ?? 120);
+
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      baseX,
+      baseY,
+    };
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const onDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const session = dragRef.current;
+    if (!session || session.pointerId !== event.pointerId) return;
+    const next = clampPosition(session.baseX + (event.clientX - session.startX), session.baseY + (event.clientY - session.startY));
+    setDockPos({ ...next, dragged: true });
+  };
+
+  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const session = dragRef.current;
+    if (!session || session.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
   const close = () => {
     setOpen(false);
     onClose?.();
@@ -143,7 +224,17 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   if (typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="quicknav-floating glass3d-panel glass3d-surface" data-panel-key="quick-nav" data-collapsed={!open ? "true" : "false"} role="dialog" aria-label="Navigation rapide">
+    <div
+      ref={dockRef}
+      className="quicknav-floating glass3d-panel glass3d-surface"
+      data-panel-key="quick-nav"
+      data-collapsed={!open ? "true" : "false"}
+      data-dragged={dockPos.dragged ? "true" : "false"}
+      data-dragging={dragging ? "true" : "false"}
+      role="dialog"
+      aria-label="Navigation rapide"
+      style={dockPos.dragged ? { left: `${dockPos.x}px`, top: `${dockPos.y}px`, transform: "none" } : undefined}
+    >
       <button
         type="button"
         onClick={() => (open ? close() : setOpen(true))}
@@ -155,7 +246,13 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
 
       {open && (
         <div className="quicknav-floating__stack">
-          <div className="quicknav-floating__topbar glass3d-header flex items-center justify-between gap-2 px-3 py-2">
+          <div
+            className="quicknav-floating__topbar glass3d-header flex items-center justify-between gap-2 px-3 py-2"
+            onPointerDown={beginDrag}
+            onPointerMove={onDragMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/82">
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/10">
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -231,7 +328,8 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.24 }} className="overflow-hidden">
                   <DragScroller className="quicknav-floating__mini-carousel no-scrollbar flex gap-2 px-2 py-2" data-testid="quicknav-mini-carousel">
                     {secondaryItems.map((item) => {
-                      const thumb = thumbFor(item.to);
+                      const MiniIcon = MINI_ICON_BY_ID[item.id] ?? Sparkles;
+                      const tint = MINI_TINT_BY_ID[item.id] ?? "from-cyan-400/45 to-indigo-500/45";
                       const badge = item.title.slice(0, 1).toUpperCase();
                       return (
                         <Link
@@ -241,13 +339,19 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
                           aria-label={item.title}
                           draggable={false}
                         >
-                          <img src={thumb} alt="" className="absolute inset-0 h-full w-full object-cover opacity-72" loading="lazy" />
-                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.56))]" />
+                          <div className={`absolute inset-0 bg-gradient-to-br ${tint}`} />
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.28),transparent_52%),linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.56))]" />
+                          <motion.div
+                            className="absolute -right-3 -top-3 h-10 w-10 rounded-full bg-white/20 blur-sm"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+                          />
                           <div className="absolute left-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/12 shadow-[0_0_14px_rgba(255,255,255,0.12)]">
-                            <motion.span whileHover={{ rotate: 360, scale: 1.14 }} transition={{ duration: 0.6 }} className="text-[10px] font-black text-white">
-                              {badge}
-                            </motion.span>
+                            <motion.div whileHover={{ rotate: 360, scale: 1.14 }} transition={{ duration: 0.6 }}>
+                              <MiniIcon className="h-3.5 w-3.5 text-white" />
+                            </motion.div>
                           </div>
+                          <div className="absolute right-2 top-2 rounded-full border border-white/25 bg-black/25 px-1.5 py-0.5 text-[9px] font-black text-white/90">{badge}</div>
                           <div className="absolute inset-x-2 bottom-2 z-10 text-[10px] font-bold leading-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] line-clamp-2">
                             {item.title}
                           </div>
