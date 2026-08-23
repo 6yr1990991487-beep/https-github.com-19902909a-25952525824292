@@ -1879,8 +1879,22 @@ body[data-hide-decors] [data-animated-bg] {
     padding-top: 4.6rem;
   }
 
+  body.launch-format-app .theme-shell {
+    background: linear-gradient(180deg, rgba(6, 9, 14, 0.96), rgba(8, 12, 20, 0.92));
+  }
+
   body.launch-format-app .theme-shell::before {
     opacity: 1;
+  }
+
+  body.launch-format-app .theme-shell footer {
+    margin-top: 1.2rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.launch-format-app .theme-shell .theme-panel-surface,
+  body.launch-format-app .theme-shell .glass3d-panel {
+    border-radius: 1.25rem;
   }
 
   .theme-shell::before {
@@ -3591,6 +3605,10 @@ body,
 
   body.launch-format-app .theme-shell {
     overflow-x: hidden;
+  }
+
+  body.launch-format-app .theme-main-content > section {
+    margin-inline: 0.35rem;
   }
 
   body.launch-format-app .theme-shell > .theme-main-content > section {

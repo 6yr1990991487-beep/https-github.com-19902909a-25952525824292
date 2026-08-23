@@ -62,8 +62,8 @@ export function LaunchFormatPicker() {
   if (!open || typeof document === "undefined") return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[10060] flex items-center justify-center bg-black/65 backdrop-blur-md p-4" role="dialog" aria-modal="true">
-      <div className="glass3d-panel w-full max-w-md rounded-[1.8rem] border border-white/15 p-5 text-white shadow-2xl">
+    <div className="fixed inset-0 z-[10060] flex items-end justify-center bg-black/65 backdrop-blur-md p-3 sm:items-center sm:p-4" role="dialog" aria-modal="true">
+      <div className="glass3d-panel w-full max-w-md rounded-[1.8rem] border border-white/15 p-5 text-white shadow-2xl sm:rounded-[2rem]">
         <button
           type="button"
           onClick={() => setOpen(false)}
@@ -74,18 +74,18 @@ export function LaunchFormatPicker() {
         </button>
         <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/65">Choix du format</p>
         <h2 className="mt-2 text-2xl font-black tracking-tight">Ouvrir Lovanet comme…</h2>
-        <p className="mt-2 text-sm text-white/75">Choisis le format à utiliser au lancement: navigateur ou application.</p>
+        <p className="mt-2 text-sm text-white/75">Choisis le format de départ à chaque ouverture installée.</p>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <button onClick={() => choose("browser")} className="glass3d-btn rounded-2xl border border-white/15 p-4 text-left">
+          <button onClick={() => choose("browser")} className="glass3d-btn rounded-[1.4rem] border border-white/15 p-4 text-left transition-transform hover:scale-[1.01]">
             <Monitor className="h-7 w-7" />
             <div className="mt-3 text-base font-bold">Format navigateur</div>
-            <div className="mt-1 text-xs text-white/70">Interface web classique, barre du navigateur visible.</div>
+            <div className="mt-1 text-xs text-white/70">Barre du navigateur visible, style web classique.</div>
           </button>
-          <button onClick={() => choose("app")} className="glass3d-btn rounded-2xl border border-white/15 p-4 text-left">
+          <button onClick={() => choose("app")} className="glass3d-btn rounded-[1.4rem] border border-white/15 p-4 text-left transition-transform hover:scale-[1.01]">
             <Smartphone className="h-7 w-7" />
             <div className="mt-3 text-base font-bold">Format application</div>
-            <div className="mt-1 text-xs text-white/70">Interface installée, plus compacte et immersive.</div>
+            <div className="mt-1 text-xs text-white/70">Interface compacte, immersive et plus native.</div>
           </button>
         </div>
 
