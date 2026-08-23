@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { MiniPreviewPlayer } from "@/components/MiniPreviewPlayer";
 import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 
-const ANIME_MOMENTS_TOP_VIDEO = "https://drive.google.com/uc?export=download&id=1Gd0U4iORwZz2UZBiFUmhnfWlIZGXGxN4";
+const ANIME_MOMENTS_TOP_VIDEO = "/videos/anime-moments-top.mp4";
 const ANIME_MOMENTS_TOP_VIDEO_FALLBACK = safeLovableVideoSource(animeMomentsTop?.url, "/home-banner.mp4");
 
 const SHOP_REEL_MP4 =

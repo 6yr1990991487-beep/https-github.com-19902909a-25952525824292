@@ -9,8 +9,8 @@ import {
   MUSIC_GENRES, MusicTrack, fetchGenreTracks, fetchCloudTracks, makeLocalTrack, uploadCloudTrack,
 } from "@/lib/musicLibrary";
 
-const AI_HUB_PLAYER_BG_VIDEO = "https://drive.google.com/uc?export=download&id=14JPUmRvHLl23CbtTIRSqGb-1z0g4M-Bm";
-const AI_HUB_PLAYER_BG_VIDEO_FALLBACK = "/videos/ai-hub-drive.mp4";
+const AI_HUB_PLAYER_BG_VIDEO = "/videos/ai-hub-drive.mp4";
+const AI_HUB_PLAYER_BG_VIDEO_FALLBACK = "/videos/ai-hub-drive-2.mp4";
 
 function formatTime(sec: number) {
   if (!Number.isFinite(sec) || sec <= 0) return "00:00";
