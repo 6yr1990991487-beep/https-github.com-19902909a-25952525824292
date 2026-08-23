@@ -27,7 +27,7 @@ export function usePushNotifications() {
           if (firstItem) {
             new Notification("Nouveau contenu sur Lovanet !", {
               body: firstItem.title,
-              icon: "/lovanet-icon-transparent-192.png?v=18",
+              icon: "/lovanet-icon-192.png?v=18",
               badge: "/lovanet-icon-64.png?v=17",
             });
           }
