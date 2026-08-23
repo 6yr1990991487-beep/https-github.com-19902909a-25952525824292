@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { Youtube, ShoppingBag, Newspaper, Compass, Film, PlayCircle, Home, Music2, Clapperboard, Clock } from "lucide-react";
 
 const FOOTER_SQUARE_VIDEO = "/portal-bottom-square.mp4";
-const FOOTER_BACKDROP_VIDEO = "/portal-bottom-background.mp4";
+const FOOTER_BACKDROP_VIDEO = "/media/portal-bottom-background-extra.mp4";
+const FOOTER_BACKDROP_IMAGE = "/media/portal-bottom-background-image.png";
 
 // Unique destinations — no duplicates between nav and content
 const allDestinations = [
@@ -36,6 +37,13 @@ export const Footer = () => {
           aria-hidden="true"
           data-testid="footer-backdrop-video"
           data-bg-video
+        />
+        <img
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-55"
+          src={FOOTER_BACKDROP_IMAGE}
+          alt=""
+          aria-hidden="true"
+          data-testid="footer-backdrop-image"
         />
         <div className="pointer-events-none absolute inset-0 z-0 bg-[rgba(6,12,22,0.42)] backdrop-blur-[4px]" />
         <div className="relative z-10 grid gap-8 border-b border-[var(--theme-border-soft)] px-5 py-8 sm:px-7 lg:grid-cols-[1.08fr_0.92fr] lg:px-8 lg:py-10">
