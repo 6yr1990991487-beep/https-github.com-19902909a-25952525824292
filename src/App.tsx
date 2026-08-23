@@ -108,10 +108,45 @@ const REDIRECTS: Array<{ from: string; to: string }> = [
 const AppShell = () => {
   usePushNotifications();
   const location = useLocation();
+
+  const isPreviewLikeHost = () => {
+    if (typeof window === "undefined") return false;
+    const host = window.location.hostname;
+    return (
+      host === "localhost" ||
+      host === "127.0.0.1" ||
+      host.includes("preview") ||
+      host.includes("emergent") ||
+      host.endsWith(".emergentcf.cloud") ||
+      host.endsWith(".emergent.host")
+    );
+  };
+
   useEffect(() => {
     initPanelTint();
     initPanelDrag();
   }, []);
+
+  useEffect(() => {
+    if (!isPreviewLikeHost()) return;
+
+    const forceVisibleAndPlay = () => {
+      document.body.removeAttribute("data-hide-videos");
+      const nodes = document.querySelectorAll("video[data-bg-video], video.hero-banner-video");
+      nodes.forEach((node) => {
+        if (!(node instanceof HTMLVideoElement)) return;
+        node.muted = true;
+        const playPromise = node.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      });
+    };
+
+    const rafId = window.requestAnimationFrame(forceVisibleAndPlay);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [location.pathname]);
+
   if (location.hash?.includes('session_id=')) { return <AuthCallback />; }
 
   const pathname = location.pathname;
