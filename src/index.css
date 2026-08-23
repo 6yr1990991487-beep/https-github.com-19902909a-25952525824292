@@ -4175,9 +4175,9 @@ body[data-panel-tint="on"] .glass3d-surface a:not(.glass3d-plain):not([style*="b
   padding-right: 1rem;
 }
 .quicknav-floating--top {
-  top: 1rem;
+  top: 4.1rem;
   transform: none;
-  width: min(92vw, 20rem);
+  width: min(96vw, 58rem);
 }
 .quicknav-floating[data-dragged="true"] {
   transform: none;
@@ -4923,22 +4923,33 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
 }
 .quicknav-floating__edge-toggle {
   position: absolute;
-  right: 0;
   top: 50%;
   z-index: 2;
-  transform: translate(50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 2.15rem;
   height: 2.15rem;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.28);
-  background: rgba(255,255,255,0.12);
-  color: #fff;
-  box-shadow: 0 0 20px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.34);
-  backdrop-filter: blur(18px) saturate(125%);
-  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  border: 1px solid rgba(255,255,255,0.34);
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
+  color: rgba(255,255,255,0.95);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -6px 12px rgba(0,0,0,0.2);
+  backdrop-filter: blur(16px) saturate(108%);
+  -webkit-backdrop-filter: blur(16px) saturate(108%);
+}
+.quicknav-floating__edge-toggle--left {
+  left: 0;
+  top: 38%;
+  transform: translate(-50%, -50%);
+}
+.quicknav-floating__edge-toggle--right {
+  right: 0;
+  top: 64%;
+  transform: translate(50%, -50%);
 }
 .quicknav-floating__stack {
   display: flex;
@@ -4961,6 +4972,21 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
 }
 .quicknav-floating[data-collapsed="true"] .quicknav-floating__stack {
   display: none;
+}
+.quicknav-floating__stack--bar {
+  gap: 0.55rem;
+}
+.quicknav-roll__main,
+.quicknav-roll__mini {
+  transition: transform 190ms ease, opacity 190ms ease;
+}
+.quicknav-roll[data-roll-phase="1"] .quicknav-roll__mini {
+  transform: translateX(112%);
+  opacity: 0;
+}
+.quicknav-roll[data-roll-phase="2"] .quicknav-roll__main {
+  transform: translateX(112%);
+  opacity: 0;
 }
 .quicknav-floating__topbar {
   min-height: 2.55rem;
@@ -5047,6 +5073,10 @@ html[data-nav-carousel] .quicknav-floating a:hover {
   }
   .quicknav-floating--right {
     right: 0.55rem;
+  }
+  .quicknav-floating--top {
+    top: 4.65rem;
+    width: min(96vw, 26rem);
   }
   .quicknav-card--full {
     min-width: 12.25rem;

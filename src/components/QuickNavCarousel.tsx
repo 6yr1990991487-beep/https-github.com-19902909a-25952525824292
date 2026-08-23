@@ -74,6 +74,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
   const [signedIn, setSignedIn] = useState(false);
   const [leftOpen, setLeftOpen] = useState(false);
   const [rightOpen, setRightOpen] = useState(false);
+  const [rightRollPhase, setRightRollPhase] = useState<0 | 1 | 2>(0);
   const [dragging, setDragging] = useState(false);
   const [dockPos, setDockPos] = useState<{ x: number; y: number; dragged: boolean }>(() => {
     try {
@@ -213,7 +214,12 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
       } else {
         scroller.scrollLeft = Math.min(max, scroller.scrollLeft + 0.95);
         if (scroller.scrollLeft >= max - 0.5) {
-          setRightOpen(false);
+          setRightRollPhase(1);
+          window.setTimeout(() => setRightRollPhase(2), 180);
+          window.setTimeout(() => {
+            setRightOpen(false);
+            setRightRollPhase(0);
+          }, 360);
           return;
         }
       }
@@ -265,6 +271,21 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     onClose?.();
   };
 
+  const toggleRight = () => {
+    if (!rightOpen) {
+      setRightRollPhase(0);
+      setRightOpen(true);
+      return;
+    }
+    if (rightRollPhase !== 0) return;
+    setRightRollPhase(1);
+    window.setTimeout(() => setRightRollPhase(2), 180);
+    window.setTimeout(() => {
+      setRightOpen(false);
+      setRightRollPhase(0);
+    }, 360);
+  };
+
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -283,7 +304,7 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
       <button
         type="button"
         onClick={() => (leftOpen ? closeLeft() : setLeftOpen(true))}
-        className="quicknav-floating__edge-toggle"
+        className="quicknav-floating__edge-toggle quicknav-floating__edge-toggle--left"
         aria-label={leftOpen ? "Réduire le menu récent" : "Ouvrir le menu récent"}
       >
         {leftOpen ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -414,27 +435,48 @@ export default function QuickNavCarousel({ items = DEFAULT_ITEMS, onClose }: { i
     >
       <button
         type="button"
-        onClick={() => setRightOpen((value) => !value)}
-        className="quicknav-floating__edge-toggle"
+        onClick={toggleRight}
+        className="quicknav-floating__edge-toggle quicknav-floating__edge-toggle--right"
         aria-label={rightOpen ? "Fermer le carrousel defilant" : "Ouvrir le carrousel defilant"}
       >
         {rightOpen ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
       {rightOpen && (
-        <div className="quicknav-floating__stack">
+        <div className="quicknav-floating__stack quicknav-floating__stack--bar quicknav-roll" data-roll-phase={rightRollPhase}>
           <div className="quicknav-floating__topbar glass3d-header flex items-center justify-between gap-2 px-3 py-2">
             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/82">
               <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/10">
                 <ChevronRight className="h-3.5 w-3.5" />
               </span>
-              Defilant
+              Menu
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Auto</div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Auto + Slide</div>
           </div>
 
-          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
-            <DragScroller className="quicknav-floating__mini-carousel no-scrollbar flex gap-2 px-2 py-2" data-testid="quicknav-right-carousel">
+          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="quicknav-roll__main overflow-hidden">
+            <DragScroller className="quicknav-floating__main-carousel no-scrollbar relative flex gap-3 px-2 py-2" data-testid="quicknav-right-carousel">
+              {primaryItems.map((item) => (
+                <Link
+                  key={`right-full-${item.id}`}
+                  to={item.to}
+                  className="quicknav-card quicknav-card--full group relative h-32 w-52 flex-shrink-0 overflow-hidden rounded-2xl p-4 text-white"
+                  aria-label={item.title}
+                  draggable={false}
+                >
+                  <div className="absolute inset-0 rounded-2xl backdrop-blur-md" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.08), rgba(20,20,20,0.22))" }} />
+                  <div className="relative flex h-full w-full flex-col justify-end rounded-xl p-2">
+                    <div className="z-10 mt-2 text-base font-extrabold leading-tight">{item.title}</div>
+                    <div className="absolute -right-5 -top-5 h-20 w-20 rounded-full opacity-20 blur-2xl" style={{ background: item.color }} />
+                    <div className="absolute bottom-2 left-2 z-10 text-[11px] text-white/90">Aller →</div>
+                  </div>
+                </Link>
+              ))}
+            </DragScroller>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2, delay: 0.04 }} className="quicknav-roll__mini overflow-hidden">
+            <DragScroller className="quicknav-floating__mini-carousel no-scrollbar flex gap-2 px-2 py-2">
               {rightItems.map((item) => {
                 const MiniIcon = MINI_ICON_BY_ID[item.id] ?? Sparkles;
                 const tint = MINI_TINT_BY_ID[item.id] ?? "from-cyan-400/45 to-indigo-500/45";
