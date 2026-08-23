@@ -8,6 +8,11 @@ export function safeLovableVideoSource(input?: string | null, fallback = "/globa
   const value = String(input ?? "").trim();
   if (!value) return fallback;
 
+  // Lovable asset proxy paths are not available on Emergent runtime.
+  if (value.startsWith("/__l5e/") || value.startsWith("/__l5e")) {
+    return fallback;
+  }
+
   if (value.startsWith("/")) return value;
   if (value.startsWith("http://") || value.startsWith("https://")) {
     if (value.includes("/__l5e/") || value.includes("googleusercontent")) {
