@@ -19,6 +19,7 @@ import { MiniPreviewPlayer } from "@/components/MiniPreviewPlayer";
 import { IMPORTED_VIDEOS } from "@/data/importedVideos";
 
 const ANIME_MOMENTS_TOP_VIDEO = "https://drive.google.com/uc?export=download&id=1Gd0U4iORwZz2UZBiFUmhnfWlIZGXGxN4";
+const ANIME_MOMENTS_TOP_VIDEO_FALLBACK = safeLovableVideoSource(animeMomentsTop?.url, "/home-banner.mp4");
 
 const SHOP_REEL_MP4 =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
@@ -121,6 +122,7 @@ const reactions = [
 ];
 
 const Index = () => {
+  const [animeMomentsTopVideo, setAnimeMomentsTopVideo] = useState(ANIME_MOMENTS_TOP_VIDEO);
   const [ytIds, setYtIds] = useState<string[]>([]);
   const [animeTrailers, setAnimeTrailers] = useState<{ countdown: string[]; catalog: string[] }>({
     countdown: [],
@@ -270,8 +272,13 @@ const Index = () => {
               style={{ aspectRatio: "854 / 480" }}
             >
               <video
-                src={ANIME_MOMENTS_TOP_VIDEO}
+                src={animeMomentsTopVideo}
                 className="h-full w-full object-cover"
+                onError={() => {
+                  if (animeMomentsTopVideo !== ANIME_MOMENTS_TOP_VIDEO_FALLBACK) {
+                    setAnimeMomentsTopVideo(ANIME_MOMENTS_TOP_VIDEO_FALLBACK);
+                  }
+                }}
                 autoPlay
                 muted
                 loop

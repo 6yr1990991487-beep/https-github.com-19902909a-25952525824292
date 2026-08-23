@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { Helmet } from "react-helmet-async";
 import lecteurBanner from "@/assets/lecteur-video-banner-v15.mp4.asset.json";
 import { safeLovableVideoSource } from "@/lib/lovableVideoSources";
 
 const LECTEURS_VIDEO_TOP_VIDEO = "https://drive.google.com/uc?export=download&id=1OagvdeVi3u0c_opbhUSQoTni3znvkUt8";
+const LECTEURS_VIDEO_TOP_VIDEO_FALLBACK = safeLovableVideoSource(lecteurBanner?.url, "/home-banner.mp4");
 
 const PRIMARY_SITE = "https://lovanet.fr";
 
@@ -23,28 +25,37 @@ const videoJsonLd = {
  * Page Lecteur vidéo — version épurée :
  * une seule bannière vidéo en haut de page, aucune autre bannière ni image.
  */
-const LecteursVideo = () => (
-  <PageShell>
-    <Helmet>
-      <script type="application/ld+json">{JSON.stringify(videoJsonLd)}</script>
-    </Helmet>
-    <section className="container mx-auto px-4 lg:px-8 py-8 lg:py-10">
-      <h1 className="sr-only">Lecteur vidéo Lovanet</h1>
-      <div className="mx-auto max-w-[854px] overflow-hidden rounded-[2rem] border border-white/12 bg-black shadow-[0_28px_90px_-42px_rgba(56,189,248,0.6)]">
-        <video
-          src={LECTEURS_VIDEO_TOP_VIDEO}
-          className="w-full h-auto block"
-          style={{ aspectRatio: "854 / 480" }}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-label="Bannière vidéo Lovanet"
-        />
-      </div>
-    </section>
-  </PageShell>
-);
+const LecteursVideo = () => {
+  const [lecteursTopVideo, setLecteursTopVideo] = useState(LECTEURS_VIDEO_TOP_VIDEO);
+
+  return (
+    <PageShell>
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(videoJsonLd)}</script>
+      </Helmet>
+      <section className="container mx-auto px-4 lg:px-8 py-8 lg:py-10">
+        <h1 className="sr-only">Lecteur vidéo Lovanet</h1>
+        <div className="mx-auto max-w-[854px] overflow-hidden rounded-[2rem] border border-white/12 bg-black shadow-[0_28px_90px_-42px_rgba(56,189,248,0.6)]">
+          <video
+            src={lecteursTopVideo}
+            className="w-full h-auto block"
+            style={{ aspectRatio: "854 / 480" }}
+            onError={() => {
+              if (lecteursTopVideo !== LECTEURS_VIDEO_TOP_VIDEO_FALLBACK) {
+                setLecteursTopVideo(LECTEURS_VIDEO_TOP_VIDEO_FALLBACK);
+              }
+            }}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label="Bannière vidéo Lovanet"
+          />
+        </div>
+      </section>
+    </PageShell>
+  );
+};
 
 export default LecteursVideo;

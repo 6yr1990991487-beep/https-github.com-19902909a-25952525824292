@@ -20,6 +20,8 @@ import { motion } from "framer-motion";
 
 const PORTAL_CARD_VIDEO = "https://drive.google.com/uc?export=download&id=1Sao371KD1M-K6uvNiOP_vlrAX5D2DGzX";
 const PORTAL_BACKGROUND_VIDEO = "https://drive.google.com/uc?export=download&id=1OagvdeVi3u0c_opbhUSQoTni3znvkUt8";
+const PORTAL_CARD_VIDEO_FALLBACK = "/portal-hero-video-1.mp4";
+const PORTAL_BACKGROUND_VIDEO_FALLBACK = "/portal-hero-video-2.mp4";
 
 const rotatingPortalDestinations = [
   { to: "/anime-moments", label: "Anime Moments", icon: Film },
@@ -246,8 +248,8 @@ export default function RootLandingPage() {
 
   const [previewSoundEnabled, setPreviewSoundEnabled] = useState(true);
   const [heroFxVariant] = useState(() => 1 + Math.floor(Math.random() * 5));
-  const portalGlassVideo1Source = PORTAL_CARD_VIDEO;
-  const portalGlassVideo2Source = PORTAL_BACKGROUND_VIDEO;
+  const [portalGlassVideo1Source, setPortalGlassVideo1Source] = useState(PORTAL_CARD_VIDEO);
+  const [portalGlassVideo2Source, setPortalGlassVideo2Source] = useState(PORTAL_BACKGROUND_VIDEO);
   // Variation d'effet 3D (panorama / flexion / tilt / vague / balancier) tiree
   // au hasard a chaque arrivee sur la page Portail.
 
@@ -438,6 +440,11 @@ export default function RootLandingPage() {
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-60"
                   src={portalGlassVideo2Source}
+                  onError={() => {
+                    if (portalGlassVideo2Source !== PORTAL_BACKGROUND_VIDEO_FALLBACK) {
+                      setPortalGlassVideo2Source(PORTAL_BACKGROUND_VIDEO_FALLBACK);
+                    }
+                  }}
                   autoPlay
                   muted
                   loop
@@ -449,6 +456,11 @@ export default function RootLandingPage() {
                 <video
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain opacity-85 mix-blend-screen"
                   src={portalGlassVideo1Source}
+                  onError={() => {
+                    if (portalGlassVideo1Source !== PORTAL_CARD_VIDEO_FALLBACK) {
+                      setPortalGlassVideo1Source(PORTAL_CARD_VIDEO_FALLBACK);
+                    }
+                  }}
                   autoPlay
                   muted
                   loop

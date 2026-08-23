@@ -10,6 +10,7 @@ import {
 } from "@/lib/musicLibrary";
 
 const AI_HUB_PLAYER_BG_VIDEO = "https://drive.google.com/uc?export=download&id=14JPUmRvHLl23CbtTIRSqGb-1z0g4M-Bm";
+const AI_HUB_PLAYER_BG_VIDEO_FALLBACK = "/videos/ai-hub-drive.mp4";
 
 function formatTime(sec: number) {
   if (!Number.isFinite(sec) || sec <= 0) return "00:00";
@@ -220,7 +221,7 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
       className={`glass3d-panel glass3d-surface audio-shell relative w-full overflow-hidden rounded-[2.2rem] p-5 sm:p-7 ${className}`}
     >
       <video
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-45"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-65"
         src={AI_HUB_PLAYER_BG_VIDEO}
         autoPlay
         muted
@@ -229,14 +230,14 @@ export default function GlassMusicPlayer({ className = "" }: { className?: strin
         preload="auto"
         onError={(event) => {
           const video = event.currentTarget;
-          if (video.src.endsWith("/home-banner.mp4")) return;
-          video.src = "/home-banner.mp4";
+          if (video.src.endsWith(AI_HUB_PLAYER_BG_VIDEO_FALLBACK)) return;
+          video.src = AI_HUB_PLAYER_BG_VIDEO_FALLBACK;
           video.load();
           const p = video.play();
           if (p && typeof p.catch === "function") p.catch(() => {});
         }}
       />
-      <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.38),rgba(2,6,23,0.52))]" />
+      <div className="pointer-events-none absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.22),rgba(2,6,23,0.34))]" />
       <div className="pointer-events-none absolute inset-0 audio-shell-glow" aria-hidden />
 
       <header className="relative flex flex-wrap items-center justify-between gap-3">
