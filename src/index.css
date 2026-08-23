@@ -1871,6 +1871,18 @@ body[data-hide-decors] [data-animated-bg] {
     color: var(--theme-fg-on-bg);
   }
 
+  body.launch-format-app .theme-shell {
+    min-height: 100dvh;
+  }
+
+  body.launch-format-app .theme-main-content {
+    padding-top: 4.6rem;
+  }
+
+  body.launch-format-app .theme-shell::before {
+    opacity: 1;
+  }
+
   .theme-shell::before {
     content: "";
     position: fixed;
@@ -3566,6 +3578,23 @@ body,
   .floating-dock-slot [role="button"] svg {
     width: 19px !important;
     height: 19px !important;
+  }
+
+  body.launch-format-app header[data-testid="site-navbar"] {
+    top: env(safe-area-inset-top, 0px) !important;
+    padding-top: 0.15rem !important;
+  }
+
+  body.launch-format-app .theme-main-content {
+    padding-top: 4.1rem !important;
+  }
+
+  body.launch-format-app .theme-shell {
+    overflow-x: hidden;
+  }
+
+  body.launch-format-app .theme-shell > .theme-main-content > section {
+    border-radius: 1.1rem;
   }
 
   .detached-bubble-panel,
