@@ -1,16 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import bgLoop1 from '@/assets/bg-loop-1.mp4.asset.json';
-import bgLoop2 from '@/assets/bg-loop-2.mp4.asset.json';
-import bgLoop3 from '@/assets/bg-loop-3.mp4.asset.json';
-import bgLoop4 from '@/assets/bg-loop-4.mp4.asset.json';
-import { safeLovableVideoSource } from '@/lib/lovableVideoSources';
 
 const BACKGROUND_VIDEO_PLAYLIST = [
-  safeLovableVideoSource(bgLoop1?.url, '/global-bg-web.mp4'),
-  safeLovableVideoSource(bgLoop2?.url, '/global-bg-mobile.mp4'),
-  safeLovableVideoSource(bgLoop3?.url, '/home-banner.mp4'),
-  safeLovableVideoSource(bgLoop4?.url, '/custom-hero-banner.mp4'),
+  "/premium-border-1.mp4",
+  "/premium-border-2.mp4",
+  "/premium-border-3.mp4",
+  "/premium-border-4.mp4",
 ];
 
 const Leaf = ({ delay, x, duration }) => (
