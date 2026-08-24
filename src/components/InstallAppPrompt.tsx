@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Download, Share, Bell, BellRing, MoreVertical } from "lucide-react";
+import { X, Download, Share, MoreVertical, Monitor, Smartphone, Check } from "lucide-react";
+import { LaunchFormat, getLaunchFormat, setLaunchFormat } from "@/components/LaunchFormatPicker";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
@@ -58,6 +59,7 @@ export const InstallAppPrompt = () => {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [open, setOpen] = useState(false);
   const [browser, setBrowser] = useState<Browser>("unknown");
+  const [launchFormat, setLaunchFormatChoice] = useState<LaunchFormat>(() => getLaunchFormat());
   const [notifState, setNotifState] = useState<NotificationPermission | "unsupported">("default");
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -114,6 +116,11 @@ export const InstallAppPrompt = () => {
       localStorage.setItem(DISMISS_UNTIL_KEY, String(Date.now() + DISMISS_COOLDOWN_MS));
     } catch { /* ignore */ }
   }, []);
+
+  const chooseLaunchFormat = (format: LaunchFormat) => {
+    setLaunchFormatChoice(format);
+    setLaunchFormat(format);
+  };
 
   const install = async () => {
     const evt = deferred || ((window as any).__lovanetInstallEvent as BIPEvent | null);
@@ -195,10 +202,49 @@ export const InstallAppPrompt = () => {
           />
         </div>
 
-        <h2 className="mt-4 text-xl font-bold tracking-tight text-white drop-shadow sm:text-2xl">Installer Lovanet</h2>
-        <p className="mt-2 text-[13px] leading-relaxed text-white/90 sm:text-sm">
-          Lovanet Portail anime, manga, gaming, pop culture japonaise
-        </p>
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-white/65">Choix du format</p>
+          <h2 className="mt-2 text-2xl font-black tracking-tight text-white drop-shadow">Ouvrir Lovanet comme…</h2>
+          <p className="mt-2 text-sm text-white/75">Choisis le format de départ à chaque ouverture installée.</p>
+
+        <div className="mt-5 rounded-2xl border border-white/15 bg-white/[0.05] p-3 text-left">
+          <div className="text-[10px] font-black uppercase tracking-[0.25em] text-white/65">Format au lancement</div>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => chooseLaunchFormat("browser")}
+              className={`rounded-2xl border px-3 py-3 text-left transition-all ${
+                launchFormat === "browser"
+                  ? "border-cyan-300/70 bg-cyan-400/15 text-white shadow-[0_0_18px_rgba(34,211,238,0.18)]"
+                  : "border-white/15 bg-white/[0.04] text-white/78 hover:border-white/30"
+              }`}
+            >
+              <div className="flex items-center gap-2 text-sm font-bold">
+                <Monitor className="h-4 w-4" />
+                Navigateur
+              </div>
+              <div className="mt-1 text-[11px] leading-snug text-white/70">Interface web classique sur PC.</div>
+            </button>
+            <button
+              type="button"
+              onClick={() => chooseLaunchFormat("app")}
+              className={`rounded-2xl border px-3 py-3 text-left transition-all ${
+                launchFormat === "app"
+                  ? "border-emerald-300/70 bg-emerald-400/15 text-white shadow-[0_0_18px_rgba(16,185,129,0.18)]"
+                  : "border-white/15 bg-white/[0.04] text-white/78 hover:border-white/30"
+              }`}
+            >
+              <div className="flex items-center gap-2 text-sm font-bold">
+                <Smartphone className="h-4 w-4" />
+                Application
+              </div>
+              <div className="mt-1 text-[11px] leading-snug text-white/70">Expérience compacte, mobile et immersive.</div>
+            </button>
+          </div>
+          <div className="mt-2 flex items-center gap-2 text-[11px] text-white/70">
+            <Check className="h-3.5 w-3.5 text-emerald-300" />
+            Le choix sera mémorisé pour l’ouverture installée.
+          </div>
+        </div>
 
         {canDirectInstall && !iosLike ? (
           <button
@@ -206,7 +252,7 @@ export const InstallAppPrompt = () => {
             className="glass3d-btn mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white"
           >
             <Download className="h-4 w-4" />
-            Installer l'application
+            Téléchargement direct
           </button>
         ) : (
           <p className="glass3d-group mt-5 flex items-start gap-2 rounded-2xl px-4 py-3 text-left text-sm text-white/95">
@@ -221,7 +267,6 @@ export const InstallAppPrompt = () => {
             disabled={notifState === "granted"}
             className="glass3d-btn mt-3 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {notifState === "granted" ? <BellRing className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
             {notifState === "granted" ? "Alertes activées" : "Activer les alertes"}
           </button>
         )}

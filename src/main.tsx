@@ -73,7 +73,13 @@ const applyLaunchFormatBodyClass = () => {
       return null;
     }
   })();
-  const format = stored === "browser" || stored === "app" ? stored : (window.matchMedia("(display-mode: standalone)").matches ? "app" : "browser");
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: minimal-ui)").matches ||
+    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+  const format = standalone
+    ? (stored === "browser" || stored === "app" ? stored : "app")
+    : "browser";
   document.body.dataset.launchFormat = format;
   document.body.classList.toggle("launch-format-app", format === "app");
   document.body.classList.toggle("launch-format-browser", format === "browser");

@@ -828,7 +828,7 @@ function Actualites() {
 
   if (loading) {
     return (
-      <PageShell>
+      <PageShell className="actualites-monochrome">
         <Helmet>
           <title>{pageTitle}</title>
           <meta name="description" key="actualites-description" content={pageDescription} />
@@ -845,7 +845,7 @@ function Actualites() {
     const displayDescription = detailTranslatedContent?.description || stripHtml(item.description || item.excerpt || item.content).slice(0, 260);
     const displayParagraphs = detailTranslatedContent?.paragraphs || detailParagraphs;
     return (
-      <PageShell>
+      <PageShell className="actualites-monochrome">
         <Helmet>
           <title>{pageTitle}</title>
           <meta name="description" key="actualites-description" content={pageDescription} />
@@ -1007,7 +1007,7 @@ function Actualites() {
 
   if (error || !home || !listing || !topHero) {
     return (
-      <PageShell>
+      <PageShell className="actualites-monochrome">
         <Helmet>
           <title>{pageTitle}</title>
           <meta name="description" key="actualites-description" content={pageDescription} />
@@ -1034,7 +1034,7 @@ function Actualites() {
   }
 
   return (
-    <PageShell>
+    <PageShell className="actualites-monochrome">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" key="actualites-description" content={pageDescription} />

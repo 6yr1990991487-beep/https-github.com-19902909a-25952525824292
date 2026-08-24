@@ -27,6 +27,15 @@ export function getLaunchFormat() {
   return getStoredFormat() ?? (isStandalone() ? "app" : "browser");
 }
 
+export function setLaunchFormat(format: LaunchFormat) {
+  try {
+    localStorage.setItem(LAUNCH_FORMAT_KEY, format);
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent("lovanet:launch-format", { detail: { format } }));
+}
+
 export function clearLaunchFormat() {
   try {
     localStorage.removeItem(LAUNCH_FORMAT_KEY);

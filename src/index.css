@@ -5105,6 +5105,68 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
 .quicknav-card:focus-visible {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.32), 0 16px 28px rgba(0,0,0,0.26), 0 0 18px rgba(255,255,255,0.08);
 }
+
+/* Actualites: monochrome glass theme (white/translucent, no blue accents) */
+.theme-main-content.actualites-monochrome {
+  --theme-link: rgba(255,255,255,0.94);
+  --theme-link-hover: rgba(255,255,255,1);
+}
+
+.theme-main-content.actualites-monochrome,
+.theme-main-content.actualites-monochrome :is(h1, h2, h3, h4, h5, h6, p, span, a, li, label, strong, em) {
+  color: rgba(255,255,255,0.94) !important;
+}
+
+.theme-main-content.actualites-monochrome [class*="text-black"],
+.theme-main-content.actualites-monochrome [class*="text-foreground"],
+.theme-main-content.actualites-monochrome [class*="text-sky-"],
+.theme-main-content.actualites-monochrome [class*="text-blue-"] {
+  color: rgba(255,255,255,0.94) !important;
+}
+
+.theme-main-content.actualites-monochrome [class*="bg-sky-"],
+.theme-main-content.actualites-monochrome [class*="bg-blue-"] {
+  background-color: rgba(255,255,255,0.14) !important;
+}
+
+.theme-main-content.actualites-monochrome [class*="border-sky-"],
+.theme-main-content.actualites-monochrome [class*="border-blue-"] {
+  border-color: rgba(255,255,255,0.22) !important;
+}
+
+.theme-main-content.actualites-monochrome .theme-panel-surface,
+.theme-main-content.actualites-monochrome .theme-subpanel,
+.theme-main-content.actualites-monochrome .theme-glass-chip,
+.theme-main-content.actualites-monochrome .theme-search-input,
+.theme-main-content.actualites-monochrome .theme-action-button,
+.theme-main-content.actualites-monochrome .btn-neon-rainbow,
+.theme-main-content.actualites-monochrome .btn-neon-rainbow-outline,
+.theme-main-content.actualites-monochrome .card,
+.theme-main-content.actualites-monochrome [role="button"] {
+  border-color: rgba(255,255,255,0.22) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05)) !important;
+  box-shadow:
+    0 18px 38px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.26) !important;
+  color: rgba(255,255,255,0.96) !important;
+  backdrop-filter: blur(18px) saturate(1.02) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.02) !important;
+}
+
+.theme-main-content.actualites-monochrome [data-testid="actualites-premium-hero"] > div:first-child {
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)) !important;
+}
+
+.theme-main-content.actualites-monochrome input,
+.theme-main-content.actualites-monochrome textarea,
+.theme-main-content.actualites-monochrome [data-radix-select-trigger] {
+  color: rgba(255,255,255,0.96) !important;
+}
+
+.theme-main-content.actualites-monochrome input::placeholder,
+.theme-main-content.actualites-monochrome textarea::placeholder {
+  color: rgba(255,255,255,0.58) !important;
+}
 html[data-nav-carousel] .quicknav-floating a:hover {
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 70%, transparent),
