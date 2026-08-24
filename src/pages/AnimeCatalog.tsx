@@ -1179,7 +1179,7 @@ export default function AnimeCatalog() {
         )}
       </Helmet>
 
-      <main className="page-nav-glass min-h-screen overflow-hidden text-foreground" style={{ background: "transparent" }}>
+      <main className="page-nav-glass catalogue-monochrome min-h-screen overflow-hidden text-foreground" style={{ background: "transparent" }}>
         <Navbar />
         <div className="h-12" />
 
@@ -1617,8 +1617,8 @@ export default function AnimeCatalog() {
             <Card className="theme-panel-surface overflow-hidden rounded-[1.9rem] border border-[var(--theme-border-soft)] bg-transparent text-white" data-testid="catalog-filter-panel">
               <CardContent className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[1.2fr_repeat(4,minmax(0,1fr))] lg:items-center">
               <div className="flex gap-2">
-                <Button variant={viewMode === "grid" ? "default" : "outline"} onClick={() => setViewMode("grid")} className="rounded-xl">Grille</Button>
-                <Button variant={viewMode === "carousel" ? "default" : "outline"} onClick={() => setViewMode("carousel")} className="rounded-xl">Carrousel 3D</Button>
+                <Button variant={viewMode === "grid" ? "default" : "outline"} onClick={() => setViewMode("grid")} className="theme-action-button rounded-xl text-white">Grille</Button>
+                <Button variant={viewMode === "carousel" ? "default" : "outline"} onClick={() => setViewMode("carousel")} className="theme-action-button rounded-xl text-white">Carrousel 3D</Button>
               </div>
                 <div className="relative">
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/44" />

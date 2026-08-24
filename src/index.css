@@ -5175,6 +5175,64 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
 .theme-main-content.actualites-monochrome textarea::placeholder {
   color: rgba(255,255,255,0.58) !important;
 }
+
+/* Catalogue: monochrome glass theme (white/translucent, no blue accents) */
+.page-nav-glass.catalogue-monochrome {
+  --theme-link: rgba(255,255,255,0.94);
+  --theme-link-hover: rgba(255,255,255,1);
+  color: rgba(255,255,255,0.94) !important;
+}
+
+.page-nav-glass.catalogue-monochrome :is(h1, h2, h3, h4, h5, h6, p, span, a, li, label, strong, em) {
+  color: rgba(255,255,255,0.94) !important;
+}
+
+.page-nav-glass.catalogue-monochrome [class*="text-black"],
+.page-nav-glass.catalogue-monochrome [class*="text-foreground"],
+.page-nav-glass.catalogue-monochrome [class*="text-sky-"],
+.page-nav-glass.catalogue-monochrome [class*="text-blue-"] {
+  color: rgba(255,255,255,0.94) !important;
+}
+
+.page-nav-glass.catalogue-monochrome [class*="bg-sky-"],
+.page-nav-glass.catalogue-monochrome [class*="bg-blue-"] {
+  background-color: rgba(255,255,255,0.14) !important;
+}
+
+.page-nav-glass.catalogue-monochrome [class*="border-sky-"],
+.page-nav-glass.catalogue-monochrome [class*="border-blue-"] {
+  border-color: rgba(255,255,255,0.22) !important;
+}
+
+.page-nav-glass.catalogue-monochrome .theme-panel-surface,
+.page-nav-glass.catalogue-monochrome .theme-subpanel,
+.page-nav-glass.catalogue-monochrome .theme-glass-chip,
+.page-nav-glass.catalogue-monochrome .theme-search-input,
+.page-nav-glass.catalogue-monochrome .theme-action-button,
+.page-nav-glass.catalogue-monochrome .btn-neon-rainbow,
+.page-nav-glass.catalogue-monochrome .btn-neon-rainbow-outline,
+.page-nav-glass.catalogue-monochrome .card,
+.page-nav-glass.catalogue-monochrome [role="button"] {
+  border-color: rgba(255,255,255,0.22) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05)) !important;
+  box-shadow:
+    0 18px 38px rgba(0,0,0,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.26) !important;
+  color: rgba(255,255,255,0.96) !important;
+  backdrop-filter: blur(18px) saturate(1.02) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.02) !important;
+}
+
+.page-nav-glass.catalogue-monochrome input,
+.page-nav-glass.catalogue-monochrome textarea,
+.page-nav-glass.catalogue-monochrome [data-radix-select-trigger] {
+  color: rgba(255,255,255,0.96) !important;
+}
+
+.page-nav-glass.catalogue-monochrome input::placeholder,
+.page-nav-glass.catalogue-monochrome textarea::placeholder {
+  color: rgba(255,255,255,0.58) !important;
+}
 html[data-nav-carousel] .quicknav-floating a:hover {
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--nav-skin-accent, #00ff9d) 70%, transparent),
