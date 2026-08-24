@@ -4,7 +4,6 @@ import { PageShell } from "@/components/PageShell";
 import { CalendarRange, Clapperboard, ExternalLink, Heart, Play, PlayCircle, Search, Info, SkipForward, Sparkles, Volume2, VolumeX, Maximize, PictureInPicture2, Pause, Star, Globe, Loader2, Captions } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HoverPreview } from "@/components/HoverPreview";
-import { MangaUniverseBanner } from "@/components/MangaUniverseBanner";
 import { ManualSyncButton } from "@/components/ManualSyncButton";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { TranslateCardButton } from "@/components/TranslateCardButton";
@@ -1197,7 +1196,6 @@ const PrimeVideo = () => {
           </div>
         )}
       </section>
-      <MangaUniverseBanner />
     </PageShell>
   );
 };
