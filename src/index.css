@@ -4975,28 +4975,36 @@ html[data-nav-carousel="spotlight"] .quicknav-floating a::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.15rem;
-  height: 2.15rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.34);
-  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08));
+  width: 1.35rem;
+  height: 3.15rem;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
   color: rgba(255,255,255,0.95);
   box-shadow:
-    0 10px 22px rgba(0,0,0,0.28),
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -6px 12px rgba(0,0,0,0.2);
-  backdrop-filter: blur(16px) saturate(108%);
-  -webkit-backdrop-filter: blur(16px) saturate(108%);
+    0 10px 22px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.44);
+  backdrop-filter: blur(14px) saturate(106%);
+  -webkit-backdrop-filter: blur(14px) saturate(106%);
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+.quicknav-floating__edge-toggle:hover,
+.quicknav-floating__edge-toggle:focus-visible {
+  border-color: rgba(255,255,255,0.42);
+  background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.1));
 }
 .quicknav-floating__edge-toggle--left {
-  left: 0.4rem;
+  left: -0.15rem;
   top: 38%;
   transform: translate(0, -50%);
+  border-radius: 0 0.9rem 0.9rem 0;
+  border-left: 0;
 }
 .quicknav-floating__edge-toggle--right {
-  right: 0.4rem;
+  right: -0.15rem;
   top: 64%;
   transform: translate(0, -50%);
+  border-radius: 0.9rem 0 0 0.9rem;
+  border-right: 0;
 }
 .quicknav-floating__stack {
   display: flex;

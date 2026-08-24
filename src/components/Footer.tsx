@@ -9,7 +9,7 @@ const FOOTER_BACKDROP_IMAGE = "/media/portal-bottom-background-image.png";
 const allDestinations = [
   { to: "/", label: "Portail", icon: Home, color: "#a78bfa" },
   { to: "/anime-moments", label: "Anime Moments", icon: Film, color: "#f472b6" },
-  { to: "/decouvrir", label: "Univers", icon: Compass, color: "#22d3ee" },
+  { to: "/univers", label: "Univers", icon: Compass, color: "#22d3ee" },
   { to: "/chaine-youtube", label: "YouTube", icon: Youtube, color: "#ef4444" },
   { to: "/tiktok", label: "TikTok", icon: Music2, color: "#ec4899" },
   { to: "/prime-video", label: "Prime Vidéo", icon: PlayCircle, color: "#3b82f6" },

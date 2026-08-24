@@ -10,7 +10,7 @@ import { Footer } from "@/components/Footer";
 const InternalSitelinks: Array<[RegExp, string]> = [
   [/^Lovanet Plateforme officiel →$/i, "/"],
   [/^Catalogue →$/i, "/anime-catalog"],
-  [/^Univers Lovanet →$/i, "/decouvrir"],
+  [/^Univers Lovanet →$/i, "/univers"],
   [/^Magasin →$/i, "/shop"],
   [/^AnimemomentsAnimeofficiel → YouTube$/i, "/chaine-youtube"],
   [/^AnimemomentsAnimeofficiel →$/i, "/chaine-youtube"],
@@ -30,7 +30,7 @@ function AppUnderTest({ path }: { path: string }) {
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/" element={<div><h1>route:/</h1><Footer /></div>} />
-        <Route path="/decouvrir" element={<div><h1>route:/decouvrir</h1><Footer /></div>} />
+        <Route path="/univers" element={<div><h1>route:/univers</h1><Footer /></div>} />
         <Route path="/shop" element={<div><h1>route:/shop</h1><Footer /></div>} />
         <Route path="/anime-countdown" element={<div><h1>route:/anime-countdown</h1><Footer /></div>} />
         <Route path="/anime-catalog" element={<div><h1>route:/anime-catalog</h1><Footer /></div>} />

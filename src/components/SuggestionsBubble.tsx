@@ -14,7 +14,7 @@ const BASE: Suggestion[] = [
   { to: "/chaine-youtube", label: "YouTube", emoji: "▶️" },
   { to: "/tiktok", label: "TikTok", emoji: "🎵" },
   { to: "/actualites", label: "Actualités", emoji: "📰" },
-  { to: "/decouvrir", label: "Univers", emoji: "🌍" },
+  { to: "/univers", label: "Univers", emoji: "🌍" },
   { to: "/shop", label: "Magasin", emoji: "🛍️" },
   { to: "/leaderboard", label: "Classement", emoji: "🏆" },
 ];

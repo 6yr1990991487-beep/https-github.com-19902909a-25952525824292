@@ -52,7 +52,7 @@ const GROUPS: { id: string; label: string; items: Item[] }[] = [
     id: "explore",
     label: "Explorer",
     items: [
-      { to: "/decouvrir", label: "Univers", icon: Compass },
+      { to: "/univers", label: "Univers", icon: Compass },
       { to: "/actualites", label: "Actualités", icon: Sparkles },
       { to: "/leaderboard", label: "Classement", icon: Trophy },
       { to: "/profile", label: "Profil", icon: User },

@@ -52,7 +52,7 @@ function breadcrumbFor(route: string, canonical: string) {
   const labels: Record<string, string> = {
     "/": "Portail Lovanet",
     "/anime-moments": "Anime Moments",
-    "/decouvrir": "Univers Lovanet",
+    "/univers": "Univers Lovanet",
     "/shop": "Magasin",
     "/anime-catalog": "Catalogue Anime",
     "/anime-countdown": "Anime à venir",

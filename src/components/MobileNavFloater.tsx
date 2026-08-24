@@ -19,7 +19,7 @@ const contextualSuggestions: Record<string, QuickSuggestion[]> = {
   default: [
     { to: "/anime-catalog", label: "Catalogue", emoji: "📺", type: "quick-link" },
     { to: "/actualites", label: "News", emoji: "📰", type: "trending" },
-    { to: "/decouvrir", label: "Univers", emoji: "🌍", type: "recommended" },
+    { to: "/univers", label: "Univers", emoji: "🌍", type: "recommended" },
     { to: "/leaderboard", label: "Classement", emoji: "🏆", type: "trending" },
   ],
   "/anime-moments": [
@@ -39,7 +39,7 @@ const contextualSuggestions: Record<string, QuickSuggestion[]> = {
   ],
   "/actualites": [
     { to: "/anime-catalog", label: "Catalogue", emoji: "📺", type: "recommended" },
-    { to: "/decouvrir", label: "Univers", emoji: "🎪", type: "context" },
+    { to: "/univers", label: "Univers", emoji: "🎪", type: "context" },
     { to: "/leaderboard", label: "Trending", emoji: "🔥", type: "trending" },
   ],
 };

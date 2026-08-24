@@ -10,7 +10,7 @@ import { ManualSyncButton } from "@/components/ManualSyncButton";
 import { getSiteOrigin } from "@/lib/siteOrigin";
 
 /**
- * /decouvrir — Univers landing page.
+ * /univers — Univers landing page.
  * Purpose: give Google / Bing / image & video search a single,
  * crawlable index of everything Lovanet offers — products with real
  * <img> thumbnails, video previews with VideoObject JSON-LD, and
@@ -46,10 +46,10 @@ const Discover = () => {
     meta("description", "Univers Lovanet : la porte d'entrée vers Anime Moments, la chaîne YouTube, les shorts TikTok, Prime Video, le catalogue 1500+ titres, les sorties à venir et le magasin collector.");
     meta("og:title", "Univers Lovanet", true);
     meta("og:description", "Univers Lovanet : vidéos, shorts, catalogue anime, sorties à venir et magasin collector.", true);
-      meta("og:url", `${PRIMARY_SITE}/decouvrir`, true);
+      meta("og:url", `${PRIMARY_SITE}/univers`, true);
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
-      canonical.href = `${PRIMARY_SITE}/decouvrir`;
+      canonical.href = `${PRIMARY_SITE}/univers`;
   }, []);
 
   const sections: Array<{
@@ -188,19 +188,16 @@ const Discover = () => {
                 <h1 className="text-4xl font-black tracking-tight text-white md:text-6xl">
                   Explore l’univers anime, vidéos et magasin de Lovanet
                 </h1>
-                <p className="mx-auto max-w-2xl text-sm leading-7 text-white/72 md:text-base">
-                  Une porte d’entrée unique vers les vidéos officielles, les shorts, le catalogue anime, les sorties à venir et les collections du magasin.
-                </p>
                 <div className="flex flex-wrap justify-center gap-3 pt-2">
                   <Link
                     to="/shop"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-extrabold text-white backdrop-blur-xl transition-colors hover:bg-white/16"
                   >
                     <ShoppingBag className="w-4 h-4" /> Magasin
                   </Link>
                   <Link
                     to="/anime-moments"
-                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition-colors hover:bg-white/10"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-extrabold text-white backdrop-blur-xl transition-colors hover:bg-white/16"
                   >
                     <Play className="w-4 h-4" /> Anime Moments
                   </Link>
@@ -280,18 +277,13 @@ const Discover = () => {
 
       {/* Closing CTA strip */}
       <section className="container mx-auto px-4 pb-16">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 p-8 md:p-12 text-center"
-          style={{ background: "radial-gradient(ellipse at center, rgba(232,121,249,0.18), rgba(56,189,248,0.08) 60%, transparent)" }}>
+        <div className="relative overflow-hidden rounded-3xl border border-white/18 bg-white/[0.04] p-8 text-center backdrop-blur-xl md:p-12">
           <div aria-hidden className="absolute inset-0 opacity-40"
-            style={{ background: "conic-gradient(from 90deg at 50% 50%, transparent, rgba(240,171,252,0.15), transparent 40%)" }} />
+            style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.14), transparent 60%)" }} />
           <div />
           <Link
             to="/anime-moments"
-            className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm text-white transition-transform hover:scale-105"
-            style={{
-              background: "linear-gradient(135deg, #e879f9, #38bdf8)",
-              boxShadow: "0 20px 40px -12px rgba(232,121,249,0.5)",
-            }}
+            className="relative inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-extrabold text-white backdrop-blur-xl transition-transform hover:scale-105 hover:bg-white/16"
           >
             Aller vers Anime Moments <ArrowRight className="w-4 h-4" />
           </Link>
